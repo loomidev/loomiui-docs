@@ -1,0 +1,71 @@
+/* loomi brand accent for the Starlight theme — same blue as the default --loomi-primary-600 */
+:root {
+  --sl-color-accent-low: #dbeafe;
+  --sl-color-accent: #2563eb;
+  --sl-color-accent-high: #bfdbfe;
+}
+:root[data-theme="dark"] {
+  --sl-color-accent-low: #1e3a8a;
+  --sl-color-accent: #60a5fa;
+  --sl-color-accent-high: #dbeafe;
+}
+
+.hero :is(h1, .tagline) {
+  letter-spacing: -0.02em;
+}
+
+/* The header logo is the full "loomiui" wordmark lockup (icon + dark-navy text) baked
+ * into one image, so it has no separate light/dark variant. The navy text is illegible
+ * against Starlight's dark-mode header, so give it a light backdrop in dark mode only —
+ * the image itself is never modified. */
+.site-title img {
+  max-height: 2.75rem;
+}
+:root[data-theme="dark"] .site-title img {
+  background: #ffffff;
+  border-radius: 0.4rem;
+  padding: 0.3rem 0.6rem;
+}
+
+/* Live component preview boxes injected above each ```html code block.
+ *
+ * loomi components default to LIGHT-mode token values unless a consumer explicitly
+ * opts into dark mode (via <loomi-theme-switcher> overriding --loomi-* tokens). They
+ * are NOT aware of Starlight's own light/dark toggle, so this surface is intentionally
+ * a fixed light background regardless of the docs site's theme — otherwise dark-text
+ * variants (e.g. a secondary outline button) become unreadable when the *site* is in
+ * dark mode while the *component* still renders its light-mode default colors.
+ */
+.loomi-preview {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 2rem 1rem 1.15rem;
+  margin: 1rem 0 0;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem 0.5rem 0 0;
+  background: #f8fafc;
+  color-scheme: light;
+}
+.loomi-preview::before {
+  content: attr(data-label);
+  position: absolute;
+  top: 0.5rem;
+  left: 0.85rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #94a3b8;
+}
+/* The code fence directly under a preview loses its top rounding/margin so the two
+   visually read as one connected "preview + code" unit. */
+.loomi-preview + .expressive-code {
+  margin-top: 0 !important;
+}
+.loomi-preview + .expressive-code .frame {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}

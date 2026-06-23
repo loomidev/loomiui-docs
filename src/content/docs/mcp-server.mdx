@@ -1,0 +1,105 @@
+---
+title: MCP Server
+description: Give Claude Code, Cursor, and other AI tools direct access to loomi's component documentation via MCP.
+---
+
+import { Tabs, TabItem, Aside } from "@astrojs/starlight/components";
+
+AI coding assistants are good at writing web components, but they can't see loomi's
+actual attribute names, default values, or events — so they guess. `@loomi/mcp-server`
+fixes that by exposing this entire documentation site as an [MCP](https://modelcontextprotocol.io)
+server your AI tool can query directly, the same way you'd ask a teammate "what
+attributes does `<loomi-datepicker>` take?"
+
+It ships every component's docs **bundled into the package** — no network calls, no
+access to your filesystem beyond the package itself.
+
+## What it exposes
+
+| Tool | What it does |
+| --- | --- |
+| `list_components` | Lists every component, optionally filtered by category (`standalone`, `forms`, `content`, `navigation`). |
+| `search_components` | Finds components by keyword — matches name, description, and category. |
+| `get_component_docs` | Returns the full docs (usage examples, attribute table, events) for one component by name or tag. |
+
+Plus a readable **resource** per component at `loomi://docs/<name>` (e.g.
+`loomi://docs/button`), for clients that prefer direct resource reads over tool calls.
+
+## Setup
+
+<Tabs>
+<TabItem label="Claude Code">
+
+Add to your MCP settings (`.claude/settings.json`, or via `/mcp` in an interactive
+session):
+
+```json
+{
+  "mcpServers": {
+    "loomi": {
+      "command": "npx",
+      "args": ["-y", "@loomi/mcp-server"]
+    }
+  }
+}
+```
+
+</TabItem>
+<TabItem label="Cursor">
+
+Add to `~/.cursor/mcp.json` (or your project's `.cursor/mcp.json`):
+
+```json
+{
+  "mcpServers": {
+    "loomi": {
+      "command": "npx",
+      "args": ["-y", "@loomi/mcp-server"]
+    }
+  }
+}
+```
+
+</TabItem>
+<TabItem label="Claude Desktop">
+
+Add to `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "loomi": {
+      "command": "npx",
+      "args": ["-y", "@loomi/mcp-server"]
+    }
+  }
+}
+```
+
+</TabItem>
+</Tabs>
+
+Restart the tool after saving, and it will pick up the `loomi` server on next launch.
+
+## Trying it without an editor
+
+You can run the server directly to confirm it starts:
+
+```bash
+npx @loomi/mcp-server
+```
+
+It speaks MCP over stdio and won't print anything on a successful start — that's
+expected; it's waiting for a client to connect.
+
+## Why this matters
+
+Once connected, ask your assistant something like *"add a loomi date range picker with
+a max date of today"* — instead of inventing an API, it can call `get_component_docs`
+for `datepicker`, see the real `range`, `max-date`, and `format` attributes, and write
+code against the actual component.
+
+<Aside type="tip">
+  This mirrors how loomi itself was documented during development — the same
+  list/search/get-docs shape that BladewindUI exposes through its own MCP connector.
+</Aside>

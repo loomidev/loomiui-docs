@@ -1,0 +1,289 @@
+---
+title: Docs Architecture
+description: How this documentation site is built — the live-preview pipeline, why Starlight, why some pages are .mdx, what changes once loomi is on npm, and how to auto-deploy from GitHub.
+---
+
+import { Aside, Tabs, TabItem, FileTree } from "@astrojs/starlight/components";
+
+This page documents **how the docs site itself works** — useful if you're contributing
+to loomi, debugging a broken preview, or setting up deployment. If you just want to
+*use* loomi, you don't need any of this — see [Installation](/installation/) instead.
+
+## The problem this solves
+
+Every component page on this site shows a **live, interactive rendering** of each code
+example, not a screenshot — directly above the code that produces it. The challenge:
+loomi's components were never published to npm (yet — see
+[below](#what-changes-once-loomi-is-on-npm)), and this docs site has no bundler step of
+its own. So how does `<loomi-button>` actually render in the browser on a static page?
+
+## The pipeline
+
+<FileTree>
+- components/ (the component monorepo, sibling to this project)
+  - packages/
+    - button/
+      - dist/loomi-button.js (compiled, but still has bare imports like `from "lit"`)
+      - README.md (source of truth for the docs page)
+    - core/, icons/, theme/, … (44 more packages)
+- docs/ (this project)
+  - scripts/
+    - loomi-packages.mjs (the category map — single source of truth, step 0)
+    - copy-component-assets.mjs (step 1)
+    - gen-component-docs.mjs (step 3)
+  - astro.config.mjs (step 2 — the import map)
+  - public/loomi/&lt;name&gt;/dist/ (generated — step 1's output)
+  - src/content/docs/components/**/*.md (generated — step 3's output)
+</FileTree>
+
+1. **Build the monorepo.** `components/` compiles each package with `tsc` only — no
+   bundler — so `dist/loomi-button.js` still contains bare specifiers like
+   `from "lit"` and `from "@loomi/core"`, exactly like what a real npm install would
+   give you.
+2. **Copy compiled assets.** `copy-component-assets.mjs` copies each package's
+   `dist/*.js` (filtering out `.d.ts`/`.map` — not needed in the browser) into
+   `docs/public/loomi/<name>/dist/`, turning them into plain static files this project
+   can serve.
+3. **Declare a browser import map.** `astro.config.mjs` injects a
+   `<script type="importmap">` (via Starlight's `head` config) that maps every bare
+   specifier a component might use to those static paths — `@loomi/button` →
+   `/loomi/button/dist/index.js`, plus a **prefix** mapping `@loomi/checkbox/` →
+   `/loomi/checkbox/dist/` for sibling-package subpath imports (`<loomi-table>` imports
+   `<loomi-checkbox>` directly). `lit` itself maps to a CDN — exactly what a consumer
+   who hasn't installed loomi locally would load.
+4. **Generate the doc pages.** `gen-component-docs.mjs` reads each component's
+   published `README.md`, and wraps every fenced `html` code block in a
+   `<div class="loomi-preview">` containing the *same* markup, plus one
+   `<script type="module">import "@loomi/<name>";</script>` per page.
+
+Because Astro's Markdown renderer passes raw HTML through untouched, that script tag and
+those custom-element tags just work — no MDX, no per-page bundling. The browser resolves
+`@loomi/button` via the import map, the module evaluates, `customElements.define()`
+fires, and every matching tag already in the DOM upgrades automatically (module scripts
+are deferred by default, so the timing always works out regardless of where the script
+tag sits on the page).
+
+<Aside type="tip" title="Both steps run automatically">
+  `pnpm dev` and `pnpm build` run `copy-component-assets.mjs` and
+  `gen-component-docs.mjs` first via `predev`/`prebuild` hooks. You only need to run them
+  by hand if you want to regenerate just one without starting a dev server.
+</Aside>
+
+### A real bug this pipeline caught
+
+loomi components default to **light-mode** token values unless a consumer explicitly
+opts into dark mode via `<loomi-theme-switcher>`. Early on, the preview surface adapted
+to *Starlight's own* dark/light toggle — which made dark-text components (a
+secondary-outline button, for instance) unreadable when the *site* was dark but the
+*component* was still rendering its light-mode default colors. The fix: the preview
+surface (`.loomi-preview` in `src/styles/custom.css`) is hardcoded to a fixed light
+background with `color-scheme: light`, independent of the site's theme.
+
+## Why Starlight
+
+[Astro](https://astro.build) ships **zero JavaScript by default** and renders custom
+elements natively — no wrapper, no adapter, no virtual DOM reconciling against elements
+it doesn't own. That matters specifically for loomi: a React-based docs framework
+(Docusaurus, Next.js) would need an interop layer just to drop `<loomi-button>` into a
+page; Astro just emits the HTML and lets the browser do what browsers already do with
+custom elements.
+
+[Starlight](https://starlight.astro.build) is Astro's official docs theme, and it gave
+us — for free — exactly the shape this site needed:
+
+- Sidebar navigation with nested groups and **autogenerated** sections (the Components
+  groups list every `.md` file in their folder automatically — add a file, it appears
+  in the nav, no config edit)
+- Built-in search (Pagefind, generated at build time, no external service)
+- Light/dark mode toggle, with a `customCss` hook for the loomi brand accent
+- `Tabs`, `Aside`, `Card`/`CardGrid`, `FileTree` components for richer formatting than
+  plain Markdown, without writing them ourselves
+
+The alternative seriously considered was **Storybook**, which has first-class web
+component support and would auto-generate prop tables from a
+`custom-elements-manifest`. It's the better choice if you want a dedicated
+controls-panel-style playground per component. We went with Astro + Starlight because
+the ask was a *documentation site* (narrative pages, installation guides, an MCP server
+page) with previews embedded in context — not a component-isolation tool.
+
+## Why some pages are `.mdx` and others are `.md`
+
+Astro/Starlight component imports (`import { Tabs } from "@astrojs/starlight/components"`
+and JSX-like usage such as `<Tabs><TabItem>...`) **only work in `.mdx` files**. Plain
+`.md` files are parsed as standard Markdown — they don't execute import statements or
+recognize JSX tags as components.
+
+| File | Extension | Why |
+| --- | --- | --- |
+| `customization.mdx`, `mcp-server.mdx`, `architecture.mdx` (this page) | `.mdx` | Use `Tabs`, `Aside`, or `FileTree` for richer formatting |
+| All 44 `components/**/*.md` pages | `.md` | Only need raw `<script>` and custom-element tags — which plain Markdown passes through untouched as raw HTML — so there's no reason to pay for MDX parsing |
+| `installation.md` | `.md` | Plain prose and code blocks, no Starlight components needed |
+
+If you ever add a Starlight component (`Tabs`, `Card`, etc.) to a page that's currently
+`.md`, you must rename it to `.mdx` first — the import line will otherwise render as
+literal text and the component tags as plain unstyled HTML. (This exact mistake
+happened once while building this site — see the git history on `customization.mdx` if
+you want the cautionary tale.)
+
+## What changes once loomi is on npm
+
+Right now, "installing" loomi for the docs site means copying compiled files directly
+out of the sibling `components/` monorepo. Once the packages are published to npm, the
+pipeline gets *simpler*, not more complex:
+
+<Tabs>
+<TabItem label="copy-component-assets.mjs">
+
+Change the copy source from the monorepo to `node_modules`:
+
+```diff
+- const PACKAGES = resolve(__dirname, "../../components/packages");
++ // After publishing: install @loomi/* as real npm dependencies in docs/package.json,
++ // then copy from node_modules instead of the sibling monorepo.
++ const PACKAGES = resolve(__dirname, "../node_modules/@loomi");
+```
+
+`docs/package.json` would list each `@loomi/*` package (or just `@loomi/components`,
+the umbrella) as a normal `dependency` — no more relying on a sibling checkout existing
+at all.
+
+</TabItem>
+<TabItem label="Or: skip copying entirely">
+
+Point the import map straight at a CDN instead of local static files:
+
+```js
+"@loomi/button": "https://esm.sh/@loomi/button@0.1.0",
+"@loomi/button/": "https://esm.sh/@loomi/button@0.1.0/",
+```
+
+This removes `copy-component-assets.mjs` and the ~900&nbsp;KB `public/loomi/` payload
+entirely. The tradeoff: previews now depend on the CDN being up, instead of working
+fully offline. Pin an exact version (read from each package's `package.json` at
+generation time) so a docs deploy never silently picks up an unreleased breaking change.
+
+</TabItem>
+<TabItem label="gen-component-docs.mjs">
+
+READMEs can also come from `node_modules` instead of the monorepo:
+
+```diff
+- const readmePath = resolve(PACKAGES, name, "README.md");
++ const readmePath = resolve(__dirname, "../node_modules/@loomi", name, "README.md");
+```
+
+npm packages typically ship their README, so this works for free once published.
+
+</TabItem>
+</Tabs>
+
+<Aside type="note">
+  `scripts/loomi-packages.mjs` (the category map) stays manually maintained either way —
+  npm has no concept of "which sidebar group does this package belong to."
+</Aside>
+
+The big-picture change: **this docs site currently depends on `components/` being a
+sibling directory on disk.** Once loomi is published, that dependency disappears — the
+docs site only needs its own `package.json` and the npm registry. That also simplifies
+CI (see below): no more checking out two directories from one (or two) repos.
+
+## Automatic deployment from GitHub
+
+Neither `components/` nor `docs/` is a git repository yet, so you have a layout decision
+to make first, and it changes what CI needs to do.
+
+<Tabs>
+<TabItem label="Same repo (monorepo)">
+
+If `litail/` becomes **one** git repo containing both `components/` and `docs/`, CI is
+simplest: one checkout gets you everything `gen-component-docs.mjs` and
+`copy-component-assets.mjs` need.
+
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy docs
+on:
+  push:
+    branches: [main]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: "pnpm" }
+      - name: Build components monorepo
+        run: pnpm --dir components install && pnpm --dir components build
+      - name: Build docs
+        run: pnpm --dir docs install && pnpm --dir docs build
+      # then deploy docs/dist — see the hosting tabs below
+```
+
+</TabItem>
+<TabItem label="Separate repos">
+
+If `components` and `docs` are **separate** GitHub repos, the docs repo's workflow needs
+an extra checkout step for the components repo before running its build (since
+`copy-component-assets.mjs` and `gen-component-docs.mjs` read from
+`../components/packages/*`):
+
+```yaml
+steps:
+  - uses: actions/checkout@v4 # checks out the docs repo itself
+  - uses: actions/checkout@v4
+    with:
+      repository: your-org/loomi-components
+      path: components # checked out as a sibling directory
+  - uses: pnpm/action-setup@v4
+  - uses: actions/setup-node@v4
+    with: { node-version: 20, cache: "pnpm" }
+  - run: pnpm --dir components install && pnpm --dir components build
+  - run: pnpm --dir docs install && pnpm --dir docs build
+```
+
+This cross-repo checkout requirement is exactly what disappears once loomi is
+[published to npm](#what-changes-once-loomi-is-on-npm) — at that point the docs repo
+only needs itself.
+
+</TabItem>
+</Tabs>
+
+### Where to actually deploy
+
+<Tabs>
+<TabItem label="Vercel / Netlify / Cloudflare Pages (recommended)">
+
+The least setup: connect the GitHub repo in the host's dashboard, set the build command
+to `pnpm build` (or `pnpm --dir docs build` for the monorepo layout) and the output
+directory to `docs/dist`. These hosts auto-detect Astro, build on every push to `main`,
+and give you **preview deployments on every pull request** for free — no workflow YAML
+required at all. This is the easiest path if `components/` and `docs/` live in the same
+repo, since the host's build container already has both directories checked out.
+
+</TabItem>
+<TabItem label="GitHub Pages">
+
+Requires an explicit Actions workflow (GitHub Pages doesn't run your build for you).
+Add to the workflow from the tabs above:
+
+```yaml
+  - uses: actions/upload-pages-artifact@v3
+    with: { path: docs/dist }
+  - uses: actions/deploy-pages@v4
+```
+
+You'll also need `id-token: write` and `pages: write` permissions on the job, and to
+enable Pages → "GitHub Actions" as the source in the repo settings. Since this site uses
+a custom domain, add a `docs/public/CNAME` file containing `loomiui.com` so GitHub Pages
+serves the right host, and keep `site: "https://loomiui.com"` in `astro.config.mjs` as
+is (no `base` path needed, since a custom domain serves from the root).
+
+</TabItem>
+</Tabs>
+
+<Aside type="caution" title="DNS">
+  Whichever host you pick, pointing `loomiui.com` at it is a DNS change outside of
+  GitHub/CI — typically a `CNAME` record (or `A`/`ALIAS` for an apex domain) at your
+  domain registrar pointing at the host's provided target.
+</Aside>

@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.astro/
+.DS_Store
+*.log
+
+# Generated from the sibling components/ monorepo at build time, not hand-maintained —
+# see scripts/copy-component-assets.mjs, scripts/gen-component-docs.mjs and
+# scripts/gen-contributing-doc.mjs.
+public/loomi/
+src/content/docs/components/
+src/content/docs/contributing.md

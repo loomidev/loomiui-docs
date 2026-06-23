@@ -1,0 +1,28 @@
+{
+  "name": "loomi-docs",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "predev": "pnpm run prepare:content",
+    "dev": "astro dev",
+    "start": "astro dev",
+    "prebuild": "pnpm run prepare:content",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "prepare:content": "node scripts/copy-component-assets.mjs && node scripts/gen-component-docs.mjs && node scripts/gen-contributing-doc.mjs",
+    "gen:components": "node scripts/gen-component-docs.mjs",
+    "gen:contributing": "node scripts/gen-contributing-doc.mjs",
+    "copy:assets": "node scripts/copy-component-assets.mjs"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.40.0",
+    "astro": "^6.4.8",
+    "sharp": "^0.33.5"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "typescript": "^5.6.3"
+  }
+}
