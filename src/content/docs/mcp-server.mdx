@@ -1,11 +1,9 @@
 ---
 title: MCP Server
-description: Give Claude Code, Cursor, and other AI tools direct access to loomi's component documentation via MCP.
+description: Give Claude Code, Cursor, and other AI tools direct access to LoomiUI's component documentation via MCP.
 ---
 
-import { Tabs, TabItem, Aside } from "@astrojs/starlight/components";
-
-AI coding assistants are good at writing web components, but they can't see loomi's
+AI coding assistants are good at writing web components, but they can't see LoomiUI's
 actual attribute names, default values, or events — so they guess. `@loomi/mcp-server`
 fixes that by exposing this entire documentation site as an [MCP](https://modelcontextprotocol.io)
 server your AI tool can query directly, the same way you'd ask a teammate "what
@@ -27,8 +25,8 @@ Plus a readable **resource** per component at `loomi://docs/<name>` (e.g.
 
 ## Setup
 
-<Tabs>
-<TabItem label="Claude Code">
+<loomi-tabs>
+<loomi-tab label="Claude Code" active>
 
 Add to your MCP settings (`.claude/settings.json`, or via `/mcp` in an interactive
 session):
@@ -36,7 +34,7 @@ session):
 ```json
 {
   "mcpServers": {
-    "loomi": {
+    "loomiui": {
       "command": "npx",
       "args": ["-y", "@loomi/mcp-server"]
     }
@@ -44,15 +42,15 @@ session):
 }
 ```
 
-</TabItem>
-<TabItem label="Cursor">
+</loomi-tab>
+<loomi-tab label="Cursor">
 
 Add to `~/.cursor/mcp.json` (or your project's `.cursor/mcp.json`):
 
 ```json
 {
   "mcpServers": {
-    "loomi": {
+    "loomiui": {
       "command": "npx",
       "args": ["-y", "@loomi/mcp-server"]
     }
@@ -60,15 +58,15 @@ Add to `~/.cursor/mcp.json` (or your project's `.cursor/mcp.json`):
 }
 ```
 
-</TabItem>
-<TabItem label="Claude Desktop">
+</loomi-tab>
+<loomi-tab label="Claude Desktop">
 
 Add to `claude_desktop_config.json`:
 
 ```json
 {
   "mcpServers": {
-    "loomi": {
+    "loomiui": {
       "command": "npx",
       "args": ["-y", "@loomi/mcp-server"]
     }
@@ -76,10 +74,10 @@ Add to `claude_desktop_config.json`:
 }
 ```
 
-</TabItem>
-</Tabs>
+</loomi-tab>
+</loomi-tabs>
 
-Restart the tool after saving, and it will pick up the `loomi` server on next launch.
+Restart the tool after saving, and it will pick up the `loomiui` server on next launch.
 
 ## Trying it without an editor
 
@@ -94,12 +92,12 @@ expected; it's waiting for a client to connect.
 
 ## Why this matters
 
-Once connected, ask your assistant something like *"add a loomi date range picker with
+Once connected, ask your assistant something like *"add a LoomiUI date range picker with
 a max date of today"* — instead of inventing an API, it can call `get_component_docs`
 for `datepicker`, see the real `range`, `max-date`, and `format` attributes, and write
 code against the actual component.
 
-<Aside type="tip">
-  This mirrors how loomi itself was documented during development — the same
+<loomi-alert type="info" icon="information-circle">
+  This mirrors how LoomiUI itself was documented during development — the same
   list/search/get-docs shape that BladewindUI exposes through its own MCP connector.
-</Aside>
+</loomi-alert>

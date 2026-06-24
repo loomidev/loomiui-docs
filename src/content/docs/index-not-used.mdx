@@ -1,5 +1,5 @@
 ---
-title: loomi
+title: LoomiUI
 description: A framework-agnostic Lit web component library, themeable entirely through CSS custom properties.
 template: splash
 hero:
@@ -11,13 +11,13 @@ hero:
       icon: right-arrow
       variant: primary
     - text: Browse Components
-      link: /components/standalone/button/
+      link: /components/button/
       variant: minimal
 ---
 
 import { Card, CardGrid } from "@astrojs/starlight/components";
 
-## Why loomi
+## Why LoomiUI
 
 <CardGrid stagger>
 	<Card title="Actually framework-agnostic" icon="puzzle">
@@ -66,7 +66,7 @@ itself when you change a single variable:
 </loomi-button>
 
 <style>
-  /* re-skins every loomi component on the page, not just this button */
+  /* re-skins every LoomiUI component on the page, not just this button */
   :root {
     --loomi-primary-600: #16a34a;
   }

@@ -13,17 +13,17 @@
 //
 //   node scripts/gen-component-docs.mjs
 
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, rmSync } from "node:fs";
 import { resolve } from "node:path";
-import { CATEGORY, categoryOf } from "./loomi-packages.mjs";
+import { COMPONENT_NAMES, categoryOf } from "./loomiui-packages.mjs";
 
 const PACKAGES = resolve(import.meta.dirname, "../../components/packages");
 const DOCS = resolve(import.meta.dirname, "../src/content/docs/components");
 
-const pathFor = (name) => {
-  const cat = categoryOf(name);
-  return cat ? `/components/${cat}/${name}/` : null;
-};
+// One flat directory, sorted alphabetically by Starlight's autogenerate (which sorts by
+// slug) — categoryOf() is still used elsewhere (the MCP server manifest) but no longer
+// affects the doc URL, which is just /components/<name>/ regardless of category.
+const pathFor = (name) => (categoryOf(name) ? `/components/${name}/` : null);
 
 function titleCase(name) {
   const special = { checkcards: "Checkcards" };
@@ -64,43 +64,52 @@ function fixLinks(md) {
 /** Insert a live <div class="loomi-preview"> rendering of each ```html fence, right above it. */
 function withLivePreviews(md) {
   return md.replace(/```html\n([\s\S]*?)\n```/g, (fullMatch, code) => {
-    return `<div class="loomi-preview" data-label="Preview">\n${code}\n</div>\n\n${fullMatch}`;
+    // CommonMark ends a raw HTML block at the first blank line, so a blank line between
+    // two multi-line elements (common for readability in the fenced source) would split
+    // this div in two, leaving everything after it to be reprocessed as markdown prose
+    // (mangled text, smart quotes, stray <p>/<blockquote> tags). Collapsing blank lines
+    // only in this copy keeps the live preview as one unbroken HTML block; the fenced
+    // code shown to the reader (via fullMatch, below) keeps its original formatting.
+    const previewCode = code.replace(/\n{2,}/g, "\n");
+    return `<div class="loomi-preview" data-label="Preview">\n${previewCode}\n</div>\n\n${fullMatch}`;
   });
 }
 
+// Wipe and recreate flat — older versions of this script nested pages under a
+// per-category subdirectory (components/forms/button.md, etc.); clear that out so a
+// stale nested copy never lingers alongside the new flat one.
+rmSync(DOCS, { recursive: true, force: true });
+mkdirSync(DOCS, { recursive: true });
+
 let written = 0;
-for (const [cat, names] of Object.entries(CATEGORY)) {
-  const dir = resolve(DOCS, cat);
-  mkdirSync(dir, { recursive: true });
-  for (const name of names) {
-    const readmePath = resolve(PACKAGES, name, "README.md");
-    let raw;
-    try {
-      raw = readFileSync(readmePath, "utf8");
-    } catch {
-      console.warn("skip (no README found):", name);
-      continue;
-    }
-    const lines = raw.split("\n");
-    const h1Index = lines.findIndex((l) => l.startsWith("# "));
-    const bodyLines = h1Index >= 0 ? lines.slice(h1Index + 1) : lines;
-    const body = bodyLines.join("\n").trimStart();
-
-    // Swap quotes/backticks out BEFORE truncating, so we never cut between a
-    // backslash and the character it escapes (that previously broke YAML parsing).
-    let description = firstParagraph(body).replace(/"/g, "'").replace(/`/g, "");
-    if (description.length > 160) {
-      description = description.slice(0, 160).replace(/\s+\S*$/, "") + "…";
-    }
-
-    const frontmatter = ["---", `title: ${titleCase(name)}`, `description: "${description}"`, "---", ""].join("\n");
-    // One page-level import (registers the custom element) resolved via the browser
-    // import map declared in astro.config.mjs — every live preview on the page relies on it.
-    const importScript = `<script type="module">\n  import "@loomi/${name}";\n</script>\n\n`;
-    const finalBody = withLivePreviews(fixLinks(body));
-
-    writeFileSync(resolve(dir, `${name}.md`), frontmatter + importScript + finalBody);
-    written++;
+for (const name of COMPONENT_NAMES) {
+  const readmePath = resolve(PACKAGES, name, "README.md");
+  let raw;
+  try {
+    raw = readFileSync(readmePath, "utf8");
+  } catch {
+    console.warn("skip (no README found):", name);
+    continue;
   }
+  const lines = raw.split("\n");
+  const h1Index = lines.findIndex((l) => l.startsWith("# "));
+  const bodyLines = h1Index >= 0 ? lines.slice(h1Index + 1) : lines;
+  const body = bodyLines.join("\n").trimStart();
+
+  // Swap quotes/backticks out BEFORE truncating, so we never cut between a
+  // backslash and the character it escapes (that previously broke YAML parsing).
+  let description = firstParagraph(body).replace(/"/g, "'").replace(/`/g, "");
+  if (description.length > 160) {
+    description = description.slice(0, 160).replace(/\s+\S*$/, "") + "…";
+  }
+
+  const frontmatter = ["---", `title: ${titleCase(name)}`, `description: "${description}"`, "---", ""].join("\n");
+  // One page-level import (registers the custom element) resolved via the browser
+  // import map declared in astro.config.mjs — every live preview on the page relies on it.
+  const importScript = `<script type="module">\n  import "@loomi/${name}";\n</script>\n\n`;
+  const finalBody = withLivePreviews(fixLinks(body));
+
+  writeFileSync(resolve(DOCS, `${name}.md`), frontmatter + importScript + finalBody);
+  written++;
 }
 console.log(`Generated ${written} component doc pages with live previews.`);

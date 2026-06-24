@@ -1,0 +1,39 @@
+---
+// Header for the marketing homepage ONLY (src/pages/index.astro). Deliberately not
+// Starlight's docs header — a marketing nav (logo, a couple of links, one CTA) reads
+// differently from a docs header (logo, search, sidebar toggle, theme switcher) and
+// trying to share one component between both would just constrain this one.
+//
+// Still dogfoods loomi for its one interactive piece, the theme switcher.
+import { Image } from "astro:assets";
+import icon from "../assets/icon.png";
+import logoLight from "../assets/logo-light.png";
+import logoDark from "../assets/logo-dark.png";
+---
+
+<header class="sticky top-0 z-50 border-b border-gray-200 bg-white/80 backdrop-blur dark:border-gray-800 dark:bg-gray-950/80">
+  <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:gap-6 sm:px-6">
+    <a href="/" class="flex min-w-0 items-center">
+      <Image src={icon} alt="loomiui" class="h-8 w-8 sm:hidden" />
+      <Image src={logoLight} alt="loomiui" class="hidden h-8 w-auto dark:hidden sm:block" />
+      <Image src={logoDark} alt="loomiui" class="hidden h-8 w-auto dark:sm:block" />
+    </a>
+
+    <nav class="hidden items-center gap-8 text-sm font-medium text-gray-600 dark:text-gray-300 sm:flex">
+      <a href="/installation/" class="hover:text-primary-600 dark:hover:text-primary-400">Docs</a>
+      <a href="/components/button/" class="hover:text-primary-600 dark:hover:text-primary-400">Components</a>
+      <a href="/mcp-server/" class="hover:text-primary-600 dark:hover:text-primary-400">MCP Server</a>
+      <a href="https://github.com/loomiui/loomiui-docs" class="hover:text-primary-600 dark:hover:text-primary-400">GitHub</a>
+    </nav>
+
+    <div class="flex min-w-0 items-center gap-3 sm:gap-4">
+      <loomi-theme-switcher></loomi-theme-switcher>
+      <loomi-button class="hidden sm:inline-flex" color="primary" size="small" tag="a" href="/installation/">Get Started</loomi-button>
+    </div>
+  </div>
+</header>
+
+<script type="module" is:inline>
+  import "@loomi/theme-switcher";
+  import "@loomi/button";
+</script>

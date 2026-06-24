@@ -1,0 +1,85 @@
+---
+// Overrides Starlight's default prev/next footer links with <loomi-card> — dogfooding
+// loomi's own component in the docs site's chrome rather than Starlight's plain <a>
+// cards. Data shape matches Starlight's own Pagination.astro exactly (see
+// node_modules/@astrojs/starlight/components/Pagination.astro for the original).
+const { dir, pagination } = Astro.locals.starlightRoute;
+const { prev, next } = pagination;
+const isRtl = dir === "rtl";
+const prevLabel = Astro.locals.t("page.previousLink");
+const nextLabel = Astro.locals.t("page.nextLink");
+const prevIcon = isRtl ? "arrow-right" : "arrow-left";
+const nextIcon = isRtl ? "arrow-left" : "arrow-right";
+---
+
+<div class="loomi-pagination-links print:hidden" dir={dir}>
+  {
+    prev && (
+      <loomi-card has-hover url={prev.href} radius="medium" class="loomi-pagi-card">
+        <div class="loomi-pagi-row">
+          <loomi-icon name={prevIcon} size="1.4rem" />
+          <span>
+            <span class="loomi-pagi-eyebrow">{prevLabel}</span>
+            <span class="loomi-pagi-title">{prev.label}</span>
+          </span>
+        </div>
+      </loomi-card>
+    )
+  }
+  {
+    next && (
+      <loomi-card has-hover url={next.href} radius="medium" class="loomi-pagi-card loomi-pagi-next">
+        <div class="loomi-pagi-row">
+          <span>
+            <span class="loomi-pagi-eyebrow">{nextLabel}</span>
+            <span class="loomi-pagi-title">{next.label}</span>
+          </span>
+          <loomi-icon name={nextIcon} size="1.4rem" />
+        </div>
+      </loomi-card>
+    )
+  }
+</div>
+
+<style>
+  @layer starlight.core {
+    .loomi-pagination-links {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
+      gap: 1rem;
+    }
+    .loomi-pagi-card {
+      display: block;
+      width: 100%;
+    }
+    .loomi-pagi-row {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      /* sets `currentColor` for the icon — these spans are light-DOM (slotted into
+         loomi-card, not inside its shadow root), so they're free to use Starlight's
+         own theme-aware variables and adapt with the site's toggle automatically. */
+      color: var(--sl-color-gray-2);
+    }
+    .loomi-pagi-next .loomi-pagi-row {
+      justify-content: flex-end;
+      text-align: right;
+    }
+    .loomi-pagi-eyebrow {
+      display: block;
+      font-size: var(--sl-text-xs);
+      color: var(--sl-color-gray-3);
+    }
+    .loomi-pagi-title {
+      display: block;
+      font-size: var(--sl-text-lg);
+      font-weight: 600;
+      color: var(--sl-color-text);
+    }
+    /* loomi-card's own surface (inside its shadow root) only responds to its
+       --loomi-* custom properties, not Starlight's theme variables. The dark-mode
+       token override lives in src/styles/custom.css (shared with .loomi-preview, via
+       the combined :is(.loomi-preview, .loomi-pagi-card) selector there) rather than
+       duplicated here. */
+  }
+</style>

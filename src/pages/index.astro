@@ -1,0 +1,1182 @@
+---
+import MarketingHeader from "../components/MarketingHeader.astro";
+import { buildImportMap } from "../lib/import-map.mjs";
+import "../styles/home.css";
+
+const importMap = buildImportMap();
+const title = "loomiui — Web components, themeable like it's 2015 again";
+const description =
+  "LoomiUI is a framework-agnostic library of Web Components built with Lit, fully themeable through CSS custom properties. Install a single component or the entire library";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.png" />
+    <script type="importmap" is:inline set:html={JSON.stringify(importMap)} />
+  </head>
+  <body class="bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
+    <MarketingHeader />
+
+    <!-- Hero -->
+    <section class="home-hero relative isolate overflow-hidden">
+      <div class="hero-surface" aria-hidden="true">
+        <div class="hero-shell">
+          <div class="hero-shell-bar">
+            <span></span>
+            <span></span>
+            <span></span>
+            <div class="ml-auto text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-400">
+              loomi workspace
+            </div>
+          </div>
+          <div class="hero-shell-body">
+            <div class="hero-preview-panel hero-preview-main">
+              <div class="mb-4 flex items-center justify-between gap-3">
+                <div>
+                  <div class="text-xs font-semibold uppercase tracking-[0.18em] text-primary-600 dark:text-primary-300">
+                    Component graph
+                  </div>
+                  <div class="mt-1 text-xl font-bold text-gray-950 dark:text-white">44 live elements</div>
+                </div>
+                <loomi-tag label="Lit" color="primary"></loomi-tag>
+              </div>
+              <div class="space-y-3">
+                <div class="hero-meter">
+                  <span>Button</span>
+                  <i style="width: 94%"></i>
+                </div>
+                <div class="hero-meter">
+                  <span>Forms</span>
+                  <i style="width: 82%"></i>
+                </div>
+                <div class="hero-meter">
+                  <span>Data</span>
+                  <i style="width: 68%"></i>
+                </div>
+              </div>
+            </div>
+            <div class="hero-preview-panel hero-preview-code">
+              <div class="mb-3 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                <span class="size-2 rounded-full bg-emerald-500"></span>
+                one tag, any framework
+              </div>
+              <pre><code>&lt;loomi-button color="primary" icon="sparkles"&gt;
+  Ship interface
+&lt;/loomi-button&gt;</code></pre>
+            </div>
+            <div class="hero-preview-panel hero-preview-stack">
+              <div class="flex flex-wrap items-center gap-2">
+                <loomi-button color="primary" size="small">Publish</loomi-button>
+                <loomi-button type="secondary" size="small">Preview</loomi-button>
+                <loomi-tag label="Scoped CSS" color="green"></loomi-tag>
+              </div>
+              <div class="mt-5 grid grid-cols-3 gap-2">
+                <div class="hero-token bg-[#2563eb]"></div>
+                <div class="hero-token bg-[#db2777]"></div>
+                <div class="hero-token bg-[#16a34a]"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="relative mx-auto max-w-5xl px-6 pb-20 pt-24 text-center sm:pb-24 sm:pt-32">
+        <div class="mx-auto inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white/85 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-primary-700 shadow-sm backdrop-blur dark:border-white/10 dark:bg-gray-950/70 dark:text-primary-300">
+          44 Lit components. One CSS variable away from your brand.
+        </div>
+        <h1 class="mx-auto mt-7 max-w-4xl text-5xl font-bold tracking-tight text-gray-950 dark:text-white sm:text-7xl">
+          Web components that feel custom-built.
+        </h1>
+        <p class="mx-auto mt-6 max-w-2xl text-lg leading-8 text-gray-600 dark:text-gray-300">
+          LoomiUI ships real custom elements with scoped styles, form participation,
+          per-component installs, and an MCP server that helps AI tools use the API
+          correctly.
+        </p>
+        <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
+          <loomi-button color="primary" size="medium" tag="a" href="/installation/" icon="arrow-right" icon-right>
+            Get Started
+          </loomi-button>
+          <loomi-button type="secondary" size="medium" tag="a" href="/components/button/">
+            Browse Components
+          </loomi-button>
+        </div>
+        <div class="hero-proof mx-auto mt-12 grid max-w-3xl grid-cols-3 overflow-hidden border border-gray-200 bg-white/80 text-left shadow-sm backdrop-blur dark:border-white/10 dark:bg-gray-950/70">
+          <div>
+            <strong>0kb</strong>
+            <span>global Tailwind</span>
+          </div>
+          <div>
+            <strong>44</strong>
+            <span>shippable packages</span>
+          </div>
+          <div>
+            <strong>1</strong>
+            <span>component API</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Why LoomiUI — intro -->
+    <section class="mx-auto max-w-3xl px-6 pt-16 text-center sm:pt-20">
+      <h2 class="text-3xl font-bold">Why LoomiUI</h2>
+      <p class="mx-auto mt-3 max-w-xl text-gray-600 dark:text-gray-400">
+        Six reasons LoomiUI feels different from a typical component kit, each one
+        shown with the same live components your app can import.
+      </p>
+    </section>
+
+    <!-- Feature 1 — Framework-agnostic -->
+    <section class="border-t border-gray-100 dark:border-gray-900">
+      <div class="mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 sm:grid-cols-2">
+        <div>
+          <h3 class="text-2xl font-bold sm:text-3xl">Actually framework-agnostic</h3>
+          <p class="mt-4 text-gray-600 dark:text-gray-400">
+            Every component is a real custom element built with Lit. Drop
+            <code>&lt;loomi-button&gt;</code> into React, Vue, Svelte, plain HTML, or a CMS
+            template — no wrapper packages, no framework-specific build. It's the exact
+            same tag, everywhere, because it's just a custom element.
+          </p>
+        </div>
+        <div class="space-y-3">
+          <div class="grid grid-cols-2 gap-3 text-xs">
+            {["App.jsx", "App.vue", "App.svelte", "index.html"].map((file) => (
+              <div class="rounded-lg border border-gray-200 bg-gray-50 p-3 font-mono dark:border-gray-800 dark:bg-gray-900">
+                <div class="mb-1 text-gray-400">{file}</div>
+                <code class="break-all">&lt;loomi-button color="primary"&gt;Buy now&lt;/loomi-button&gt;</code>
+              </div>
+            ))}
+          </div>
+          <div class="flex items-center justify-center rounded-lg border border-dashed border-gray-300 p-6 dark:border-gray-700">
+            <loomi-button color="primary">Buy now</loomi-button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Feature 2 — No Tailwind at runtime -->
+    <section class="border-t border-gray-100 dark:border-gray-900">
+      <div class="mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 sm:grid-cols-2">
+        <div class="sm:order-2">
+          <h3 class="text-2xl font-bold sm:text-3xl">No Tailwind at runtime</h3>
+          <p class="mt-4 text-gray-600 dark:text-gray-400">
+            Components are authored with Tailwind, but it's compiled away at build time
+            and inlined into each component's Shadow DOM. Consumers never install
+            Tailwind and never fight a global stylesheet — styles can't leak in or out.
+          </p>
+        </div>
+        <div class="space-y-4 sm:order-1">
+          <div>
+            <div class="mb-1 flex justify-between text-xs text-gray-500">
+              <span>Typical UI kit + Tailwind</span><span>~38kb CSS</span>
+            </div>
+            <div class="h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-800">
+              <div class="h-full w-[95%] rounded-full bg-gray-400 dark:bg-gray-600"></div>
+            </div>
+          </div>
+          <div>
+            <div class="mb-1 flex justify-between text-xs text-gray-500">
+              <span>@loomi/button, installed alone</span><span>0kb global CSS</span>
+            </div>
+            <div class="h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-800">
+              <div class="h-full w-[4%] rounded-full bg-primary-600"></div>
+            </div>
+          </div>
+          <div class="flex items-center justify-center rounded-lg border border-dashed border-primary-300 p-6 dark:border-primary-800">
+            <loomi-button color="primary" outline>Styled, scoped, shipped</loomi-button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Feature 3 — Theme with one CSS variable -->
+    <section class="border-t border-gray-100 dark:border-gray-900">
+      <div class="mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 sm:grid-cols-2">
+        <div>
+          <h3 class="text-2xl font-bold sm:text-3xl">Theme with one CSS variable</h3>
+          <p class="mt-4 text-gray-600 dark:text-gray-400">
+            Override <code>--loomi-primary-600</code> (or any of the 14 palette colors)
+            from your page's own CSS and every component re-skins instantly — no
+            rebuild, no config file. Try it on the right.
+          </p>
+        </div>
+        <div class="rounded-2xl border border-gray-200 bg-gray-50 p-6 dark:border-gray-800 dark:bg-gray-900">
+          <div class="flex flex-wrap items-center gap-4">
+            <loomi-button color="primary" size="small">Primary action</loomi-button>
+            <loomi-tag label="In review" color="primary"></loomi-tag>
+            <div style="width: 9rem">
+              <loomi-progress-bar percentage="68" color="primary"></loomi-progress-bar>
+            </div>
+          </div>
+          <div class="mt-6 flex gap-3" id="theme-swatches">
+            <button type="button" class="size-8 rounded-full bg-[#2563eb] ring-2 ring-offset-2 ring-offset-gray-50 dark:ring-offset-gray-900" data-color="#2563eb" aria-label="Blue"></button>
+            <button type="button" class="size-8 rounded-full bg-[#db2777]" data-color="#db2777" aria-label="Pink"></button>
+            <button type="button" class="size-8 rounded-full bg-[#16a34a]" data-color="#16a34a" aria-label="Green"></button>
+            <button type="button" class="size-8 rounded-full bg-[#9333ea]" data-color="#9333ea" aria-label="Purple"></button>
+            <button type="button" class="size-8 rounded-full bg-[#ea580c]" data-color="#ea580c" aria-label="Orange"></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Feature 4 — Install exactly what you need -->
+    <section class="border-t border-gray-100 dark:border-gray-900">
+      <div class="mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 sm:grid-cols-2">
+        <div class="sm:order-2">
+          <h3 class="text-2xl font-bold sm:text-3xl">Install exactly what you need</h3>
+          <p class="mt-4 text-gray-600 dark:text-gray-400">
+            <code>npm install @loomi/button</code> pulls in only the button and its
+            direct dependencies. Want everything? <code>npm install @loomi/components</code>
+            gets the whole library in one shot.
+          </p>
+        </div>
+        <div class="grid grid-cols-2 gap-4 sm:order-1">
+          <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-800">
+            <pre class="overflow-x-auto rounded bg-gray-900 p-2 text-[11px] text-gray-100 dark:bg-black"><code>npm install<br />@loomi/button</code></pre>
+            <div class="mt-3 grid grid-cols-8 gap-1">
+              {Array.from({ length: 44 }).map((_, i) => (
+                <span class:list={["block size-2 rounded-full", i === 0 ? "bg-primary-600" : "bg-gray-200 dark:bg-gray-800"]}></span>
+              ))}
+            </div>
+            <p class="mt-2 text-xs text-gray-500">1 of 44 packages</p>
+          </div>
+          <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-800">
+            <pre class="overflow-x-auto rounded bg-gray-900 p-2 text-[11px] text-gray-100 dark:bg-black"><code>npm install<br />@loomi/components</code></pre>
+            <div class="mt-3 grid grid-cols-8 gap-1">
+              {Array.from({ length: 44 }).map(() => (
+                <span class="block size-2 rounded-full bg-primary-600"></span>
+              ))}
+            </div>
+            <p class="mt-2 text-xs text-gray-500">All 44 packages</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Feature 5 — Real form participation -->
+    <section class="border-t border-gray-100 dark:border-gray-900">
+      <div class="mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 sm:grid-cols-2">
+        <div>
+          <h3 class="text-2xl font-bold sm:text-3xl">Real form participation</h3>
+          <p class="mt-4 text-gray-600 dark:text-gray-400">
+            Every form control is form-associated via <code>ElementInternals</code> —
+            they submit with a native <code>&lt;form&gt;</code> like any built-in input,
+            across the shadow boundary. Fill this in and submit it — the values on the
+            right come straight from a real <code>FormData</code>.
+          </p>
+        </div>
+        <form id="demo-form" class="space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-6 dark:border-gray-800 dark:bg-gray-900">
+          <loomi-input name="full_name" label="Full name" required></loomi-input>
+          <loomi-select
+            name="plan"
+            label="Plan"
+            selected-value="pro"
+            data='[{"label":"Starter","value":"starter"},{"label":"Pro","value":"pro"}]'
+          ></loomi-select>
+          <div class="flex items-center gap-3">
+            <loomi-button id="demo-form-submit" can-submit color="primary" size="small">Submit</loomi-button>
+            <span class="text-xs text-gray-500">Real FormData, right below ↓</span>
+          </div>
+          <pre id="demo-form-output" class="hidden overflow-x-auto rounded bg-gray-900 p-3 text-xs text-gray-100 dark:bg-black"></pre>
+        </form>
+      </div>
+    </section>
+
+    <!-- Feature 6 — Built for AI-assisted coding -->
+    <section class="border-t border-gray-100 dark:border-gray-900">
+      <div class="mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 sm:grid-cols-2">
+        <div class="sm:order-2">
+          <h3 class="text-2xl font-bold sm:text-3xl">Built for AI-assisted coding</h3>
+          <p class="mt-4 text-gray-600 dark:text-gray-400">
+            Ships an MCP server alongside the library so Claude Code, Cursor, and other
+            AI tools can look up real attribute tables instead of guessing at your API.
+          </p>
+        </div>
+        <div class="space-y-3 rounded-2xl border border-gray-200 bg-gray-50 p-6 text-sm dark:border-gray-800 dark:bg-gray-900 sm:order-1">
+          <div class="flex justify-end">
+            <div class="max-w-xs rounded-2xl rounded-br-sm bg-primary-600 px-4 py-2 text-white">
+              What props does loomi-button take?
+            </div>
+          </div>
+          <div class="flex justify-start">
+            <div class="max-w-sm rounded-2xl rounded-bl-sm bg-white px-4 py-3 font-mono text-xs text-gray-700 shadow dark:bg-gray-800 dark:text-gray-200">
+              <div class="mb-1 font-sans text-[10px] font-semibold tracking-wide text-primary-600 uppercase">
+                via loomi MCP server
+              </div>
+              color, size, icon, icon-right, outline, tag, href, can-submit, disabled…
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- A real library, not a demo -->
+    <section class="demo-band border-t border-gray-100 px-6 py-20 dark:border-gray-900">
+      <div class="mx-auto grid max-w-6xl items-end gap-8 md:grid-cols-[0.9fr_1.1fr]">
+        <div>
+          <div class="text-sm font-semibold uppercase tracking-[0.18em] text-primary-600 dark:text-primary-300">
+            Live product proof
+          </div>
+          <h2 class="mt-3 text-3xl font-bold sm:text-4xl">A real library, not a brochure.</h2>
+        </div>
+        <p class="max-w-2xl text-gray-600 dark:text-gray-400 md:justify-self-end">
+          Every component below is the actual package, composed into a small workspace.
+          Switch projects, drag tasks, open details, post a comment, or create new work
+          and watch the interface respond.
+        </p>
+      </div>
+
+      <loomi-card class="demo-card mx-auto mt-10 block max-w-6xl overflow-hidden" no-padding has-hover="false">
+        <div class="demo-card-bar border-b border-gray-200 px-5 py-3 dark:border-gray-800">
+          <div class="flex items-center gap-2">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <div class="text-xs font-semibold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400">
+            LoomiUI project workspace
+          </div>
+          <loomi-tag label="Interactive" color="green"></loomi-tag>
+        </div>
+        <div id="demo-app" class="h-[44rem] overflow-y-auto">
+          <!-- Page: Dashboard -->
+          <div class="demo-page" data-page="dashboard">
+            <div class="flex flex-wrap items-center justify-between gap-4 border-b border-gray-200 p-5 dark:border-gray-800">
+              <div>
+                <div class="flex items-center gap-2">
+                  <loomi-tag label="Workspace" color="primary"></loomi-tag>
+                  <span id="dash-health" class="text-xs font-medium text-emerald-600 dark:text-emerald-400">On track</span>
+                </div>
+                <div id="dash-project-name" class="mt-2 text-xl font-bold">Homepage Redesign</div>
+                <div id="dash-project-meta" class="text-sm text-gray-500">Led by Michael K. Ocansey</div>
+              </div>
+              <div class="flex flex-wrap items-center gap-3">
+                <loomi-select
+                  id="project-switcher"
+                  size="small"
+                  style="width: 14rem"
+                  selected-value="redesign"
+                ></loomi-select>
+                <loomi-button id="dash-new-project" type="secondary" size="small" icon="folder-plus">New Project</loomi-button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 gap-4 p-5 sm:grid-cols-4">
+              <loomi-statistic id="stat-total" number="8" label="Total tasks" has-shadow="false"></loomi-statistic>
+              <loomi-statistic id="stat-progress" number="1" label="In progress" has-shadow="false"></loomi-statistic>
+              <loomi-statistic id="stat-complete" number="25%" label="Complete" has-shadow="false"></loomi-statistic>
+              <loomi-statistic id="stat-due" number="6" label="Due soon" has-shadow="false"></loomi-statistic>
+            </div>
+
+            <div class="grid gap-5 px-5 pb-5 md:grid-cols-[1.2fr_0.8fr]">
+              <div class="space-y-5">
+                <div>
+                  <div class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">Tasks by status</div>
+                  <loomi-horizontal-line-graph id="status-graph"></loomi-horizontal-line-graph>
+                </div>
+                <div>
+                  <div class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">Team workload</div>
+                  <loomi-horizontal-line-graph id="workload-graph"></loomi-horizontal-line-graph>
+                </div>
+              </div>
+              <div class="rounded-md border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-900">
+                <div class="mb-3 flex items-center justify-between">
+                  <div class="text-sm font-medium text-gray-600 dark:text-gray-400">Recent activity</div>
+                  <loomi-tag id="dash-budget" label="$18k" color="green"></loomi-tag>
+                </div>
+                <loomi-listview id="activity-list" compact class="block"></loomi-listview>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-3 border-t border-gray-200 p-5 dark:border-gray-800">
+              <loomi-button id="dash-view-board" color="primary" size="small" icon="kanban-square">View Tasks</loomi-button>
+              <loomi-button id="dash-new-task" type="secondary" size="small" icon="plus">Add Task</loomi-button>
+              <loomi-button id="dash-new-project-bottom" type="secondary" size="small" icon="folder-plus">Add Project</loomi-button>
+            </div>
+          </div>
+
+          <!-- Page: Board -->
+          <div class="demo-page hidden" data-page="board">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 p-5 dark:border-gray-800">
+              <loomi-button id="board-back" type="secondary" size="small" icon="arrow-left">Dashboard</loomi-button>
+              <div>
+                <div id="board-project-name" class="font-semibold">Homepage Redesign</div>
+                <div id="board-project-lead" class="text-xs text-gray-500">Michael K. Ocansey</div>
+              </div>
+              <loomi-button id="board-new-task" color="primary" size="small" icon="plus">Add Task</loomi-button>
+            </div>
+            <div class="grid grid-cols-1 gap-4 p-5 md:grid-cols-3">
+              <div>
+                <div class="mb-2 flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400">
+                  To Do <span id="count-todo" class="rounded-full bg-gray-100 px-2 py-0.5 text-xs dark:bg-gray-800">0</span>
+                </div>
+                <loomi-sortable id="col-todo" type="shared" group="board"></loomi-sortable>
+              </div>
+              <div>
+                <div class="mb-2 flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400">
+                  In Progress <span id="count-in-progress" class="rounded-full bg-gray-100 px-2 py-0.5 text-xs dark:bg-gray-800">0</span>
+                </div>
+                <loomi-sortable id="col-in-progress" type="shared" group="board"></loomi-sortable>
+              </div>
+              <div>
+                <div class="mb-2 flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400">
+                  Done <span id="count-done" class="rounded-full bg-gray-100 px-2 py-0.5 text-xs dark:bg-gray-800">0</span>
+                </div>
+                <loomi-sortable id="col-done" type="shared" group="board"></loomi-sortable>
+              </div>
+            </div>
+          </div>
+
+          <!-- Page: Task detail -->
+          <div class="demo-page hidden" data-page="task-detail">
+            <div class="flex items-center justify-between border-b border-gray-200 p-5 dark:border-gray-800">
+              <loomi-button id="detail-back" type="secondary" size="small" icon="arrow-left">Board</loomi-button>
+              <loomi-tag id="detail-status" label="To Do" color="gray"></loomi-tag>
+            </div>
+            <div class="space-y-5 p-5">
+              <div>
+                <h4 id="detail-title" class="text-lg font-semibold"></h4>
+                <p id="detail-description" class="mt-1 text-sm text-gray-600 dark:text-gray-400"></p>
+                <div id="detail-due" class="mt-3 text-xs font-medium text-gray-500"></div>
+              </div>
+              <div class="grid gap-4 sm:grid-cols-2">
+                <loomi-select
+                  id="detail-assignee"
+                  label="Assigned to"
+                  size="small"
+                  data='[{"label":"Michael K. Ocansey","value":"mk"},{"label":"Sara Field","value":"sf"},{"label":"Robert Boateng","value":"rb"}]'
+                ></loomi-select>
+                <loomi-select
+                  id="detail-status-select"
+                  label="Status"
+                  size="small"
+                  data='[{"label":"To Do","value":"todo"},{"label":"In Progress","value":"in-progress"},{"label":"Done","value":"done"}]'
+                ></loomi-select>
+              </div>
+              <div>
+                <div class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">Comments</div>
+                <loomi-listview id="detail-comments" compact class="block"></loomi-listview>
+                <div class="mt-3 space-y-2">
+                  <loomi-textarea id="detail-comment-input" placeholder="Write a comment…" rows="2"></loomi-textarea>
+                  <loomi-button id="detail-comment-submit" size="small" color="primary" icon="send">Post comment</loomi-button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Page: New task -->
+          <div class="demo-page hidden" data-page="new-task">
+            <div class="flex items-center justify-between border-b border-gray-200 p-5 dark:border-gray-800">
+              <loomi-button id="new-task-back" type="secondary" size="small" icon="arrow-left">Cancel</loomi-button>
+              <div class="font-semibold">New Task</div>
+              <span></span>
+            </div>
+            <form id="new-task-form" class="space-y-4 p-5" enctype="multipart/form-data">
+              <loomi-input name="title" label="Title" required></loomi-input>
+              <loomi-textarea name="description" label="Description" rows="4" toolbar></loomi-textarea>
+              <div class="grid gap-4 sm:grid-cols-2">
+                <loomi-select
+                  name="assignee"
+                  label="Assign to"
+                  selected-value="mk"
+                  data='[{"label":"Michael K. Ocansey","value":"mk"},{"label":"Sara Field","value":"sf"},{"label":"Robert Boateng","value":"rb"}]'
+                ></loomi-select>
+                <loomi-datepicker name="due_date" label="Due date"></loomi-datepicker>
+              </div>
+              <div class="grid gap-4 sm:grid-cols-2">
+                <loomi-timepicker name="due_time" label="Due time"></loomi-timepicker>
+                <loomi-filepicker name="attachment" placeholder-line1="Attach a file" placeholder-line2="Optional"></loomi-filepicker>
+              </div>
+              <loomi-button id="new-task-submit" can-submit color="primary" size="small" icon="check">Create task</loomi-button>
+            </form>
+          </div>
+
+          <!-- Page: New project -->
+          <div class="demo-page hidden" data-page="new-project">
+            <div class="flex items-center justify-between border-b border-gray-200 p-5 dark:border-gray-800">
+              <loomi-button id="new-project-back" type="secondary" size="small" icon="arrow-left">Cancel</loomi-button>
+              <div class="font-semibold">New Project</div>
+              <span></span>
+            </div>
+            <form id="new-project-form" class="space-y-4 p-5">
+              <loomi-input name="name" label="Project name" required></loomi-input>
+              <div class="grid gap-4 sm:grid-cols-2">
+                <loomi-select
+                  name="lead"
+                  label="Project lead"
+                  selected-value="mk"
+                  data='[{"label":"Michael K. Ocansey","value":"mk"},{"label":"Sara Field","value":"sf"},{"label":"Robert Boateng","value":"rb"}]'
+                ></loomi-select>
+                <loomi-datepicker name="start_date" label="Start date"></loomi-datepicker>
+              </div>
+              <div class="grid gap-4 sm:grid-cols-2">
+                <loomi-input name="budget" label="Budget" prefix="$" numeric></loomi-input>
+                <loomi-select
+                  name="health"
+                  label="Health"
+                  selected-value="Planning"
+                  data='[{"label":"Planning","value":"Planning"},{"label":"On track","value":"On track"},{"label":"At risk","value":"At risk"}]'
+                ></loomi-select>
+              </div>
+              <loomi-button id="new-project-submit" can-submit color="primary" size="small" icon="check">Create project</loomi-button>
+            </form>
+          </div>
+        </div>
+      </loomi-card>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-200 dark:border-gray-800">
+      <div class="mx-auto max-w-6xl px-6 py-10 text-sm text-gray-500 dark:text-gray-400">
+        <div class="flex flex-wrap justify-center gap-6">
+          <a href="/installation/" class="hover:text-primary-600 dark:hover:text-primary-400">Installation</a>
+          <a href="/components/button/" class="hover:text-primary-600 dark:hover:text-primary-400">Components</a>
+          <a href="/mcp-server/" class="hover:text-primary-600 dark:hover:text-primary-400">MCP Server</a>
+          <a href="/contributing/" class="hover:text-primary-600 dark:hover:text-primary-400">Contributing</a>
+        </div>
+        <p class="mt-6 text-center">© {new Date().getFullYear()} LoomiUI.</p>
+      </div>
+    </footer>
+
+    <script type="module" is:inline>
+      import "@loomi/button";
+      import "@loomi/card";
+      import "@loomi/tag";
+      import "@loomi/avatar";
+      import "@loomi/progress";
+      import "@loomi/listview";
+      import "@loomi/input";
+      import "@loomi/select";
+      import "@loomi/statistic";
+      import "@loomi/horizontal-line-graph";
+      import "@loomi/sortable";
+      import "@loomi/textarea";
+      import "@loomi/datepicker";
+      import "@loomi/timepicker";
+      import "@loomi/filepicker";
+    </script>
+    <script>
+      // Live re-theme demo: clicking a swatch overrides loomi's public --loomi-primary-*
+      // tokens at :root, which every loomi component on the page already reads through
+      // (var(--loomi-X, var(--_loomi-X-default))) — no per-component wiring needed.
+      document.getElementById("theme-swatches")?.addEventListener("click", (e) => {
+        const target = e.target;
+        if (!(target instanceof Element)) return;
+        const button = target.closest("button[data-color]");
+        if (!(button instanceof HTMLElement)) return;
+        document.documentElement.style.setProperty("--loomi-primary-600", button.dataset.color ?? "");
+        for (const b of document.querySelectorAll("#theme-swatches button")) {
+          b.classList.toggle("ring-2", b === button);
+          b.classList.toggle("ring-offset-2", b === button);
+        }
+      });
+
+      // Real form participation demo: a genuine FormData read, proving form-associated
+      // custom elements submit like native inputs across the shadow boundary.
+      //
+      // loomi-button's own native <button type="submit"> lives inside ITS shadow root,
+      // and a shadow-internal native button does not automatically submit an ancestor
+      // light-DOM <form> by crossing that boundary — only form-associated custom
+      // elements (via ElementInternals, like loomi's form controls) get that. So the
+      // button's click is wired to demoForm.requestSubmit(), which fires a real
+      // `submit` event the normal way.
+      const demoForm = document.getElementById("demo-form");
+      document.getElementById("demo-form-submit")?.addEventListener("click", () => {
+        if (demoForm instanceof HTMLFormElement) demoForm.requestSubmit();
+      });
+      demoForm?.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (!(demoForm instanceof HTMLFormElement)) return;
+        const data = Object.fromEntries(new FormData(demoForm).entries());
+        const out = document.getElementById("demo-form-output");
+        if (out) {
+          out.textContent = JSON.stringify(data, null, 2);
+          out.classList.remove("hidden");
+        }
+      });
+    </script>
+
+    <script>
+      // Mini project-management demo: a handful of "pages" (plain divs, shown one at a
+      // time) wired to a small in-memory project space. Every component here is the
+      // real package — <loomi-sortable> drags items between columns, <loomi-select>
+      // re-syncs when records change, and every form submits through real FormData.
+      interface DemoUser {
+        name: string;
+        initials: string;
+      }
+      interface DemoComment {
+        author: string;
+        text: string;
+      }
+      interface DemoTask {
+        id: string;
+        title: string;
+        description: string;
+        status: "todo" | "in-progress" | "done";
+        assignee: string;
+        dueDate: string;
+        dueTime: string;
+        attachment: string;
+        comments: DemoComment[];
+      }
+      interface DemoProject {
+        id: string;
+        name: string;
+        lead: string;
+        health: string;
+        budget: number;
+        created: string;
+        tasks: DemoTask[];
+      }
+
+      const USERS: Record<string, DemoUser> = {
+        mk: { name: "Michael K. Ocansey", initials: "MK" },
+        sf: { name: "Sara Field", initials: "SF" },
+        rb: { name: "Robert Boateng", initials: "RB" },
+      };
+      const STATUSES: DemoTask["status"][] = ["todo", "in-progress", "done"];
+      const STATUS_LABELS: Record<DemoTask["status"], string> = {
+        todo: "To Do",
+        "in-progress": "In Progress",
+        done: "Done",
+      };
+      const STATUS_COLORS: Record<DemoTask["status"], string> = {
+        todo: "gray",
+        "in-progress": "orange",
+        done: "green",
+      };
+
+      let nextProjectId = 3;
+      let nextTaskId = 12;
+      let activeProjectId = "redesign";
+      let activeTaskId: string | null = null;
+      const projects: DemoProject[] = [
+        {
+          id: "redesign",
+          name: "Homepage Redesign",
+          lead: "mk",
+          health: "On track",
+          budget: 18000,
+          created: "2026-06-18",
+          tasks: [
+            {
+              id: "1",
+              title: "Wireframe the hero section",
+              description: "Rough layout for the new homepage hero.",
+              status: "done",
+              assignee: "mk",
+              dueDate: "2026-06-20",
+              dueTime: "10:00",
+              attachment: "hero-wireframe.fig",
+              comments: [{ author: "mk", text: "Shipped, ready for review." }],
+            },
+            {
+              id: "2",
+              title: "Pick a color palette",
+              description: "Decide on primary/accent colors for the redesign.",
+              status: "done",
+              assignee: "sf",
+              dueDate: "2026-06-21",
+              dueTime: "14:00",
+              attachment: "",
+              comments: [],
+            },
+            {
+              id: "3",
+              title: "Build the component showcase",
+              description: "Wire up live loomi components across the homepage.",
+              status: "in-progress",
+              assignee: "rb",
+              dueDate: "2026-06-25",
+              dueTime: "17:00",
+              attachment: "component-map.pdf",
+              comments: [{ author: "sf", text: "Let me know if you need a design review." }],
+            },
+            {
+              id: "4",
+              title: "Write launch announcement",
+              description: "Draft the blog post and social copy for launch day.",
+              status: "todo",
+              assignee: "mk",
+              dueDate: "2026-06-28",
+              dueTime: "09:00",
+              attachment: "",
+              comments: [],
+            },
+            {
+              id: "8",
+              title: "Prepare accessibility pass",
+              description: "Check keyboard paths, labels, and contrast across the home page.",
+              status: "todo",
+              assignee: "sf",
+              dueDate: "2026-06-29",
+              dueTime: "12:00",
+              attachment: "",
+              comments: [],
+            },
+            {
+              id: "9",
+              title: "Record component walkthrough",
+              description: "Capture a short clip showing the live project workspace.",
+              status: "todo",
+              assignee: "rb",
+              dueDate: "2026-06-30",
+              dueTime: "15:00",
+              attachment: "",
+              comments: [],
+            },
+            {
+              id: "10",
+              title: "Review installation copy",
+              description: "Make sure package names and snippets match the current docs.",
+              status: "todo",
+              assignee: "mk",
+              dueDate: "2026-07-01",
+              dueTime: "10:30",
+              attachment: "",
+              comments: [],
+            },
+            {
+              id: "11",
+              title: "Polish responsive spacing",
+              description: "Test the mini project card on mobile and tablet breakpoints.",
+              status: "todo",
+              assignee: "sf",
+              dueDate: "2026-07-02",
+              dueTime: "16:00",
+              attachment: "",
+              comments: [],
+            },
+          ],
+        },
+        {
+          id: "mobile",
+          name: "Mobile App Launch",
+          lead: "sf",
+          health: "At risk",
+          budget: 42000,
+          created: "2026-06-12",
+          tasks: [
+            {
+              id: "5",
+              title: "QA onboarding flow",
+              description: "Test signup, verification, and first project creation.",
+              status: "in-progress",
+              assignee: "sf",
+              dueDate: "2026-06-26",
+              dueTime: "13:30",
+              attachment: "qa-notes.csv",
+              comments: [{ author: "rb", text: "Android checks are halfway through." }],
+            },
+            {
+              id: "6",
+              title: "Publish beta release notes",
+              description: "Summarize the feature set and known limitations.",
+              status: "todo",
+              assignee: "mk",
+              dueDate: "2026-06-27",
+              dueTime: "11:00",
+              attachment: "",
+              comments: [],
+            },
+            {
+              id: "7",
+              title: "App store screenshots",
+              description: "Export localized screenshots for the listing.",
+              status: "done",
+              assignee: "rb",
+              dueDate: "2026-06-22",
+              dueTime: "16:00",
+              attachment: "screenshots.zip",
+              comments: [{ author: "sf", text: "Approved for the beta listing." }],
+            },
+          ],
+        },
+      ];
+
+      const app = document.getElementById("demo-app");
+
+      function showPage(name: string): void {
+        for (const page of app?.querySelectorAll<HTMLElement>(".demo-page") ?? []) {
+          page.classList.toggle("hidden", page.dataset.page !== name);
+        }
+      }
+
+      function formatDate(iso: string): string {
+        if (!iso) return "no date";
+        const d = new Date(`${iso}T00:00:00`);
+        if (Number.isNaN(d.getTime())) return iso;
+        return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+      }
+
+      function activeProject(): DemoProject {
+        return projects.find((project) => project.id === activeProjectId) ?? projects[0];
+      }
+
+      function activeTasks(): DemoTask[] {
+        return activeProject().tasks;
+      }
+
+      function columnFor(status: string): HTMLElement & { items?: unknown[] } {
+        return document.getElementById(`col-${status}`) as HTMLElement & { items?: unknown[] };
+      }
+
+      function currentProjectOptions(): { label: string; value: string }[] {
+        return projects.map((project) => ({ label: project.name, value: project.id }));
+      }
+
+      function updateProjectSwitcher(): void {
+        const switcher = document.getElementById("project-switcher") as (HTMLElement & {
+          data?: unknown[];
+          selectedValue?: string;
+        }) | null;
+        if (!switcher) return;
+        switcher.data = currentProjectOptions();
+        switcher.selectedValue = activeProjectId;
+      }
+
+      function setListItems(id: string, rows: { title: string; meta: string }[]): void {
+        const list = document.getElementById(id);
+        if (!list) return;
+        list.innerHTML = "";
+        for (const rowData of rows) {
+          const item = document.createElement("loomi-listview-item");
+          const row = document.createElement("div");
+          row.style.width = "100%";
+          const title = document.createElement("div");
+          title.style.fontSize = "0.85rem";
+          title.style.fontWeight = "600";
+          title.textContent = rowData.title;
+          const meta = document.createElement("div");
+          meta.style.fontSize = "0.75rem";
+          meta.style.color = "rgb(107 114 128)";
+          meta.textContent = rowData.meta;
+          row.append(title, meta);
+          item.appendChild(row);
+          list.appendChild(item);
+        }
+      }
+
+      function renderBoard(): void {
+        const project = activeProject();
+        const tasks = project.tasks;
+        const lead = USERS[project.lead];
+        const boardName = document.getElementById("board-project-name");
+        const boardLead = document.getElementById("board-project-lead");
+        if (boardName) boardName.textContent = project.name;
+        if (boardLead) boardLead.textContent = lead ? `Led by ${lead.name}` : "No lead assigned";
+
+        for (const status of STATUSES) {
+          const col = columnFor(status);
+          const colTasks = tasks.filter((t) => t.status === status);
+          col.items = colTasks.map((t) => ({
+            id: t.id,
+            label: t.title,
+            meta: `${USERS[t.assignee]?.name ?? "Unassigned"} · ${formatDate(t.dueDate)}${t.attachment ? ` · ${t.attachment}` : ""}`,
+          }));
+          const count = document.getElementById(`count-${status}`);
+          if (count) count.textContent = String(colTasks.length);
+        }
+      }
+
+      function renderDashboard(): void {
+        const project = activeProject();
+        const tasks = project.tasks;
+        const total = tasks.length;
+        const inProgress = tasks.filter((t) => t.status === "in-progress").length;
+        const done = tasks.filter((t) => t.status === "done").length;
+        const todo = tasks.filter((t) => t.status === "todo").length;
+        const pct = total ? Math.round((done / total) * 100) : 0;
+        const dueSoon = tasks.filter((t) => t.status !== "done" && t.dueDate).length;
+
+        const lead = USERS[project.lead];
+        const dashName = document.getElementById("dash-project-name");
+        const dashMeta = document.getElementById("dash-project-meta");
+        const dashHealth = document.getElementById("dash-health");
+        const budget = document.getElementById("dash-budget");
+        if (dashName) dashName.textContent = project.name;
+        if (dashMeta) dashMeta.textContent = lead ? `Led by ${lead.name}` : "No lead assigned";
+        if (dashHealth) {
+          dashHealth.textContent = project.health;
+          dashHealth.className =
+            project.health === "At risk"
+              ? "text-xs font-medium text-rose-600 dark:text-rose-400"
+              : "text-xs font-medium text-emerald-600 dark:text-emerald-400";
+        }
+        if (budget) budget.setAttribute("label", `$${project.budget.toLocaleString()}`);
+
+        document.getElementById("stat-total")?.setAttribute("number", String(total));
+        document.getElementById("stat-progress")?.setAttribute("number", String(inProgress));
+        document.getElementById("stat-complete")?.setAttribute("number", `${pct}%`);
+        document.getElementById("stat-due")?.setAttribute("number", String(dueSoon));
+
+        const graph = document.getElementById("status-graph") as (HTMLElement & { data?: unknown[] }) | null;
+        if (graph) {
+          graph.data = [
+            { label: "To Do", value: todo, color: "gray" },
+            { label: "In Progress", value: inProgress, color: "orange" },
+            { label: "Done", value: done, color: "green" },
+          ];
+        }
+
+        const workload = document.getElementById("workload-graph") as (HTMLElement & { data?: unknown[] }) | null;
+        if (workload) {
+          workload.data = Object.entries(USERS).map(([id, user]) => ({
+            label: user.initials,
+            value: Math.max(0.001, tasks.filter((task) => task.assignee === id && task.status !== "done").length),
+            color: id === "mk" ? "primary" : id === "sf" ? "pink" : "cyan",
+          }));
+        }
+
+        const recent = [...tasks]
+          .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
+          .slice(0, 4)
+          .map((task) => ({
+            title: task.title,
+            meta: `${STATUS_LABELS[task.status]} · ${USERS[task.assignee]?.initials ?? "NA"} · ${formatDate(task.dueDate)}`,
+          }));
+        setListItems("activity-list", recent.length ? recent : [{ title: "No tasks yet", meta: "Create the first task for this project" }]);
+      }
+
+      function renderComments(task: DemoTask): void {
+        const list = document.getElementById("detail-comments");
+        if (!list) return;
+        list.innerHTML = "";
+        if (task.comments.length === 0) {
+          const empty = document.createElement("p");
+          empty.className = "px-1 text-xs text-gray-500";
+          empty.textContent = "No comments yet.";
+          list.appendChild(empty);
+          return;
+        }
+        for (const comment of task.comments) {
+          const user = USERS[comment.author];
+          const item = document.createElement("loomi-listview-item");
+          const row = document.createElement("div");
+          row.style.display = "flex";
+          row.style.gap = "0.5rem";
+          row.style.width = "100%";
+          const avatar = document.createElement("loomi-avatar");
+          avatar.setAttribute("size", "tiny");
+          avatar.setAttribute("label", user?.initials ?? "?");
+          const text = document.createElement("div");
+          const name = document.createElement("div");
+          name.style.fontSize = "0.8rem";
+          name.style.fontWeight = "600";
+          name.textContent = user?.name ?? "Unknown";
+          const body = document.createElement("div");
+          body.style.fontSize = "0.85rem";
+          body.textContent = comment.text;
+          text.append(name, body);
+          row.append(avatar, text);
+          item.appendChild(row);
+          list.appendChild(item);
+        }
+      }
+
+      function openTaskDetail(id: string): void {
+        const task = activeTasks().find((t) => t.id === id);
+        if (!task) return;
+        activeTaskId = id;
+        const titleEl = document.getElementById("detail-title");
+        const descEl = document.getElementById("detail-description");
+        const dueEl = document.getElementById("detail-due");
+        const statusTag = document.getElementById("detail-status");
+        if (titleEl) titleEl.textContent = task.title;
+        if (descEl) descEl.textContent = task.description || "No description.";
+        if (dueEl) dueEl.textContent = `Due ${formatDate(task.dueDate)}${task.dueTime ? ` at ${task.dueTime}` : ""}${task.attachment ? ` · ${task.attachment}` : ""}`;
+        if (statusTag) {
+          statusTag.setAttribute("label", STATUS_LABELS[task.status]);
+          statusTag.setAttribute("color", STATUS_COLORS[task.status]);
+        }
+        const assigneeSelect = document.getElementById("detail-assignee") as (HTMLElement & { selectedValue?: string }) | null;
+        if (assigneeSelect) assigneeSelect.selectedValue = task.assignee;
+        const statusSelect = document.getElementById("detail-status-select") as (HTMLElement & { selectedValue?: string }) | null;
+        if (statusSelect) statusSelect.selectedValue = task.status;
+        renderComments(task);
+        showPage("task-detail");
+      }
+
+      function openNewTask(): void {
+        showPage("new-task");
+      }
+
+      function openNewProject(): void {
+        showPage("new-project");
+      }
+
+      function renderAll(): void {
+        updateProjectSwitcher();
+        renderBoard();
+        renderDashboard();
+      }
+
+      // --- Dashboard actions ---
+      document.getElementById("dash-view-board")?.addEventListener("click", () => showPage("board"));
+      document.getElementById("dash-new-task")?.addEventListener("click", openNewTask);
+      document.getElementById("dash-new-project")?.addEventListener("click", openNewProject);
+      document.getElementById("dash-new-project-bottom")?.addEventListener("click", openNewProject);
+      document.getElementById("project-switcher")?.addEventListener("select", (e) => {
+        const detail = (e as CustomEvent<{ value: string }>).detail;
+        if (!projects.some((project) => project.id === detail.value)) return;
+        activeProjectId = detail.value;
+        activeTaskId = null;
+        renderAll();
+      });
+
+      // --- Board actions ---
+      document.getElementById("board-back")?.addEventListener("click", () => showPage("dashboard"));
+      document.getElementById("board-new-task")?.addEventListener("click", openNewTask);
+      for (const status of STATUSES) {
+        const col = columnFor(status);
+        col.addEventListener("reorder", (e) => {
+          const detail = (e as CustomEvent<{ order: string[] }>).detail;
+          syncColumnOrder(status, detail.order);
+        });
+        col.addEventListener("transfer", (e) => {
+          const detail = (e as CustomEvent<{ order: string[]; item: { id: string } }>).detail;
+          if (!detail.order.includes(detail.item.id)) return;
+          const task = activeTasks().find((t) => t.id === detail.item.id);
+          if (task) task.status = status;
+          syncColumnOrder(status, detail.order);
+          renderAll();
+        });
+        col.addEventListener("item-click", (e) => {
+          const detail = (e as CustomEvent<{ item: { id: string } }>).detail;
+          openTaskDetail(detail.item.id);
+        });
+      }
+
+      function syncColumnOrder(status: DemoTask["status"], order: string[]): void {
+        const project = activeProject();
+        const rank = new Map(order.map((id, index) => [id, index]));
+        project.tasks.sort((a, b) => {
+          if (a.status === status && b.status === status) {
+            return (rank.get(a.id) ?? 0) - (rank.get(b.id) ?? 0);
+          }
+          return 0;
+        });
+      }
+
+      // --- Task detail actions ---
+      document.getElementById("detail-back")?.addEventListener("click", () => showPage("board"));
+      document.getElementById("detail-assignee")?.addEventListener("select", (e) => {
+        const detail = (e as CustomEvent<{ value: string }>).detail;
+        const task = activeTasks().find((t) => t.id === activeTaskId);
+        if (task) task.assignee = detail.value;
+        renderAll();
+      });
+      document.getElementById("detail-status-select")?.addEventListener("select", (e) => {
+        const detail = (e as CustomEvent<{ value: DemoTask["status"] }>).detail;
+        const task = activeTasks().find((t) => t.id === activeTaskId);
+        if (!task || !STATUSES.includes(detail.value)) return;
+        task.status = detail.value;
+        renderAll();
+        openTaskDetail(task.id);
+      });
+      document.getElementById("detail-comment-submit")?.addEventListener("click", () => {
+        const textarea = document.getElementById("detail-comment-input") as (HTMLElement & { value?: string }) | null;
+        const task = activeTasks().find((t) => t.id === activeTaskId);
+        const text = textarea?.value?.trim();
+        if (!task || !textarea || !text) return;
+        task.comments.push({ author: "mk", text });
+        textarea.value = "";
+        renderComments(task);
+      });
+
+      // --- New task form ---
+      document.getElementById("new-task-back")?.addEventListener("click", () => showPage("board"));
+      const newTaskForm = document.getElementById("new-task-form");
+      document.getElementById("new-task-submit")?.addEventListener("click", () => {
+        if (newTaskForm instanceof HTMLFormElement) newTaskForm.requestSubmit();
+      });
+      newTaskForm?.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (!(newTaskForm instanceof HTMLFormElement)) return;
+        const data = new FormData(newTaskForm);
+        const title = String(data.get("title") ?? "").trim();
+        if (!title) return;
+        const id = String(nextTaskId++);
+        const attachment = data.get("attachment");
+        activeProject().tasks.push({
+          id,
+          title,
+          description: String(data.get("description") ?? ""),
+          status: "todo",
+          assignee: String(data.get("assignee") ?? "mk"),
+          dueDate: String(data.get("due_date") ?? ""),
+          dueTime: String(data.get("due_time") ?? ""),
+          attachment: attachment instanceof File && attachment.name ? attachment.name : "",
+          comments: [],
+        });
+        newTaskForm.reset();
+        renderAll();
+        showPage("board");
+      });
+
+      // --- New project form ---
+      document.getElementById("new-project-back")?.addEventListener("click", () => showPage("dashboard"));
+      const newProjectForm = document.getElementById("new-project-form");
+      document.getElementById("new-project-submit")?.addEventListener("click", () => {
+        if (newProjectForm instanceof HTMLFormElement) newProjectForm.requestSubmit();
+      });
+      newProjectForm?.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (!(newProjectForm instanceof HTMLFormElement)) return;
+        const data = new FormData(newProjectForm);
+        const name = String(data.get("name") ?? "").trim();
+        if (!name) return;
+        const id = `project-${nextProjectId++}`;
+        const lead = String(data.get("lead") ?? "mk");
+        const startDate = String(data.get("start_date") ?? "");
+        projects.push({
+          id,
+          name,
+          lead,
+          health: String(data.get("health") ?? "Planning"),
+          budget: Number(String(data.get("budget") ?? "").replaceAll(",", "")) || 0,
+          created: startDate,
+          tasks: [
+            {
+              id: String(nextTaskId++),
+              title: "Kickoff project plan",
+              description: "Define scope, milestones, and owners for the first sprint.",
+              status: "todo",
+              assignee: lead,
+              dueDate: startDate,
+              dueTime: "09:00",
+              attachment: "",
+              comments: [{ author: "mk", text: "Project created from the LoomiUI mini workspace." }],
+            },
+          ],
+        });
+        activeProjectId = id;
+        activeTaskId = null;
+        newProjectForm.reset();
+        renderAll();
+        showPage("dashboard");
+      });
+
+      async function initializeDemoApp(): Promise<void> {
+        await Promise.all(
+          [
+            "loomi-horizontal-line-graph",
+            "loomi-listview",
+            "loomi-select",
+            "loomi-sortable",
+            "loomi-statistic",
+            "loomi-textarea",
+          ].map((tagName) => customElements.whenDefined(tagName)),
+        );
+        renderAll();
+      }
+
+      void initializeDemoApp();
+    </script>
+  </body>
+</html>

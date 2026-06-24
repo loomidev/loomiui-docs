@@ -8,34 +8,110 @@
   --sl-color-accent-low: #1e3a8a;
   --sl-color-accent: #60a5fa;
   --sl-color-accent-high: #dbeafe;
+
+  /* Shared dark-mode values for loomi's near-neutral color tokens (white, gray,
+   * secondary, black). loomi components read colors through
+   * var(--loomi-X, var(--_loomi-X-default)); the public slot is left undeclared by
+   * default so it inherits a consumer's :root, falling back to the light-mode default.
+   * Any surface on this site that wants its loomi components to respect Starlight's
+   * dark mode re-maps the public slots to the --_dark-* values below, scoped to
+   * itself — see .loomi-preview and .loomi-pagi-card for the two places that do this.
+   *
+   * gray, secondary and black all need inverting (not just gray) because palette.json
+   * maps secondary to Tailwind's "slate" ramp and black to "neutral" — both are
+   * themselves near-grayscale, so a secondary-outline button's text has the same
+   * dark-on-dark contrast problem as gray text does. The true hue ramps (primary, red,
+   * blue, etc.) are left alone; their default lightness already reads fine on both
+   * light and dark surfaces.
+   */
+  --_dark-gray-50: oklch(21% 0.034 264.665); /* gray-900 */
+  --_dark-gray-100: oklch(27.8% 0.033 256.848); /* gray-800 */
+  --_dark-gray-200: oklch(37.3% 0.034 259.733); /* gray-700 */
+  --_dark-gray-300: oklch(44.6% 0.03 256.802); /* gray-600 */
+  --_dark-gray-400: oklch(55.1% 0.027 264.364); /* gray-500 */
+  --_dark-gray-500: oklch(70.7% 0.022 261.325); /* gray-400 */
+  --_dark-gray-600: oklch(87.2% 0.01 258.338); /* gray-300 */
+  --_dark-gray-700: oklch(92.8% 0.006 264.531); /* gray-200 */
+  --_dark-gray-800: oklch(96.7% 0.003 264.542); /* gray-100 */
+  --_dark-gray-900: oklch(98.5% 0.002 247.839); /* gray-50 */
+  --_dark-white: var(--_dark-gray-50); /* gray-900 — a dark slate "surface" */
+
+  --_dark-secondary-50: oklch(20.8% 0.042 265.755); /* secondary-900 */
+  --_dark-secondary-100: oklch(27.9% 0.041 260.031); /* secondary-800 */
+  --_dark-secondary-200: oklch(37.2% 0.044 257.287); /* secondary-700 */
+  --_dark-secondary-300: oklch(44.6% 0.043 257.281); /* secondary-600 */
+  --_dark-secondary-400: oklch(55.4% 0.046 257.417); /* secondary-500 */
+  --_dark-secondary-500: oklch(70.4% 0.04 256.788); /* secondary-400 */
+  --_dark-secondary-600: oklch(86.9% 0.022 252.894); /* secondary-300 */
+  --_dark-secondary-700: oklch(92.9% 0.013 255.508); /* secondary-200 */
+  --_dark-secondary-800: oklch(96.8% 0.007 247.896); /* secondary-100 */
+  --_dark-secondary-900: oklch(98.4% 0.003 247.858); /* secondary-50 */
+
+  --_dark-black-50: oklch(20.5% 0 0); /* black-900 */
+  --_dark-black-100: oklch(26.9% 0 0); /* black-800 */
+  --_dark-black-200: oklch(37.1% 0 0); /* black-700 */
+  --_dark-black-300: oklch(43.9% 0 0); /* black-600 */
+  --_dark-black-400: oklch(55.6% 0 0); /* black-500 */
+  --_dark-black-500: oklch(70.8% 0 0); /* black-400 */
+  --_dark-black-600: oklch(87% 0 0); /* black-300 */
+  --_dark-black-700: oklch(92.2% 0 0); /* black-200 */
+  --_dark-black-800: oklch(97% 0 0); /* black-100 */
+  --_dark-black-900: oklch(98.5% 0 0); /* black-50 */
 }
 
 .hero :is(h1, .tagline) {
   letter-spacing: -0.02em;
 }
 
-/* The header logo is the full "loomiui" wordmark lockup (icon + dark-navy text) baked
- * into one image, so it has no separate light/dark variant. The navy text is illegible
- * against Starlight's dark-mode header, so give it a light backdrop in dark mode only —
- * the image itself is never modified. */
+/* The header logo uses dedicated light/dark image variants (see astro.config.mjs'
+ * `logo: { light, dark }`), so no theme-conditional CSS treatment is needed here —
+ * just a consistent max size. */
 .site-title img {
   max-height: 2.75rem;
 }
-:root[data-theme="dark"] .site-title img {
-  background: #ffffff;
-  border-radius: 0.4rem;
-  padding: 0.3rem 0.6rem;
+
+/* The 30 token re-mappings (gray/secondary/black x 10 shades) shared by every surface
+ * on this site that wants its loomi components to respect dark mode — currently
+ * .loomi-preview (below) and .loomi-pagi-card (Pagination.astro). A plain global
+ * stylesheet like this one can target a class from any component regardless of which
+ * file defines it; Astro's per-component CSS scoping only affects rules *authored*
+ * inside that component's own <style> block, not external sheets matching its classes.
+ */
+:root[data-theme="dark"] :is(.loomi-preview, .loomi-pagi-card) {
+  --loomi-white: var(--_dark-white);
+  --loomi-gray-50: var(--_dark-gray-50);
+  --loomi-gray-100: var(--_dark-gray-100);
+  --loomi-gray-200: var(--_dark-gray-200);
+  --loomi-gray-300: var(--_dark-gray-300);
+  --loomi-gray-400: var(--_dark-gray-400);
+  --loomi-gray-500: var(--_dark-gray-500);
+  --loomi-gray-600: var(--_dark-gray-600);
+  --loomi-gray-700: var(--_dark-gray-700);
+  --loomi-gray-800: var(--_dark-gray-800);
+  --loomi-gray-900: var(--_dark-gray-900);
+  --loomi-secondary-50: var(--_dark-secondary-50);
+  --loomi-secondary-100: var(--_dark-secondary-100);
+  --loomi-secondary-200: var(--_dark-secondary-200);
+  --loomi-secondary-300: var(--_dark-secondary-300);
+  --loomi-secondary-400: var(--_dark-secondary-400);
+  --loomi-secondary-500: var(--_dark-secondary-500);
+  --loomi-secondary-600: var(--_dark-secondary-600);
+  --loomi-secondary-700: var(--_dark-secondary-700);
+  --loomi-secondary-800: var(--_dark-secondary-800);
+  --loomi-secondary-900: var(--_dark-secondary-900);
+  --loomi-black-50: var(--_dark-black-50);
+  --loomi-black-100: var(--_dark-black-100);
+  --loomi-black-200: var(--_dark-black-200);
+  --loomi-black-300: var(--_dark-black-300);
+  --loomi-black-400: var(--_dark-black-400);
+  --loomi-black-500: var(--_dark-black-500);
+  --loomi-black-600: var(--_dark-black-600);
+  --loomi-black-700: var(--_dark-black-700);
+  --loomi-black-800: var(--_dark-black-800);
+  --loomi-black-900: var(--_dark-black-900);
 }
 
-/* Live component preview boxes injected above each ```html code block.
- *
- * loomi components default to LIGHT-mode token values unless a consumer explicitly
- * opts into dark mode (via <loomi-theme-switcher> overriding --loomi-* tokens). They
- * are NOT aware of Starlight's own light/dark toggle, so this surface is intentionally
- * a fixed light background regardless of the docs site's theme — otherwise dark-text
- * variants (e.g. a secondary outline button) become unreadable when the *site* is in
- * dark mode while the *component* still renders its light-mode default colors.
- */
+/* Live component preview boxes injected above each ```html code block. */
 .loomi-preview {
   position: relative;
   display: flex;
@@ -48,6 +124,19 @@
   border-radius: 0.5rem 0.5rem 0 0;
   background: #f8fafc;
   color-scheme: light;
+}
+:root[data-theme="dark"] .loomi-preview {
+  border-color: var(--_dark-gray-100);
+  background: oklch(13% 0.028 261.692); /* gray-950, darker than the token ramp goes */
+  color-scheme: dark;
+}
+/* loomi-progress-bar's :host is display:block with a width:100% inner track — as a
+ * flex item with the default flex-basis:auto, that 100% has nothing to resolve against
+ * and the bar collapses to a few px wide instead of spanning the row. Giving it an
+ * explicit full-width flex-basis fixes the sizing and, since .loomi-preview wraps, makes
+ * each progress-bar example land on its own line as intended. */
+.loomi-preview > loomi-progress-bar {
+  flex: 1 1 100%;
 }
 .loomi-preview::before {
   content: attr(data-label);
@@ -68,4 +157,19 @@
 .loomi-preview + .expressive-code .frame {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
+}
+
+/* Sidebar groups ("Start Here", "Components") should always be fully expanded — no
+ * collapse/expand interaction. CSS-only, so it doesn't matter whether a toggle is
+ * triggered by mouse, keyboard, or Starlight's own scroll-position-restore script:
+ * children stay visible regardless of the underlying <details> open state. */
+sl-sidebar-state-persist details > :not(summary) {
+  display: block !important;
+}
+sl-sidebar-state-persist summary {
+  cursor: default;
+  pointer-events: none;
+}
+sl-sidebar-state-persist .caret {
+  display: none;
 }

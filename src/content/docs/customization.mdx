@@ -1,11 +1,9 @@
 ---
 title: Customization
-description: Re-theme the entire loomi library by overriding CSS custom properties — no build step, no Tailwind required.
+description: Re-theme the entire LoomiUI library by overriding CSS custom properties — no build step, no Tailwind required.
 ---
 
-import { Aside, Tabs, TabItem } from "@astrojs/starlight/components";
-
-Every colored loomi component resolves its colors through a shared set of CSS custom
+Every colored LoomiUI component resolves its colors through a shared set of CSS custom
 properties. Override one of them from your own page CSS and **every component that uses
 that color updates instantly** — no rebuild, no config file, and no Tailwind required on
 your end.
@@ -26,11 +24,12 @@ That's the entire API. Custom properties inherit straight through the Shadow DOM
 boundary, so a single `:root` declaration reaches into every component on the page —
 buttons, inputs, tags, alerts, all of it — at once.
 
-<Aside type="tip" title="Override every shade you use">
-  Most components reference more than one shade of a color (e.g. `600` for the fill,
-  `700` for hover, `100` for a soft background). For a clean re-skin, override the full
-  ramp for any color you're changing — `50` through `950`.
-</Aside>
+<loomi-alert type="success" icon="check-circle">
+  <strong>Override every shade you use.</strong> Most components reference more than one
+  shade of a color (e.g. `600` for the fill, `700` for hover, `100` for a soft
+  background). For a clean re-skin, override the full ramp for any color you're
+  changing — `50` through `950`.
+</loomi-alert>
 
 ## The 14 palette colors
 
@@ -60,7 +59,7 @@ overriding `--loomi-red-600` re-skins every red-colored instance, not just one.
 
 ## Dark mode
 
-loomi ships a `<loomi-theme-switcher>` component that toggles a `dark` class on
+LoomiUI ships a `<loomi-theme-switcher>` component that toggles a `dark` class on
 `<html>` and persists the choice to `localStorage`:
 
 ```html
@@ -71,8 +70,8 @@ loomi ships a `<loomi-theme-switcher>` component that toggles a `dark` class on
 <loomi-theme-switcher></loomi-theme-switcher>
 ```
 
-<Tabs>
-<TabItem label="Use the component">
+<loomi-tabs>
+<loomi-tab label="Use the component" active>
 
 Drop it anywhere in your layout — it handles light/dark/system state on its own:
 
@@ -80,20 +79,20 @@ Drop it anywhere in your layout — it handles light/dark/system state on its ow
 <loomi-theme-switcher light-text="Light" dark-text="Dark" system-text="Auto"></loomi-theme-switcher>
 ```
 
-</TabItem>
-<TabItem label="Drive it yourself">
+</loomi-tab>
+<loomi-tab label="Drive it yourself">
 
 Or call the exported helpers directly if you're building your own toggle UI:
 
 ```js
 import { applyLoomiTheme, getLoomiTheme } from "@loomi/theme-switcher";
 
-applyLoomiTheme("dark");   // "light" | "dark" | "system"
-getLoomiTheme();           // reads the persisted choice
+applyLoomiTheme("dark"); // "light" | "dark" | "system"
+getLoomiTheme(); // reads the persisted choice
 ```
 
-</TabItem>
-</Tabs>
+</loomi-tab>
+</loomi-tabs>
 
 Style your dark theme against the `html.dark` class it toggles — typically by
 overriding the same `--loomi-*` tokens with darker-mode-appropriate values:
@@ -106,16 +105,16 @@ html.dark {
 }
 ```
 
-<Aside type="caution">
-  Call `applyLoomiTheme(getLoomiTheme())` as early as possible in your page (before
-  first paint) if you want to avoid a flash of the wrong theme before
-  `<loomi-theme-switcher>` upgrades.
-</Aside>
+<loomi-alert type="warning" icon="exclamation-triangle">
+  Call <code>applyLoomiTheme(getLoomiTheme())</code> as early as possible in your page
+  (before first paint) if you want to avoid a flash of the wrong theme before
+  <code>&lt;loomi-theme-switcher&gt;</code> upgrades.
+</loomi-alert>
 
 ## Forking for deeper changes
 
 The override model above covers the vast majority of theming needs. If you need to
 change the *default* values themselves (rather than overriding them per-app), or add a
-15th palette color, that requires building from source — loomi's defaults are generated
+15th palette color, that requires building from source — LoomiUI's defaults are generated
 from a single `palette.json` at build time, so a fork only needs to edit one file and
 rebuild. That's a source-level change, not something exposed to npm consumers.

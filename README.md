@@ -1,8 +1,13 @@
-# loomi docs
+# LoomiUI Documentation
 
-The documentation site for [loomi](../components), built with
+The documentation site for [LoomiUI](../components), built with
 [Astro](https://astro.build) + [Starlight](https://starlight.astro.build), deployed at
 **https://loomiui.com**.
+
+It contains setup guides, customization notes, MCP server docs, and generated
+component references with live, runnable previews. Content is sourced from the
+component monorepo where possible, so package-level README updates can be
+regenerated into docs pages consistently.
 
 ## Structure
 

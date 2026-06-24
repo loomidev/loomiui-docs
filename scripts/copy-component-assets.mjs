@@ -8,7 +8,7 @@
 import { cpSync, existsSync, rmSync, mkdirSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { ALL_PACKAGE_NAMES } from "./loomi-packages.mjs";
+import { ALL_PACKAGE_NAMES } from "./loomiui-packages.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PACKAGES = resolve(__dirname, "../../components/packages");

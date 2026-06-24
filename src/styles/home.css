@@ -1,0 +1,321 @@
+/* Tailwind for this docs site's own marketing homepage only (src/pages/index.astro).
+ * Compiled away at build time, same as everywhere else in this project — the rest of
+ * the docs site (Starlight pages) keeps using custom.css and is untouched by this. */
+@import "tailwindcss";
+
+@theme {
+  /* loomiui's primary brand blue is #2563eb / #60a5fa (light/dark) — see custom.css's
+   * --sl-color-accent for the same values applied to Starlight's own chrome. That ramp
+   * happens to be Tailwind's stock `blue` scale, so alias rather than re-type hex. */
+  --color-primary-50: var(--color-blue-50);
+  --color-primary-100: var(--color-blue-100);
+  --color-primary-200: var(--color-blue-200);
+  --color-primary-300: var(--color-blue-300);
+  --color-primary-400: var(--color-blue-400);
+  --color-primary-500: var(--color-blue-500);
+  --color-primary-600: var(--color-blue-600);
+  --color-primary-700: var(--color-blue-700);
+  --color-primary-800: var(--color-blue-800);
+  --color-primary-900: var(--color-blue-900);
+  --color-primary-950: var(--color-blue-950);
+}
+
+/* The homepage is a raw Astro page (no Starlight Layout), so it doesn't inherit
+ * Starlight's light/dark `data-theme` attribute handling automatically — loomi's own
+ * <loomi-theme-switcher> still drives it (same localStorage + `dark` class on <html>
+ * contract documented in its README), this just maps that class to Tailwind's `dark:`
+ * variant for the homepage's own Tailwind-authored markup. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  color-scheme: light;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+.home-hero {
+  min-height: min(760px, calc(100svh - 4rem));
+  background:
+    linear-gradient(180deg, rgb(248 250 252 / 0.96), rgb(255 255 255 / 0.94) 78%, rgb(255 255 255)),
+    radial-gradient(circle at 20% 0%, rgb(219 39 119 / 0.12), transparent 32%),
+    radial-gradient(circle at 82% 22%, rgb(22 163 74 / 0.13), transparent 30%);
+}
+
+.dark .home-hero {
+  background:
+    linear-gradient(180deg, rgb(3 7 18 / 0.94), rgb(3 7 18 / 0.9) 78%, rgb(3 7 18)),
+    radial-gradient(circle at 20% 0%, rgb(236 72 153 / 0.16), transparent 32%),
+    radial-gradient(circle at 82% 22%, rgb(34 197 94 / 0.12), transparent 30%);
+}
+
+.home-hero::before {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  content: "";
+  background-image:
+    linear-gradient(rgb(15 23 42 / 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(15 23 42 / 0.06) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: linear-gradient(to bottom, black, transparent 82%);
+}
+
+.dark .home-hero::before {
+  background-image:
+    linear-gradient(rgb(255 255 255 / 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.08) 1px, transparent 1px);
+}
+
+.hero-surface {
+  position: absolute;
+  inset: 5rem max(1rem, calc((100vw - 76rem) / 2)) auto;
+  z-index: -1;
+  height: 34rem;
+  opacity: 0.72;
+  transform: perspective(1300px) rotateX(54deg) rotateZ(-8deg) translateY(-8.5rem);
+  transform-origin: top center;
+}
+
+.hero-shell {
+  min-width: 64rem;
+  overflow: hidden;
+  border: 1px solid rgb(148 163 184 / 0.34);
+  border-radius: 8px;
+  background: rgb(255 255 255 / 0.88);
+  box-shadow: 0 32px 120px rgb(15 23 42 / 0.22);
+}
+
+.dark .hero-shell {
+  border-color: rgb(255 255 255 / 0.12);
+  background: rgb(15 23 42 / 0.82);
+  box-shadow: 0 32px 120px rgb(0 0 0 / 0.54);
+}
+
+.hero-shell-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 1px solid rgb(148 163 184 / 0.22);
+  padding: 0.9rem 1rem;
+}
+
+.hero-shell-bar span {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 999px;
+  background: rgb(148 163 184);
+}
+
+.hero-shell-bar span:nth-child(1) {
+  background: rgb(244 63 94);
+}
+
+.hero-shell-bar span:nth-child(2) {
+  background: rgb(234 179 8);
+}
+
+.hero-shell-bar span:nth-child(3) {
+  background: rgb(34 197 94);
+}
+
+.hero-shell-body {
+  display: grid;
+  grid-template-columns: 1.2fr 0.9fr;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.hero-preview-panel {
+  border: 1px solid rgb(148 163 184 / 0.24);
+  border-radius: 8px;
+  background: rgb(248 250 252 / 0.9);
+  padding: 1rem;
+}
+
+.dark .hero-preview-panel {
+  border-color: rgb(255 255 255 / 0.1);
+  background: rgb(2 6 23 / 0.78);
+}
+
+.hero-preview-main {
+  grid-row: span 2;
+  min-height: 18rem;
+}
+
+.hero-preview-code pre {
+  margin: 0;
+  overflow: hidden;
+  border-radius: 8px;
+  background: rgb(15 23 42);
+  padding: 1rem;
+  color: rgb(226 232 240);
+  font-size: 0.78rem;
+  line-height: 1.65;
+}
+
+.hero-meter {
+  display: grid;
+  grid-template-columns: 5rem 1fr;
+  align-items: center;
+  gap: 0.8rem;
+  color: rgb(71 85 105);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.dark .hero-meter {
+  color: rgb(203 213 225);
+}
+
+.hero-meter::after {
+  grid-column: 2;
+  grid-row: 1;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: rgb(226 232 240);
+  content: "";
+}
+
+.dark .hero-meter::after {
+  background: rgb(30 41 59);
+}
+
+.hero-meter i {
+  grid-column: 2;
+  grid-row: 1;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgb(37 99 235), rgb(22 163 74));
+}
+
+.hero-token {
+  aspect-ratio: 1;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.32);
+}
+
+.hero-proof {
+  border-radius: 8px;
+}
+
+.hero-proof > div {
+  padding: 1rem;
+}
+
+.hero-proof > div + div {
+  border-left: 1px solid rgb(226 232 240);
+}
+
+.dark .hero-proof > div + div {
+  border-left-color: rgb(255 255 255 / 0.1);
+}
+
+.hero-proof strong,
+.hero-proof span {
+  display: block;
+}
+
+.hero-proof strong {
+  color: rgb(15 23 42);
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.dark .hero-proof strong {
+  color: white;
+}
+
+.hero-proof span {
+  margin-top: 0.35rem;
+  color: rgb(71 85 105);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.dark .hero-proof span {
+  color: rgb(203 213 225);
+}
+
+.demo-band {
+  background:
+    linear-gradient(180deg, rgb(248 250 252), rgb(255 255 255) 42%),
+    linear-gradient(90deg, rgb(37 99 235 / 0.08), transparent 38%, rgb(22 163 74 / 0.08));
+}
+
+.dark .demo-band {
+  background:
+    linear-gradient(180deg, rgb(2 6 23), rgb(3 7 18) 42%),
+    linear-gradient(90deg, rgb(59 130 246 / 0.1), transparent 38%, rgb(34 197 94 / 0.08));
+}
+
+.demo-card {
+  border-radius: 8px;
+  box-shadow: 0 30px 90px rgb(15 23 42 / 0.14);
+}
+
+.dark .demo-card {
+  box-shadow: 0 30px 90px rgb(0 0 0 / 0.42);
+}
+
+.demo-card-bar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 1rem;
+  background: rgb(255 255 255 / 0.82);
+}
+
+.dark .demo-card-bar {
+  background: rgb(15 23 42 / 0.68);
+}
+
+.demo-card-bar span {
+  display: block;
+  width: 0.62rem;
+  height: 0.62rem;
+  border-radius: 999px;
+  background: rgb(148 163 184);
+}
+
+.demo-card-bar span:nth-child(1) {
+  background: rgb(244 63 94);
+}
+
+.demo-card-bar span:nth-child(2) {
+  background: rgb(234 179 8);
+}
+
+.demo-card-bar span:nth-child(3) {
+  background: rgb(34 197 94);
+}
+
+@media (max-width: 720px) {
+  .home-hero {
+    min-height: auto;
+  }
+
+  .hero-surface {
+    inset-inline: -19rem;
+    opacity: 0.5;
+    transform: perspective(1100px) rotateX(58deg) rotateZ(-11deg) translateY(-8rem);
+  }
+
+  .hero-proof {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-proof > div + div {
+    border-top: 1px solid rgb(226 232 240);
+    border-left: 0;
+  }
+
+  .dark .hero-proof > div + div {
+    border-top-color: rgb(255 255 255 / 0.1);
+  }
+
+  .demo-card-bar {
+    grid-template-columns: 1fr;
+  }
+}

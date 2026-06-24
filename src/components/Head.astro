@@ -1,0 +1,24 @@
+---
+// Overrides Starlight's default <Head> to additionally register a small set of
+// loomi components used throughout the docs site's own chrome (the Pagination
+// override below uses <loomi-card>/<loomi-icon>; several pages use <loomi-alert> and
+// <loomi-tabs> in place of Starlight's Aside/Tabs, dogfooding the library in its own
+// docs). Component-doc pages already import their own component individually — this
+// just covers the ones used site-wide so every page has them available.
+//
+// `is:inline` is required: it tells Astro to emit this script byte-for-byte rather
+// than resolving "@loomi/*" through Vite/Node module resolution (which would fail,
+// since these aren't real node_modules packages here — see /architecture/). The
+// browser's own import map, declared in astro.config.mjs, resolves them at runtime
+// instead, exactly like the per-page scripts on component doc pages.
+import Default from "@astrojs/starlight/components/Head.astro";
+import type { Props } from "@astrojs/starlight/props";
+---
+
+<Default {...Astro.props}><slot /></Default>
+<script type="module" is:inline>
+  import "@loomi/card";
+  import "@loomi/icon";
+  import "@loomi/alert";
+  import "@loomi/tab";
+</script>

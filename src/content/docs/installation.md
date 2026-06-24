@@ -1,15 +1,16 @@
 ---
 title: Installation
-description: Install the whole loomi library, a single component, or a whole category.
+description: Install the whole LoomiUI library, a single component, or a whole category.
 ---
 
-loomi ships as many small npm packages instead of one big one. Pick the install path
+LoomiUI ships as many small npm packages instead of one big one. Pick the install path
 that matches how much of the library you actually need.
 
 `lit` is a **peer dependency** of every package, so your app controls the single Lit
 version on the page — there's never more than one copy.
 
-## Option 1 — install everything
+<loomi-tabs>
+<loomi-tab label="Install everything" active>
 
 The umbrella package re-exports every component and registers all of them on import.
 
@@ -29,7 +30,8 @@ import "@loomi/components/button";
 import "@loomi/components/datepicker";
 ```
 
-## Option 2 — install just one component
+</loomi-tab>
+<loomi-tab label="Install one component">
 
 Each component is a fully standalone package. Installing it pulls in only its direct
 dependencies (the shared theme tokens and, where relevant, the icon registry) — never
@@ -47,10 +49,11 @@ import "@loomi/button/loomi-button.js";
 <loomi-button color="primary" icon="check">Save changes</loomi-button>
 ```
 
-## Option 3 — install a whole category
+</loomi-tab>
+<loomi-tab label="Install a category">
 
 If you need most of a category but not the entire library, install that category's
-grouping package:
+grouping package.
 
 ```bash
 npm install @loomi/forms lit
@@ -64,6 +67,9 @@ npm install @loomi/navigation lit
 import "@loomi/forms"; // registers every form component
 ```
 
+</loomi-tab>
+</loomi-tabs>
+
 ## TypeScript
 
 Every package ships its own `.d.ts` declarations, so component props, events, and the
@@ -74,5 +80,4 @@ box — no `@types/*` package needed.
 
 - **[Customization →](/customization/)** — re-theme the whole library with one CSS
   variable, and set up dark mode.
-- **Browse components** — see the sidebar for the full list, grouped into Standalone,
-  Forms, Content, and Navigation.
+- **Browse components** — see the sidebar for the full alphabetical list.

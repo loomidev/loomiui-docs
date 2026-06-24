@@ -1,40 +1,50 @@
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
-import { ALL_PACKAGE_NAMES } from "./scripts/loomi-packages.mjs";
+import tailwindcss from "@tailwindcss/vite";
+import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
+import { buildImportMap } from "./src/lib/import-map.mjs";
 
-// Browser import map so live component previews (plain <script type="module"> tags
-// embedded right in the Markdown content) can resolve every @loomi/* package's
-// internal bare-specifier imports (e.g. `from "@loomi/core"`) without a bundler on the
-// docs site. `lit` itself comes from a CDN, exactly like a consumer who hasn't
-// installed loomi locally would load it. Each package also gets a `<name>/` *prefix*
-// entry, since a couple of components import siblings via a subpath
-// (e.g. `@loomi/checkbox/loomi-checkbox.js` from inside <loomi-table>).
-const importMap = {
-  imports: {
-    lit: "https://esm.sh/lit@3.3.3",
-    "lit/": "https://esm.sh/lit@3.3.3/",
-    ...Object.fromEntries(
-      ALL_PACKAGE_NAMES.flatMap((name) => [
-        [`@loomi/${name}`, `/loomi/${name}/dist/index.js`],
-        [`@loomi/${name}/`, `/loomi/${name}/dist/`],
-      ]),
-    ),
-  },
-};
+// See src/lib/import-map.mjs — shared with src/pages/index.astro, which sits outside
+// Starlight's Layout and so never receives this integration's `head` config below.
+const importMap = buildImportMap();
 
 export default defineConfig({
   site: "https://loomiui.com",
+  vite: {
+    // Tailwind here styles ONLY this docs site's own marketing chrome (the homepage in
+    // src/pages/index.astro) — it has nothing to do with loomi's components, which
+    // compile their own scoped Tailwind into each Shadow DOM at the package level and
+    // ship zero Tailwind to consumers. This is purely the docs site authoring its own
+    // page, the same boundary bladewindui.com's own site respects for its components.
+    plugins: [tailwindcss()],
+  },
   integrations: [
     starlight({
-      title: "loomiui",
-      tagline: "Themeable Lit web components, framework-agnostic by design.",
-      description:
-        "loomi is a framework-agnostic web component library built with Lit, themeable entirely through CSS custom properties — install one component or the whole library.",
-      // The logo image already contains the "loomiui" wordmark, so it replaces the
-      // separate text title entirely rather than rendering alongside it.
-      logo: { src: "./src/assets/logo.png", alt: "loomiui", replacesTitle: true },
+      title: "LoomiUI",
+      tagline: "Web components for every stack",
+      description: "LoomiUI is a framework-agnostic library of Web Components built with Lit, fully themeable through CSS custom properties. Install a single component or the entire library",
+      // The logo image already contains the "LoomiUI" wordmark, so it replaces the
+      // separate text title entirely rather than rendering alongside it. Dedicated
+      // light/dark variants (rather than one image + a CSS backdrop hack) since the
+      // wordmark's navy text has no other way to stay legible on a dark header.
+      logo: {
+        light: "./src/assets/logo-light.png",
+        dark: "./src/assets/logo-dark.png",
+        alt: "LoomiUI",
+        replacesTitle: true,
+      },
       favicon: "/favicon.png",
       customCss: ["./src/styles/custom.css"],
+      expressiveCode: {
+        plugins: [pluginLineNumbers()],
+        defaultProps: { showLineNumbers: true },
+      },
+      components: {
+        // Dogfood LoomiUI's own components in the docs site's chrome — see
+        // src/components/{Head,Pagination}.astro for what/why.
+        Head: "./src/components/Head.astro",
+        Pagination: "./src/components/Pagination.astro",
+      },
       head: [
         {
           tag: "script",
@@ -49,18 +59,15 @@ export default defineConfig({
             { label: "Installation", slug: "installation" },
             { label: "Customization", slug: "customization" },
             { label: "Contributing", slug: "contributing" },
+            { label: "MCP Server", slug: "mcp-server" },
+            { label: "Architecture", slug: "architecture" },
           ],
         },
-        { label: "MCP Server", slug: "mcp-server" },
-        { label: "Docs Architecture", slug: "architecture" },
         {
           label: "Components",
-          items: [
-            { label: "Standalone", items: [{ autogenerate: { directory: "components/standalone" } }] },
-            { label: "Forms", items: [{ autogenerate: { directory: "components/forms" } }] },
-            { label: "Content", items: [{ autogenerate: { directory: "components/content" } }] },
-            { label: "Navigation", items: [{ autogenerate: { directory: "components/navigation" } }] },
-          ],
+          // Flat directory (no per-category subfolders) -> autogenerate sorts by slug,
+          // giving a single alphabetical list across all 44 components.
+          items: [{ autogenerate: { directory: "components" } }],
         },
       ],
     }),

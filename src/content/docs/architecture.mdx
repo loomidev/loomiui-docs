@@ -1,20 +1,20 @@
 ---
 title: Docs Architecture
-description: How this documentation site is built — the live-preview pipeline, why Starlight, why some pages are .mdx, what changes once loomi is on npm, and how to auto-deploy from GitHub.
+description: How this documentation site is built — the live-preview pipeline, why Starlight, why some pages are .mdx, what changes once LoomiUI is on npm, and how to auto-deploy from GitHub.
 ---
 
-import { Aside, Tabs, TabItem, FileTree } from "@astrojs/starlight/components";
+import { FileTree, Aside } from "@astrojs/starlight/components";
 
 This page documents **how the docs site itself works** — useful if you're contributing
-to loomi, debugging a broken preview, or setting up deployment. If you just want to
-*use* loomi, you don't need any of this — see [Installation](/installation/) instead.
+to LoomiUI, debugging a broken preview, or setting up deployment. If you just want to
+*use* LoomiUI, you don't need any of this — see [Installation](/installation/) instead.
 
 ## The problem this solves
 
 Every component page on this site shows a **live, interactive rendering** of each code
 example, not a screenshot — directly above the code that produces it. The challenge:
-loomi's components were never published to npm (yet — see
-[below](#what-changes-once-loomi-is-on-npm)), and this docs site has no bundler step of
+LoomiUI's components were never published to npm (yet — see
+[below](#what-changes-once-loomiui-is-on-npm)), and this docs site has no bundler step of
 its own. So how does `<loomi-button>` actually render in the browser on a static page?
 
 ## The pipeline
@@ -32,8 +32,9 @@ its own. So how does `<loomi-button>` actually render in the browser on a static
     - copy-component-assets.mjs (step 1)
     - gen-component-docs.mjs (step 3)
   - astro.config.mjs (step 2 — the import map)
+  - src/components/Head.astro (registers a few LoomiUI components site-wide)
   - public/loomi/&lt;name&gt;/dist/ (generated — step 1's output)
-  - src/content/docs/components/**/*.md (generated — step 3's output)
+  - src/content/docs/components/&lt;name&gt;.md (generated, flat, one per component — step 3's output)
 </FileTree>
 
 1. **Build the monorepo.** `components/` compiles each package with `tsc` only — no
@@ -50,7 +51,7 @@ its own. So how does `<loomi-button>` actually render in the browser on a static
    `/loomi/button/dist/index.js`, plus a **prefix** mapping `@loomi/checkbox/` →
    `/loomi/checkbox/dist/` for sibling-package subpath imports (`<loomi-table>` imports
    `<loomi-checkbox>` directly). `lit` itself maps to a CDN — exactly what a consumer
-   who hasn't installed loomi locally would load.
+   who hasn't installed LoomiUI locally would load.
 4. **Generate the doc pages.** `gen-component-docs.mjs` reads each component's
    published `README.md`, and wraps every fenced `html` code block in a
    `<div class="loomi-preview">` containing the *same* markup, plus one
@@ -63,27 +64,65 @@ fires, and every matching tag already in the DOM upgrades automatically (module 
 are deferred by default, so the timing always works out regardless of where the script
 tag sits on the page).
 
-<Aside type="tip" title="Both steps run automatically">
-  `pnpm dev` and `pnpm build` run `copy-component-assets.mjs` and
-  `gen-component-docs.mjs` first via `predev`/`prebuild` hooks. You only need to run them
-  by hand if you want to regenerate just one without starting a dev server.
+<loomi-alert type="success" icon="check-circle">
+  <strong>Both steps run automatically.</strong> `pnpm dev` and `pnpm build` run
+  `copy-component-assets.mjs` and `gen-component-docs.mjs` first via `predev`/`prebuild`
+  hooks. You only need to run them by hand if you want to regenerate just one without
+  starting a dev server.
+</loomi-alert>
+
+### A real bug this pipeline caught (and its proper fix)
+
+LoomiUI components default to **light-mode** token values unless a consumer explicitly
+opts into dark mode via `<loomi-theme-switcher>`. Early on, the preview surface adapted
+to *Starlight's own* dark/light toggle with nothing else — which made dark-text
+components (a secondary-outline button, for instance) unreadable when the *site* was
+dark but the *component* was still rendering its light-mode default colors.
+
+The first fix was to hardcode the preview surface to a fixed light background regardless
+of the site's theme — safe, but it meant previews never looked dark even when the rest
+of the site did. The actual fix, in `src/styles/custom.css`, is to give previews a real
+dark theme: when `:root[data-theme="dark"]`, `.loomi-preview` overrides the public
+`--loomi-white`/`--loomi-gray-*`/`--loomi-secondary-*`/`--loomi-black-*` slots with an
+inverted ramp (50↔900, 100↔800, …, using the real default oklch values from
+`@loomi/theme`) — the *exact* mechanism a real consumer's own `:root` dark-mode CSS
+would use, just scoped to the preview box instead of the whole page.
+`src/components/Pagination.astro`'s `<loomi-card>` footer links share the identical
+override (`:is(.loomi-preview, .loomi-pagi-card)` in `custom.css`, since a plain global
+stylesheet can target a class from any component regardless of which file defines it).
+
+<Aside type="caution" title="Don't forget the near-neutral colors">
+  Inverting only `--loomi-gray-*` looked complete until checking an actual
+  secondary-outline button: `secondary` maps to Tailwind's `slate` ramp and `black` maps
+  to `neutral` — both near-grayscale, so their dark-shade text has the exact same
+  dark-on-dark problem gray text does. The true hue ramps (`primary`/`red`/etc.) don't
+  need this; their default lightness already reads fine on both light and dark surfaces.
 </Aside>
 
-### A real bug this pipeline caught
+## Dogfooding LoomiUI in the docs site's own chrome
 
-loomi components default to **light-mode** token values unless a consumer explicitly
-opts into dark mode via `<loomi-theme-switcher>`. Early on, the preview surface adapted
-to *Starlight's own* dark/light toggle — which made dark-text components (a
-secondary-outline button, for instance) unreadable when the *site* was dark but the
-*component* was still rendering its light-mode default colors. The fix: the preview
-surface (`.loomi-preview` in `src/styles/custom.css`) is hardcoded to a fixed light
-background with `color-scheme: light`, independent of the site's theme.
+Beyond the live previews, this site uses LoomiUI's own components for parts of its UI
+that Starlight would otherwise render with plain HTML or its own built-in components:
+
+| Where | Starlight default | What this site uses instead |
+| --- | --- | --- |
+| Prev/next footer links | Plain `<a>` cards | `<loomi-card>` (see `src/components/Pagination.astro`) |
+| Callouts/emphasis | `<Aside>` | `<loomi-alert>` |
+| Tabbed content | `<Tabs>`/`<TabItem>` | `<loomi-tabs>`/`<loomi-tab>` |
+
+This works because `<loomi-card>`, `<loomi-alert>`, and `<loomi-tabs>` are real custom
+elements, not Astro/JSX components — they render anywhere raw HTML is allowed, including
+inside a component override like `Pagination.astro` (where the script registering them
+must be marked `is:inline`, so Astro emits it untouched instead of trying to resolve
+`@loomi/card` through Node module resolution — see `src/components/Head.astro`).
+`FileTree` above stays a Starlight component since LoomiUI has no file-tree equivalent —
+nothing wrong with mixing the two where it makes sense.
 
 ## Why Starlight
 
 [Astro](https://astro.build) ships **zero JavaScript by default** and renders custom
 elements natively — no wrapper, no adapter, no virtual DOM reconciling against elements
-it doesn't own. That matters specifically for loomi: a React-based docs framework
+it doesn't own. That matters specifically for LoomiUI: a React-based docs framework
 (Docusaurus, Next.js) would need an interop layer just to drop `<loomi-button>` into a
 page; Astro just emits the HTML and lets the browser do what browsers already do with
 custom elements.
@@ -91,13 +130,20 @@ custom elements.
 [Starlight](https://starlight.astro.build) is Astro's official docs theme, and it gave
 us — for free — exactly the shape this site needed:
 
-- Sidebar navigation with nested groups and **autogenerated** sections (the Components
-  groups list every `.md` file in their folder automatically — add a file, it appears
-  in the nav, no config edit)
+- Sidebar navigation with **autogenerated** sections (the "Components" group lists
+  every `.md` file in `src/content/docs/components/` automatically, alphabetically by
+  slug — add a file, it appears in the nav, no config edit). A small CSS override in
+  `custom.css` (`sl-sidebar-state-persist details > :not(summary)`) keeps both top-level
+  groups always expanded — Starlight's groups are collapsible by default; this site's
+  aren't.
 - Built-in search (Pagefind, generated at build time, no external service)
-- Light/dark mode toggle, with a `customCss` hook for the loomi brand accent
-- `Tabs`, `Aside`, `Card`/`CardGrid`, `FileTree` components for richer formatting than
-  plain Markdown, without writing them ourselves
+- Light/dark mode toggle, with a `customCss` hook for the LoomiUI brand accent and
+  dedicated light/dark logo variants
+- A **component override system** (`components: { Head, Pagination }` in
+  `astro.config.mjs`) that let us swap in LoomiUI's own components without forking
+  Starlight
+- `FileTree` for this page's directory diagram, and Expressive Code (see
+  [below](#code-blocks--line-numbers)) for every fenced code block
 
 The alternative seriously considered was **Storybook**, which has first-class web
 component support and would auto-generate prop tables from a
@@ -106,33 +152,72 @@ controls-panel-style playground per component. We went with Astro + Starlight be
 the ask was a *documentation site* (narrative pages, installation guides, an MCP server
 page) with previews embedded in context — not a component-isolation tool.
 
+## Code blocks & line numbers
+
+Every fenced code block on this site is rendered by **[Expressive Code](https://expressive-code.com/)**
+(`astro-expressive-code`), which Starlight bundles and configures automatically — it's
+what gives every snippet syntax highlighting, the copy-to-clipboard button, frame/title
+support, and the red/green diff highlighting used in the npm-migration tabs above.
+
+Line numbers are **not** part of Expressive Code's core — they're the separate
+[`@expressive-code/plugin-line-numbers`](https://expressive-code.com/plugins/line-numbers/)
+plugin, registered in `astro.config.mjs`:
+
+```js
+import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
+
+starlight({
+  expressiveCode: {
+    plugins: [pluginLineNumbers()],
+    defaultProps: { showLineNumbers: true },
+  },
+});
+```
+
+`defaultProps: { showLineNumbers: true }` turns them on for every code block site-wide.
+To opt a single block out, add `showLineNumbers=false` to its fence's meta string:
+
+````md
+```js showLineNumbers=false
+// no line numbers on this one
+```
+````
+
 ## Why some pages are `.mdx` and others are `.md`
 
-Astro/Starlight component imports (`import { Tabs } from "@astrojs/starlight/components"`
-and JSX-like usage such as `<Tabs><TabItem>...`) **only work in `.mdx` files**. Plain
-`.md` files are parsed as standard Markdown — they don't execute import statements or
-recognize JSX tags as components.
+Astro/Starlight's own components (`FileTree`, `Card`/`CardGrid`, and the rest of
+`@astrojs/starlight/components`) only work via an `import` statement and JSX-like usage
+(`<FileTree>...</FileTree>`) — both of which **only work in `.mdx` files**. Plain `.md`
+files are parsed as standard Markdown: they don't execute import statements or recognize
+JSX tags as components.
+
+loomi's *own* components are different — `<loomi-alert>`, `<loomi-tabs>`, `<loomi-card>`,
+and the rest are real custom elements, not Astro components. They don't need an import
+statement at all; they just need raw HTML to pass through, which plain `.md` already
+does. So the only thing that actually forces a page to be `.mdx` here is using a
+**Starlight** component:
 
 | File | Extension | Why |
 | --- | --- | --- |
-| `customization.mdx`, `mcp-server.mdx`, `architecture.mdx` (this page) | `.mdx` | Use `Tabs`, `Aside`, or `FileTree` for richer formatting |
-| All 44 `components/**/*.md` pages | `.md` | Only need raw `<script>` and custom-element tags — which plain Markdown passes through untouched as raw HTML — so there's no reason to pay for MDX parsing |
-| `installation.md` | `.md` | Plain prose and code blocks, no Starlight components needed |
+| `architecture.mdx` (this page) | `.mdx` | Uses `FileTree` |
+| `customization.mdx`, `mcp-server.mdx` | `.mdx` | No Starlight components left after the dogfooding pass above — kept `.mdx` anyway since renaming buys nothing (the URL slug doesn't include the extension) |
+| All 44 `components/**/*.md` pages, `installation.md` | `.md` | Only ever needed raw `<script>` and custom-element tags |
 
-If you ever add a Starlight component (`Tabs`, `Card`, etc.) to a page that's currently
+If you add a *Starlight* component (`FileTree`, `Card`, etc.) to a page that's currently
 `.md`, you must rename it to `.mdx` first — the import line will otherwise render as
-literal text and the component tags as plain unstyled HTML. (This exact mistake
-happened once while building this site — see the git history on `customization.mdx` if
-you want the cautionary tale.)
+literal text and the component tags as plain unstyled HTML. (This exact mistake happened
+once while building this site, with `Tabs`/`Aside` before they were swapped out for
+LoomiUI's own components — see the early git history on `customization.mdx` for the
+cautionary tale.) Adding a **LoomiUI** component needs no such rename.
 
-## What changes once loomi is on npm
+## What changes once LoomiUI is on npm
 
-Right now, "installing" loomi for the docs site means copying compiled files directly
+Right now, "installing" LoomiUI for the docs site means copying compiled files directly
 out of the sibling `components/` monorepo. Once the packages are published to npm, the
 pipeline gets *simpler*, not more complex:
 
-<Tabs>
-<TabItem label="copy-component-assets.mjs">
+<loomi-tabs>
+<loomi-tab label="copy-component-assets.mjs" active>
 
 Change the copy source from the monorepo to `node_modules`:
 
@@ -147,8 +232,8 @@ Change the copy source from the monorepo to `node_modules`:
 the umbrella) as a normal `dependency` — no more relying on a sibling checkout existing
 at all.
 
-</TabItem>
-<TabItem label="Or: skip copying entirely">
+</loomi-tab>
+<loomi-tab label="Or: skip copying entirely">
 
 Point the import map straight at a CDN instead of local static files:
 
@@ -162,8 +247,8 @@ entirely. The tradeoff: previews now depend on the CDN being up, instead of work
 fully offline. Pin an exact version (read from each package's `package.json` at
 generation time) so a docs deploy never silently picks up an unreleased breaking change.
 
-</TabItem>
-<TabItem label="gen-component-docs.mjs">
+</loomi-tab>
+<loomi-tab label="gen-component-docs.mjs">
 
 READMEs can also come from `node_modules` instead of the monorepo:
 
@@ -174,30 +259,32 @@ READMEs can also come from `node_modules` instead of the monorepo:
 
 npm packages typically ship their README, so this works for free once published.
 
-</TabItem>
-</Tabs>
+</loomi-tab>
+</loomi-tabs>
 
-<Aside type="note">
+<loomi-alert type="info" icon="information-circle">
   `scripts/loomi-packages.mjs` (the category map) stays manually maintained either way —
   npm has no concept of "which sidebar group does this package belong to."
-</Aside>
+</loomi-alert>
 
 The big-picture change: **this docs site currently depends on `components/` being a
-sibling directory on disk.** Once loomi is published, that dependency disappears — the
+sibling directory on disk.** Once LoomiUI is published, that dependency disappears — the
 docs site only needs its own `package.json` and the npm registry. That also simplifies
 CI (see below): no more checking out two directories from one (or two) repos.
 
 ## Automatic deployment from GitHub
 
-Neither `components/` nor `docs/` is a git repository yet, so you have a layout decision
-to make first, and it changes what CI needs to do.
+Both `components/` and `docs/` are now git repositories (initialized separately — see
+the "Separate repos" tab below for why), but neither has a remote yet. Once you add one
+and push, here's what CI needs to do, depending on the layout.
 
-<Tabs>
-<TabItem label="Same repo (monorepo)">
+<loomi-tabs>
+<loomi-tab label="Same repo (monorepo)" active>
 
 If `litail/` becomes **one** git repo containing both `components/` and `docs/`, CI is
 simplest: one checkout gets you everything `gen-component-docs.mjs` and
-`copy-component-assets.mjs` need.
+`copy-component-assets.mjs` need. (This would mean re-initializing as a single repo,
+since git can't nest one repo inside another's working tree.)
 
 ```yaml
 # .github/workflows/deploy.yml
@@ -220,13 +307,15 @@ jobs:
       # then deploy docs/dist — see the hosting tabs below
 ```
 
-</TabItem>
-<TabItem label="Separate repos">
+</loomi-tab>
+<loomi-tab label="Separate repos">
 
-If `components` and `docs` are **separate** GitHub repos, the docs repo's workflow needs
-an extra checkout step for the components repo before running its build (since
+This is the **current layout**: `components/` and `docs/` are each their own repo (the
+former already had real history — CI workflows, Changesets, a test suite — that
+splitting into one repo would have meant discarding). The docs repo's workflow needs an
+extra checkout step for the components repo before running its build, since
 `copy-component-assets.mjs` and `gen-component-docs.mjs` read from
-`../components/packages/*`):
+`../components/packages/*`:
 
 ```yaml
 steps:
@@ -242,27 +331,29 @@ steps:
   - run: pnpm --dir docs install && pnpm --dir docs build
 ```
 
-This cross-repo checkout requirement is exactly what disappears once loomi is
-[published to npm](#what-changes-once-loomi-is-on-npm) — at that point the docs repo
+This cross-repo checkout requirement is exactly what disappears once LoomiUI is
+[published to npm](#what-changes-once-loomiui-is-on-npm) — at that point the docs repo
 only needs itself.
 
-</TabItem>
-</Tabs>
+</loomi-tab>
+</loomi-tabs>
 
 ### Where to actually deploy
 
-<Tabs>
-<TabItem label="Vercel / Netlify / Cloudflare Pages (recommended)">
+<loomi-tabs>
+<loomi-tab label="Vercel / Netlify / Cloudflare Pages (recommended)" active>
 
 The least setup: connect the GitHub repo in the host's dashboard, set the build command
 to `pnpm build` (or `pnpm --dir docs build` for the monorepo layout) and the output
 directory to `docs/dist`. These hosts auto-detect Astro, build on every push to `main`,
 and give you **preview deployments on every pull request** for free — no workflow YAML
-required at all. This is the easiest path if `components/` and `docs/` live in the same
-repo, since the host's build container already has both directories checked out.
+required at all. With the current separate-repos layout, you'd need the host's build to
+also fetch `components/` (most hosts support a build-time clone step or a monorepo
+"included repos" setting) — this is the main reason the monorepo layout is simpler for
+hosts that don't run arbitrary multi-repo checkout logic.
 
-</TabItem>
-<TabItem label="GitHub Pages">
+</loomi-tab>
+<loomi-tab label="GitHub Pages">
 
 Requires an explicit Actions workflow (GitHub Pages doesn't run your build for you).
 Add to the workflow from the tabs above:
@@ -279,11 +370,11 @@ a custom domain, add a `docs/public/CNAME` file containing `loomiui.com` so GitH
 serves the right host, and keep `site: "https://loomiui.com"` in `astro.config.mjs` as
 is (no `base` path needed, since a custom domain serves from the root).
 
-</TabItem>
-</Tabs>
+</loomi-tab>
+</loomi-tabs>
 
-<Aside type="caution" title="DNS">
-  Whichever host you pick, pointing `loomiui.com` at it is a DNS change outside of
-  GitHub/CI — typically a `CNAME` record (or `A`/`ALIAS` for an apex domain) at your
-  domain registrar pointing at the host's provided target.
-</Aside>
+<loomi-alert type="warning" icon="exclamation-triangle">
+  <strong>DNS.</strong> Whichever host you pick, pointing `loomiui.com` at it is a DNS
+  change outside of GitHub/CI — typically a `CNAME` record (or `A`/`ALIAS` for an apex
+  domain) at your domain registrar pointing at the host's provided target.
+</loomi-alert>
