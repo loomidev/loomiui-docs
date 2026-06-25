@@ -1,29 +1,15 @@
 /* loomi brand accent for the Starlight theme — same blue as the default --loomi-primary-600 */
+@import "tailwindcss";
 :root {
-  --sl-color-accent-low: #dbeafe;
-  --sl-color-accent: #2563eb;
-  --sl-color-accent-high: #bfdbfe;
+  --sl-color-accent-low: var(--color-blue-400);
+  --sl-color-accent: var(--color-blue-600)
+  --sl-color-accent-high: var(--color-blue-200);
 }
 :root[data-theme="dark"] {
   --sl-color-accent-low: #1e3a8a;
   --sl-color-accent: #60a5fa;
   --sl-color-accent-high: #dbeafe;
 
-  /* Shared dark-mode values for loomi's near-neutral color tokens (white, gray,
-   * secondary, black). loomi components read colors through
-   * var(--loomi-X, var(--_loomi-X-default)); the public slot is left undeclared by
-   * default so it inherits a consumer's :root, falling back to the light-mode default.
-   * Any surface on this site that wants its loomi components to respect Starlight's
-   * dark mode re-maps the public slots to the --_dark-* values below, scoped to
-   * itself — see .loomi-preview and .loomi-pagi-card for the two places that do this.
-   *
-   * gray, secondary and black all need inverting (not just gray) because palette.json
-   * maps secondary to Tailwind's "slate" ramp and black to "neutral" — both are
-   * themselves near-grayscale, so a secondary-outline button's text has the same
-   * dark-on-dark contrast problem as gray text does. The true hue ramps (primary, red,
-   * blue, etc.) are left alone; their default lightness already reads fine on both
-   * light and dark surfaces.
-   */
   --_dark-gray-50: oklch(21% 0.034 264.665); /* gray-900 */
   --_dark-gray-100: oklch(27.8% 0.033 256.848); /* gray-800 */
   --_dark-gray-200: oklch(37.3% 0.034 259.733); /* gray-700 */
@@ -63,21 +49,11 @@
   letter-spacing: -0.02em;
 }
 
-/* The header logo uses dedicated light/dark image variants (see astro.config.mjs'
- * `logo: { light, dark }`), so no theme-conditional CSS treatment is needed here —
- * just a consistent max size. */
 .site-title img {
   height: 2rem;
   max-height: 2rem;
 }
 
-/* The 30 token re-mappings (gray/secondary/black x 10 shades) shared by every surface
- * on this site that wants its loomi components to respect dark mode — currently
- * .loomi-preview (below) and .loomi-pagi-card (Pagination.astro). A plain global
- * stylesheet like this one can target a class from any component regardless of which
- * file defines it; Astro's per-component CSS scoping only affects rules *authored*
- * inside that component's own <style> block, not external sheets matching its classes.
- */
 :root[data-theme="dark"] :is(.loomi-preview, .loomi-pagi-card) {
   --loomi-white: var(--_dark-white);
   --loomi-gray-50: var(--_dark-gray-50);
@@ -114,16 +90,7 @@
 
 /* Live component preview boxes injected above each ```html code block. */
 .loomi-preview {
-  position: relative;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.85rem;
-  padding: 2rem 1rem 1.15rem;
-  margin: 1rem 0 0;
-  border: 1px solid #e2e8f0;
-  border-radius: 0.5rem 0.5rem 0 0;
-  background: #f8fafc;
+  @apply mt-8 pt-3 p-6 border border-slate-200 rounded-t-2xl bg-slate-50 gap-[0.85rem];
   color-scheme: light;
 }
 :root[data-theme="dark"] .loomi-preview {
@@ -131,11 +98,48 @@
   background: oklch(13% 0.028 261.692); /* gray-950, darker than the token ramp goes */
   color-scheme: dark;
 }
-/* loomi-progress-bar's :host is display:block with a width:100% inner track — as a
- * flex item with the default flex-basis:auto, that 100% has nothing to resolve against
- * and the bar collapses to a few px wide instead of spanning the row. Giving it an
- * explicit full-width flex-basis fixes the sizing and, since .loomi-preview wraps, makes
- * each progress-bar example land on its own line as intended. */
+
+starlight-toc > nav > ul {
+  @apply space-y-2;
+}
+
+.sidebar-content li {
+  @apply p-0 m-0 ml-2 border-l-slate-200;
+}
+
+.sidebar-content li a {
+  @apply rounded-none py-1.5 pl-3 border-l-2 border-l-transparent tracking-wide hover:border-l-slate-500
+  hover:bg-linear-to-r hover:from-slate-200/80 hover:to-white text-sm;
+}
+
+.sidebar-content li {
+  @apply last:mb-6
+}
+
+.sidebar-content summary > span > span {
+  @apply mt-4 mb-2 uppercase text-xs tracking-widest block text-slate-900;
+}
+
+summary > svg {
+  @apply hidden;
+}
+
+.sidebar-content a[aria-current="page"] {
+  @apply border-l-2 border-l-orange-600 text-orange-700 bg-linear-to-r from-orange-200/70 to-white hover:bg-linear-to-r hover:from-orange-200/80 hover:to-white;
+}
+.content-panel {
+  @apply border-0;
+}
+.main-pane h1, .main-pane h2, .main-pane h3, .main-pane h4 {
+  @apply font-light tracking-wide;
+}
+.main-pane p {
+  @apply leading-8;
+}
+loomi-alert > p {
+  @apply leading-none;
+}
+
 .loomi-preview > loomi-progress-bar {
   flex: 1 1 100%;
 }
@@ -146,14 +150,7 @@
 
 .loomi-preview::before {
   content: attr(data-label);
-  position: absolute;
-  top: 0.5rem;
-  left: 0.85rem;
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #94a3b8;
+  @apply block text-[0.7rem] font-semibold uppercase tracking-[0.06em] text-slate-400 mb-4;
 }
 /* The code fence directly under a preview loses its top rounding/margin so the two
    visually read as one connected "preview + code" unit. */
@@ -185,7 +182,7 @@
  * collapse/expand interaction. CSS-only, so it doesn't matter whether a toggle is
  * triggered by mouse, keyboard, or Starlight's own scroll-position-restore script:
  * children stay visible regardless of the underlying <details> open state. */
-sl-sidebar-state-persist details > :not(summary) {
+/*sl-sidebar-state-persist details > :not(summary) {
   display: block !important;
 }
 sl-sidebar-state-persist .top-level > li {
@@ -210,7 +207,7 @@ sl-sidebar-state-persist a:not([aria-current="page"]):hover,
 sl-sidebar-state-persist a:not([aria-current="page"]):focus {
   background-color: color-mix(in srgb, var(--sl-color-text-accent) 14%, transparent);
   color: var(--sl-color-white);
-}
+}*/
 
 @media (min-width: 50rem) {
   .header {

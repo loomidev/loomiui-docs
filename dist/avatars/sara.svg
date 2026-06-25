@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-labelledby="title desc">
+  <title id="title">Sara placeholder headshot</title>
+  <desc id="desc">Free-to-use illustrated avatar placeholder for LoomiUI documentation examples.</desc>
+  <rect width="160" height="160" fill="#fae8ff"/>
+  <path fill="#db2777" d="M26 160c5-34 25-55 54-55s49 21 54 55H26z"/>
+  <circle cx="80" cy="70" r="34" fill="#f1b58f"/>
+  <path fill="#7c2d12" d="M42 80c1-36 17-56 44-56 21 0 34 15 36 45-22-15-49-14-80 11z"/>
+  <path fill="#7c2d12" d="M48 67c-4 24 2 40 18 48-31-5-43-40-18-48z" opacity=".7"/>
+  <circle cx="66" cy="76" r="4" fill="#2f1f1b"/>
+  <circle cx="94" cy="76" r="4" fill="#2f1f1b"/>
+  <path fill="none" stroke="#9f5f45" stroke-linecap="round" stroke-width="4" d="M70 93c7 6 15 6 22 0"/>
+</svg>

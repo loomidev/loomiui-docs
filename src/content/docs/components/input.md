@@ -1,0 +1,226 @@
+---
+title: Input
+description: "<loomi-input> — a themeable text input with a floating label, text/icon prefixes & suffixes, password reveal, a clearable field, numeric filtering and inline…"
+---
+<script type="module">
+  import "@loomi/input";
+</script>
+
+`<loomi-input>` — a themeable text input with a floating label, text/icon prefixes &
+suffixes, password reveal, a clearable field, numeric filtering and inline validation.
+It is **form-associated**: its value submits with the surrounding `<form>` under `name`.
+
+## Installation
+
+```bash
+npm install @loomi/input lit
+```
+
+```js
+import "@loomi/input/loomi-input.js"; // registers <loomi-input>
+```
+
+## Basic Usage
+
+<div class="loomi-preview" data-label="Preview">
+<loomi-input label="Full name"></loomi-input>
+<loomi-input placeholder="Full name"></loomi-input>
+<loomi-input type="email" label="Email"></loomi-input>
+</div>
+
+```html
+<loomi-input label="Full name"></loomi-input>
+<loomi-input placeholder="Full name"></loomi-input>
+<loomi-input type="email" label="Email"></loomi-input>
+```
+
+## Password & Reveal
+
+<div class="loomi-preview" data-label="Preview">
+<loomi-input type="password" label="Password"></loomi-input>
+<loomi-input type="password" label="Password" viewable></loomi-input>
+</div>
+
+```html
+<loomi-input type="password" label="Password"></loomi-input>
+<loomi-input type="password" label="Password" viewable></loomi-input>
+```
+
+## Numeric
+
+<div class="loomi-preview" data-label="Preview">
+<loomi-input numeric label="Phone"></loomi-input>
+<loomi-input numeric with-dots label="Amount"></loomi-input>
+<loomi-input numeric min="3" max="12" label="Days off"></loomi-input>
+</div>
+
+```html
+<loomi-input numeric label="Phone"></loomi-input>
+<loomi-input numeric with-dots label="Amount"></loomi-input>
+<loomi-input numeric min="3" max="12" label="Days off"></loomi-input>
+```
+
+## Masking
+
+Masks follow Alpine's `x-mask` wildcard syntax: `9` accepts digits, `a` accepts letters,
+and `*` accepts any character. Literal characters in the mask are inserted as the user
+types.
+
+<div class="loomi-preview" data-label="Preview">
+<loomi-input mask="99/99/9999" placeholder="MM/DD/YYYY"></loomi-input>
+<loomi-input mask="(999) 999-9999" label="Phone"></loomi-input>
+</div>
+
+```html
+<loomi-input mask="99/99/9999" placeholder="MM/DD/YYYY"></loomi-input>
+<loomi-input mask="(999) 999-9999" label="Phone"></loomi-input>
+```
+
+Use the built-in dynamic credit card mask to switch between standard card grouping and
+Amex grouping (`34`/`37` prefixes).
+
+<div class="loomi-preview" data-label="Preview">
+<loomi-input dynamic-mask="creditcard" label="Card number"></loomi-input>
+</div>
+
+```html
+<loomi-input dynamic-mask="creditcard" label="Card number"></loomi-input>
+```
+
+`mask="creditcard"` is also accepted as a shortcut.
+
+For custom dynamic masks, assign a function to the `dynamicMask` property in JavaScript.
+The function receives the current input value before the next mask is applied and must
+return a mask string using the same `9` / `a` / `*` syntax.
+
+<div class="loomi-preview" data-label="Preview">
+<loomi-input id="product-code" label="Product code"></loomi-input>
+</div>
+
+```html
+<loomi-input id="product-code" label="Product code"></loomi-input>
+```
+
+```js
+const input = document.querySelector("#product-code");
+
+input.dynamicMask = (value) => {
+  return value.startsWith("P") ? "a-999" : "999-999";
+};
+```
+
+Custom dynamic masks are property-only because HTML attributes can only pass strings.
+Use `dynamic-mask="creditcard"` for named built-ins and `el.dynamicMask = fn` for your
+own switching logic.
+
+## Prefixes, Suffixes & Icons
+
+Use text or a built-in icon (set `prefix-icon` / `suffix-icon`). Set
+`transparent-prefix="false"` / `transparent-suffix="false"` for a solid affix.
+
+<div class="loomi-preview" data-label="Preview">
+<loomi-input prefix="https://" placeholder="website"></loomi-input>
+<loomi-input prefix="USD" transparent-prefix="false" placeholder="0.00" numeric></loomi-input>
+<loomi-input suffix=".loomiui.dev" transparent-suffix="false" placeholder="workspace"></loomi-input>
+<loomi-input prefix-icon="envelope" placeholder="me@loomiui.dev"></loomi-input>
+<loomi-input prefix-icon="key" type="password" viewable placeholder="Password"></loomi-input>
+</div>
+
+```html
+<loomi-input prefix="https://" placeholder="website"></loomi-input>
+<loomi-input prefix="USD" transparent-prefix="false" placeholder="0.00" numeric></loomi-input>
+<loomi-input suffix=".loomiui.dev" transparent-suffix="false" placeholder="workspace"></loomi-input>
+<loomi-input prefix-icon="envelope" placeholder="me@loomiui.dev"></loomi-input>
+<loomi-input prefix-icon="key" type="password" viewable placeholder="Password"></loomi-input>
+```
+
+Need full control? Use the `prefix` / `suffix` slots.
+
+## Clearable
+
+<div class="loomi-preview" data-label="Preview">
+<loomi-input clearable placeholder="I am clearable"></loomi-input>
+</div>
+
+```html
+<loomi-input clearable placeholder="I am clearable"></loomi-input>
+```
+
+## Sizes
+
+`small` · `regular` · `medium` (default) · `big`.
+
+<div class="loomi-preview" data-label="Preview">
+<loomi-input size="small" label="Small"></loomi-input>
+<loomi-input size="big" label="Big"></loomi-input>
+</div>
+
+```html
+<loomi-input size="small" label="Small"></loomi-input>
+<loomi-input size="big" label="Big"></loomi-input>
+```
+
+## Validation
+
+<div class="loomi-preview" data-label="Preview">
+<loomi-input required label="Full name" error-message="Your name is required" show-error-inline></loomi-input>
+</div>
+
+```html
+<loomi-input required label="Full name" error-message="Your name is required" show-error-inline></loomi-input>
+```
+
+```js
+const ok = document.querySelector("loomi-input").validate(); // toggles `invalid`, returns boolean
+```
+
+## Attributes
+
+| Attribute | Default | Description |
+| --- | --- | --- |
+| `name` | _(blank)_ | Submitted with the form. |
+| `type` | `text` | `text` \| `email` \| `password` \| `search` \| `tel` \| `url` |
+| `label` | _(blank)_ | Floating label (sits in the placeholder spot, floats on focus/fill). |
+| `placeholder` | _(blank)_ | Placeholder text. |
+| `value` | _(blank)_ | Current value (also a property). |
+| `required` | `false` | Marks the field required (red asterisk on the label). _(boolean)_ |
+| `disabled` | `false` | Disable the field. _(boolean)_ |
+| `readonly` | `false` | Read-only field. _(boolean)_ |
+| `numeric` | `false` | Allow digits only. _(boolean)_ |
+| `with-dots` | `true` | Allow one decimal point when `numeric`. _(boolean)_ |
+| `mask` | _(blank)_ | Alpine-style mask using `9`, `a`, and `*` wildcards, or `creditcard`. |
+| `dynamic-mask` | _(blank)_ | Built-in dynamic mask attribute. Currently supports `creditcard`. |
+| `min` / `max` | _(blank)_ | Clamp numeric values on change. |
+| `size` | `medium` | `small` \| `regular` \| `medium` \| `big` |
+| `prefix` / `suffix` | _(blank)_ | Text affix. |
+| `prefix-icon` / `suffix-icon` | _(blank)_ | Icon-name affix (see `@loomi/icons`). |
+| `transparent-prefix` / `transparent-suffix` | `true` | Transparent (vs solid) affix. _(boolean)_ |
+| `viewable` | `false` | Show a reveal eye when `type="password"`. _(boolean)_ |
+| `clearable` | `false` | Show a clear (✕) button when the field has a value. _(boolean)_ |
+| `error-message` | _(blank)_ | Message shown when validation fails. |
+| `show-error-inline` | `false` | Render the error beneath the field. _(boolean)_ |
+| `show-placeholder-always` | `false` | Keep the placeholder visible even with a label. _(boolean)_ |
+| `no-clearing` | `false` | Remove the default bottom margin. _(boolean, attribute on host)_ |
+
+### Methods & events
+
+| Member | Description |
+| --- | --- |
+| `.value` | Get/set the current value. |
+| `.dynamicMask` | Set a custom dynamic mask function, or a named built-in such as `"creditcard"`. |
+| `focus()` / `clear()` | Focus or clear the field. |
+| `validate()` | Validate required state; returns boolean. |
+| `input` / `change` | Native events (composed). |
+
+### Slots & parts
+
+| Slot / Part | Description |
+| --- | --- |
+| slot `prefix` / `suffix` | Custom affix content. |
+| part `field` | The bordered container. |
+| part `input` | The native `<input>`. |
+
+## Theming
+
+Inputs use the primary palette for focus and the gray palette for borders. Override from
+your page — see the [root README](/customization/).

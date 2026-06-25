@@ -12,7 +12,6 @@
 // browser's own import map, declared in astro.config.mjs, resolves them at runtime
 // instead, exactly like the per-page scripts on component doc pages.
 import Default from "@astrojs/starlight/components/Head.astro";
-import type { Props } from "@astrojs/starlight/props";
 ---
 
 <Default {...Astro.props}><slot /></Default>

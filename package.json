@@ -1,31 +1,24 @@
 {
-  "name": "loomiui-docs",
-  "version": "0.1.0",
-  "private": true,
-  "type": "module",
+  "name": "docs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
   "scripts": {
-    "predev": "pnpm run prepare:content",
     "dev": "astro dev",
-    "start": "astro dev",
-    "prebuild": "pnpm run prepare:content",
     "build": "astro check && astro build",
-    "preview": "astro preview",
-    "astro": "astro",
-    "prepare:content": "node scripts/copy-component-assets.mjs && node scripts/gen-component-docs.mjs && node scripts/gen-contributing-doc.mjs",
-    "gen:components": "node scripts/gen-component-docs.mjs",
-    "gen:contributing": "node scripts/gen-contributing-doc.mjs",
-    "copy:assets": "node scripts/copy-component-assets.mjs"
+    "preview": "astro preview"
   },
   "dependencies": {
-    "@astrojs/starlight": "^0.40.0",
+    "@astrojs/starlight": "^0.41.0",
     "@expressive-code/plugin-line-numbers": "^0.43.1",
-    "astro": "^6.4.8",
-    "sharp": "^0.33.5"
+    "astro": "^7.0.2",
+    "sharp": "^0.35.2"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.4",
+    "@astrojs/check": "^0.9.9",
     "@tailwindcss/vite": "^4.3.1",
     "tailwindcss": "^4.3.1",
-    "typescript": "^5.6.3"
-  }
+    "typescript": "^5.9.3"
+  },
+  "private": true
 }
