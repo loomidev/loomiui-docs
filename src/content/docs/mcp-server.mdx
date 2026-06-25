@@ -12,6 +12,9 @@ attributes does `<loomi-datepicker>` take?"
 It ships every component's docs **bundled into the package** — no network calls, no
 access to your filesystem beyond the package itself.
 
+You do not import this package into your app. Your AI editor or assistant starts it in
+the background when it needs LoomiUI documentation.
+
 ## What it exposes
 
 | Tool | What it does |
@@ -25,25 +28,10 @@ Plus a readable **resource** per component at `loomi://docs/<name>` (e.g.
 
 ## Setup
 
-### Claude Code
+Before you start, make sure Node.js is installed. The examples below use `npx`, which
+comes with npm when you install Node.js.
 
-Add to your MCP settings (`.claude/settings.json`, or via `/mcp` in an interactive
-session):
-
-```json
-{
-  "mcpServers": {
-    "loomiui": {
-      "command": "npx",
-      "args": ["-y", "@loomi/mcp-server"]
-    }
-  }
-}
-```
-
-### Cursor
-
-Add to `~/.cursor/mcp.json` (or your project's `.cursor/mcp.json`):
+Add this server config to your AI tool:
 
 ```json
 {
@@ -56,44 +44,97 @@ Add to `~/.cursor/mcp.json` (or your project's `.cursor/mcp.json`):
 }
 ```
 
-### Claude Desktop
+The `"command": "npx"` line tells your tool to download and run the package for you.
+The `-y` flag lets `npx` run it without stopping to ask for confirmation.
 
-Add to `claude_desktop_config.json`:
+### Where to put the config
 
-```json
-{
-  "mcpServers": {
-    "loomiui": {
-      "command": "npx",
-      "args": ["-y", "@loomi/mcp-server"]
-    }
-  }
-}
-```
+Choose the tool you use, then add the matching JSON to that tool's MCP config file.
+If the file does not exist yet, create it. After saving the file, restart the tool so it
+can start the `loomiui` server.
 
-Restart the tool after saving, and it will pick up the `loomiui` server on next launch.
+#### Claude Code
+
+Add the config to your MCP settings. You can use `.claude/settings.json` in a project,
+or run `/mcp` inside an interactive Claude Code session.
+
+#### Cursor
+
+Add this to `~/.cursor/mcp.json` for all Cursor projects, or to your project's
+`.cursor/mcp.json` for just one project.
+
+#### Claude Desktop
+
+Add the config to your `claude_desktop_config.json` file.
 
 ## Trying it without an editor
 
 Open a regular terminal on your computer, such as Terminal, iTerm, or your editor's
 integrated terminal. You can run this from any folder; it does not need to be inside a
-LoomiUI project.
-
-Run the server directly to confirm it starts:
+LoomiUI project or the app where you plan to use LoomiUI.
 
 ```bash
-npx @loomi/mcp-server
+npx -y @loomi/mcp-server
 ```
 
-It speaks MCP over stdio and won't print anything on a successful start — that's
-expected; it's waiting for a client to connect.
+If it starts successfully, it may look like nothing happened. That is expected. MCP
+servers communicate over stdio, so this command waits quietly for an MCP client, such
+as Claude Code or Cursor, to connect.
+
+Press `Ctrl+C` to stop the test server and return to your terminal prompt.
+
+## Working from source
+
+Most users do not need this. Use the source version only if you are developing LoomiUI
+itself or testing an unpublished local change to the MCP server.
+
+For example, if the LoomiUI source workspace lives at `~/Projects/kursor/litail`, build
+the server like this:
+
+```bash
+cd ~/Projects/kursor/litail/components
+pnpm --filter @loomi/mcp-server build
+```
+
+Then point your MCP config at the built file with an absolute path:
+
+```json
+{
+  "mcpServers": {
+    "loomiui": {
+      "command": "node",
+      "args": ["/Users/your-name/Projects/kursor/litail/components/packages/mcp-server/dist/index.js"]
+    }
+  }
+}
+```
+
+You can also start that built server from a consuming app:
+
+```bash
+cd ~/Projects/my-app
+node /Users/your-name/Projects/kursor/litail/components/packages/mcp-server/dist/index.js
+```
+
+That command still uses the local LoomiUI source workspace for the server code; it does
+not install anything into `my-app`.
+
+## Using it in your assistant
+
+Once the server is connected, ask your assistant for LoomiUI-specific help:
+
+```txt
+Add a LoomiUI date range picker with a max date of today.
+```
+
+Your assistant can call `get_component_docs` for `datepicker`, see the real `range`,
+`max-date`, and `format` attributes, and write code against the actual component.
 
 ## Why this matters
 
-Once connected, ask your assistant something like *"add a LoomiUI date range picker with
-a max date of today"* — instead of inventing an API, it can call `get_component_docs`
-for `datepicker`, see the real `range`, `max-date`, and `format` attributes, and write
-code against the actual component.
+Without the MCP server, an assistant only knows what was in its training data and what
+you paste into the chat. With the server connected, it can look up the current LoomiUI
+docs before it writes code.
 
 <loomi-alert type="info" icon="information-circle">
   This mirrors how LoomiUI itself was documented during development — the same

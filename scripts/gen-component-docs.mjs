@@ -61,6 +61,16 @@ function fixLinks(md) {
   return out;
 }
 
+function fixAvatarExampleImages(md) {
+  return md
+    .replaceAll('image="/me.jpg"', 'image="/avatars/michael.svg"')
+    .replaceAll('image="/ada.jpg"', 'image="/avatars/ada.svg"')
+    .replaceAll('image="/sara.jpg"', 'image="/avatars/sara.svg"')
+    .replaceAll('image="/a.jpg"', 'image="/avatars/ada.svg"')
+    .replaceAll('image="/b.jpg"', 'image="/avatars/sara.svg"')
+    .replaceAll('image="/c.jpg"', 'image="/avatars/robert.svg"');
+}
+
 /** Insert a live <div class="loomi-preview"> rendering of each ```html fence, right above it. */
 function withLivePreviews(md) {
   return md.replace(/```html\n([\s\S]*?)\n```/g, (fullMatch, code) => {
@@ -107,7 +117,8 @@ for (const name of COMPONENT_NAMES) {
   // One page-level import (registers the custom element) resolved via the browser
   // import map declared in astro.config.mjs — every live preview on the page relies on it.
   const importScript = `<script type="module">\n  import "@loomi/${name}";\n</script>\n\n`;
-  const finalBody = withLivePreviews(fixLinks(body));
+  const fixedBody = name === "avatar" ? fixAvatarExampleImages(body) : body;
+  const finalBody = withLivePreviews(fixLinks(fixedBody));
 
   writeFileSync(resolve(DOCS, `${name}.md`), frontmatter + importScript + finalBody);
   written++;

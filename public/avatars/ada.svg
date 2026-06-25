@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-labelledby="title desc">
+  <title id="title">Ada placeholder headshot</title>
+  <desc id="desc">Free-to-use illustrated avatar placeholder for LoomiUI documentation examples.</desc>
+  <rect width="160" height="160" fill="#dbeafe"/>
+  <circle cx="80" cy="70" r="48" fill="#312e81"/>
+  <path fill="#4338ca" d="M30 160c4-34 24-54 50-54s46 20 50 54H30z"/>
+  <circle cx="80" cy="69" r="34" fill="#f2c6a0"/>
+  <path fill="#312e81" d="M44 77c2-35 17-53 43-53 20 0 31 13 33 40-15-8-31-11-48-8-11 2-20 9-28 21z"/>
+  <circle cx="66" cy="75" r="4" fill="#2f1f1b"/>
+  <circle cx="94" cy="75" r="4" fill="#2f1f1b"/>
+  <path fill="none" stroke="#9f5f45" stroke-linecap="round" stroke-width="4" d="M70 92c7 6 14 6 21 0"/>
+  <path fill="#7c2d12" d="M53 58c12-23 43-28 62-8-24-2-44 1-62 8z" opacity=".28"/>
+</svg>

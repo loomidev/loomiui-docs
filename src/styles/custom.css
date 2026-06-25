@@ -139,6 +139,11 @@
 .loomi-preview > loomi-progress-bar {
   flex: 1 1 100%;
 }
+
+.loomi-preview > loomi-button {
+  margin-top: 0 !important;
+}
+
 .loomi-preview::before {
   content: attr(data-label);
   position: absolute;
