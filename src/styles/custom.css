@@ -178,6 +178,7 @@ sl-sidebar-state-persist .top-level > li:last-child {
 }
 sl-sidebar-state-persist summary {
   cursor: default;
+  padding-bottom: 15px;
   pointer-events: none;
 }
 sl-sidebar-state-persist .caret {
