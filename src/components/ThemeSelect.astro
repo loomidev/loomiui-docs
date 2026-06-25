@@ -1,0 +1,67 @@
+---
+const t = Astro.locals.t;
+---
+
+<starlight-loomi-theme-select>
+  <loomi-theme-picker
+    variant="dropmenu"
+    light-text={t("themeSelect.light")}
+    dark-text={t("themeSelect.dark")}
+    system-text={t("themeSelect.auto")}
+  ></loomi-theme-picker>
+</starlight-loomi-theme-select>
+
+<script is:inline>
+  StarlightThemeProvider.updatePickers();
+</script>
+
+<script type="module" is:inline>
+  // @ts-nocheck
+  async function registerThemePicker() {
+    if (customElements.get("loomi-theme-picker")) return;
+    try {
+      await import("@loomi/theme-picker");
+    } catch {
+      const { LoomiThemeSwitcher } = await import("@loomi/theme-switcher");
+      if (!customElements.get("loomi-theme-picker")) {
+        customElements.define(
+          "loomi-theme-picker",
+          class LoomiThemePicker extends LoomiThemeSwitcher {},
+        );
+      }
+    }
+  }
+
+  const parseTheme = (theme) => {
+    if (theme === "light" || theme === "dark") return theme;
+    if (theme === "system" || theme === "auto") return "system";
+    return "system";
+  };
+
+  class StarlightLoomiThemeSelect extends HTMLElement {
+    connectedCallback() {
+      if (this.hasAttribute("data-theme-listening")) return;
+      this.setAttribute("data-theme-listening", "");
+      this.addEventListener("theme-change", (event) => {
+        const theme = event instanceof CustomEvent ? event.detail?.theme : undefined;
+        window.StarlightThemeProvider.applyTheme(parseTheme(theme));
+      });
+      window.StarlightThemeProvider.updatePickers();
+    }
+  }
+
+  if (!customElements.get("starlight-loomi-theme-select")) {
+    customElements.define("starlight-loomi-theme-select", StarlightLoomiThemeSelect);
+  }
+
+  await registerThemePicker();
+</script>
+
+<style>
+  @layer starlight.core {
+    starlight-loomi-theme-select {
+      display: block;
+      min-width: max-content;
+    }
+  }
+</style>

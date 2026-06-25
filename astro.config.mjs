@@ -41,9 +41,11 @@ export default defineConfig({
       },
       components: {
         // Dogfood LoomiUI's own components in the docs site's chrome — see
-        // src/components/{Head,Pagination}.astro for what/why.
+        // src/components/{Head,Pagination,ThemeSelect}.astro for what/why.
         Head: "./src/components/Head.astro",
         Pagination: "./src/components/Pagination.astro",
+        ThemeProvider: "./src/components/ThemeProvider.astro",
+        ThemeSelect: "./src/components/ThemeSelect.astro",
       },
       head: [
         {

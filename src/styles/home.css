@@ -36,7 +36,7 @@
 }
 
 .home-hero {
-  min-height: min(760px, calc(100svh - 4rem));
+  min-height: auto;
   background:
     linear-gradient(180deg, rgb(248 250 252 / 0.82), rgb(255 255 255 / 0.94) 78%, rgb(255 255 255)),
     linear-gradient(135deg, rgb(219 234 254), rgb(252 231 243) 38%, rgb(220 252 231) 72%, rgb(255 255 255));
@@ -64,7 +64,7 @@
   position: absolute;
   inset: auto 0 0;
   z-index: -1;
-  height: 38%;
+  height: 8rem;
   content: "";
   background: linear-gradient(to bottom, transparent, white 82%);
 }
@@ -136,58 +136,515 @@
   mix-blend-mode: soft-light;
 }
 
-.hero-proof {
-  border-radius: 8px;
+.post-hero-backdrop {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, white, rgb(239 246 255) 18%, rgb(255 255 255) 78%),
+    radial-gradient(circle at 9% 4%, rgb(37 99 235 / 0.18), transparent 30%),
+    radial-gradient(circle at 88% 18%, rgb(14 165 233 / 0.16), transparent 28%),
+    radial-gradient(circle at 52% 74%, rgb(99 102 241 / 0.12), transparent 34%);
 }
 
-.hero-proof > div {
+.post-hero-backdrop::before {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background-image:
+    linear-gradient(116deg, transparent 0 18%, rgb(37 99 235 / 0.11) 18% 18.35%, transparent 18.35% 54%, rgb(14 165 233 / 0.09) 54% 54.35%, transparent 54.35%),
+    linear-gradient(64deg, transparent 0 30%, rgb(99 102 241 / 0.08) 30% 30.35%, transparent 30.35% 62%, rgb(37 99 235 / 0.08) 62% 62.35%, transparent 62.35%),
+    radial-gradient(circle, rgb(15 23 42 / 0.055) 1px, transparent 1px);
+  background-size: 40rem 24rem, 34rem 22rem, 28px 28px;
+  mask-image: linear-gradient(to bottom, black, black 88%, transparent);
+  pointer-events: none;
+}
+
+.post-hero-backdrop::after {
+  position: absolute;
+  inset: -16rem -10% auto;
+  height: 34rem;
+  content: "";
+  background:
+    conic-gradient(from 208deg at 18% 35%, rgb(37 99 235 / 0.26), transparent 28%, rgb(14 165 233 / 0.22), transparent 52%, rgb(99 102 241 / 0.2), rgb(37 99 235 / 0.26)),
+    conic-gradient(from 34deg at 82% 28%, rgb(56 189 248 / 0.2), transparent 34%, rgb(37 99 235 / 0.18), transparent 58%, rgb(129 140 248 / 0.16));
+  filter: blur(18px) saturate(1.22);
+  opacity: 0.82;
+  transform: skewY(-6deg);
+  mask-image: linear-gradient(to bottom, black 0%, black 64%, transparent 100%);
+  pointer-events: none;
+}
+
+.dark .post-hero-backdrop {
+  background:
+    linear-gradient(180deg, rgb(3 7 18), rgb(2 6 23) 18%, rgb(3 7 18) 78%),
+    radial-gradient(circle at 9% 4%, rgb(59 130 246 / 0.18), transparent 30%),
+    radial-gradient(circle at 88% 18%, rgb(56 189 248 / 0.12), transparent 28%),
+    radial-gradient(circle at 52% 74%, rgb(129 140 248 / 0.1), transparent 34%);
+}
+
+.dark .post-hero-backdrop::before {
+  background-image:
+    linear-gradient(116deg, transparent 0 18%, rgb(96 165 250 / 0.11) 18% 18.35%, transparent 18.35% 54%, rgb(34 211 238 / 0.08) 54% 54.35%, transparent 54.35%),
+    linear-gradient(64deg, transparent 0 30%, rgb(129 140 248 / 0.09) 30% 30.35%, transparent 30.35% 62%, rgb(59 130 246 / 0.09) 62% 62.35%, transparent 62.35%),
+    radial-gradient(circle, rgb(255 255 255 / 0.05) 1px, transparent 1px);
+}
+
+.dark .post-hero-backdrop::after {
+  background:
+    conic-gradient(from 208deg at 18% 35%, rgb(59 130 246 / 0.22), transparent 28%, rgb(34 211 238 / 0.16), transparent 52%, rgb(129 140 248 / 0.16), rgb(59 130 246 / 0.22)),
+    conic-gradient(from 34deg at 82% 28%, rgb(56 189 248 / 0.14), transparent 34%, rgb(37 99 235 / 0.16), transparent 58%, rgb(129 140 248 / 0.12));
+  opacity: 0.7;
+}
+
+.feature-intro {
+  position: relative;
+  z-index: 1;
+}
+
+.feature-kicker {
+  width: fit-content;
+  margin-bottom: 1rem;
+  border: 1px solid rgb(37 99 235 / 0.18);
+  border-radius: 999px;
+  background: rgb(37 99 235 / 0.06);
+  padding: 0.45rem 0.8rem;
+  color: rgb(37 99 235);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.dark .feature-kicker {
+  border-color: rgb(96 165 250 / 0.24);
+  background: rgb(96 165 250 / 0.1);
+  color: rgb(147 197 253);
+}
+
+.feature-section {
+  position: relative;
+  overflow: hidden;
+  border-top: 1px solid rgb(241 245 249);
+  background: transparent;
+}
+
+.feature-section-muted {
+  background:
+    linear-gradient(135deg, rgb(255 255 255 / 0.56), rgb(248 250 252 / 0.68) 52%, rgb(240 253 244 / 0.34)),
+    linear-gradient(90deg, rgb(37 99 235 / 0.04), transparent 46%, rgb(219 39 119 / 0.04));
+}
+
+.dark .feature-section {
+  border-top-color: rgb(15 23 42);
+  background: transparent;
+}
+
+.dark .feature-section-muted {
+  background:
+    linear-gradient(135deg, rgb(2 6 23), rgb(3 7 18) 52%, rgb(15 23 42)),
+    linear-gradient(90deg, rgb(37 99 235 / 0.09), transparent 46%, rgb(219 39 119 / 0.06));
+}
+
+.feature-section::before {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background-image:
+    linear-gradient(rgb(15 23 42 / 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(15 23 42 / 0.035) 1px, transparent 1px);
+  background-size: 46px 46px;
+  mask-image: linear-gradient(90deg, transparent, black 18%, black 82%, transparent);
+  pointer-events: none;
+}
+
+.dark .feature-section::before {
+  background-image:
+    linear-gradient(rgb(255 255 255 / 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.045) 1px, transparent 1px);
+}
+
+.feature-row {
+  position: relative;
+  z-index: 1;
+}
+
+.feature-copy {
+  max-width: 34rem;
+}
+
+.feature-eyebrow,
+.feature-panel-label {
+  color: rgb(37 99 235);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.dark .feature-eyebrow,
+.dark .feature-panel-label {
+  color: rgb(147 197 253);
+}
+
+.feature-eyebrow {
+  margin-bottom: 0.9rem;
+}
+
+.feature-panel {
+  position: relative;
+  border: 1px solid rgb(203 213 225 / 0.72);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.92), rgb(248 250 252 / 0.84)),
+    linear-gradient(135deg, rgb(37 99 235 / 0.08), transparent 42%, rgb(22 163 74 / 0.08));
+  padding: 1.25rem;
+  box-shadow: 0 22px 60px rgb(15 23 42 / 0.08);
+}
+
+.dark .feature-panel {
+  border-color: rgb(51 65 85 / 0.84);
+  background:
+    linear-gradient(180deg, rgb(15 23 42 / 0.86), rgb(2 6 23 / 0.9)),
+    linear-gradient(135deg, rgb(59 130 246 / 0.1), transparent 42%, rgb(34 197 94 / 0.08));
+  box-shadow: 0 22px 60px rgb(0 0 0 / 0.28);
+}
+
+.feature-panel::before {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  content: "";
+  background: linear-gradient(135deg, rgb(255 255 255 / 0.5), transparent 34%);
+  pointer-events: none;
+}
+
+.dark .feature-panel::before {
+  background: linear-gradient(135deg, rgb(255 255 255 / 0.08), transparent 34%);
+}
+
+.feature-panel > * {
+  position: relative;
+  z-index: 1;
+}
+
+.feature-panel-label {
+  margin-bottom: 1rem;
+  color: rgb(71 85 105);
+}
+
+.dark .feature-panel-label {
+  color: rgb(203 213 225);
+}
+
+.code-tile {
+  background: rgb(255 255 255 / 0.76);
+}
+
+.dark .code-tile {
+  background: rgb(15 23 42 / 0.76);
+}
+
+.component-stage {
+  background:
+    linear-gradient(135deg, rgb(37 99 235 / 0.06), rgb(22 163 74 / 0.06)),
+    rgb(255 255 255 / 0.72);
+}
+
+.dark .component-stage {
+  background:
+    linear-gradient(135deg, rgb(96 165 250 / 0.08), rgb(74 222 128 / 0.07)),
+    rgb(2 6 23 / 0.5);
+}
+
+.runtime-panel {
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.94), rgb(239 246 255 / 0.74)),
+    linear-gradient(135deg, rgb(15 23 42 / 0.04), transparent);
+}
+
+.dark .runtime-panel {
+  background:
+    linear-gradient(180deg, rgb(15 23 42 / 0.9), rgb(2 6 23 / 0.94)),
+    linear-gradient(135deg, rgb(96 165 250 / 0.08), transparent);
+}
+
+.theme-panel {
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.94), rgb(248 250 252 / 0.86)),
+    conic-gradient(from 160deg at 85% 12%, rgb(37 99 235 / 0.18), rgb(219 39 119 / 0.16), rgb(22 163 74 / 0.14), rgb(37 99 235 / 0.18));
+}
+
+.dark .theme-panel {
+  background:
+    linear-gradient(180deg, rgb(15 23 42 / 0.92), rgb(2 6 23 / 0.94)),
+    conic-gradient(from 160deg at 85% 12%, rgb(96 165 250 / 0.16), rgb(244 114 182 / 0.1), rgb(74 222 128 / 0.1), rgb(96 165 250 / 0.16));
+}
+
+.signup-showcase {
+  border: 1px solid rgb(226 232 240 / 0.8);
+  border-radius: 8px;
+  background: rgb(255 255 255 / 0.66);
   padding: 1rem;
 }
 
-.hero-proof > div + div {
-  border-left: 1px solid rgb(226 232 240);
+.dark .signup-showcase {
+  border-color: rgb(51 65 85 / 0.84);
+  background: rgb(2 6 23 / 0.42);
 }
 
-.dark .hero-proof > div + div {
-  border-left-color: rgb(255 255 255 / 0.1);
+.install-visual {
+  overflow: hidden;
 }
 
-.hero-proof strong,
-.hero-proof span {
+.install-track {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: stretch;
+  gap: 0.75rem;
+}
+
+.install-command {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border: 1px solid rgb(226 232 240);
+  border-radius: 8px;
+  background: rgb(255 255 255 / 0.68);
+  padding: 0.85rem;
+}
+
+.dark .install-command {
+  border-color: rgb(51 65 85);
+  background: rgb(2 6 23 / 0.48);
+}
+
+.install-command span {
+  color: rgb(71 85 105);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.dark .install-command span {
+  color: rgb(203 213 225);
+}
+
+.install-command code {
+  display: block;
+  overflow-wrap: anywhere;
+  border-radius: 8px;
+  background: rgb(15 23 42);
+  padding: 0.72rem;
+  color: rgb(226 232 240);
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
+.install-command-full {
+  border-color: rgb(37 99 235 / 0.38);
+}
+
+.install-arrow {
+  display: grid;
+  place-items: center;
+  color: rgb(37 99 235);
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.install-grid {
+  display: grid;
+  grid-template-columns: repeat(11, minmax(0, 1fr));
+  gap: 0.38rem;
+}
+
+.install-dot {
+  aspect-ratio: 1;
+  border-radius: 4px;
+  background: rgb(226 232 240);
+}
+
+.dark .install-dot {
+  background: rgb(30 41 59);
+}
+
+.install-dot.category {
+  background: rgb(147 197 253);
+}
+
+.install-dot.selected {
+  background: rgb(37 99 235);
+  box-shadow: 0 0 0 3px rgb(37 99 235 / 0.18);
+}
+
+.install-stat {
+  border: 1px solid rgb(226 232 240 / 0.82);
+  border-radius: 8px;
+  background: rgb(255 255 255 / 0.58);
+  padding: 0.75rem;
+}
+
+.dark .install-stat {
+  border-color: rgb(51 65 85 / 0.84);
+  background: rgb(2 6 23 / 0.38);
+}
+
+.install-stat strong,
+.install-stat span {
   display: block;
 }
 
-.hero-proof strong {
+.install-stat strong {
   color: rgb(15 23 42);
   font-size: 1.35rem;
   line-height: 1;
 }
 
-.dark .hero-proof strong {
+.dark .install-stat strong {
   color: white;
 }
 
-.hero-proof span {
+.install-stat span {
   margin-top: 0.35rem;
   color: rgb(71 85 105);
-  font-size: 0.78rem;
-  font-weight: 600;
+  font-size: 0.72rem;
+  font-weight: 700;
 }
 
-.dark .hero-proof span {
+.dark .install-stat span {
+  color: rgb(203 213 225);
+}
+
+.form-panel {
+  padding: 1.5rem;
+}
+
+.ai-panel {
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.94), rgb(248 250 252 / 0.9)),
+    linear-gradient(135deg, rgb(37 99 235 / 0.1), transparent 36%, rgb(219 39 119 / 0.08));
+}
+
+.dark .ai-panel {
+  background:
+    linear-gradient(180deg, rgb(15 23 42 / 0.92), rgb(2 6 23 / 0.94)),
+    linear-gradient(135deg, rgb(96 165 250 / 0.1), transparent 36%, rgb(244 114 182 / 0.06));
+}
+
+.ai-console {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.ai-prompt,
+.ai-answer {
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.ai-prompt {
+  margin-left: auto;
+  max-width: 23rem;
+  background: rgb(37 99 235);
+  color: white;
+}
+
+.ai-prompt span {
+  display: block;
+  margin-bottom: 0.45rem;
+  font-size: 0.65rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.78;
+}
+
+.ai-prompt p {
+  line-height: 1.55;
+}
+
+.ai-answer {
+  background: rgb(255 255 255 / 0.78);
+  box-shadow: 0 14px 34px rgb(15 23 42 / 0.08);
+}
+
+.dark .ai-answer {
+  background: rgb(15 23 42 / 0.76);
+  box-shadow: 0 14px 34px rgb(0 0 0 / 0.24);
+}
+
+.ai-answer pre {
+  overflow-x: auto;
+  border-radius: 8px;
+  background: rgb(15 23 42);
+  padding: 1rem;
+  color: rgb(226 232 240);
+  font-size: 0.76rem;
+  line-height: 1.65;
+}
+
+.ai-attrs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.ai-attrs span {
+  border: 1px solid rgb(191 219 254);
+  border-radius: 999px;
+  background: rgb(239 246 255 / 0.74);
+  padding: 0.34rem 0.58rem;
+  color: rgb(30 64 175);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.dark .ai-attrs span {
+  border-color: rgb(30 64 175 / 0.7);
+  background: rgb(30 58 138 / 0.22);
+  color: rgb(191 219 254);
+}
+
+.ai-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.9rem;
+  border-top: 1px solid rgb(226 232 240 / 0.82);
+  padding-top: 1rem;
+}
+
+.dark .ai-footer {
+  border-top-color: rgb(51 65 85 / 0.84);
+}
+
+.ai-footer p {
+  max-width: 15rem;
+  color: rgb(71 85 105);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.dark .ai-footer p {
   color: rgb(203 213 225);
 }
 
 .demo-band {
   background:
     linear-gradient(180deg, rgb(248 250 252), rgb(255 255 255) 42%),
-    linear-gradient(90deg, rgb(37 99 235 / 0.08), transparent 38%, rgb(22 163 74 / 0.08));
+    conic-gradient(from 180deg at 14% 12%, rgb(37 99 235 / 0.12), transparent 24%, rgb(22 163 74 / 0.1), transparent 48%, rgb(219 39 119 / 0.08));
 }
 
 .dark .demo-band {
   background:
     linear-gradient(180deg, rgb(2 6 23), rgb(3 7 18) 42%),
-    linear-gradient(90deg, rgb(59 130 246 / 0.1), transparent 38%, rgb(34 197 94 / 0.08));
+    conic-gradient(from 180deg at 14% 12%, rgb(59 130 246 / 0.1), transparent 24%, rgb(34 197 94 / 0.08), transparent 48%, rgb(244 114 182 / 0.06));
 }
 
 .demo-card {
@@ -207,11 +664,19 @@
   background: rgb(255 255 255 / 0.82);
 }
 
+.demo-title-lockup {
+  display: inline-flex;
+  align-items: center;
+  justify-self: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
 .dark .demo-card-bar {
   background: rgb(15 23 42 / 0.68);
 }
 
-.demo-card-bar span {
+.demo-card-bar > div:first-child span {
   display: block;
   width: 0.62rem;
   height: 0.62rem;
@@ -219,15 +684,15 @@
   background: rgb(148 163 184);
 }
 
-.demo-card-bar span:nth-child(1) {
+.demo-card-bar > div:first-child span:nth-child(1) {
   background: rgb(244 63 94);
 }
 
-.demo-card-bar span:nth-child(2) {
+.demo-card-bar > div:first-child span:nth-child(2) {
   background: rgb(234 179 8);
 }
 
-.demo-card-bar span:nth-child(3) {
+.demo-card-bar > div:first-child span:nth-child(3) {
   background: rgb(34 197 94);
 }
 
@@ -247,17 +712,12 @@
     transform: skewY(-10deg);
   }
 
-  .hero-proof {
+  .install-track {
     grid-template-columns: 1fr;
   }
 
-  .hero-proof > div + div {
-    border-top: 1px solid rgb(226 232 240);
-    border-left: 0;
-  }
-
-  .dark .hero-proof > div + div {
-    border-top-color: rgb(255 255 255 / 0.1);
+  .install-arrow {
+    min-height: 1.2rem;
   }
 
   .demo-card-bar {

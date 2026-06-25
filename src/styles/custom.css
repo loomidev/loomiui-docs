@@ -67,7 +67,8 @@
  * `logo: { light, dark }`), so no theme-conditional CSS treatment is needed here —
  * just a consistent max size. */
 .site-title img {
-  max-height: 2.75rem;
+  height: 2rem;
+  max-height: 2rem;
 }
 
 /* The 30 token re-mappings (gray/secondary/black x 10 shades) shared by every surface
@@ -166,10 +167,38 @@
 sl-sidebar-state-persist details > :not(summary) {
   display: block !important;
 }
+sl-sidebar-state-persist .top-level > li {
+  margin-top: 1rem;
+}
+sl-sidebar-state-persist .top-level > li + li {
+  margin-top: 1.25rem;
+}
+sl-sidebar-state-persist .top-level > li:last-child {
+  padding-bottom: 2rem;
+}
 sl-sidebar-state-persist summary {
   cursor: default;
   pointer-events: none;
 }
 sl-sidebar-state-persist .caret {
   display: none;
+}
+
+sl-sidebar-state-persist a:not([aria-current="page"]):hover,
+sl-sidebar-state-persist a:not([aria-current="page"]):focus {
+  background-color: color-mix(in srgb, var(--sl-color-text-accent) 14%, transparent);
+  color: var(--sl-color-white);
+}
+
+@media (min-width: 50rem) {
+  .header {
+    grid-template-columns: minmax(0, 1fr) minmax(16rem, 22rem) minmax(0, 1fr) !important;
+  }
+  .header > .sl-flex:has(> site-search) {
+    justify-content: center;
+    min-width: 0;
+  }
+  .header .right-group {
+    justify-content: flex-end;
+  }
 }

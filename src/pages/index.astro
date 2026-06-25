@@ -1,5 +1,7 @@
 ---
+import { Image } from "astro:assets";
 import MarketingHeader from "../components/MarketingHeader.astro";
+import icon from "../assets/icon.png";
 import { buildImportMap } from "../lib/import-map.mjs";
 import "../styles/home.css";
 
@@ -28,7 +30,7 @@ const description =
         <div class="hero-mesh-lines"></div>
       </div>
 
-      <div class="relative mx-auto max-w-5xl px-6 pb-20 pt-24 text-center sm:pb-24 sm:pt-32">
+      <div class="relative mx-auto max-w-5xl px-6 pb-[30px] pt-24 text-center sm:pt-32">
         <div class="mx-auto inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white/85 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-primary-700 shadow-sm backdrop-blur dark:border-white/10 dark:bg-gray-950/70 dark:text-primary-300">
           44 Lit components. One CSS variable away from your brand.
         </div>
@@ -44,40 +46,26 @@ const description =
           <loomi-button color="primary" size="medium" tag="a" href="/installation/" icon="arrow-right" icon-right>
             Get Started
           </loomi-button>
-          <loomi-button type="secondary" size="medium" tag="a" href="/components/button/">
-            Browse Components
-          </loomi-button>
-        </div>
-        <div class="hero-proof mx-auto mt-12 grid max-w-3xl grid-cols-3 overflow-hidden border border-gray-200 bg-white/80 text-left shadow-sm backdrop-blur dark:border-white/10 dark:bg-gray-950/70">
-          <div>
-            <strong>0kb</strong>
-            <span>global Tailwind</span>
-          </div>
-          <div>
-            <strong>44</strong>
-            <span>shippable packages</span>
-          </div>
-          <div>
-            <strong>1</strong>
-            <span>component API</span>
-          </div>
         </div>
       </div>
     </section>
 
+    <div class="post-hero-backdrop">
     <!-- Why LoomiUI — intro -->
-    <section class="mx-auto max-w-3xl px-6 pt-16 text-center sm:pt-20">
-      <h2 class="text-3xl font-bold">Why LoomiUI</h2>
-      <p class="mx-auto mt-3 max-w-xl text-gray-600 dark:text-gray-400">
+    <section class="feature-intro mx-auto max-w-4xl px-6 pt-0 text-center">
+      <div class="feature-kicker mx-auto">Designed for the messy middle</div>
+      <h2 class="text-4xl font-bold tracking-tight sm:text-5xl">Why LoomiUI</h2>
+      <p class="mx-auto mt-4 max-w-2xl text-lg leading-8 text-gray-600 dark:text-gray-400">
         Six reasons LoomiUI feels different from a typical component kit, each one
         shown with the same live components your app can import.
       </p>
     </section>
 
     <!-- Feature 1 — Framework-agnostic -->
-    <section class="border-t border-gray-100 dark:border-gray-900">
-      <div class="mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 sm:grid-cols-2">
-        <div>
+    <section class="feature-section">
+      <div class="feature-row mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 sm:grid-cols-2">
+        <div class="feature-copy">
+          <div class="feature-eyebrow">01 / Portability</div>
           <h3 class="text-2xl font-bold sm:text-3xl">Actually framework-agnostic</h3>
           <p class="mt-4 text-gray-600 dark:text-gray-400">
             Every component is a real custom element built with Lit. Drop
@@ -86,16 +74,17 @@ const description =
             same tag, everywhere, because it's just a custom element.
           </p>
         </div>
-        <div class="space-y-3">
-          <div class="grid grid-cols-2 gap-3 text-xs">
+        <div class="feature-panel framework-panel space-y-3">
+          <div class="feature-panel-label">Same markup, four homes</div>
+          <div class="grid grid-cols-1 gap-3 text-xs">
             {["App.jsx", "App.vue", "App.svelte", "index.html"].map((file) => (
-              <div class="rounded-lg border border-gray-200 bg-gray-50 p-3 font-mono dark:border-gray-800 dark:bg-gray-900">
+              <div class="code-tile rounded-lg border border-gray-200 bg-gray-50 p-3 font-mono dark:border-gray-800 dark:bg-gray-900">
                 <div class="mb-1 text-gray-400">{file}</div>
                 <code class="break-all">&lt;loomi-button color="primary"&gt;Buy now&lt;/loomi-button&gt;</code>
               </div>
             ))}
           </div>
-          <div class="flex items-center justify-center rounded-lg border border-dashed border-gray-300 p-6 dark:border-gray-700">
+          <div class="component-stage flex items-center justify-center rounded-lg border border-dashed border-gray-300 p-6 dark:border-gray-700">
             <loomi-button color="primary">Buy now</loomi-button>
           </div>
         </div>
@@ -103,9 +92,10 @@ const description =
     </section>
 
     <!-- Feature 2 — No Tailwind at runtime -->
-    <section class="border-t border-gray-100 dark:border-gray-900">
-      <div class="mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 sm:grid-cols-2">
-        <div class="sm:order-2">
+    <section class="feature-section feature-section-muted">
+      <div class="feature-row mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 sm:grid-cols-2">
+        <div class="feature-copy sm:order-2">
+          <div class="feature-eyebrow">02 / Scoped styling</div>
           <h3 class="text-2xl font-bold sm:text-3xl">No Tailwind at runtime</h3>
           <p class="mt-4 text-gray-600 dark:text-gray-400">
             Components are authored with Tailwind, but it's compiled away at build time
@@ -113,7 +103,8 @@ const description =
             Tailwind and never fight a global stylesheet — styles can't leak in or out.
           </p>
         </div>
-        <div class="space-y-4 sm:order-1">
+        <div class="feature-panel runtime-panel space-y-4 sm:order-1">
+          <div class="feature-panel-label">Global payload check</div>
           <div>
             <div class="mb-1 flex justify-between text-xs text-gray-500">
               <span>Typical UI kit + Tailwind</span><span>~38kb CSS</span>
@@ -138,9 +129,10 @@ const description =
     </section>
 
     <!-- Feature 3 — Theme with one CSS variable -->
-    <section class="border-t border-gray-100 dark:border-gray-900">
-      <div class="mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 sm:grid-cols-2">
-        <div>
+    <section class="feature-section">
+      <div class="feature-row mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 sm:grid-cols-2">
+        <div class="feature-copy">
+          <div class="feature-eyebrow">03 / Brand control</div>
           <h3 class="text-2xl font-bold sm:text-3xl">Theme with one CSS variable</h3>
           <p class="mt-4 text-gray-600 dark:text-gray-400">
             Override <code>--loomi-primary-600</code> (or any of the 14 palette colors)
@@ -148,12 +140,35 @@ const description =
             rebuild, no config file. Try it on the right.
           </p>
         </div>
-        <div class="rounded-2xl border border-gray-200 bg-gray-50 p-6 dark:border-gray-800 dark:bg-gray-900">
-          <div class="flex flex-wrap items-center gap-4">
-            <loomi-button color="primary" size="small">Primary action</loomi-button>
-            <loomi-tag label="In review" color="primary"></loomi-tag>
-            <div style="width: 9rem">
+        <div class="feature-panel theme-panel">
+          <div class="feature-panel-label">Live theme tokens</div>
+          <div class="signup-showcase">
+            <div class="flex items-center justify-between gap-4">
+              <div>
+                <div class="text-sm font-bold text-gray-950 dark:text-white">Create workspace</div>
+                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Every primary control below follows the selected token.</p>
+              </div>
+              <loomi-tag label="68% ready" color="primary"></loomi-tag>
+            </div>
+            <div class="mt-5 grid gap-3 sm:grid-cols-2">
+              <loomi-input name="signup_name" label="Name" prefix-icon="user" value="Maya Chen"></loomi-input>
+              <loomi-input name="signup_email" label="Email" type="email" prefix-icon="envelope" value="maya@studio.dev"></loomi-input>
+            </div>
+            <div class="mt-4 grid gap-4 sm:grid-cols-[1fr_0.8fr]">
+              <div>
+                <div class="mb-2 text-xs font-semibold text-gray-500 dark:text-gray-400">Launch readiness</div>
+                <loomi-slider name="readiness" color="primary" selected="68" show-values></loomi-slider>
+              </div>
+              <div class="space-y-2">
+                <loomi-checkbox color="primary" checked>Invite teammates</loomi-checkbox>
+                <loomi-toggle color="primary" checked label="Weekly digest" label-position="right"></loomi-toggle>
+              </div>
+            </div>
+            <div class="mt-4">
               <loomi-progress-bar percentage="68" color="primary"></loomi-progress-bar>
+            </div>
+            <div class="mt-5 flex justify-end">
+              <loomi-button color="primary" size="small" icon="arrow-right" icon-right>Create account</loomi-button>
             </div>
           </div>
           <div class="mt-6 flex gap-3" id="theme-swatches">
@@ -168,9 +183,10 @@ const description =
     </section>
 
     <!-- Feature 4 — Install exactly what you need -->
-    <section class="border-t border-gray-100 dark:border-gray-900">
-      <div class="mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 sm:grid-cols-2">
-        <div class="sm:order-2">
+    <section class="feature-section feature-section-muted">
+      <div class="feature-row mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 sm:grid-cols-2">
+        <div class="feature-copy sm:order-2">
+          <div class="feature-eyebrow">04 / Package shape</div>
           <h3 class="text-2xl font-bold sm:text-3xl">Install exactly what you need</h3>
           <p class="mt-4 text-gray-600 dark:text-gray-400">
             <code>npm install @loomi/button</code> pulls in only the button and its
@@ -178,33 +194,47 @@ const description =
             gets the whole library in one shot.
           </p>
         </div>
-        <div class="grid grid-cols-2 gap-4 sm:order-1">
-          <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-800">
-            <pre class="overflow-x-auto rounded bg-gray-900 p-2 text-[11px] text-gray-100 dark:bg-black"><code>npm install<br />@loomi/button</code></pre>
-            <div class="mt-3 grid grid-cols-8 gap-1">
-              {Array.from({ length: 44 }).map((_, i) => (
-                <span class:list={["block size-2 rounded-full", i === 0 ? "bg-primary-600" : "bg-gray-200 dark:bg-gray-800"]}></span>
-              ))}
+        <div class="feature-panel install-visual sm:order-1">
+          <div class="feature-panel-label">Install map</div>
+          <div class="install-track">
+            <div class="install-command">
+              <span>single component</span>
+              <code>npm install @loomi/button lit</code>
             </div>
-            <p class="mt-2 text-xs text-gray-500">1 of 44 packages</p>
+            <div class="install-arrow">or</div>
+            <div class="install-command install-command-full">
+              <span>entire library</span>
+              <code>npm install @loomi/components lit</code>
+            </div>
           </div>
-          <div class="rounded-lg border border-gray-200 p-4 dark:border-gray-800">
-            <pre class="overflow-x-auto rounded bg-gray-900 p-2 text-[11px] text-gray-100 dark:bg-black"><code>npm install<br />@loomi/components</code></pre>
-            <div class="mt-3 grid grid-cols-8 gap-1">
-              {Array.from({ length: 44 }).map(() => (
-                <span class="block size-2 rounded-full bg-primary-600"></span>
-              ))}
+          <div class="install-grid mt-5">
+            {Array.from({ length: 44 }).map((_, i) => (
+              <span class:list={["install-dot", i === 0 ? "selected" : i < 12 ? "category" : ""]}></span>
+            ))}
+          </div>
+          <div class="mt-5 grid gap-3 sm:grid-cols-3">
+            <div class="install-stat">
+              <strong>1</strong>
+              <span>button package</span>
             </div>
-            <p class="mt-2 text-xs text-gray-500">All 44 packages</p>
+            <div class="install-stat">
+              <strong>12</strong>
+              <span>category bundles</span>
+            </div>
+            <div class="install-stat">
+              <strong>44</strong>
+              <span>full suite</span>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Feature 5 — Real form participation -->
-    <section class="border-t border-gray-100 dark:border-gray-900">
-      <div class="mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 sm:grid-cols-2">
-        <div>
+    <section class="feature-section">
+      <div class="feature-row mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 sm:grid-cols-2">
+        <div class="feature-copy">
+          <div class="feature-eyebrow">05 / Native behavior</div>
           <h3 class="text-2xl font-bold sm:text-3xl">Real form participation</h3>
           <p class="mt-4 text-gray-600 dark:text-gray-400">
             Every form control is form-associated via <code>ElementInternals</code> —
@@ -213,7 +243,8 @@ const description =
             right come straight from a real <code>FormData</code>.
           </p>
         </div>
-        <form id="demo-form" class="space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-6 dark:border-gray-800 dark:bg-gray-900">
+        <form id="demo-form" class="feature-panel form-panel space-y-4">
+          <div class="feature-panel-label">Native submit path</div>
           <loomi-input name="full_name" label="Full name" required></loomi-input>
           <loomi-select
             name="plan"
@@ -221,7 +252,13 @@ const description =
             selected-value="pro"
             data='[{"label":"Starter","value":"starter"},{"label":"Pro","value":"pro"}]'
           ></loomi-select>
-          <div class="flex items-center gap-3">
+          <loomi-datepicker
+            name="launch_date"
+            label="Launch date"
+            selected-value="2026-07-15"
+            min-date="2026-06-25"
+          ></loomi-datepicker>
+          <div class="flex flex-col items-center justify-center gap-2 text-center">
             <loomi-button id="demo-form-submit" can-submit color="primary" size="small">Submit</loomi-button>
             <span class="text-xs text-gray-500">Real FormData, right below ↓</span>
           </div>
@@ -231,32 +268,49 @@ const description =
     </section>
 
     <!-- Feature 6 — Built for AI-assisted coding -->
-    <section class="border-t border-gray-100 dark:border-gray-900">
-      <div class="mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 sm:grid-cols-2">
-        <div class="sm:order-2">
+    <section class="feature-section feature-section-muted">
+      <div class="feature-row mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 sm:grid-cols-2">
+        <div class="feature-copy sm:order-2">
+          <div class="feature-eyebrow">06 / AI context</div>
           <h3 class="text-2xl font-bold sm:text-3xl">Built for AI-assisted coding</h3>
           <p class="mt-4 text-gray-600 dark:text-gray-400">
             Ships an MCP server alongside the library so Claude Code, Cursor, and other
             AI tools can look up real attribute tables instead of guessing at your API.
           </p>
         </div>
-        <div class="space-y-3 rounded-2xl border border-gray-200 bg-gray-50 p-6 text-sm dark:border-gray-800 dark:bg-gray-900 sm:order-1">
-          <div class="flex justify-end">
-            <div class="max-w-xs rounded-2xl rounded-br-sm bg-primary-600 px-4 py-2 text-white">
-              What props does loomi-button take?
+        <div class="feature-panel ai-panel space-y-4 text-sm sm:order-1">
+          <div class="feature-panel-label">Grounded component answers</div>
+          <div class="ai-console">
+            <div class="ai-prompt">
+              <span>Prompt</span>
+              <p>Build a primary CTA with an icon, submit behavior, and a link fallback.</p>
+            </div>
+            <div class="ai-answer">
+              <div class="mb-2 flex items-center justify-between gap-3">
+                <span class="font-sans text-[10px] font-semibold uppercase tracking-[0.16em] text-primary-600 dark:text-primary-300">loomi MCP lookup</span>
+                <loomi-tag label="verified attrs" color="green"></loomi-tag>
+              </div>
+              <pre><code>&lt;loomi-button
+  color="primary"
+  icon="arrow-right"
+  icon-right
+  can-submit
+&gt;Continue&lt;/loomi-button&gt;</code></pre>
             </div>
           </div>
-          <div class="flex justify-start">
-            <div class="max-w-sm rounded-2xl rounded-bl-sm bg-white px-4 py-3 font-mono text-xs text-gray-700 shadow dark:bg-gray-800 dark:text-gray-200">
-              <div class="mb-1 font-sans text-[10px] font-semibold tracking-wide text-primary-600 uppercase">
-                via loomi MCP server
-              </div>
-              color, size, icon, icon-right, outline, tag, href, can-submit, disabled…
-            </div>
+          <div class="ai-attrs">
+            {["color", "size", "icon", "icon-right", "tag", "href", "can-submit", "disabled"].map((attr) => (
+              <span>{attr}</span>
+            ))}
+          </div>
+          <div class="ai-footer">
+            <loomi-button color="primary" size="small" icon="sparkles">Ask with context</loomi-button>
+            <p>Fewer hallucinated props. More copy-pasteable UI.</p>
           </div>
         </div>
       </div>
     </section>
+    </div>
 
     <!-- A real library, not a demo -->
     <section class="demo-band border-t border-gray-100 px-6 py-20 dark:border-gray-900">
@@ -281,8 +335,9 @@ const description =
             <span></span>
             <span></span>
           </div>
-          <div class="text-xs font-semibold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400">
-            LoomiUI project workspace
+          <div class="demo-title-lockup text-xs font-semibold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400">
+            <Image src={icon} alt="" class="h-5 w-5" />
+            <span>LoomiUI project workspace</span>
           </div>
           <loomi-tag label="Interactive" color="green"></loomi-tag>
         </div>
@@ -495,6 +550,9 @@ const description =
       import "@loomi/listview";
       import "@loomi/input";
       import "@loomi/select";
+      import "@loomi/checkbox";
+      import "@loomi/toggle";
+      import "@loomi/slider";
       import "@loomi/statistic";
       import "@loomi/horizontal-line-graph";
       import "@loomi/sortable";
@@ -512,7 +570,17 @@ const description =
         if (!(target instanceof Element)) return;
         const button = target.closest("button[data-color]");
         if (!(button instanceof HTMLElement)) return;
-        document.documentElement.style.setProperty("--loomi-primary-600", button.dataset.color ?? "");
+        const shadeMap: Record<string, { 500: string; 600: string; 700: string }> = {
+          "#2563eb": { 500: "#3b82f6", 600: "#2563eb", 700: "#1d4ed8" },
+          "#db2777": { 500: "#ec4899", 600: "#db2777", 700: "#be185d" },
+          "#16a34a": { 500: "#22c55e", 600: "#16a34a", 700: "#15803d" },
+          "#9333ea": { 500: "#a855f7", 600: "#9333ea", 700: "#7e22ce" },
+          "#ea580c": { 500: "#f97316", 600: "#ea580c", 700: "#c2410c" },
+        };
+        const shades = shadeMap[button.dataset.color ?? ""] ?? shadeMap["#2563eb"];
+        document.documentElement.style.setProperty("--loomi-primary-500", shades[500]);
+        document.documentElement.style.setProperty("--loomi-primary-600", shades[600]);
+        document.documentElement.style.setProperty("--loomi-primary-700", shades[700]);
         for (const b of document.querySelectorAll("#theme-swatches button")) {
           b.classList.toggle("ring-2", b === button);
           b.classList.toggle("ring-offset-2", b === button);

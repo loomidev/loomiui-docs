@@ -1,0 +1,91 @@
+---
+import Icon from "../../node_modules/@astrojs/starlight/user-components/Icon.astro";
+---
+
+{/* Inlined to avoid a flash while bridging Starlight's and Loomi's theme contracts. */}
+<script is:inline>
+  window.StarlightThemeProvider = (() => {
+    const starlightStorageKey = "starlight-theme";
+    const loomiStorageKey = "loomi-theme";
+    const systemQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+    const normalizeTheme = (theme) => {
+      if (theme === "light" || theme === "dark") return theme;
+      if (theme === "auto" || theme === "system" || theme === "") return "system";
+      return undefined;
+    };
+
+    const toStarlightTheme = (theme) => (theme === "system" ? "auto" : theme);
+    const toLoomiTheme = (theme) => (theme === "auto" ? "system" : theme);
+    const getEffectiveTheme = (theme) =>
+      theme === "system" ? (systemQuery.matches ? "dark" : "light") : theme;
+
+    const storedLoomiTheme =
+      typeof localStorage !== "undefined" && localStorage.getItem(loomiStorageKey);
+    const storedStarlightTheme =
+      typeof localStorage !== "undefined" && localStorage.getItem(starlightStorageKey);
+    const initialTheme =
+      normalizeTheme(storedLoomiTheme) || normalizeTheme(storedStarlightTheme) || "system";
+
+    const storeTheme = (theme) => {
+      if (typeof localStorage === "undefined") return;
+      localStorage.setItem(loomiStorageKey, theme);
+      localStorage.setItem(starlightStorageKey, theme === "system" ? "" : theme);
+    };
+
+    const updatePicker = (picker, theme) => {
+      const select = picker.querySelector("select");
+      if (select) select.value = toStarlightTheme(theme);
+
+      const loomiPicker = picker.querySelector("loomi-theme-picker, loomi-theme-switcher");
+      if (loomiPicker) {
+        loomiPicker.mode = toLoomiTheme(theme);
+        loomiPicker.requestUpdate?.();
+      }
+
+      const tmpl = document.querySelector("#theme-icons");
+      const newIcon = tmpl && tmpl.content.querySelector("." + toStarlightTheme(theme));
+      if (newIcon) {
+        const oldIcon = picker.querySelector("svg.label-icon");
+        if (oldIcon) oldIcon.replaceChildren(...newIcon.cloneNode(true).childNodes);
+      }
+    };
+
+    const applyTheme = (theme, { persist = true } = {}) => {
+      const normalizedTheme = normalizeTheme(theme) || "system";
+      const effectiveTheme = getEffectiveTheme(normalizedTheme);
+      document.documentElement.dataset.theme = effectiveTheme;
+      document.documentElement.classList.toggle("dark", effectiveTheme === "dark");
+      if (persist) storeTheme(normalizedTheme);
+      window.StarlightThemeProvider?.updatePickers(normalizedTheme);
+    };
+
+    document.documentElement.dataset.theme = getEffectiveTheme(initialTheme);
+    document.documentElement.classList.toggle("dark", getEffectiveTheme(initialTheme) === "dark");
+    if (storedLoomiTheme || storedStarlightTheme) storeTheme(initialTheme);
+
+    systemQuery.addEventListener("change", () => {
+      const storedTheme =
+        normalizeTheme(localStorage.getItem(loomiStorageKey)) ||
+        normalizeTheme(localStorage.getItem(starlightStorageKey)) ||
+        "system";
+      if (storedTheme === "system") applyTheme("system", { persist: false });
+    });
+
+    return {
+      applyTheme,
+      updatePickers(theme = initialTheme) {
+        const normalizedTheme = normalizeTheme(theme) || "system";
+        document
+          .querySelectorAll("starlight-theme-select, starlight-loomi-theme-select")
+          .forEach((picker) => updatePicker(picker, normalizedTheme));
+      },
+    };
+  })();
+</script>
+
+<template id="theme-icons">
+  <Icon name="sun" class="light" />
+  <Icon name="moon" class="dark" />
+  <Icon name="laptop" class="auto" />
+</template>
