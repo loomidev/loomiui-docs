@@ -96,8 +96,7 @@ system mode:
 The switcher adds a `dark` class to `<html>` when dark mode is active. It also remembers
 the user's choice in `localStorage`.
 
-<loomi-tabs>
-<loomi-tab label="Use the component" active>
+### Use the component
 
 Most apps can just place the component in the header or settings menu:
 
@@ -105,8 +104,7 @@ Most apps can just place the component in the header or settings menu:
 <loomi-theme-switcher light-text="Light" dark-text="Dark" system-text="Auto"></loomi-theme-switcher>
 ```
 
-</loomi-tab>
-<loomi-tab label="Drive it yourself">
+### Use the helpers
 
 If you are building your own toggle UI, use the helper functions:
 
@@ -117,8 +115,52 @@ applyLoomiTheme("dark"); // "light" | "dark" | "system"
 getLoomiTheme(); // reads the persisted choice
 ```
 
-</loomi-tab>
-</loomi-tabs>
+### No switcher
+
+If your app already has its own theme system, you do not need
+`<loomi-theme-switcher>`.
+
+LoomiUI only needs a `dark` class on an ancestor, usually `<html>`:
+
+```html
+<html class="dark">
+  <body>
+    <loomi-button color="primary">Save</loomi-button>
+  </body>
+</html>
+```
+
+You can add and remove that class yourself:
+
+```js
+document.documentElement.classList.add("dark"); // turn dark mode on
+document.documentElement.classList.remove("dark"); // turn dark mode off
+```
+
+For a real toggle, save the choice and apply it when the page loads:
+
+```js
+const savedTheme = localStorage.getItem("theme");
+
+if (savedTheme === "dark") {
+  document.documentElement.classList.add("dark");
+}
+
+function setTheme(theme) {
+  localStorage.setItem("theme", theme);
+  document.documentElement.classList.toggle("dark", theme === "dark");
+}
+```
+
+If your app uses a different class, such as `theme-dark`, that is fine too. Just write
+your LoomiUI color overrides under that class:
+
+```css
+html.theme-dark {
+  --loomi-gray-50: #0f172a;
+  --loomi-gray-900: #f1f5f9;
+}
+```
 
 To customize dark mode colors, write CSS under `html.dark`:
 

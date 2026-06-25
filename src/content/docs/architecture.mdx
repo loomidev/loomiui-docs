@@ -108,9 +108,9 @@ that Starlight would otherwise render with plain HTML or its own built-in compon
 | --- | --- | --- |
 | Prev/next footer links | Plain `<a>` cards | `<loomi-card>` (see `src/components/Pagination.astro`) |
 | Callouts/emphasis | `<Aside>` | `<loomi-alert>` |
-| Tabbed content | `<Tabs>`/`<TabItem>` | `<loomi-tabs>`/`<loomi-tab>` |
+| Buttons and links | Plain `<button>`/`<a>` elements | `<loomi-button>` |
 
-This works because `<loomi-card>`, `<loomi-alert>`, and `<loomi-tabs>` are real custom
+This works because `<loomi-card>`, `<loomi-alert>`, and `<loomi-button>` are real custom
 elements, not Astro/JSX components — they render anywhere raw HTML is allowed, including
 inside a component override like `Pagination.astro` (where the script registering them
 must be marked `is:inline`, so Astro emits it untouched instead of trying to resolve
@@ -157,7 +157,7 @@ page) with previews embedded in context — not a component-isolation tool.
 Every fenced code block on this site is rendered by **[Expressive Code](https://expressive-code.com/)**
 (`astro-expressive-code`), which Starlight bundles and configures automatically — it's
 what gives every snippet syntax highlighting, the copy-to-clipboard button, frame/title
-support, and the red/green diff highlighting used in the npm-migration tabs above.
+support, and the red/green diff highlighting used in the npm-migration examples below.
 
 Line numbers are **not** part of Expressive Code's core — they're the separate
 [`@expressive-code/plugin-line-numbers`](https://expressive-code.com/plugins/line-numbers/)
@@ -191,7 +191,7 @@ Astro/Starlight's own components (`FileTree`, `Card`/`CardGrid`, and the rest of
 files are parsed as standard Markdown: they don't execute import statements or recognize
 JSX tags as components.
 
-loomi's *own* components are different — `<loomi-alert>`, `<loomi-tabs>`, `<loomi-card>`,
+loomi's *own* components are different — `<loomi-alert>`, `<loomi-button>`, `<loomi-card>`,
 and the rest are real custom elements, not Astro components. They don't need an import
 statement at all; they just need raw HTML to pass through, which plain `.md` already
 does. So the only thing that actually forces a page to be `.mdx` here is using a
@@ -214,10 +214,9 @@ cautionary tale.) Adding a **LoomiUI** component needs no such rename.
 
 Right now, "installing" LoomiUI for the docs site means copying compiled files directly
 out of the sibling `components/` monorepo. Once the packages are published to npm, the
-pipeline gets *simpler*, not more complex:
+pipeline gets *simpler*, not more complex.
 
-<loomi-tabs>
-<loomi-tab label="copy-component-assets.mjs" active>
+### Update `copy-component-assets.mjs`
 
 Change the copy source from the monorepo to `node_modules`:
 
@@ -232,8 +231,7 @@ Change the copy source from the monorepo to `node_modules`:
 the umbrella) as a normal `dependency` — no more relying on a sibling checkout existing
 at all.
 
-</loomi-tab>
-<loomi-tab label="Or: skip copying entirely">
+### Or skip copying entirely
 
 Point the import map straight at a CDN instead of local static files:
 
@@ -247,8 +245,7 @@ entirely. The tradeoff: previews now depend on the CDN being up, instead of work
 fully offline. Pin an exact version (read from each package's `package.json` at
 generation time) so a docs deploy never silently picks up an unreleased breaking change.
 
-</loomi-tab>
-<loomi-tab label="gen-component-docs.mjs">
+### Update `gen-component-docs.mjs`
 
 READMEs can also come from `node_modules` instead of the monorepo:
 
@@ -258,9 +255,6 @@ READMEs can also come from `node_modules` instead of the monorepo:
 ```
 
 npm packages typically ship their README, so this works for free once published.
-
-</loomi-tab>
-</loomi-tabs>
 
 <loomi-alert type="info" icon="information-circle">
   `scripts/loomi-packages.mjs` (the category map) stays manually maintained either way —
@@ -275,11 +269,10 @@ CI (see below): no more checking out two directories from one (or two) repos.
 ## Automatic deployment from GitHub
 
 Both `components/` and `docs/` are now git repositories (initialized separately — see
-the "Separate repos" tab below for why), but neither has a remote yet. Once you add one
-and push, here's what CI needs to do, depending on the layout.
+the "Separate repos" option below for why), but neither has a remote yet. Once you add
+one and push, here's what CI needs to do, depending on the layout.
 
-<loomi-tabs>
-<loomi-tab label="Same repo (monorepo)" active>
+### Same repo (monorepo)
 
 If `litail/` becomes **one** git repo containing both `components/` and `docs/`, CI is
 simplest: one checkout gets you everything `gen-component-docs.mjs` and
@@ -304,11 +297,10 @@ jobs:
         run: pnpm --dir components install && pnpm --dir components build
       - name: Build docs
         run: pnpm --dir docs install && pnpm --dir docs build
-      # then deploy docs/dist — see the hosting tabs below
+      # then deploy docs/dist — see the hosting options below
 ```
 
-</loomi-tab>
-<loomi-tab label="Separate repos">
+### Separate repos
 
 This is the **current layout**: `components/` and `docs/` are each their own repo (the
 former already had real history — CI workflows, Changesets, a test suite — that
@@ -335,13 +327,9 @@ This cross-repo checkout requirement is exactly what disappears once LoomiUI is
 [published to npm](#what-changes-once-loomiui-is-on-npm) — at that point the docs repo
 only needs itself.
 
-</loomi-tab>
-</loomi-tabs>
-
 ### Where to actually deploy
 
-<loomi-tabs>
-<loomi-tab label="Vercel / Netlify / Cloudflare Pages (recommended)" active>
+#### Vercel / Netlify / Cloudflare Pages
 
 The least setup: connect the GitHub repo in the host's dashboard, set the build command
 to `pnpm build` (or `pnpm --dir docs build` for the monorepo layout) and the output
@@ -352,11 +340,10 @@ also fetch `components/` (most hosts support a build-time clone step or a monore
 "included repos" setting) — this is the main reason the monorepo layout is simpler for
 hosts that don't run arbitrary multi-repo checkout logic.
 
-</loomi-tab>
-<loomi-tab label="GitHub Pages">
+#### GitHub Pages
 
 Requires an explicit Actions workflow (GitHub Pages doesn't run your build for you).
-Add to the workflow from the tabs above:
+Add to the workflow from the options above:
 
 ```yaml
   - uses: actions/upload-pages-artifact@v3
@@ -369,9 +356,6 @@ enable Pages → "GitHub Actions" as the source in the repo settings. Since this
 a custom domain, add a `docs/public/CNAME` file containing `loomiui.com` so GitHub Pages
 serves the right host, and keep `site: "https://loomiui.com"` in `astro.config.mjs` as
 is (no `base` path needed, since a custom domain serves from the root).
-
-</loomi-tab>
-</loomi-tabs>
 
 <loomi-alert type="warning" icon="exclamation-triangle">
   <strong>DNS.</strong> Whichever host you pick, pointing `loomiui.com` at it is a DNS

@@ -35,8 +35,7 @@ You usually do not need to import `lit` yourself. Just install it with LoomiUI.
 If you are new, use **Install everything**. You can switch to smaller installs later if
 you want to keep your app bundle smaller.
 
-<loomi-tabs>
-<loomi-tab label="Install everything" active>
+### Install everything
 
 Use this when you want the simplest setup.
 
@@ -55,8 +54,7 @@ import "@loomi/components/button";
 import "@loomi/components/datepicker";
 ```
 
-</loomi-tab>
-<loomi-tab label="Install one component">
+### Install one component
 
 Use this when you only need one component.
 
@@ -74,15 +72,14 @@ import "@loomi/button";
 
 Each component package works on its own, so this does not install the whole library.
 
-</loomi-tab>
-<loomi-tab label="Install a category">
+### Install a category
 
 Use this when you need a group of related components.
 
 Each category has one package for the full group. Every component also has its own
 standalone package if you only need that one component.
 
-### Forms
+#### Forms
 
 ```bash
 npm install @loomi/forms lit
@@ -109,7 +106,7 @@ import "@loomi/forms"; // registers every form component
 | `<loomi-colorpicker>` | Color picker. | `@loomi/colorpicker` |
 | `<loomi-filepicker>` | File picker with drag and drop. | `@loomi/filepicker` |
 
-### Content
+#### Content
 
 ```bash
 npm install @loomi/content lit
@@ -140,7 +137,7 @@ import "@loomi/content"; // registers every content component
 | `<loomi-horizontal-line-graph>` | Labeled proportion bar. | `@loomi/horizontal-line-graph` |
 | `<loomi-chart>` | SVG charts like line, bar, pie, and donut. | `@loomi/chart` |
 
-### Navigation
+#### Navigation
 
 ```bash
 npm install @loomi/navigation lit
@@ -157,7 +154,7 @@ import "@loomi/navigation"; // registers every navigation component
 | `<loomi-dropmenu>` | Dropdown action menu. | `@loomi/dropmenu` |
 | `<loomi-theme-switcher>` | Light, dark, and system theme toggle. | `@loomi/theme-switcher` |
 
-### Standalone Components
+#### Standalone Components
 
 These components are installed one at a time.
 
@@ -171,9 +168,6 @@ These components are installed one at a time.
 | `<loomi-modal>` | Dialog or popup window. | `@loomi/modal` |
 | `<loomi-notification>` | Toast notification. | `@loomi/notification` |
 | `<loomi-table>` | Data table with sorting, search, and pagination. | `@loomi/table` |
-
-</loomi-tab>
-</loomi-tabs>
 
 ## TypeScript
 

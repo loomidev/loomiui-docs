@@ -25,8 +25,7 @@ Plus a readable **resource** per component at `loomi://docs/<name>` (e.g.
 
 ## Setup
 
-<loomi-tabs>
-<loomi-tab label="Claude Code" active>
+### Claude Code
 
 Add to your MCP settings (`.claude/settings.json`, or via `/mcp` in an interactive
 session):
@@ -42,8 +41,7 @@ session):
 }
 ```
 
-</loomi-tab>
-<loomi-tab label="Cursor">
+### Cursor
 
 Add to `~/.cursor/mcp.json` (or your project's `.cursor/mcp.json`):
 
@@ -58,8 +56,7 @@ Add to `~/.cursor/mcp.json` (or your project's `.cursor/mcp.json`):
 }
 ```
 
-</loomi-tab>
-<loomi-tab label="Claude Desktop">
+### Claude Desktop
 
 Add to `claude_desktop_config.json`:
 
@@ -74,14 +71,15 @@ Add to `claude_desktop_config.json`:
 }
 ```
 
-</loomi-tab>
-</loomi-tabs>
-
 Restart the tool after saving, and it will pick up the `loomiui` server on next launch.
 
 ## Trying it without an editor
 
-You can run the server directly to confirm it starts:
+Open a regular terminal on your computer, such as Terminal, iTerm, or your editor's
+integrated terminal. You can run this from any folder; it does not need to be inside a
+LoomiUI project.
+
+Run the server directly to confirm it starts:
 
 ```bash
 npx @loomi/mcp-server

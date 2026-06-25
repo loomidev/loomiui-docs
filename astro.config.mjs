@@ -39,6 +39,10 @@ export default defineConfig({
         plugins: [pluginLineNumbers()],
         defaultProps: { showLineNumbers: true },
       },
+      tableOfContents: {
+        minHeadingLevel: 2,
+        maxHeadingLevel: 4,
+      },
       components: {
         // Dogfood LoomiUI's own components in the docs site's chrome — see
         // src/components/{Head,Pagination,ThemeSelect}.astro for what/why.
