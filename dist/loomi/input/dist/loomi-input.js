@@ -4,9 +4,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { LitElement, html, nothing } from "lit";
+import { html, nothing } from "lit";
 import { customElement, property, state, query } from "lit/decorators.js";
-import { themeStyles } from "@loomi/theme";
+import { LoomiElement, loomiT, themeStyles } from "@loomi/core";
 import { getLoomiIcon } from "./icons.js";
 import { componentStyles } from "./generated/styles.css.js";
 const MASK_TOKEN_TESTS = {
@@ -28,7 +28,7 @@ const AMEX_CARD_MASK = "9999 999999 99999";
  * @fires input - Native input event (composed).
  * @fires change - Native change event (composed).
  */
-let LoomiInput = class LoomiInput extends LitElement {
+let LoomiInput = class LoomiInput extends LoomiElement {
     constructor() {
         super(...arguments);
         this.internals = this.attachInternals();
@@ -36,6 +36,7 @@ let LoomiInput = class LoomiInput extends LitElement {
         this.name = "";
         this.type = "text";
         this.label = "";
+        this.locale = "";
         this.placeholder = "";
         this.value = "";
         this.required = false;
@@ -128,7 +129,7 @@ let LoomiInput = class LoomiInput extends LitElement {
         const empty = this.required && !this.disabled && !this.readonly && this.value.trim() === "";
         this.invalid = empty && showInvalid;
         const validity = empty ? { valueMissing: true } : {};
-        const message = empty ? this.errorMessage || "Please fill out this field." : "";
+        const message = empty ? this.errorMessage || loomiT("validation.requiredField", {}, this.locale) : "";
         if (this.inputEl)
             this.internals.setValidity(validity, message, this.inputEl);
         else
@@ -226,10 +227,10 @@ let LoomiInput = class LoomiInput extends LitElement {
         const cls = `loomi-suffix${this.transparentSuffix ? "" : " loomi-affix-solid"}`;
         return html `<span class=${cls}>
       ${showClear
-            ? html `<button type="button" class="loomi-iconbtn" aria-label="Clear" @click=${this.clear}>${this.renderIcon("x-circle")}</button>`
+            ? html `<button type="button" class="loomi-iconbtn" aria-label=${loomiT("common.clear", {}, this.locale)} @click=${this.clear}>${this.renderIcon("x-circle")}</button>`
             : nothing}
       ${showReveal
-            ? html `<button type="button" class="loomi-iconbtn" aria-label="Toggle password visibility" @click=${() => (this.revealed = !this.revealed)}>${this.renderIcon(this.revealed ? "eye-slash" : "eye")}</button>`
+            ? html `<button type="button" class="loomi-iconbtn" aria-label=${loomiT("input.togglePassword", {}, this.locale)} @click=${() => (this.revealed = !this.revealed)}>${this.renderIcon(this.revealed ? "eye-slash" : "eye")}</button>`
             : nothing}
       <slot name="suffix">${this.suffixIcon ? this.renderIcon(this.suffixIcon) : this.suffix}</slot>
     </span>`;
@@ -280,6 +281,9 @@ __decorate([
 __decorate([
     property()
 ], LoomiInput.prototype, "label", void 0);
+__decorate([
+    property()
+], LoomiInput.prototype, "locale", void 0);
 __decorate([
     property()
 ], LoomiInput.prototype, "placeholder", void 0);

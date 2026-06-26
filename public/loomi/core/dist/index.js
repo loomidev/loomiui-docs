@@ -1,4 +1,6 @@
+import { LitElement } from "lit";
 import { themeStyles } from "@loomi/theme";
+export * from "./i18n.js";
 // Re-export the shared theme surface so components import everything from @loomi/core.
 export { themeStyles, LOOMI_COLORS, LOOMI_SHADES, isLoomiColor, } from "@loomi/theme";
 /**
@@ -11,6 +13,60 @@ export { themeStyles, LOOMI_COLORS, LOOMI_SHADES, isLoomiColor, } from "@loomi/t
  */
 export function loomiStyles(...styles) {
     return [themeStyles, ...styles];
+}
+function safeClassToken(value) {
+    return value
+        .trim()
+        .replace(/\s+/g, "-")
+        .replace(/[^A-Za-z0-9_-]/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-|-$/g, "");
+}
+function componentTypeFromTag(tagName) {
+    return safeClassToken(tagName.toLowerCase().replace(/^loomi-/, "")) || "component";
+}
+function randomSuffix() {
+    return Math.random().toString(36).slice(2, 7) || String(Date.now()).slice(-5);
+}
+/**
+ * Shared base for loomi web components. Each host element receives a stable target
+ * class using its explicit `name` when present, or `loomi-<component>-<suffix>`.
+ */
+export class LoomiElement extends LitElement {
+    constructor() {
+        super(...arguments);
+        this.generatedLoomiName = "";
+        this.appliedLoomiNameClass = "";
+    }
+    static { this.properties = {
+        name: { type: String, reflect: true },
+    }; }
+    connectedCallback() {
+        super.connectedCallback();
+        this.syncLoomiNameClass();
+    }
+    update(changedProperties) {
+        super.update(changedProperties);
+        this.syncLoomiNameClass();
+    }
+    get defaultLoomiName() {
+        if (!this.generatedLoomiName) {
+            this.generatedLoomiName = `loomi-${componentTypeFromTag(this.localName)}-${randomSuffix()}`;
+        }
+        return this.generatedLoomiName;
+    }
+    get loomiNameClass() {
+        return safeClassToken(this.name || "") || this.defaultLoomiName;
+    }
+    syncLoomiNameClass() {
+        const nextClass = this.loomiNameClass;
+        if (this.appliedLoomiNameClass === nextClass)
+            return;
+        if (this.appliedLoomiNameClass)
+            this.classList.remove(this.appliedLoomiNameClass);
+        this.classList.add(nextClass);
+        this.appliedLoomiNameClass = nextClass;
+    }
 }
 /** A single token reference with its private-default fallback, e.g. `var(--loomi-red-600, var(--_loomi-red-600-default))`. */
 function token(color, shade) {

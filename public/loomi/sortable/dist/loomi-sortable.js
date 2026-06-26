@@ -4,9 +4,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { LitElement, html, nothing, svg } from "lit";
+import { html, nothing, svg } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { loomiStyles } from "@loomi/core";
+import { LoomiElement, loomiStyles, loomiT } from "@loomi/core";
 import { getLoomiIcon } from "@loomi/icons";
 import { componentStyles } from "./generated/styles.css.js";
 const GRIP = svg `<path d="M9 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 12a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 19a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM17 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM17 12a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM17 19a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z" fill="currentColor" />`;
@@ -27,7 +27,7 @@ let activeDrag = null;
  * @fires item-click - `detail: { item }` when a row is clicked outside multi-drag mode.
  * @fires filter - `detail: { item }` when a filtered row is clicked or drag-started.
  */
-let LoomiSortable = class LoomiSortable extends LitElement {
+let LoomiSortable = class LoomiSortable extends LoomiElement {
     constructor() {
         super(...arguments);
         this.internals = this.attachInternals();
@@ -43,6 +43,7 @@ let LoomiSortable = class LoomiSortable extends LitElement {
         this.clone = false;
         /** Enable or disable drag-starting from this list. The list still accepts incoming transfers when `false`. */
         this.sortable = true;
+        this.locale = "";
         /** Enable or disable sorting within this list. Items may still be dragged out when `false`. */
         this.sort = true;
         /** SortableJS-style selector for rows/elements that cannot be dragged, e.g. `.filtered`. */
@@ -395,7 +396,7 @@ let LoomiSortable = class LoomiSortable extends LitElement {
                 : nothing}
         </div>`;
         })}
-      ${this.items.length === 0 ? html `<div class="loomi-empty-hint">Drop here</div>` : nothing}
+      ${this.items.length === 0 ? html `<div class="loomi-empty-hint">${loomiT("sortable.dropHere", {}, this.locale)}</div>` : nothing}
     </div>`;
     }
 };
@@ -417,6 +418,9 @@ __decorate([
 __decorate([
     property({ type: Boolean })
 ], LoomiSortable.prototype, "sortable", void 0);
+__decorate([
+    property()
+], LoomiSortable.prototype, "locale", void 0);
 __decorate([
     property({ type: Boolean })
 ], LoomiSortable.prototype, "sort", void 0);

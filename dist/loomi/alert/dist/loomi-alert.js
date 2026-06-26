@@ -4,9 +4,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { LitElement, html, nothing, svg } from "lit";
+import { html, nothing, svg } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { loomiStyles, accentVars } from "@loomi/core";
+import { LoomiElement, loomiStyles, loomiT, accentVars } from "@loomi/core";
 import { getLoomiIcon } from "@loomi/icons";
 import { componentStyles } from "./generated/styles.css.js";
 const TYPE_COLOR = {
@@ -37,7 +37,7 @@ const booleanAttribute = {
  * @slot - The alert message (may contain HTML/links).
  * @fires close - Fired when dismissed (the alert hides itself unless prevented).
  */
-let LoomiAlert = class LoomiAlert extends LitElement {
+let LoomiAlert = class LoomiAlert extends LoomiElement {
     constructor() {
         super(...arguments);
         this.type = "info";
@@ -47,6 +47,7 @@ let LoomiAlert = class LoomiAlert extends LitElement {
         this.showCloseIcon = true;
         this.icon = "";
         this.avatar = "";
+        this.locale = "";
         this.showRing = false;
         this.dismissed = false;
         this.onClose = () => {
@@ -77,7 +78,7 @@ let LoomiAlert = class LoomiAlert extends LitElement {
                 : nothing}
       <div class="loomi-body"><slot></slot></div>
       ${this.showCloseIcon
-            ? html `<button type="button" class="loomi-close" aria-label="Dismiss" @click=${this.onClose}>
+            ? html `<button type="button" class="loomi-close" aria-label=${loomiT("common.dismiss", {}, this.locale)} @click=${this.onClose}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">${X}</svg>
           </button>`
             : nothing}
@@ -105,6 +106,9 @@ __decorate([
 __decorate([
     property()
 ], LoomiAlert.prototype, "avatar", void 0);
+__decorate([
+    property()
+], LoomiAlert.prototype, "locale", void 0);
 __decorate([
     property({ type: Boolean, attribute: "show-ring" })
 ], LoomiAlert.prototype, "showRing", void 0);

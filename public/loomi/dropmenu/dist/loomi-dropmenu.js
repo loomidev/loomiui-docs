@@ -4,9 +4,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { LitElement, html, nothing, svg } from "lit";
+import { html, nothing, svg } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { loomiStyles, onClickOutside } from "@loomi/core";
+import { LoomiElement, loomiStyles, onClickOutside } from "@loomi/core";
 import { getLoomiIcon } from "@loomi/icons";
 import { componentStyles } from "./generated/styles.css.js";
 const ELLIPSIS = svg `<path d="M6 12a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0ZM13.5 12a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0ZM21 12a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" fill="currentColor" />`;
@@ -14,7 +14,7 @@ const ELLIPSIS = svg `<path d="M6 12a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0ZM13.5 1
  * `<loomi-dropmenu-item>` — a single menu line. Put links/handlers inside, or set `icon`.
  * @slot - Item content.
  */
-let LoomiDropmenuItem = class LoomiDropmenuItem extends LitElement {
+let LoomiDropmenuItem = class LoomiDropmenuItem extends LoomiElement {
     constructor() {
         super(...arguments);
         this.icon = "";
@@ -61,7 +61,7 @@ export { LoomiDropmenuItem };
  * @slot - `<loomi-dropmenu-item>` children.
  * @slot trigger - Custom trigger markup.
  */
-let LoomiDropmenu = class LoomiDropmenu extends LitElement {
+let LoomiDropmenu = class LoomiDropmenu extends LoomiElement {
     constructor() {
         super(...arguments);
         this.trigger = "";

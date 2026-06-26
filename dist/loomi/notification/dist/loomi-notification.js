@@ -4,9 +4,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { LitElement, html, nothing } from "lit";
+import { html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { loomiStyles, accentVars } from "@loomi/core";
+import { LoomiElement, loomiStyles, loomiT, accentVars } from "@loomi/core";
 import "@loomi/icon/loomi-icon.js";
 import { componentStyles } from "./generated/styles.css.js";
 const TYPE = {
@@ -20,10 +20,11 @@ let uid = 0;
  * `<loomi-notification>` — a container for stacked, auto-dismissing toasts. Trigger via
  * the `notify()` method or the global `showLoomiNotification()` helper.
  */
-let LoomiNotification = class LoomiNotification extends LitElement {
+let LoomiNotification = class LoomiNotification extends LoomiElement {
     constructor() {
         super(...arguments);
         this.position = "top-right";
+        this.locale = "";
         this.toasts = [];
         this.timers = new Map();
     }
@@ -81,7 +82,7 @@ let LoomiNotification = class LoomiNotification extends LitElement {
             ${t.title ? html `<div class="loomi-title">${t.title}</div>` : nothing}
             <div class="loomi-message">${t.message}</div>
           </div>
-          <button type="button" class="loomi-close" aria-label="Dismiss" @click=${(event) => this.onDismiss(event, t.id)}>
+          <button type="button" class="loomi-close" aria-label=${loomiT("common.dismiss", {}, this.locale)} @click=${(event) => this.onDismiss(event, t.id)}>
             <loomi-icon name="x-mark" stroke-width="2"></loomi-icon>
           </button>
         </div>`;
@@ -92,6 +93,9 @@ let LoomiNotification = class LoomiNotification extends LitElement {
 __decorate([
     property()
 ], LoomiNotification.prototype, "position", void 0);
+__decorate([
+    property()
+], LoomiNotification.prototype, "locale", void 0);
 __decorate([
     state()
 ], LoomiNotification.prototype, "toasts", void 0);

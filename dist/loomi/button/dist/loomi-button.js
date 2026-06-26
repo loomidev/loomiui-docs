@@ -4,10 +4,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { LitElement, html, nothing } from "lit";
+import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { ifDefined } from "lit/directives/if-defined.js";
-import { themeStyles, isLoomiColor } from "@loomi/theme";
+import { LoomiElement, themeStyles, isLoomiColor } from "@loomi/core";
 import { getLoomiIcon } from "./icons.js";
 import { buttonStyles } from "./generated/styles.css.js";
 /** Padding + font-size per size. Literal strings so Tailwind's scanner picks them up. */
@@ -43,7 +43,7 @@ const BORDER_WIDTH = {
  * @csspart button - The underlying `<button>`/`<a>` element.
  * @fires click - Native click event (composed; crosses the shadow boundary).
  */
-let LoomiButton = class LoomiButton extends LitElement {
+let LoomiButton = class LoomiButton extends LoomiElement {
     constructor() {
         super(...arguments);
         /** Structural variant: `primary` (bold fill) or `secondary` (soft). */

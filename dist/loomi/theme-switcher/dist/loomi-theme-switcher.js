@@ -4,14 +4,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { LitElement, html, nothing } from "lit";
+import { html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { loomiStyles } from "@loomi/core";
+import { LoomiElement, loomiDefaultText, loomiStyles, loomiT } from "@loomi/core";
 import { getLoomiIcon } from "@loomi/icons";
 import "@loomi/dropmenu/loomi-dropmenu.js";
 import "@loomi/icon/loomi-icon.js";
 import { componentStyles } from "./generated/styles.css.js";
 const STORAGE_KEY = "loomi-theme";
+const DEFAULT_LIGHT_TEXT = "Light";
+const DEFAULT_DARK_TEXT = "Dark";
+const DEFAULT_SYSTEM_TEXT = "System";
 /** Apply a theme: toggles the `dark` class on <html> and stores the choice. */
 export function applyLoomiTheme(mode) {
     try {
@@ -38,12 +41,13 @@ export function getLoomiTheme() {
  *
  * @fires theme-change - `detail: { theme }` when the theme is changed.
  */
-let LoomiThemeSwitcher = class LoomiThemeSwitcher extends LitElement {
+let LoomiThemeSwitcher = class LoomiThemeSwitcher extends LoomiElement {
     constructor() {
         super(...arguments);
-        this.lightText = "Light";
-        this.darkText = "Dark";
-        this.systemText = "System";
+        this.lightText = DEFAULT_LIGHT_TEXT;
+        this.darkText = DEFAULT_DARK_TEXT;
+        this.systemText = DEFAULT_SYSTEM_TEXT;
+        this.locale = "";
         this.lightIcon = "sun";
         this.darkIcon = "moon";
         this.systemIcon = "computer-desktop";
@@ -73,9 +77,9 @@ let LoomiThemeSwitcher = class LoomiThemeSwitcher extends LitElement {
     }
     options() {
         return [
-            { mode: "light", text: this.lightText, icon: this.lightIcon },
-            { mode: "dark", text: this.darkText, icon: this.darkIcon },
-            { mode: "system", text: this.systemText, icon: this.systemIcon },
+            { mode: "light", text: loomiDefaultText(this.lightText, DEFAULT_LIGHT_TEXT, "themeSwitcher.light", this.locale), icon: this.lightIcon },
+            { mode: "dark", text: loomiDefaultText(this.darkText, DEFAULT_DARK_TEXT, "themeSwitcher.dark", this.locale), icon: this.darkIcon },
+            { mode: "system", text: loomiDefaultText(this.systemText, DEFAULT_SYSTEM_TEXT, "themeSwitcher.system", this.locale), icon: this.systemIcon },
         ];
     }
     icon(iconName) {
@@ -95,7 +99,7 @@ let LoomiThemeSwitcher = class LoomiThemeSwitcher extends LitElement {
     </button>`;
     }
     renderHorizontal() {
-        return html `<div class="loomi-switch" role="group" aria-label="Theme">
+        return html `<div class="loomi-switch" role="group" aria-label=${loomiT("themeSwitcher.theme", {}, this.locale)}>
       ${this.options().map(({ mode, text, icon }) => this.opt(mode, text, icon))}
     </div>`;
     }
@@ -105,7 +109,7 @@ let LoomiThemeSwitcher = class LoomiThemeSwitcher extends LitElement {
         return html `<loomi-dropmenu class="loomi-theme-menu" position="right">
       <span slot="trigger" class="loomi-menu-trigger">
         <loomi-icon class="loomi-menu-selected-icon" name=${selected.icon} size="1.05rem"></loomi-icon>
-        <span class="loomi-sr-only">Theme: ${selected.text}</span>
+        <span class="loomi-sr-only">${loomiT("themeSwitcher.selectedTheme", { theme: selected.text }, this.locale)}</span>
         <loomi-icon class="loomi-menu-chevron" name="chevron-down" size="1rem"></loomi-icon>
       </span>
       ${this.options().map(({ mode, text, icon }) => html `<loomi-dropmenu-item
@@ -143,6 +147,9 @@ __decorate([
 __decorate([
     property({ attribute: "system-text" })
 ], LoomiThemeSwitcher.prototype, "systemText", void 0);
+__decorate([
+    property()
+], LoomiThemeSwitcher.prototype, "locale", void 0);
 __decorate([
     property({ attribute: "light-icon" })
 ], LoomiThemeSwitcher.prototype, "lightIcon", void 0);

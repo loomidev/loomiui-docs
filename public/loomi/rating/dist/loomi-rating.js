@@ -4,9 +4,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { LitElement, html, svg } from "lit";
+import { html, svg } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { loomiStyles, accentVars } from "@loomi/core";
+import { LoomiElement, loomiStyles, loomiT, accentVars } from "@loomi/core";
 import { componentStyles } from "./generated/styles.css.js";
 const SHAPES = {
     star: svg `<path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />`,
@@ -19,7 +19,7 @@ const SHAPES = {
  *
  * @fires change - `detail: { rating }` when a new rating is chosen.
  */
-let LoomiRating = class LoomiRating extends LitElement {
+let LoomiRating = class LoomiRating extends LoomiElement {
     constructor() {
         super(...arguments);
         this.internals = this.attachInternals();
@@ -29,6 +29,7 @@ let LoomiRating = class LoomiRating extends LitElement {
         this.size = "small";
         this.rating = 0;
         this.clickable = true;
+        this.locale = "";
         this.hover = 0;
     }
     static { this.styles = loomiStyles(componentStyles); }
@@ -49,14 +50,14 @@ let LoomiRating = class LoomiRating extends LitElement {
       class="loomi-rating size-${this.size} ${this.clickable ? "" : "readonly"}"
       style=${accentVars(this.color)}
       role="radiogroup"
-      aria-label="Rating"
+      aria-label=${loomiT("rating.label", {}, this.locale)}
       @mouseleave=${() => (this.hover = 0)}
     >
       ${[1, 2, 3, 4, 5].map((n) => html `<button
           class="loomi-star ${n <= active ? "on" : ""}"
           role="radio"
           aria-checked=${n === this.rating ? "true" : "false"}
-          aria-label="${n} star${n > 1 ? "s" : ""}"
+          aria-label=${loomiT("rating.valueLabel", { value: n, max: 5 }, this.locale)}
           @mouseenter=${() => this.clickable && (this.hover = n)}
           @click=${() => this.pick(n)}
         >
@@ -83,6 +84,9 @@ __decorate([
 __decorate([
     property({ type: Boolean })
 ], LoomiRating.prototype, "clickable", void 0);
+__decorate([
+    property()
+], LoomiRating.prototype, "locale", void 0);
 __decorate([
     state()
 ], LoomiRating.prototype, "hover", void 0);

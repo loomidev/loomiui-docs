@@ -4,9 +4,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { LitElement, html, nothing, svg } from "lit";
+import { html, nothing, svg } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { loomiStyles, accentVars } from "@loomi/core";
+import { LoomiElement, loomiStyles, accentVars } from "@loomi/core";
 import { getLoomiIcon } from "@loomi/icons";
 import { componentStyles } from "./generated/styles.css.js";
 const CHECK = svg `<path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />`;
@@ -16,7 +16,7 @@ const CHECK = svg `<path stroke-linecap="round" stroke-linejoin="round" d="m4.5 
  * @slot - Custom content (overrides the `content` attribute).
  * @slot content - Alias for the default slot.
  */
-let LoomiTimeline = class LoomiTimeline extends LitElement {
+let LoomiTimeline = class LoomiTimeline extends LoomiElement {
     constructor() {
         super(...arguments);
         this.date = "";
@@ -94,7 +94,7 @@ export { LoomiTimeline };
  * `<loomi-timelines>` — wraps `<loomi-timeline>` items and shares attributes with them.
  * @slot - `<loomi-timeline>` children.
  */
-let LoomiTimelines = class LoomiTimelines extends LitElement {
+let LoomiTimelines = class LoomiTimelines extends LoomiElement {
     constructor() {
         super(...arguments);
         this.stacked = false;

@@ -5,13 +5,15 @@ description: Install LoomiUI in a few simple steps.
 
 LoomiUI is installed with npm, just like most frontend packages.
 
-The easiest way to start is to install the main package:
+To keep setup simple, start with the main package first. This registers all LoomiUI
+components at once, so you can begin building immediately without choosing individual
+packages up front.
 
 ```bash
 npm install @loomi/components lit
 ```
 
-Then import LoomiUI once in your app:
+Then import LoomiUI once in your app entry file (for example, `main.js` or `index.ts`) so all registered components are available across your application:
 
 ```js
 import "@loomi/components";
@@ -25,19 +27,21 @@ Now you can use LoomiUI components in your HTML:
 
 ## Why do I install `lit` too?
 
-LoomiUI is built with [Lit](https://lit.dev/). Installing `lit` gives LoomiUI the small
-runtime it needs in your app.
+LoomiUI is powered by [Lit](https://lit.dev/). Adding `lit` installs the runtime LoomiUI
+components rely on to render, react to state changes, and update in the browser.
+Because of this, LoomiUI packages require `lit` to be present at runtime.
 
-You usually do not need to import `lit` yourself. Just install it with LoomiUI.
+In most apps, you do not need to import `lit` yourself unless you are using Lit APIs directly.
+For typical LoomiUI usage, install `lit` with LoomiUI and import only the components you need.
 
 ## Pick an install option
 
-If you are new, use **Install everything**. You can switch to smaller installs later if
-you want to keep your app bundle smaller.
+**Install everything** is the fastest way to get LoomiUI running, with every component available out of the box. 
+As you get a hang on the library, you can move to smaller installs and import only what you need.
 
 ### Install everything
 
-Use this when you want the simplest setup.
+This is the easiest way to get started fast, since everything is ready to use right away.
 
 ```bash
 npm install @loomi/components lit
@@ -54,30 +58,42 @@ import "@loomi/components/button";
 import "@loomi/components/datepicker";
 ```
 
-### Install one component
+### Install specific components
 
-Use this when you only need one component.
+Use this when you only need specific components. Each component package works on its own. 
+In the example below we install the [avatar](/components/avatar), [button](/components/button) and [chart](/components/chart) components.
 
 ```bash
-npm install @loomi/button lit
+npm install @loomi/avatar @loomi/button @loomi/chart lit
 ```
 
 ```js
+import "@loomi/avatar";
 import "@loomi/button";
+import "@loomi/chart";
 ```
 
 ```html
+<loomi-avatar image="/avatars/jondoe.svg"></loomi-avatar>
+```
+```html
 <loomi-button color="primary" icon="check">Save changes</loomi-button>
 ```
-
-Each component package works on its own, so this does not install the whole library.
 
 ### Install a category
 
 Use this when you need a group of related components.
 
+LoomiUI's components are split into three categories. 
 Each category has one package for the full group. Every component also has its own
-standalone package if you only need that one component.
+standalone package if you only need that one component. 
+
+| Category | Description |
+| --- | --- |
+| [forms](#forms) | Input and form-related components. |
+| [content](#content) | Display and layout components for content presentation. |
+| [navigation](#navigation) | Components for movement, menus, tabs, and paging. |
+| standalone | This is not a 'category' per se. All other components that fall out of the three categories. |
 
 #### Forms
 
@@ -171,12 +187,14 @@ These components are installed one at a time.
 
 ## TypeScript
 
-TypeScript support is included in every LoomiUI package.
+TypeScript support is included in every LoomiUI package, so it works out of the box.
 
-You do not need to install a separate `@types/*` package. After you install a LoomiUI
-package, TypeScript can read its types automatically.
+You do not need to install a separate `@types/*` package. Once you install a LoomiUI
+package, TypeScript picks up the types automatically.
 
-This helps when you import component classes, helper functions, or shared types:
+That means you get helpful autocomplete, safer code, and clearer errors while you work.
+It is especially useful when you import component classes, helper functions, or shared
+types in your app:
 
 ```ts
 import "@loomi/button";
@@ -196,8 +214,12 @@ import { showLoomiModal } from "@loomi/modal";
 showLoomiModal("delete-user");
 ```
 
-If you use LoomiUI in plain HTML, you usually do not need to think about these types.
-They are most useful when your TypeScript code talks to a component directly.
+If you use LoomiUI in plain HTML, you usually do not need to think about types at all.
+Just install the package, import the component, and use the element in your markup.
+
+Types become helpful when you are writing TypeScript and your code interacts with a
+component directly (for example, reading properties, calling methods, or handling typed
+events).
 
 ## What's next
 

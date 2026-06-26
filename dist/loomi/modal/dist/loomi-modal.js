@@ -4,9 +4,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { LitElement, html, nothing } from "lit";
+import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { loomiStyles, accentVars } from "@loomi/core";
+import { LoomiElement, loomiStyles, loomiT, accentVars } from "@loomi/core";
 import "@loomi/button/loomi-button.js";
 import "@loomi/icon/loomi-icon.js";
 import { componentStyles } from "./generated/styles.css.js";
@@ -16,6 +16,8 @@ const TYPE = {
     warning: { color: "orange", icon: "exclamation-triangle" },
     success: { color: "green", icon: "check-circle" },
 };
+const DEFAULT_OK_LABEL = "Okay";
+const DEFAULT_CANCEL_LABEL = "Cancel";
 const booleanAttribute = {
     fromAttribute(value) {
         return value !== null && value.toLowerCase() !== "false";
@@ -71,7 +73,7 @@ window.hideLoomiModal = hideLoomiModal;
  * @slot - The modal body.
  * @fires ok - Primary button clicked. @fires cancel - Secondary button clicked. @fires close - Dismissed.
  */
-let LoomiModal = class LoomiModal extends LitElement {
+let LoomiModal = class LoomiModal extends LoomiElement {
     constructor() {
         super(...arguments);
         this.name = "";
@@ -79,9 +81,10 @@ let LoomiModal = class LoomiModal extends LitElement {
         this.type = "";
         this.icon = "";
         this.size = "medium";
+        this.locale = "";
         this.open = false;
-        this.okButtonLabel = "Okay";
-        this.cancelButtonLabel = "Cancel";
+        this.okButtonLabel = DEFAULT_OK_LABEL;
+        this.cancelButtonLabel = DEFAULT_CANCEL_LABEL;
         this.showActionButtons = true;
         this.showCloseIcon = false;
         this.backdropCanClose = true;
@@ -242,6 +245,10 @@ let LoomiModal = class LoomiModal extends LitElement {
         const iconName = this.icon || t?.icon || "";
         const actionColor = t?.color ?? "primary";
         const accent = accentVars(actionColor);
+        const okLabel = this.okButtonLabel === DEFAULT_OK_LABEL ? loomiT("modal.ok", {}, this.locale) : this.okButtonLabel;
+        const cancelLabel = this.cancelButtonLabel === DEFAULT_CANCEL_LABEL
+            ? loomiT("modal.cancel", {}, this.locale)
+            : this.cancelButtonLabel;
         const showOk = this.showActionButtons && this.okButtonLabel;
         const showCancel = this.showActionButtons && this.cancelButtonLabel;
         const dialogClasses = [
@@ -255,12 +262,12 @@ let LoomiModal = class LoomiModal extends LitElement {
         class=${dialogClasses}
         role="dialog"
         aria-modal="true"
-        aria-label=${this.title || "Dialog"}
+        aria-label=${this.title || loomiT("modal.dialog", {}, this.locale)}
         tabindex="-1"
         style=${accent}
       >
         ${this.showCloseIcon
-            ? html `<button class="loomi-close" aria-label="Close" @click=${() => this.hide()}>
+            ? html `<button class="loomi-close" aria-label=${loomiT("common.close", {}, this.locale)} @click=${() => this.hide()}>
               <loomi-icon name="x-mark" size="1.15rem" stroke-width="2"></loomi-icon>
             </button>`
             : nothing}
@@ -284,7 +291,7 @@ let LoomiModal = class LoomiModal extends LitElement {
                     size="small"
                     ?block=${this.stretchActionButtons}
                     @click=${this.onCancel}
-                    >${this.cancelButtonLabel}</loomi-button
+                    >${cancelLabel}</loomi-button
                   >`
                 : nothing}
               ${showOk
@@ -294,7 +301,7 @@ let LoomiModal = class LoomiModal extends LitElement {
                     color=${actionColor}
                     ?block=${this.stretchActionButtons}
                     @click=${this.onOk}
-                    >${this.okButtonLabel}</loomi-button
+                    >${okLabel}</loomi-button
                   >`
                 : nothing}
             </div>`
@@ -318,6 +325,9 @@ __decorate([
 __decorate([
     property()
 ], LoomiModal.prototype, "size", void 0);
+__decorate([
+    property()
+], LoomiModal.prototype, "locale", void 0);
 __decorate([
     property({ type: Boolean, reflect: true })
 ], LoomiModal.prototype, "open", void 0);

@@ -4,9 +4,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { LitElement, html, nothing, svg } from "lit";
+import { html, nothing, svg } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { loomiStyles, accentVars } from "@loomi/core";
+import { LoomiElement, loomiStyles, accentVars } from "@loomi/core";
 import { getLoomiIcon } from "@loomi/icons";
 import { componentStyles } from "./generated/styles.css.js";
 const CHECK = svg `<path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />`;
@@ -14,7 +14,7 @@ const CHECK = svg `<path stroke-linecap="round" stroke-linejoin="round" d="m4.5 
  * `<loomi-checkcard>` — a single selectable card. Use inside `<loomi-checkcards>`.
  * @slot - Card body content.
  */
-let LoomiCheckcard = class LoomiCheckcard extends LitElement {
+let LoomiCheckcard = class LoomiCheckcard extends LoomiElement {
     constructor() {
         super(...arguments);
         this.value = "";
@@ -89,7 +89,7 @@ export { LoomiCheckcard };
  * @slot - `<loomi-checkcard>` children.
  * @fires change - `detail: { values }` when the selection changes.
  */
-let LoomiCheckcards = class LoomiCheckcards extends LitElement {
+let LoomiCheckcards = class LoomiCheckcards extends LoomiElement {
     constructor() {
         super(...arguments);
         this.internals = this.attachInternals();

@@ -4,9 +4,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { LitElement, html, nothing } from "lit";
+import { html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { loomiStyles, onClickOutside } from "@loomi/core";
+import { LoomiElement, loomiStyles, onClickOutside } from "@loomi/core";
 import { getLoomiIcon } from "@loomi/icons";
 import { componentStyles } from "./generated/styles.css.js";
 /**
@@ -15,7 +15,7 @@ import { componentStyles } from "./generated/styles.css.js";
  * @slot - Panel content (rich markup allowed).
  * @slot trigger - Custom trigger markup (overrides the `trigger` icon).
  */
-let LoomiPopover = class LoomiPopover extends LitElement {
+let LoomiPopover = class LoomiPopover extends LoomiElement {
     constructor() {
         super(...arguments);
         this.trigger = "information-circle";

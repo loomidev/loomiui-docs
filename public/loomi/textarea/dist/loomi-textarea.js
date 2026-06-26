@@ -4,9 +4,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { LitElement, html, nothing } from "lit";
+import { html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
-import { themeStyles } from "@loomi/theme";
+import { LoomiElement, loomiT, themeStyles } from "@loomi/core";
 import { componentStyles, quillStyles } from "./generated/styles.css.js";
 /**
  * `<loomi-textarea>` — a themeable multi-line text input with a floating label
@@ -19,13 +19,14 @@ import { componentStyles, quillStyles } from "./generated/styles.css.js";
  * @fires input - Native input event (composed).
  * @fires change - Native change event (composed).
  */
-let LoomiTextarea = class LoomiTextarea extends LitElement {
+let LoomiTextarea = class LoomiTextarea extends LoomiElement {
     constructor() {
         super(...arguments);
         this.internals = this.attachInternals();
         this.validationVisible = false;
         this.name = "";
         this.label = "";
+        this.locale = "";
         this.placeholder = "";
         this.value = "";
         this.rows = 3;
@@ -114,7 +115,7 @@ let LoomiTextarea = class LoomiTextarea extends LitElement {
         const empty = this.required && !this.disabled && !this.readonly && text.trim() === "";
         this.invalid = empty && showInvalid;
         const validity = empty ? { valueMissing: true } : {};
-        const message = empty ? this.errorMessage || "Please fill out this field." : "";
+        const message = empty ? this.errorMessage || loomiT("validation.requiredField", {}, this.locale) : "";
         const anchor = (this.toolbar ? this.quillRootEl : this.textareaEl);
         if (anchor)
             this.internals.setValidity(validity, message, anchor);
@@ -178,6 +179,9 @@ __decorate([
 __decorate([
     property()
 ], LoomiTextarea.prototype, "label", void 0);
+__decorate([
+    property()
+], LoomiTextarea.prototype, "locale", void 0);
 __decorate([
     property()
 ], LoomiTextarea.prototype, "placeholder", void 0);

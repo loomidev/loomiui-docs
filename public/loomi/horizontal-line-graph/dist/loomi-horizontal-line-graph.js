@@ -4,16 +4,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { LitElement, html, nothing } from "lit";
+import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { loomiStyles, cssColor } from "@loomi/core";
+import { LoomiElement, loomiStyles, cssColor } from "@loomi/core";
 import { componentStyles } from "./generated/styles.css.js";
 const FALLBACK = ["primary", "green", "orange", "red", "purple", "cyan", "pink", "indigo"];
 /**
  * `<loomi-horizontal-line-graph>` — a single proportion bar split into colored segments,
  * with an optional legend. Provide `data` (`{ label, value, color? }`).
  */
-let LoomiHorizontalLineGraph = class LoomiHorizontalLineGraph extends LitElement {
+let LoomiHorizontalLineGraph = class LoomiHorizontalLineGraph extends LoomiElement {
     constructor() {
         super(...arguments);
         this.data = [];

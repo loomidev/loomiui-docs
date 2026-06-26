@@ -4,9 +4,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { LitElement, html, nothing } from "lit";
+import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { loomiStyles, accentVars, isLoomiColor } from "@loomi/core";
+import { LoomiElement, loomiStyles, accentVars, isLoomiColor } from "@loomi/core";
 import { componentStyles } from "./generated/styles.css.js";
 /**
  * `<loomi-checkbox>` — a themeable checkbox in the full loomi palette.
@@ -16,7 +16,7 @@ import { componentStyles } from "./generated/styles.css.js";
  * @csspart box - The checkbox box.
  * @fires change - Fired when the checked state changes (composed).
  */
-let LoomiCheckbox = class LoomiCheckbox extends LitElement {
+let LoomiCheckbox = class LoomiCheckbox extends LoomiElement {
     constructor() {
         super(...arguments);
         this.internals = this.attachInternals();

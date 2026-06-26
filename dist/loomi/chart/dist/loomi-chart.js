@@ -4,9 +4,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { LitElement, html, nothing, svg } from "lit";
+import { html, nothing, svg } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { loomiStyles, accentVars, cssColor } from "@loomi/core";
+import { LoomiElement, loomiStyles, accentVars, cssColor } from "@loomi/core";
 import { componentStyles } from "./generated/styles.css.js";
 const PALETTE = ["primary", "green", "orange", "red", "purple", "cyan", "pink", "indigo"];
 const segColor = (p, i) => {
@@ -17,7 +17,7 @@ const segColor = (p, i) => {
  * `<loomi-chart>` — a lightweight SVG chart: `bar`, `line`, `pie` or `donut`. Provide a
  * single series via `data` (`{ label, value, color? }`).
  */
-let LoomiChart = class LoomiChart extends LitElement {
+let LoomiChart = class LoomiChart extends LoomiElement {
     constructor() {
         super(...arguments);
         this.type = "bar";

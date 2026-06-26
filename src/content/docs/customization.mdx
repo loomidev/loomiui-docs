@@ -3,15 +3,16 @@ title: Customization
 description: Re-theme the entire LoomiUI library by overriding CSS custom properties — no build step, no Tailwind required.
 ---
 
-You customize LoomiUI with normal CSS variables. Put the variables in your own CSS, and
-every LoomiUI component on the page can use them.
+You customize LoomiUI with normal CSS variables, just like any other styles in your app.
+Add the variables in your own stylesheet, and every LoomiUI component on the page can
+pick them up automatically.
 
-There is no config file to edit, no rebuild step, and no Tailwind setup required in your
-app.
+That means you can start small: change one color, preview it, and adjust as needed. When
+you are happy with it, the same values apply across buttons, inputs, alerts, and more.
 
 ## Overriding the defaults
 
-Use this variable pattern:
+LoomiUI color tokens follow a predictable naming convention, making it easy to customize and override any palette color.
 
 ```txt
 --loomi-<color>-<shade>
@@ -29,11 +30,15 @@ For example, this changes the main `primary` color to green:
 }
 ```
 
-After that, every component that uses `color="primary"` picks up your new color. That
-includes buttons, inputs, tags, alerts, and other components.
+Once these variables are defined, any LoomiUI component that uses `color="primary"` automatically adopts your custom palette.
 
-The `:root` selector means "make this available everywhere on the page". LoomiUI
-components can read those variables even though they use Shadow DOM.
+The change is applied consistently across the library, including [buttons](/components/button), [inputs](/components/input), [tags](/components/tag), [alerts](/components/alert), and any other component that relies on the primary color tokens.
+
+Define your overrides on the `:root` selector to make them available throughout the document:
+
+Variables declared in `:root` are globally accessible. LoomiUI components can resolve these values even when rendered inside Shadow DOM.
+
+This approach lets you manage your application’s theme from a single stylesheet, ensuring a consistent look and feel without styling individual component instances.
 
 <loomi-alert type="success" icon="check-circle">
   <strong>Tip:</strong> change the whole color ramp when you can. Components often use
@@ -43,7 +48,15 @@ components can read those variables even though they use Shadow DOM.
 
 ## The 14 palette colors
 
-Each button below is a real `<loomi-button>` using one palette color.
+These are the built-in semantic + utility palettes available out of the box.
+You can use any of these names with the `color` attribute across components.
+For example:
+
+```html
+<loomi-button color="indigo">Open</loomi-button>
+<loomi-tag color="orange">Draft</loomi-tag>
+<loomi-alert color="red">Action required</loomi-alert>
+```
 
 <div class="loomi-palette-grid">
   <loomi-button color="primary" size="small">primary</loomi-button>
@@ -62,51 +75,94 @@ Each button below is a real `<loomi-button>` using one palette color.
   <loomi-button color="gray" size="small">gray</loomi-button>
 </div>
 
-Every color has the same shades: `50`, `100`, `200`, `300`, `400`, `500`, `600`, `700`,
-`800`, `900`, and `950`.
+Each palette in LoomiUI uses the same 11-step shade scale:
+`50`, `100`, `200`, `300`, `400`, `500`, `600`, `700`, `800`, `900`, and `950`.
 
-That means variables like `--loomi-red-500`, `--loomi-cyan-700`, and
-`--loomi-gray-100` are all valid.
+Because the scale is consistent, token names are always predictable. Any
+combination of a supported color + one of these shade values is valid, for example:
+`--loomi-red-500`, `--loomi-cyan-700`, or `--loomi-gray-100`.
+
+If you override tokens for one of these colors (such as `--loomi-indigo-600`),
+every component using that color updates automatically.
+
+### How components use shades
+
+Most interactive components map shades to states in a consistent way:
+
+| Shade(s) | Usage |
+| --- | --- |
+| `600` | Base/primary action color |
+| `700` | Hover and active state |
+| `50`–`200` | Soft backgrounds, accents, and low-emphasis surfaces |
+| `300`–`500` | Borders, outlines, and intermediate emphasis |
+| `800`–`950` | High-contrast text and strong surfaces |
+
+For best visual consistency, override the full shade ramp for a color instead of only
+one or two tokens. Updating the complete set keeps buttons, tags, alerts, and form
+controls visually aligned across all states.
 
 ## Per-instance colors
 
-Use the `color` attribute when you want one component to use a specific palette color:
+Use the `color` attribute when you want to apply a specific palette to an individual component instance.
+This is useful when a single UI element needs semantic meaning (for example, danger, success, or warning)
+without changing the global theme.
 
 ```html
 <loomi-checkbox color="red" checked>Critical</loomi-checkbox>
 <loomi-checkbox color="green" checked>Resolved</loomi-checkbox>
 ```
 
-If you later change `--loomi-red-600`, every component using `color="red"` will update.
-You do not need to style each component one by one.
+The `color` value must match one of the supported LoomiUI palette names (such as `red`, `green`,
+`indigo`, or `primary`).
+
+Because LoomiUI components resolve these values from CSS tokens, instance colors remain fully themeable.
+If you later override a token like `--loomi-red-600`, every component that uses `color="red"` updates
+automatically across the app. This lets you keep component markup simple while still getting centralized control over visual styles.
 
 ## Dark mode
 
-LoomiUI includes a theme switcher component. It lets the user choose light, dark, or
-system mode:
+LoomiUI supports runtime theme switching and dark-mode token overrides out of the box.
+The recommended option is the built-in `<loomi-theme-switcher>` component, which handles
+mode selection, persistence, and class application automatically.
+
+The switcher supports three modes:
+
+| Mode | Behavior |
+| --- | --- |
+| `light` | Always uses the light theme |
+| `dark` | Always uses the dark theme |
+| `system` | Follows the user’s OS/browser color-scheme preference |
+
+## Install and render the switcher
+
+Import the component once, then render it where users can access theme controls
+(for example, your app header, profile menu, or settings page):
 
 ```html
 <script type="module">
-  import "@loomi/theme-switcher/loomi-theme-switcher.js";
+  import "@loomi/theme-switcher";
 </script>
 
 <loomi-theme-switcher></loomi-theme-switcher>
 ```
 
-The switcher adds a `dark` class to `<html>` when dark mode is active. It also remembers
-the user's choice in `localStorage`.
+When dark mode is active, the switcher applies a `dark` class to the root `<html>` element.
+LoomiUI components automatically resolve any token overrides declared under `html.dark`.
 
-### Use the component
+The selected mode is saved in `localStorage`, so the user preference is restored on
+subsequent visits without extra setup.
 
-Most apps can just place the component in the header or settings menu:
+### Customize switcher labels
+
+Use [custom text labels](/components/theme-switcher/#custom-labels) when needed:
 
 ```html
-<loomi-theme-switcher light-text="Light" dark-text="Dark" system-text="Auto"></loomi-theme-switcher>
+<loomi-theme-switcher system-text="System"></loomi-theme-switcher>
 ```
 
-### Use the helpers
+### Use helper functions in custom UI
 
-If you are building your own toggle UI, use the helper functions:
+If you are building your own theme toggle, import the helpers:
 
 ```js
 import { applyLoomiTheme, getLoomiTheme } from "@loomi/theme-switcher";
@@ -115,12 +171,15 @@ applyLoomiTheme("dark"); // "light" | "dark" | "system"
 getLoomiTheme(); // reads the persisted choice
 ```
 
-### No switcher
+`applyLoomiTheme()` applies the selected mode and updates the root class.
+`getLoomiTheme()` reads the currently persisted preference.
 
-If your app already has its own theme system, you do not need
-`<loomi-theme-switcher>`.
+### Use your own theme system (no switcher)
 
-LoomiUI only needs a `dark` class on an ancestor, usually `<html>`:
+If your app already has theme controls, you do not need `<loomi-theme-switcher>`.
+LoomiUI only requires a `dark` class on an ancestor element (typically `<html>`).
+
+For example:
 
 ```html
 <html class="dark">
@@ -130,14 +189,14 @@ LoomiUI only needs a `dark` class on an ancestor, usually `<html>`:
 </html>
 ```
 
-You can add and remove that class yourself:
+You can toggle the class directly:
 
 ```js
 document.documentElement.classList.add("dark"); // turn dark mode on
 document.documentElement.classList.remove("dark"); // turn dark mode off
 ```
 
-For a real toggle, save the choice and apply it when the page loads:
+For a persistent manual toggle, store the selected theme and apply it on load:
 
 ```js
 const savedTheme = localStorage.getItem("theme");
@@ -152,8 +211,8 @@ function setTheme(theme) {
 }
 ```
 
-If your app uses a different class, such as `theme-dark`, that is fine too. Just write
-your LoomiUI color overrides under that class:
+If your app uses a different class name (for example, `theme-dark`), place your LoomiUI
+token overrides under that selector:
 
 ```css
 html.theme-dark {
@@ -162,7 +221,9 @@ html.theme-dark {
 }
 ```
 
-To customize dark mode colors, write CSS under `html.dark`:
+### Define dark-mode tokens
+
+To customize dark mode colors, declare token overrides in `html.dark`:
 
 ```css
 html.dark {
@@ -172,16 +233,26 @@ html.dark {
 }
 ```
 
-<loomi-alert type="warning" icon="exclamation-triangle">
-  To avoid a quick flash of the wrong theme, call
-  <code>applyLoomiTheme(getLoomiTheme())</code> as early as possible, before the page
-  paints.
-</loomi-alert>
+<loomi-alert type="warning" show-close-icon="false">To avoid a flash of the wrong theme on first paint, call <code>applyLoomiTheme(getLoomiTheme())</code> as early as possible during app startup.</loomi-alert>
 
 ## Forking for deeper changes
 
-CSS variables are enough for most apps.
+For most teams, CSS token overrides are the right and sufficient approach.
+They are fast to ship, easy to maintain, and keep you on the official LoomiUI
+upgrade path.
 
-Fork LoomiUI only if you need to change the built-in defaults for everyone or add a new
-15th palette color. Those defaults come from `palette.json` during the build, so that is
-a source-code change, not a normal app-level customization.
+You should fork LoomiUI only when you need framework-level changes that cannot be
+expressed with app-level CSS variables.
+
+Common examples:
+
+- Changing the default color values shipped to all consumers of your design system
+- Adding a new built-in palette color beyond the standard 14 palettes
+- Modifying how default tokens are generated at build time
+
+These defaults are produced from `palette.json` during the LoomiUI build process.
+As a result, this is a source-code customization workflow (inside a LoomiUI fork),
+not a runtime theming workflow in your app.
+
+If you only need product-level branding or per-app theme control, prefer token
+overrides in your stylesheet instead of maintaining a fork.

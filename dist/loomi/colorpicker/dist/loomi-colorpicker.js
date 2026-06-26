@@ -4,9 +4,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { LitElement, html, nothing } from "lit";
+import { html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { loomiStyles, onClickOutside } from "@loomi/core";
+import { LoomiElement, loomiStyles, loomiT, onClickOutside } from "@loomi/core";
 import { componentStyles } from "./generated/styles.css.js";
 /**
  * `<loomi-colorpicker>` — pick a color. Uses the native color input by default; pass a
@@ -14,7 +14,7 @@ import { componentStyles } from "./generated/styles.css.js";
  *
  * @fires change - `detail: { value }` when a color is chosen.
  */
-let LoomiColorpicker = class LoomiColorpicker extends LitElement {
+let LoomiColorpicker = class LoomiColorpicker extends LoomiElement {
     constructor() {
         super(...arguments);
         this.internals = this.attachInternals();
@@ -22,6 +22,7 @@ let LoomiColorpicker = class LoomiColorpicker extends LitElement {
         this.selectedValue = "#000000";
         this.showValue = false;
         this.colors = "";
+        this.locale = "";
         this.size = "regular";
         this.open = false;
     }
@@ -52,7 +53,7 @@ let LoomiColorpicker = class LoomiColorpicker extends LitElement {
     render() {
         const palette = this.palette;
         const swatch = palette.length
-            ? html `<button class="loomi-swatch size-${this.size}" style="background:${this.selectedValue}" aria-label="Pick color" @click=${() => this.toggle()}></button>
+            ? html `<button class="loomi-swatch size-${this.size}" style="background:${this.selectedValue}" aria-label=${loomiT("colorpicker.pickColor", {}, this.locale)} @click=${() => this.toggle()}></button>
           ${this.open
                 ? html `<div class="loomi-panel" role="listbox">
                 ${palette.map((c) => html `<button class="loomi-chip ${c.toLowerCase() === this.selectedValue.toLowerCase() ? "selected" : ""}" style="background:${c}" aria-label=${c} @click=${() => { this.setValue(c); this.open = false; }}></button>`)}
@@ -77,6 +78,9 @@ __decorate([
 __decorate([
     property()
 ], LoomiColorpicker.prototype, "colors", void 0);
+__decorate([
+    property()
+], LoomiColorpicker.prototype, "locale", void 0);
 __decorate([
     property()
 ], LoomiColorpicker.prototype, "size", void 0);

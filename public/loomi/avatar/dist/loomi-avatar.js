@@ -4,15 +4,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { LitElement, html, nothing } from "lit";
+import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { loomiStyles, accentVars, cssColor } from "@loomi/core";
+import { LoomiElement, loomiStyles, accentVars, cssColor } from "@loomi/core";
 import { componentStyles } from "./generated/styles.css.js";
 /**
  * `<loomi-avatar>` — a rounded image or initials avatar with optional status dot.
  * Wrap several in `<loomi-avatars>` to stack them.
  */
-let LoomiAvatar = class LoomiAvatar extends LitElement {
+let LoomiAvatar = class LoomiAvatar extends LoomiElement {
     constructor() {
         super(...arguments);
         this.image = "";
@@ -79,16 +79,31 @@ export { LoomiAvatar };
  *
  * @slot - `<loomi-avatar>` children.
  */
-let LoomiAvatars = class LoomiAvatars extends LitElement {
+let LoomiAvatars = class LoomiAvatars extends LoomiElement {
     constructor() {
         super(...arguments);
         this.stacked = false;
+        this.dotted = false;
+        this.dotColor = "green";
+        this.dotPosition = "bottom";
         this.plus = 0;
         this.size = "regular";
         this.syncChildren = () => {
             if (this.plus > 0)
                 this.stacked = true;
-            this.querySelectorAll("loomi-avatar").forEach((a) => a.setAttribute("size", this.size));
+            const hasGroupDotColor = this.hasAttribute("dot-color") || this.dotColor !== "green";
+            const hasGroupDotPosition = this.hasAttribute("dot-position") || this.dotPosition !== "bottom";
+            this.querySelectorAll("loomi-avatar").forEach((avatar) => {
+                avatar.setAttribute("size", this.size);
+                if (this.dotted)
+                    avatar.setAttribute("dotted", "");
+                if (hasGroupDotColor && !avatar.hasAttribute("dot-color")) {
+                    avatar.setAttribute("dot-color", this.dotColor);
+                }
+                if (hasGroupDotPosition && !avatar.hasAttribute("dot-position")) {
+                    avatar.setAttribute("dot-position", this.dotPosition);
+                }
+            });
         };
     }
     static { this.styles = loomiStyles(componentStyles); }
@@ -111,6 +126,15 @@ let LoomiAvatars = class LoomiAvatars extends LitElement {
 __decorate([
     property({ type: Boolean, reflect: true })
 ], LoomiAvatars.prototype, "stacked", void 0);
+__decorate([
+    property({ type: Boolean })
+], LoomiAvatars.prototype, "dotted", void 0);
+__decorate([
+    property({ attribute: "dot-color" })
+], LoomiAvatars.prototype, "dotColor", void 0);
+__decorate([
+    property({ attribute: "dot-position" })
+], LoomiAvatars.prototype, "dotPosition", void 0);
 __decorate([
     property({ type: Number })
 ], LoomiAvatars.prototype, "plus", void 0);

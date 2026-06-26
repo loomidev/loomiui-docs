@@ -90,7 +90,7 @@
 
 /* Live component preview boxes injected above each ```html code block. */
 .loomi-preview {
-  @apply mt-8 pt-3 p-6 border border-slate-200 rounded-t-2xl bg-slate-50 gap-[0.85rem];
+  @apply mt-8 gap-[0.85rem] mb-6;
   color-scheme: light;
 }
 :root[data-theme="dark"] .loomi-preview {
@@ -99,8 +99,12 @@
   color-scheme: dark;
 }
 
-starlight-toc > nav > ul {
+starlight-toc nav ul {
   @apply space-y-2;
+}
+
+starlight-toc nav ul li a{
+  @apply hover:bg-linear-to-r hover:from-slate-200/80 hover:to-white rounded-md;
 }
 
 .sidebar-content li {
@@ -127,14 +131,39 @@ summary > svg {
 .sidebar-content a[aria-current="page"] {
   @apply border-l-2 border-l-orange-600 text-orange-700 bg-linear-to-r from-orange-200/70 to-white hover:bg-linear-to-r hover:from-orange-200/80 hover:to-white;
 }
+
+h2#starlight__on-this-page {
+  @apply mt-6 mb-4 text-xs font-semibold tracking-widest uppercase text-slate-900;
+}
+
 .content-panel {
-  @apply border-0;
+  @apply border-0 pt-0;
 }
 .main-pane h1, .main-pane h2, .main-pane h3, .main-pane h4 {
-  @apply font-light tracking-wide;
+  @apply font-light;
 }
+
+.main-pane h1 {
+  @apply pt-4 text-4xl tracking-wide;
+}
+
+.main-pane h2 {
+  @apply text-2xl text-orange-800;
+}
+
+.main-pane h3, .main-pane h4 {
+  @apply text-xl text-blue-800;
+}
+
 .main-pane p {
   @apply leading-8;
+}
+.main-pane p a {
+  @apply text-orange-600 hover:text-orange-700 hover:underline;
+}
+
+.main-pane .sl-container {
+  @apply max-w-full px-3 lg:px-14;
 }
 loomi-alert > p {
   @apply leading-none;
@@ -148,66 +177,39 @@ loomi-alert > p {
   margin-top: 0 !important;
 }
 
-.loomi-preview::before {
-  content: attr(data-label);
-  @apply block text-[0.7rem] font-semibold uppercase tracking-[0.06em] text-slate-400 mb-4;
+.expressive-code pre {
+  @apply border-0 rounded-xl;
 }
-/* The code fence directly under a preview loses its top rounding/margin so the two
-   visually read as one connected "preview + code" unit. */
-.loomi-preview + .expressive-code {
-  margin-top: 0 !important;
+.frame pre, .expressive-code .frame.is-terminal .header::after {
+  @apply border-0;
 }
-.loomi-preview + .expressive-code .frame {
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
+.frame.is-terminal .header {
+  @apply border-0 rounded-t-xl;
+}
+.frame.is-terminal pre {
+  @apply rounded-t-none;
 }
 
+
 .loomi-palette-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
-  gap: 0.75rem;
-  margin: 1rem 0 1.5rem;
+  @apply grid grid-cols-[repeat(auto-fit,minmax(8rem,1fr))] gap-3 mt-4 mb-6;
 }
 
 .loomi-palette-grid > loomi-button {
-  display: block;
-  margin-top: 0 !important;
+  @apply block mt-0!;
 }
 
 .loomi-palette-grid loomi-button::part(button) {
-  width: 100%;
+  @apply w-full;
 }
 
-/* Sidebar groups ("Start Here", "Components") should always be fully expanded — no
- * collapse/expand interaction. CSS-only, so it doesn't matter whether a toggle is
- * triggered by mouse, keyboard, or Starlight's own scroll-position-restore script:
- * children stay visible regardless of the underlying <details> open state. */
-/*sl-sidebar-state-persist details > :not(summary) {
-  display: block !important;
-}
-sl-sidebar-state-persist .top-level > li {
-  margin-top: 1rem;
-}
-sl-sidebar-state-persist .top-level > li + li {
-  margin-top: 1.25rem;
-}
-sl-sidebar-state-persist .top-level > li:last-child {
-  padding-bottom: 2rem;
-}
-sl-sidebar-state-persist summary {
-  cursor: default;
-  padding-bottom: 15px;
-  pointer-events: none;
-}
-sl-sidebar-state-persist .caret {
-  display: none;
+div.loomi-preview:has(> loomi-avatar + loomi-avatar) {
+  @apply flex items-center gap-4;
 }
 
-sl-sidebar-state-persist a:not([aria-current="page"]):hover,
-sl-sidebar-state-persist a:not([aria-current="page"]):focus {
-  background-color: color-mix(in srgb, var(--sl-color-text-accent) 14%, transparent);
-  color: var(--sl-color-white);
-}*/
+.sl-markdown-content loomi-avatar {
+		@apply mt-0!;
+	}
 
 @media (min-width: 50rem) {
   .header {

@@ -4,17 +4,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { LitElement, html, nothing } from "lit";
+import { html, nothing } from "lit";
 import { customElement, property, state, queryAll } from "lit/decorators.js";
-import { loomiStyles } from "@loomi/core";
+import { LoomiElement, loomiDefaultText, loomiStyles, loomiT } from "@loomi/core";
 import { componentStyles } from "./generated/styles.css.js";
+const DEFAULT_ERROR_MESSAGE = "Verification code is invalid";
 /**
  * `<loomi-code>` — a verification-code (PIN) input of N boxes. Form-associated: submits
  * the joined code under `name`.
  *
  * @fires verify - `detail: { code }` when the last box is filled.
  */
-let LoomiCode = class LoomiCode extends LitElement {
+let LoomiCode = class LoomiCode extends LoomiElement {
     constructor() {
         super(...arguments);
         this.internals = this.attachInternals();
@@ -22,7 +23,8 @@ let LoomiCode = class LoomiCode extends LitElement {
         this.totalDigits = 4;
         this.size = "small";
         this.mask = false;
-        this.errorMessage = "Verification code is invalid";
+        this.errorMessage = DEFAULT_ERROR_MESSAGE;
+        this.locale = "";
         this.invalid = false;
         this.digits = [];
     }
@@ -88,13 +90,13 @@ let LoomiCode = class LoomiCode extends LitElement {
         type=${this.mask ? "password" : "text"}
         inputmode="numeric"
         maxlength="1"
-        aria-label="Digit ${i + 1}"
+        aria-label=${loomiT("code.digitLabel", { number: i + 1 }, this.locale)}
         .value=${this.digits[i] ?? ""}
         @input=${(e) => this.onInput(i, e)}
         @keydown=${(e) => this.onKeydown(i, e)}
       />`)}
     </div>
-    ${this.invalid ? html `<p class="loomi-error">${this.errorMessage}</p>` : nothing}`;
+    ${this.invalid ? html `<p class="loomi-error">${loomiDefaultText(this.errorMessage, DEFAULT_ERROR_MESSAGE, "code.errorMessage", this.locale)}</p>` : nothing}`;
     }
 };
 __decorate([
@@ -112,6 +114,9 @@ __decorate([
 __decorate([
     property({ attribute: "error-message" })
 ], LoomiCode.prototype, "errorMessage", void 0);
+__decorate([
+    property()
+], LoomiCode.prototype, "locale", void 0);
 __decorate([
     property({ type: Boolean, reflect: true })
 ], LoomiCode.prototype, "invalid", void 0);

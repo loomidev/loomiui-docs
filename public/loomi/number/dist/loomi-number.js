@@ -4,9 +4,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { LitElement, html, nothing, svg } from "lit";
+import { html, nothing, svg } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
-import { themeStyles } from "@loomi/theme";
+import { LoomiElement, loomiT, themeStyles } from "@loomi/core";
 import { componentStyles } from "./generated/styles.css.js";
 const MINUS = svg `<path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14" />`;
 const PLUS = svg `<path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14" />`;
@@ -19,13 +19,14 @@ const PLUS = svg `<path stroke-linecap="round" stroke-linejoin="round" d="M12 5v
  * @fires input - Fired as the value changes (composed).
  * @fires change - Fired on commit (composed).
  */
-let LoomiNumber = class LoomiNumber extends LitElement {
+let LoomiNumber = class LoomiNumber extends LoomiElement {
     constructor() {
         super(...arguments);
         this.internals = this.attachInternals();
         this.validationVisible = false;
         this.name = "";
         this.label = "";
+        this.locale = "";
         this.value = "";
         this.min = 0;
         this.max = 100;
@@ -97,7 +98,7 @@ let LoomiNumber = class LoomiNumber extends LitElement {
         const empty = this.required && !this.disabled && this.value.trim() === "";
         this.invalid = empty && showInvalid;
         const validity = empty ? { valueMissing: true } : {};
-        const message = empty ? "Please enter a number." : "";
+        const message = empty ? loomiT("validation.enterNumber", {}, this.locale) : "";
         if (this.inputEl)
             this.internals.setValidity(validity, message, this.inputEl);
         else
@@ -115,7 +116,7 @@ let LoomiNumber = class LoomiNumber extends LitElement {
         return html `<button
       type="button"
       class=${cls}
-      aria-label=${dir === 1 ? "Increment" : "Decrement"}
+      aria-label=${dir === 1 ? loomiT("number.increment", {}, this.locale) : loomiT("number.decrement", {}, this.locale)}
       ?disabled=${this.disabled || atLimit}
       @click=${() => this.bump(dir)}
     >
@@ -165,6 +166,9 @@ __decorate([
 __decorate([
     property()
 ], LoomiNumber.prototype, "label", void 0);
+__decorate([
+    property()
+], LoomiNumber.prototype, "locale", void 0);
 __decorate([
     property()
 ], LoomiNumber.prototype, "value", void 0);
