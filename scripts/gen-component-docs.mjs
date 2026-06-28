@@ -61,9 +61,14 @@ function fixLinks(md) {
   return out;
 }
 
-/** Insert a live <div class="loomi-preview"> rendering of each ```html fence, right above it. */
+/**
+ * Insert a live <div class="loomi-preview"> rendering of each ```html fence, right above it.
+ * A ```html.skip fence renders the same live preview but omits the fence itself from the
+ * output — for READMEs that already show the markup/script split into separate ```js
+ * blocks above and only need this one to drive the combined preview.
+ */
 function withLivePreviews(md) {
-  return md.replace(/```html\n([\s\S]*?)\n```/g, (fullMatch, code) => {
+  return md.replace(/```html(\.skip)?\n([\s\S]*?)\n```/g, (fullMatch, skip, code) => {
     // CommonMark ends a raw HTML block at the first blank line, so a blank line between
     // two multi-line elements (common for readability in the fenced source) would split
     // this div in two, leaving everything after it to be reprocessed as markdown prose
@@ -71,7 +76,8 @@ function withLivePreviews(md) {
     // only in this copy keeps the live preview as one unbroken HTML block; the fenced
     // code shown to the reader (via fullMatch, below) keeps its original formatting.
     const previewCode = code.replace(/\n{2,}/g, "\n");
-    return `<div class="loomi-preview" data-label="Preview">\n${previewCode}\n</div>\n\n${fullMatch}`;
+    const preview = `<div class="loomi-preview" data-label="Preview">\n${previewCode}\n</div>`;
+    return skip ? preview : `${preview}\n\n${fullMatch}`;
   });
 }
 
@@ -96,9 +102,11 @@ for (const name of COMPONENT_NAMES) {
   const bodyLines = h1Index >= 0 ? lines.slice(h1Index + 1) : lines;
   const body = bodyLines.join("\n").trimStart();
 
-  // Swap quotes/backticks out BEFORE truncating, so we never cut between a
-  // backslash and the character it escapes (that previously broke YAML parsing).
-  let description = firstParagraph(body).replace(/"/g, "'").replace(/`/g, "");
+  // Swap quotes/backticks out and drop backslashes BEFORE truncating, so a stray
+  // markdown escape (e.g. `\`` or `\-`) never leaves a dangling backslash next to
+  // whatever character follows once the backtick is gone — that's what previously
+  // broke YAML parsing of the double-quoted frontmatter description.
+  let description = firstParagraph(body).replace(/"/g, "'").replace(/`/g, "").replace(/\\/g, "");
   if (description.length > 160) {
     description = description.slice(0, 160).replace(/\s+\S*$/, "") + "…";
   }

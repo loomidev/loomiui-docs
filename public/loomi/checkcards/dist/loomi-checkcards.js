@@ -4,12 +4,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { html, nothing, svg } from "lit";
+import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { LoomiElement, loomiStyles, accentVars } from "@loomidev/core";
 import { getLoomiIcon } from "@loomidev/icons";
+import "@loomidev/icon/loomi-icon.js";
 import { componentStyles } from "./generated/styles.css.js";
-const CHECK = svg `<path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />`;
 /**
  * `<loomi-checkcard>` — a single selectable card. Use inside `<loomi-checkcards>`.
  * @slot - Card body content.
@@ -34,7 +34,7 @@ let LoomiCheckcard = class LoomiCheckcard extends LoomiElement {
                 : html `<img class="loomi-avatar" src=${this.avatar} alt="" />`;
         }
         if (this.icon && getLoomiIcon(this.icon)) {
-            return html `<span class="loomi-media"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">${getLoomiIcon(this.icon)}</svg></span>`;
+            return html `<span class="loomi-media"><loomi-icon name=${this.icon} stroke-width="1.6"></loomi-icon></span>`;
         }
         return nothing;
     }
@@ -45,7 +45,7 @@ let LoomiCheckcard = class LoomiCheckcard extends LoomiElement {
       aria-checked=${this.selected ? "true" : "false"}
       @click=${() => this.dispatchEvent(new CustomEvent("loomi-checkcard-click", { bubbles: true, composed: true, detail: { value: this.value } }))}
     >
-      <svg class="loomi-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">${CHECK}</svg>
+      <loomi-icon class="loomi-check" name="check" stroke-width="3"></loomi-icon>
       ${this.media()}
       <div class="loomi-body">
         ${this.title ? html `<div class="loomi-title">${this.title}</div>` : nothing}

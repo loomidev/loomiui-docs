@@ -51,7 +51,8 @@ The `-y` flag lets `npx` run it without stopping to ask for confirmation.
 
 Choose the tool you use, then add the matching JSON to that tool's MCP config file.
 If the file does not exist yet, create it. After saving the file, restart the tool so it
-can start the `loomiui` server.
+can start the `loomiui` server. VS Code uses a slightly different JSON shape, shown
+below.
 
 #### Claude Code
 
@@ -62,6 +63,28 @@ or run `/mcp` inside an interactive Claude Code session.
 
 Add this to `~/.cursor/mcp.json` for all Cursor projects, or to your project's
 `.cursor/mcp.json` for just one project.
+
+#### VS Code
+
+VS Code nests servers under `servers` instead of `mcpServers`. For one project, create
+`.vscode/mcp.json`:
+
+```json
+{
+  "servers": {
+    "loomiui": {
+      "command": "npx",
+      "args": ["-y", "@loomidev/mcp-server"]
+    }
+  }
+}
+```
+
+For every project instead, run `MCP: Open User Configuration` from the Command Palette
+(`Cmd+Shift+P` / `Ctrl+Shift+P`) and add the same JSON to the file it opens.
+
+Either way, VS Code prompts you to trust the server the first time it starts — approve
+it, then find `loomiui`'s tools in the Chat view's tool picker.
 
 #### Claude Desktop
 
