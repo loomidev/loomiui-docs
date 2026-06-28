@@ -21,8 +21,8 @@ export function buildImportMap() {
       "quill/": "https://esm.sh/quill@2.0.3/",
       ...Object.fromEntries(
         ALL_PACKAGE_NAMES.flatMap((name) => [
-          [`@loomi/${name}`, `/loomi/${name}/dist/index.js`],
-          [`@loomi/${name}/`, `/loomi/${name}/dist/`],
+          [`@loomidev/${name}`, `/loomi/${name}/dist/index.js`],
+          [`@loomidev/${name}/`, `/loomi/${name}/dist/`],
         ]),
       ),
     },

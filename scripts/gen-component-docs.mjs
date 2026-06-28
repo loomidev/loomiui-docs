@@ -106,7 +106,7 @@ for (const name of COMPONENT_NAMES) {
   const frontmatter = ["---", `title: ${titleCase(name)}`, `description: "${description}"`, "---", ""].join("\n");
   // One page-level import (registers the custom element) resolved via the browser
   // import map declared in astro.config.mjs — every live preview on the page relies on it.
-  const importScript = `<script type="module">\n  import "@loomi/${name}";\n</script>\n\n`;
+  const importScript = `<script type="module">\n  import "@loomidev/${name}";\n</script>\n\n`;
   const finalBody = withLivePreviews(fixLinks(body));
 
   writeFileSync(resolve(DOCS, `${name}.md`), frontmatter + importScript + finalBody);
