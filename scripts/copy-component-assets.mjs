@@ -1,4 +1,4 @@
-// Copies each @loomi/* package's compiled `dist/` output into docs/public/loomi/<name>/dist/
+// Copies each @loomidev/* package's compiled `dist/` output into docs/public/loomi/<name>/dist/
 // so the docs site can load real, working components in the browser via plain <script
 // type="module"> tags pointing at absolute URLs — no bundler step on the docs side.
 //

@@ -1,10 +1,10 @@
 // Shared browser import map so live component previews (plain <script type="module">
 // tags embedded directly in Markdown content, or hand-authored in src/pages/*.astro)
-// can resolve every @loomi/* package's internal bare-specifier imports (e.g. `from
-// "@loomi/core"`) without a bundler on the docs site. `lit` itself comes from a CDN,
+// can resolve every @loomidev/* package's internal bare-specifier imports (e.g. `from
+// "@loomidev/core"`) without a bundler on the docs site. `lit` itself comes from a CDN,
 // exactly like a consumer who hasn't installed loomi locally would load it. Each
 // package also gets a `<name>/` *prefix* entry, since a couple of components import
-// siblings via a subpath (e.g. `@loomi/checkbox/loomi-checkbox.js` from inside
+// siblings via a subpath (e.g. `@loomidev/checkbox/loomi-checkbox.js` from inside
 // <loomi-table>).
 //
 // Used by astro.config.mjs (injected into every Starlight-rendered page's <head>) AND

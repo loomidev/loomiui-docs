@@ -20,9 +20,9 @@ const t = Astro.locals.t;
   async function registerThemePicker() {
     if (customElements.get("loomi-theme-picker")) return;
     try {
-      await import("@loomi/theme-picker");
+      await import("@loomidev/theme-picker");
     } catch {
-      const { LoomiThemeSwitcher } = await import("@loomi/theme-switcher");
+      const { LoomiThemeSwitcher } = await import("@loomidev/theme-switcher");
       if (!customElements.get("loomi-theme-picker")) {
         customElements.define(
           "loomi-theme-picker",

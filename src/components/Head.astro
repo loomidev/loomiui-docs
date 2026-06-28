@@ -7,7 +7,7 @@
 // just covers the ones used site-wide so every page has them available.
 //
 // `is:inline` is required: it tells Astro to emit this script byte-for-byte rather
-// than resolving "@loomi/*" through Vite/Node module resolution (which would fail,
+// than resolving "@loomidev/*" through Vite/Node module resolution (which would fail,
 // since these aren't real node_modules packages here — see /architecture/). The
 // browser's own import map, declared in astro.config.mjs, resolves them at runtime
 // instead, exactly like the per-page scripts on component doc pages.
@@ -16,9 +16,9 @@ import Default from "@astrojs/starlight/components/Head.astro";
 
 <Default {...Astro.props}><slot /></Default>
 <script type="module" is:inline>
-  import "@loomi/card";
-  import "@loomi/icon";
-  import "@loomi/alert";
-  import "@loomi/tab";
-  import "@loomi/button";
+  import "@loomidev/card";
+  import "@loomidev/icon";
+  import "@loomidev/alert";
+  import "@loomidev/tab";
+  import "@loomidev/button";
 </script>

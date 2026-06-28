@@ -34,14 +34,14 @@ Every `​```html` code block in a component page gets a **live rendered preview
 injected directly above it (same markup, executed for real, not a screenshot). This
 works without a bundler on the docs side:
 
-1. `scripts/copy-component-assets.mjs` copies each `@loomi/*` package's compiled
+1. `scripts/copy-component-assets.mjs` copies each `@loomidev/*` package's compiled
    `dist/*.js` from the components monorepo into `public/loomi/<name>/dist/`.
 2. `astro.config.mjs` declares a browser **import map** (in Starlight's `head` config)
-   mapping bare specifiers like `@loomi/button` to those public paths, and `lit` to a
+   mapping bare specifiers like `@loomidev/button` to those public paths, and `lit` to a
    CDN — exactly what a consumer who installed the package locally would get.
 3. `scripts/gen-component-docs.mjs` wraps each html code block in
    `<div class="loomi-preview">` (rendered live) and adds one
-   `<script type="module">import "@loomi/<name>";</script>` per page to register that
+   `<script type="module">import "@loomidev/<name>";</script>` per page to register that
    component. Raw HTML in Markdown passes through untouched, so this works in plain
    `.md` files — no MDX needed.
 
@@ -50,7 +50,7 @@ run them by hand in normal use.
 
 ## Regenerating component pages from source
 
-Component pages are derived from each `@loomi/*` package's `README.md`
+Component pages are derived from each `@loomidev/*` package's `README.md`
 (`../components/packages/<name>/README.md`) — they are **not** hand-maintained here. If
 a component's API changes, update its package README first, then regenerate:
 

@@ -1,4 +1,4 @@
-// Regenerates src/content/docs/components/**/*.md from each @loomi/* package's
+// Regenerates src/content/docs/components/**/*.md from each @loomidev/* package's
 // README.md (one level up, in ../../components/packages/<name>/README.md).
 //
 // Component docs are NOT hand-maintained in this project — they're derived from the
@@ -15,7 +15,7 @@
 
 import { readFileSync, writeFileSync, mkdirSync, rmSync } from "node:fs";
 import { resolve } from "node:path";
-import { COMPONENT_NAMES, categoryOf } from "./loomiui-packages.mjs";
+import { COMPONENT_NAMES, PACKAGE_PREFIX, categoryOf } from "./loomiui-packages.mjs";
 
 const PACKAGES = resolve(import.meta.dirname, "../../components/packages");
 const DOCS = resolve(import.meta.dirname, "../src/content/docs/components");
@@ -106,7 +106,7 @@ for (const name of COMPONENT_NAMES) {
   const frontmatter = ["---", `title: ${titleCase(name)}`, `description: "${description}"`, "---", ""].join("\n");
   // One page-level import (registers the custom element) resolved via the browser
   // import map declared in astro.config.mjs — every live preview on the page relies on it.
-  const importScript = `<script type="module">\n  import "@loomidev/${name}";\n</script>\n\n`;
+  const importScript = `<script type="module">\n  import "${PACKAGE_PREFIX}/${name}";\n</script>\n\n`;
   const finalBody = withLivePreviews(fixLinks(body));
 
   writeFileSync(resolve(DOCS, `${name}.md`), frontmatter + importScript + finalBody);

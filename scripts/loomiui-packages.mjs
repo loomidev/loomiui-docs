@@ -1,7 +1,7 @@
-// Single source of truth for "which @loomi/* packages exist and what category they're
+// Single source of truth for "which @loomidev/* packages exist and what category they're
 // in", shared by astro.config.mjs (import map + sidebar), copy-component-assets.mjs
 // (which dist/ folders to publish), and gen-component-docs.mjs (which READMEs to read).
-// Mirrors the @loomi/forms, @loomi/content and @loomi/navigation grouping packages in
+// Mirrors the @loomidev/forms, @loomidev/content and @loomidev/navigation grouping packages in
 // the components monorepo — keep in sync if a component is added there.
 
 export const INFRA = ["theme", "core", "icons"];
@@ -22,6 +22,7 @@ export const CATEGORY = {
 
 export const COMPONENT_NAMES = Object.values(CATEGORY).flat();
 export const ALL_PACKAGE_NAMES = [...INFRA, ...COMPONENT_NAMES];
+export const PACKAGE_PREFIX = "@loomidev";
 
 export function categoryOf(name) {
   for (const [cat, names] of Object.entries(CATEGORY)) if (names.includes(name)) return cat;

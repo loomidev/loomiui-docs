@@ -4,7 +4,7 @@ description: Give Claude Code, Cursor, and other AI tools direct access to Loomi
 ---
 
 AI coding assistants are good at writing web components, but they can't see LoomiUI's
-actual attribute names, default values, or events — so they guess. `@loomi/mcp-server`
+actual attribute names, default values, or events — so they guess. `@loomidev/mcp-server`
 fixes that by exposing this entire documentation site as an [MCP](https://modelcontextprotocol.io)
 server your AI tool can query directly, the same way you'd ask a teammate "what
 attributes does `<loomi-datepicker>` take?"
@@ -38,7 +38,7 @@ Add this server config to your AI tool:
   "mcpServers": {
     "loomiui": {
       "command": "npx",
-      "args": ["-y", "@loomi/mcp-server"]
+      "args": ["-y", "@loomidev/mcp-server"]
     }
   }
 }
@@ -74,7 +74,7 @@ integrated terminal. You can run this from any folder; it does not need to be in
 LoomiUI project or the app where you plan to use LoomiUI.
 
 ```bash
-npx -y @loomi/mcp-server
+npx -y @loomidev/mcp-server
 ```
 
 If it starts successfully, it may look like nothing happened. That is expected. MCP
@@ -93,7 +93,7 @@ the server like this:
 
 ```bash
 cd ~/Projects/kursor/litail/components
-pnpm --filter @loomi/mcp-server build
+pnpm --filter @loomidev/mcp-server build
 ```
 
 Then point your MCP config at the built file with an absolute path:
