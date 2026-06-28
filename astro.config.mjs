@@ -71,7 +71,7 @@ export default defineConfig({
             { label: "Installation", slug: "installation" },
             { label: "Customization", slug: "customization" },
             { label: "Contributing", slug: "contributing" },
-            { label: "MCP Server", slug: "mcp-server" },
+            { label: "MCP", slug: "mcp-server" },
             { label: "Architecture", slug: "architecture", collapsed: true },
           ],
         },

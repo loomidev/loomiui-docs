@@ -40,7 +40,7 @@ its own. So how does `<loomi-button>` actually render in the browser on a static
 1. **Build the monorepo.** `components/` builds generated CSS/tokens/manifests where a
    package needs them, then compiles with `tsc` — still no bundler — so
    `dist/loomi-button.js` still contains bare specifiers like
-   `from "lit"` and `from "@loomi/core"`, exactly like what a real npm install would
+   `from "lit"` and `from "@loomidev/core"`, exactly like what a real npm install would
    give you.
 2. **Copy compiled assets.** `copy-component-assets.mjs` copies each package's
    `dist/*.js` (filtering out `.d.ts`/`.map` — not needed in the browser) into
@@ -48,8 +48,8 @@ its own. So how does `<loomi-button>` actually render in the browser on a static
    can serve.
 3. **Declare a browser import map.** `astro.config.mjs` injects a
    `<script type="importmap">` (via Starlight's `head` config) that maps every bare
-   specifier a component might use to those static paths — `@loomi/button` →
-   `/loomi/button/dist/index.js`, plus a **prefix** mapping `@loomi/checkbox/` →
+   specifier a component might use to those static paths — `@loomidev/button` →
+   `/loomi/button/dist/index.js`, plus a **prefix** mapping `@loomidev/checkbox/` →
    `/loomi/checkbox/dist/` for sibling-package subpath imports (`<loomi-table>` imports
    `<loomi-checkbox>` directly). External runtime imports such as `lit` and `quill`
    map to CDNs — exactly what a consumer who hasn't installed LoomiUI locally would
@@ -57,11 +57,11 @@ its own. So how does `<loomi-button>` actually render in the browser on a static
 4. **Generate the doc pages.** `gen-component-docs.mjs` reads each component's
    published `README.md`, and wraps every fenced `html` code block in a
    `<div class="loomi-preview">` containing the *same* markup, plus one
-   `<script type="module">import "@loomi/<name>";</script>` per page.
+   `<script type="module">import "@loomidev/<name>";</script>` per page.
 
 Because Astro's Markdown renderer passes raw HTML through untouched, that script tag and
 those custom-element tags just work — no MDX, no per-page bundling. The browser resolves
-`@loomi/button` via the import map, the module evaluates, `customElements.define()`
+`@loomidev/button` via the import map, the module evaluates, `customElements.define()`
 fires, and every matching tag already in the DOM upgrades automatically (module scripts
 are deferred by default, so the timing always works out regardless of where the script
 tag sits on the page).
@@ -88,7 +88,7 @@ of the site did. The actual fix, in `src/styles/custom.css`, is to give previews
 dark theme: when `:root[data-theme="dark"]`, `.loomi-preview` overrides the public
 `--loomi-white`/`--loomi-gray-*`/`--loomi-secondary-*`/`--loomi-black-*` slots with an
 inverted ramp (50↔900, 100↔800, …, using the real default oklch values from
-`@loomi/theme`) — the *exact* mechanism a real consumer's own `:root` dark-mode CSS
+`@loomidev/theme`) — the *exact* mechanism a real consumer's own `:root` dark-mode CSS
 would use, just scoped to the preview box instead of the whole page.
 `src/components/Pagination.astro`'s `<loomi-card>` footer links share the identical
 override (`:is(.loomi-preview, .loomi-pagi-card)` in `custom.css`, since a plain global
@@ -117,7 +117,7 @@ This works because `<loomi-card>`, `<loomi-alert>`, and `<loomi-button>` are rea
 elements, not Astro/JSX components — they render anywhere raw HTML is allowed, including
 inside a component override like `Pagination.astro` (where the script registering them
 must be marked `is:inline`, so Astro emits it untouched instead of trying to resolve
-`@loomi/card` through Node module resolution — see `src/components/Head.astro`).
+`@loomidev/card` through Node module resolution — see `src/components/Head.astro`).
 `FileTree` above stays a Starlight component since LoomiUI has no file-tree equivalent —
 nothing wrong with mixing the two where it makes sense.
 
@@ -224,12 +224,12 @@ Change the copy source from the monorepo to `node_modules`:
 
 ```diff
 - const PACKAGES = resolve(__dirname, "../../components/packages");
-+ // After publishing: install @loomi/* as real npm dependencies in docs/package.json,
++ // After publishing: install @loomidev/* as real npm dependencies in docs/package.json,
 + // then copy from node_modules instead of the sibling monorepo.
-+ const PACKAGES = resolve(__dirname, "../node_modules/@loomi");
++ const PACKAGES = resolve(__dirname, "../node_modules/@loomidev");
 ```
 
-`docs/package.json` would list each `@loomi/*` package (or just `@loomi/components`,
+`docs/package.json` would list each `@loomidev/*` package (or just `@loomidev/components`,
 the umbrella) as a normal `dependency` — no more relying on a sibling checkout existing
 at all.
 
@@ -238,8 +238,8 @@ at all.
 Point the import map straight at a CDN instead of local static files:
 
 ```js
-"@loomi/button": "https://esm.sh/@loomi/button@0.1.0",
-"@loomi/button/": "https://esm.sh/@loomi/button@0.1.0/",
+"@loomidev/button": "https://esm.sh/@loomidev/button@0.1.0",
+"@loomidev/button/": "https://esm.sh/@loomidev/button@0.1.0/",
 ```
 
 This removes `copy-component-assets.mjs` and the ~900&nbsp;KB `public/loomi/` payload
@@ -253,7 +253,7 @@ READMEs can also come from `node_modules` instead of the monorepo:
 
 ```diff
 - const readmePath = resolve(PACKAGES, name, "README.md");
-+ const readmePath = resolve(__dirname, "../node_modules/@loomi", name, "README.md");
++ const readmePath = resolve(__dirname, "../node_modules/@loomidev", name, "README.md");
 ```
 
 npm packages typically ship their README, so this works for free once published.

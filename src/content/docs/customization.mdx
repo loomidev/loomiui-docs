@@ -140,7 +140,7 @@ Import the component once, then render it where users can access theme controls
 
 ```html
 <script type="module">
-  import "@loomi/theme-switcher";
+  import "@loomidev/theme-switcher";
 </script>
 
 <loomi-theme-switcher></loomi-theme-switcher>
@@ -165,7 +165,7 @@ Use [custom text labels](/components/theme-switcher/#custom-labels) when needed:
 If you are building your own theme toggle, import the helpers:
 
 ```js
-import { applyLoomiTheme, getLoomiTheme } from "@loomi/theme-switcher";
+import { applyLoomiTheme, getLoomiTheme } from "@loomidev/theme-switcher";
 
 applyLoomiTheme("dark"); // "light" | "dark" | "system"
 getLoomiTheme(); // reads the persisted choice

@@ -1,0 +1,81 @@
+name: Deploy docs
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-docs
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout docs
+        uses: actions/checkout@v4
+        with:
+          path: docs
+
+      # Component docs and previews are generated from this repo's package READMEs
+      # and compiled dist/ output — see docs/scripts/gen-component-docs.mjs.
+      - name: Checkout components
+        uses: actions/checkout@v4
+        with:
+          repository: loomidev/loomiui
+          path: components
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: |
+            docs/pnpm-lock.yaml
+            components/pnpm-lock.yaml
+
+      - name: Install components dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: components
+
+      - name: Build component packages
+        run: pnpm build
+        working-directory: components
+
+      - name: Install docs dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: docs
+
+      # Runs the prebuild hook (copy-component-assets, gen-component-docs,
+      # gen-contributing-doc) then `astro check && astro build`.
+      - name: Build docs site
+        run: pnpm build
+        working-directory: docs
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DROPLET_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p "${{ secrets.DROPLET_PORT || 22 }}" -H "${{ secrets.DROPLET_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Deploy to droplet
+        run: |
+          rsync -avz --delete \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.DROPLET_PORT || 22 }}" \
+            docs/dist/ \
+            "${{ secrets.DROPLET_USER }}@${{ secrets.DROPLET_HOST }}:${{ secrets.DROPLET_DEPLOY_PATH }}"
+
+      - name: Clean up SSH key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
