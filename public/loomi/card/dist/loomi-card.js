@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { LoomiElement, loomiStyles } from "@loomi/core";
+import { LoomiElement, loomiStyles } from "@loomidev/core";
 import { componentStyles } from "./generated/styles.css.js";
 /**
  * `<loomi-card>` — a content card with an optional title and header/footer slots.

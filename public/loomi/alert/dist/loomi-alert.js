@@ -6,8 +6,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { html, nothing, svg } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { LoomiElement, loomiStyles, loomiT, accentVars } from "@loomi/core";
-import { getLoomiIcon } from "@loomi/icons";
+import { LoomiElement, loomiStyles, loomiT, accentVars } from "@loomidev/core";
+import { getLoomiIcon } from "@loomidev/icons";
 import { componentStyles } from "./generated/styles.css.js";
 const TYPE_COLOR = {
     info: "blue",

@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { html, nothing } from "lit";
 import { customElement, property, state, query } from "lit/decorators.js";
-import { LoomiElement, loomiT, themeStyles } from "@loomi/core";
+import { LoomiElement, loomiT, themeStyles } from "@loomidev/core";
 import { getLoomiIcon } from "./icons.js";
 import { componentStyles } from "./generated/styles.css.js";
 const MASK_TOKEN_TESTS = {

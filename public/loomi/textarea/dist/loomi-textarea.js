@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
-import { LoomiElement, loomiT, themeStyles } from "@loomi/core";
+import { LoomiElement, loomiT, themeStyles } from "@loomidev/core";
 import { componentStyles, quillStyles } from "./generated/styles.css.js";
 /**
  * `<loomi-textarea>` — a themeable multi-line text input with a floating label

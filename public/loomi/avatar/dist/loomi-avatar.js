@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { LoomiElement, loomiStyles, accentVars, cssColor } from "@loomi/core";
+import { LoomiElement, loomiStyles, accentVars, cssColor } from "@loomidev/core";
 import { componentStyles } from "./generated/styles.css.js";
 /**
  * `<loomi-avatar>` — a rounded image or initials avatar with optional status dot.

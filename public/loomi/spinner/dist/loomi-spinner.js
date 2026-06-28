@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { html } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { LoomiElement, loomiStyles, loomiT, accentVars } from "@loomi/core";
+import { LoomiElement, loomiStyles, loomiT, accentVars } from "@loomidev/core";
 import { componentStyles } from "./generated/styles.css.js";
 /**
  * `<loomi-spinner>` — a themeable loading spinner.

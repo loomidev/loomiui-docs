@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { html, nothing, svg } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { LoomiElement, loomiDefaultText, loomiStyles, loomiT, accentVars } from "@loomi/core";
+import { LoomiElement, loomiDefaultText, loomiStyles, loomiT, accentVars } from "@loomidev/core";
 import { componentStyles } from "./generated/styles.css.js";
 const PREV = svg `<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />`;
 const NEXT = svg `<path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />`;

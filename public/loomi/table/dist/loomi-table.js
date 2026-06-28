@@ -7,10 +7,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { html, nothing, svg } from "lit";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import { customElement, property, state } from "lit/decorators.js";
-import { LoomiElement, loomiDefaultText, loomiStyles, cssColor } from "@loomi/core";
-import { getLoomiIcon } from "@loomi/icons";
-import "@loomi/checkbox/loomi-checkbox.js";
-import "@loomi/pagination/loomi-pagination.js";
+import { LoomiElement, loomiDefaultText, loomiStyles, cssColor } from "@loomidev/core";
+import { getLoomiIcon } from "@loomidev/icons";
+import "@loomidev/checkbox/loomi-checkbox.js";
+import "@loomidev/pagination/loomi-pagination.js";
 import { componentStyles } from "./generated/styles.css.js";
 const SORT = svg `<path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />`;
 const SEARCH = svg `<path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />`;

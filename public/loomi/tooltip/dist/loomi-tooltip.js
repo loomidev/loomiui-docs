@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { html } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { LoomiElement, loomiStyles } from "@loomi/core";
+import { LoomiElement, loomiStyles } from "@loomidev/core";
 import { componentStyles } from "./generated/styles.css.js";
 /**
  * `<loomi-tooltip>` — shows a tooltip on hover/focus of its trigger content.

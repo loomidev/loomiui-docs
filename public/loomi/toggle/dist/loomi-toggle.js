@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { LoomiElement, loomiStyles, accentVars, isLoomiColor } from "@loomi/core";
+import { LoomiElement, loomiStyles, accentVars, isLoomiColor } from "@loomidev/core";
 import { componentStyles } from "./generated/styles.css.js";
 /**
  * `<loomi-toggle>` — a themeable toggle/switch (a checkbox, spiced up).

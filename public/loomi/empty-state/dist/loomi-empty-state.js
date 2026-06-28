@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { html, nothing, svg } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { LoomiElement, loomiStyles } from "@loomi/core";
+import { LoomiElement, loomiStyles } from "@loomidev/core";
 import { componentStyles } from "./generated/styles.css.js";
 const DEFAULT_ART = svg `<svg viewBox="0 0 120 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
   <rect x="18" y="28" width="84" height="56" rx="6" stroke="currentColor" stroke-width="3" />

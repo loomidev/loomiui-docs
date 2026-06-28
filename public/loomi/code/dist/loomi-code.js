@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { html, nothing } from "lit";
 import { customElement, property, state, queryAll } from "lit/decorators.js";
-import { LoomiElement, loomiDefaultText, loomiStyles, loomiT } from "@loomi/core";
+import { LoomiElement, loomiDefaultText, loomiStyles, loomiT } from "@loomidev/core";
 import { componentStyles } from "./generated/styles.css.js";
 const DEFAULT_ERROR_MESSAGE = "Verification code is invalid";
 /**

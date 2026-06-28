@@ -6,10 +6,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { LoomiElement, loomiDefaultText, loomiStyles, loomiT } from "@loomi/core";
-import { getLoomiIcon } from "@loomi/icons";
-import "@loomi/dropmenu/loomi-dropmenu.js";
-import "@loomi/icon/loomi-icon.js";
+import { LoomiElement, loomiDefaultText, loomiStyles, loomiT } from "@loomidev/core";
+import { getLoomiIcon } from "@loomidev/icons";
+import "@loomidev/dropmenu/loomi-dropmenu.js";
+import "@loomidev/icon/loomi-icon.js";
 import { componentStyles } from "./generated/styles.css.js";
 const STORAGE_KEY = "loomi-theme";
 const DEFAULT_LIGHT_TEXT = "Light";

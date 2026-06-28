@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { html, nothing } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { LoomiElement, loomiStyles, loomiT, onClickOutside } from "@loomi/core";
+import { LoomiElement, loomiStyles, loomiT, onClickOutside } from "@loomidev/core";
 import { componentStyles } from "./generated/styles.css.js";
 /**
  * `<loomi-colorpicker>` — pick a color. Uses the native color input by default; pass a

@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { ifDefined } from "lit/directives/if-defined.js";
-import { LoomiElement, themeStyles, isLoomiColor } from "@loomi/core";
+import { LoomiElement, themeStyles, isLoomiColor } from "@loomidev/core";
 import { getLoomiIcon } from "./icons.js";
 import { buttonStyles } from "./generated/styles.css.js";
 /** Padding + font-size per size. Literal strings so Tailwind's scanner picks them up. */

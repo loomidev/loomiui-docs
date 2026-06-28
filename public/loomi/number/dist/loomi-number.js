@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { html, nothing, svg } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
-import { LoomiElement, loomiT, themeStyles } from "@loomi/core";
+import { LoomiElement, loomiT, themeStyles } from "@loomidev/core";
 import { componentStyles } from "./generated/styles.css.js";
 const MINUS = svg `<path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14" />`;
 const PLUS = svg `<path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14" />`;

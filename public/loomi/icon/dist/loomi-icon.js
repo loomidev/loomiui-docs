@@ -6,11 +6,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { LoomiElement, loomiStyles } from "@loomi/core";
-import { getLoomiIcon } from "@loomi/icons";
+import { LoomiElement, loomiStyles } from "@loomidev/core";
+import { getLoomiIcon } from "@loomidev/icons";
 import { componentStyles } from "./generated/styles.css.js";
 /**
- * `<loomi-icon>` — renders an icon from the shared `@loomi/icons` registry by `name`,
+ * `<loomi-icon>` — renders an icon from the shared `@loomidev/icons` registry by `name`,
  * a file from a custom directory, or any custom SVG placed in the default slot. Registry
  * icons follow `currentColor`; file icons render as images. Size is controlled with the
  * `size` attribute or the `--loomi-icon-size` custom property.
@@ -20,7 +20,7 @@ import { componentStyles } from "./generated/styles.css.js";
 let LoomiIcon = class LoomiIcon extends LoomiElement {
     constructor() {
         super(...arguments);
-        /** Registered icon name (see `@loomi/icons`). */
+        /** Registered icon name (see `@loomidev/icons`). */
         this.name = "";
         /** Heroicons style variant. */
         this.variant = "outline";

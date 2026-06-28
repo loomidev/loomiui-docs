@@ -6,9 +6,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { LoomiElement, loomiStyles, loomiT, accentVars } from "@loomi/core";
-import "@loomi/button/loomi-button.js";
-import "@loomi/icon/loomi-icon.js";
+import { LoomiElement, loomiStyles, loomiT, accentVars } from "@loomidev/core";
+import "@loomidev/button/loomi-button.js";
+import "@loomidev/icon/loomi-icon.js";
 import { componentStyles } from "./generated/styles.css.js";
 const TYPE = {
     info: { color: "blue", icon: "information-circle" },

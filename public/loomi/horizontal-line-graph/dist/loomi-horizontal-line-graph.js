@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { LoomiElement, loomiStyles, cssColor } from "@loomi/core";
+import { LoomiElement, loomiStyles, cssColor } from "@loomidev/core";
 import { componentStyles } from "./generated/styles.css.js";
 const FALLBACK = ["primary", "green", "orange", "red", "purple", "cyan", "pink", "indigo"];
 /**

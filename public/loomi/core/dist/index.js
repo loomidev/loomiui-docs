@@ -1,8 +1,8 @@
 import { LitElement } from "lit";
-import { themeStyles } from "@loomi/theme";
+import { themeStyles } from "@loomidev/theme";
 export * from "./i18n.js";
-// Re-export the shared theme surface so components import everything from @loomi/core.
-export { themeStyles, LOOMI_COLORS, LOOMI_SHADES, isLoomiColor, } from "@loomi/theme";
+// Re-export the shared theme surface so components import everything from @loomidev/core.
+export { themeStyles, LOOMI_COLORS, LOOMI_SHADES, isLoomiColor, } from "@loomidev/theme";
 /**
  * Prepend the shared theme tokens to a component's own styles. Use it in
  * `static styles` so every `var(--loomi-*)` reference resolves in the Shadow DOM:

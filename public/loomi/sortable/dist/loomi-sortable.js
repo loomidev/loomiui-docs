@@ -6,8 +6,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { html, nothing, svg } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { LoomiElement, loomiStyles, loomiT } from "@loomi/core";
-import { getLoomiIcon } from "@loomi/icons";
+import { LoomiElement, loomiStyles, loomiT } from "@loomidev/core";
+import { getLoomiIcon } from "@loomidev/icons";
 import { componentStyles } from "./generated/styles.css.js";
 const GRIP = svg `<path d="M9 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 12a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM9 19a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM17 5a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM17 12a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM17 19a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z" fill="currentColor" />`;
 // Module-level because a drag-and-drop gesture can span two <loomi-sortable>
@@ -52,7 +52,7 @@ let LoomiSortable = class LoomiSortable extends LoomiElement {
         this.handle = "";
         /** Drag by a dedicated handle instead of the whole row surface. */
         this.hasHandle = false;
-        /** Icon name (from `@loomi/icons`) used for the drag handle when handle mode is enabled. */
+        /** Icon name (from `@loomidev/icons`) used for the drag handle when handle mode is enabled. */
         this.handleIcon = "bars-3";
         /** Backwards-compatible multi-drag flag. */
         this.multidrag = false;
