@@ -6,7 +6,7 @@ import { buildImportMap } from "../lib/import-map.mjs";
 import "../styles/home.css";
 
 const importMap = buildImportMap();
-const title = "loomiui — Web components, themeable like it's 2015 again";
+const title = "LoomiUI - One component library for every frontend stack";
 const description =
   "LoomiUI is a framework-agnostic library of Web Components built with Lit, fully themeable through CSS custom properties. Install a single component or the entire library";
 ---
@@ -24,31 +24,57 @@ const description =
     <MarketingHeader />
 
     <div class="post-hero-backdrop">
-    <!-- Hero -->
-    <section class="home-hero relative isolate overflow-hidden">
-      <div class="relative mx-auto max-w-5xl px-6 pb-[30px] pt-24 text-center sm:pt-32">
-        <div class="mx-auto inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white/85 px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-primary-700 shadow-sm backdrop-blur dark:border-white/10 dark:bg-gray-950/70 dark:text-primary-300">
-          44 Lit components. One CSS variable away from your brand.
+      <section class="max-w-7xl mx-auto my-24 flex items-center sm:gap-2 sm:px-6">
+        <div class="grow max-w-3xl">
+          <h1 class="text-5xl font-light text-gray-950 dark:text-white sm:text-[75px] pr-10 tracking-tight">
+            One component library for <span class="font-bold text-orange-600">every</span> frontend stack
+          </h1>
+          <p class="mt-6 max-w-2xl text-xl leading-8 text-gray-600 dark:text-gray-300">
+            LoomiUI provides accessible, production-ready Web Components that work across React, Vue, Angular,
+            Svelte, and vanilla JavaScript. Build faster with a consistent UI.
+          </p>
+          <div class="mt-8 flex flex-wrap items-center gap-4">
+            <loomi-button color="primary" tag="a" href="/installation/" icon="arrow-right" icon-right>
+              Get Started
+            </loomi-button>
+            <loomi-button type="secondary" tag="a" href="/components/" icon="book-open" outline icon-right>
+                Browse Components
+              </loomi-button>
+          </div>
         </div>
-        <h1 class="mx-auto mt-7 max-w-4xl text-5xl font-bold tracking-tight text-gray-950 dark:text-white sm:text-7xl">
-          Web components that feel custom-built.
-        </h1>
-        <p class="mx-auto mt-6 max-w-2xl text-lg leading-8 text-gray-600 dark:text-gray-300">
-          LoomiUI ships real custom elements with scoped styles, form participation,
-          per-component installs, and an MCP server that helps AI tools use the API
-          correctly.
-        </p>
-        <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
-          <loomi-button color="primary" size="medium" tag="a" href="/installation/" icon="arrow-right" icon-right>
-            Get Started
-          </loomi-button>
+
+        <div class="relative bg-white rounded-lg p-6 border border-dashed border-blue-400 shadow-2xl">
+          <loomi-card no-shadow class="-ml-12 -mb-10 border border-dashed border-blue-400 rounded-xl! shadow-2xl shadow-blue-200">
+            <div class="feature-panel-label">Same markup, every stack</div>
+            <div class="grid grid-cols-1 gap-3 text-xs">
+              {["App.jsx", "App.vue", "App.svelte", "index.html"].map((file) => (
+                <div class="bg-gray-50 rounded-lg border border-dashed border-blue-400 p-3 font-mono dark:border-gray-800 dark:bg-gray-900">
+                  <div class="mb-1 text-gray-400">{file}</div>
+                  <code class="break-all">&lt;<span class="text-blue-700">loomi-button radius=</span><span class="text-green-700">"full"</span>&gt;Save User&lt;/<span class="text-blue-700">loomi-button</span>&gt;</code>
+                </div>
+              ))}
+            </div>
+            <div class="component-stage flex items-center justify-center rounded-lg border border-dashed border-gray-400 mt-3 p-3 dark:border-gray-700">
+              <loomi-button radius="full">Save User</loomi-button>
+            </div>
+        </loomi-card>
         </div>
-      </div>
-    </section>
+      </section>
+
+      <section>
+        <div class="mt-6 flex gap-10 justify-center" id="theme-swatches">
+          <button class="size-24 rounded-full bg-[#2563eb] ring-8 ring-blue-200 ring-offset-4 ring-offset-white cursor-pointer dark:ring-offset-gray-900" data-color="#2563eb" aria-label="Blue"></button>
+          <button class="size-24 rounded-full bg-[#db2777] ring-pink-200 ring-offset-4 ring-offset-white cursor-pointer" data-color="#db2777" aria-label="Pink"></button>
+          <button class="size-24 rounded-full bg-[#16a34a] ring-green-200 ring-offset-4 ring-offset-white cursor-pointer" data-color="#16a34a" aria-label="Green"></button>
+          <button class="size-24 rounded-full bg-[#9333ea] ring-purple-200 ring-offset-4 ring-offset-white cursor-pointer" data-color="#9333ea" aria-label="Purple"></button>
+          <button class="size-24 rounded-full bg-[#ea580c] ring-orange-200 ring-offset-4 ring-offset-white cursor-pointer" data-color="#ea580c" aria-label="Orange"></button>
+          <button class="size-24 rounded-full bg-[#ea580c] ring-orange-200 ring-offset-4 ring-offset-white cursor-pointer" data-color="#ea580c" aria-label="Cyan"></button>
+        </div>
+      </section>
 
     <!-- Why LoomiUI — intro -->
-    <section class="feature-intro mx-auto max-w-4xl px-6 pt-0 text-center">
-      <div class="feature-kicker mx-auto">Designed for the messy middle</div>
+    <section class="feature-intro mx-auto max-w-4xl px-6 pt-0">
+      <div class="feature-kicker mx-auto">Built for real-world development</div>
       <h2 class="text-4xl font-bold tracking-tight sm:text-5xl">Why LoomiUI</h2>
       <p class="mx-auto mt-4 max-w-2xl text-lg leading-8 text-gray-600 dark:text-gray-400">
         Six reasons LoomiUI feels different from a typical component kit, each one
@@ -577,7 +603,7 @@ const description =
         document.documentElement.style.setProperty("--loomi-primary-600", shades[600]);
         document.documentElement.style.setProperty("--loomi-primary-700", shades[700]);
         for (const b of document.querySelectorAll("#theme-swatches button")) {
-          b.classList.toggle("ring-2", b === button);
+          b.classList.toggle("ring-8", b === button);
           b.classList.toggle("ring-offset-2", b === button);
         }
       });

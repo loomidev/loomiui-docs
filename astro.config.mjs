@@ -10,6 +10,12 @@ const importMap = buildImportMap();
 
 export default defineConfig({
   site: "https://loomiui.com",
+  server: {
+    host: true,
+    port: 4321,
+    strictPort: true,
+    allowedHosts: ["loomiui.test"],
+  },
   vite: {
     // Tailwind here styles ONLY this docs site's own marketing chrome (the homepage in
     // src/pages/index.astro) — it has nothing to do with loomi's components, which
@@ -66,13 +72,11 @@ export default defineConfig({
             { label: "Customization", slug: "customization" },
             { label: "Contributing", slug: "contributing" },
             { label: "MCP Server", slug: "mcp-server" },
-            { label: "Architecture", slug: "architecture" },
+            { label: "Architecture", slug: "architecture", collapsed: true },
           ],
         },
         {
           label: "Components",
-          // Flat directory (no per-category subfolders) -> autogenerate sorts by slug,
-          // giving a single alphabetical list across all 44 components.
           items: [{ autogenerate: { directory: "components" } }],
         },
       ],

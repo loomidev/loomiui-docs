@@ -4,7 +4,7 @@
 @import "tailwindcss";
 
 @theme {
-  /* loomiui's primary brand blue is #2563eb / #60a5fa (light/dark) — see custom.css's
+  /* LoomiUI's primary brand blue is #2563eb / #60a5fa (light/dark) — see custom.css's
    * --sl-color-accent for the same values applied to Starlight's own chrome. That ramp
    * happens to be Tailwind's stock `blue` scale, so alias rather than re-type hex. */
   --color-primary-50: var(--color-blue-50);
@@ -28,20 +28,19 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  color-scheme: light;
+  @apply scheme-light
 }
 
 .dark {
-  color-scheme: dark;
+  @apply scheme-dark
 }
 
 .home-hero {
-  min-height: auto;
+  @apply min-h-auto;
 }
 
 .post-hero-backdrop {
-  position: relative;
-  overflow: hidden;
+  @apply relative overflow-hidden;
   background:
     linear-gradient(180deg, rgb(239 246 255), rgb(248 250 252) 36%, rgb(255 255 255) 82%),
     radial-gradient(circle at 9% 4%, rgb(37 99 235 / 0.18), transparent 30%),
@@ -50,8 +49,7 @@
 }
 
 .post-hero-backdrop > * {
-  position: relative;
-  z-index: 1;
+  @apply relative z-10;
 }
 
 .post-hero-backdrop::before {
@@ -244,14 +242,6 @@
 
 .dark .feature-panel-label {
   color: rgb(203 213 225);
-}
-
-.code-tile {
-  background: rgb(255 255 255 / 0.76);
-}
-
-.dark .code-tile {
-  background: rgb(15 23 42 / 0.76);
 }
 
 .component-stage {
@@ -633,4 +623,5 @@
   .demo-card-bar {
     grid-template-columns: 1fr;
   }
+
 }
