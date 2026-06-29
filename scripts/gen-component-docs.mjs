@@ -69,6 +69,15 @@ function fixLinks(md) {
  */
 function withLivePreviews(md) {
   return md.replace(/```html(\.skip)?\n([\s\S]*?)\n```/g, (fullMatch, skip, code) => {
+    // The "Plain HTML" CDN sample brings its own <script type="importmap"> and a
+    // <script src="https://esm.sh/..."> for the component. Both are illustrative of a
+    // standalone setup with no bundler — neither is safe to execute live on this page:
+    // the import map collides with the one this site's own <head> already declares (the
+    // browser drops the conflicting rule, e.g. for `lit`), and the esm.sh script would
+    // re-register the same custom element a second time on top of this page's own
+    // locally-imported copy. Leave it as inert sample code instead.
+    if (/type=["']importmap["']/.test(code)) return fullMatch;
+
     // CommonMark ends a raw HTML block at the first blank line, so a blank line between
     // two multi-line elements (common for readability in the fenced source) would split
     // this div in two, leaving everything after it to be reprocessed as markdown prose

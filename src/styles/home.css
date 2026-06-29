@@ -1,9 +1,16 @@
-/* Tailwind for this docs site's own marketing homepage only (src/pages/index.astro).
- * Compiled away at build time, same as everywhere else in this project — the rest of
- * the docs site (Starlight pages) keeps using custom.css and is untouched by this. */
+/* Tailwind for this docs site's own marketing homepage only (src/pages/index.astro,
+ * src/pages/components/index.astro). Compiled away at build time, same as everywhere
+ * else in this project — the rest of the docs site (Starlight pages) keeps using
+ * custom.css and is untouched by this. */
 @import "tailwindcss";
+@import "./fonts.css";
 
 @theme {
+  /* Overrides Tailwind's default --font-sans, which feeds both the `font-sans` utility
+   * and preflight's body default — so plain text picks up Inter with no class needed. */
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji";
+
   /* LoomiUI's primary brand blue is #2563eb / #60a5fa (light/dark) — see custom.css's
    * --sl-color-accent for the same values applied to Starlight's own chrome. That ramp
    * happens to be Tailwind's stock `blue` scale, so alias rather than re-type hex. */
@@ -33,10 +40,6 @@
 
 .dark {
   @apply scheme-dark
-}
-
-.home-hero {
-  @apply min-h-auto;
 }
 
 .post-hero-backdrop {
@@ -104,11 +107,8 @@
   opacity: 0.7;
 }
 
-.feature-intro {
-  position: relative;
-  z-index: 1;
-}
-
+/* Small pill badge used as a section eyebrow (components gallery page) or, with
+ * .kicker-dot, the softer two-part hero badge ("Open source · Built with Lit"). */
 .feature-kicker {
   width: fit-content;
   margin-bottom: 1rem;
@@ -129,410 +129,365 @@
   color: rgb(147 197 253);
 }
 
-.feature-section {
-  position: relative;
-  overflow: hidden;
-  border-top: 1px solid rgb(241 245 249);
-  background: transparent;
+.kicker-badge {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid rgb(37 99 235 / 0.18);
+  border-radius: 999px;
+  background: rgb(37 99 235 / 0.06);
+  padding: 0.4rem 0.85rem;
+  color: rgb(29 78 216);
+  font-size: 0.78rem;
+  font-weight: 600;
 }
 
-.feature-section-muted {
-  background:
-    linear-gradient(135deg, rgb(255 255 255 / 0.56), rgb(248 250 252 / 0.68) 52%, rgb(240 253 244 / 0.34)),
-    linear-gradient(90deg, rgb(37 99 235 / 0.04), transparent 46%, rgb(219 39 119 / 0.04));
-}
-
-.dark .feature-section {
-  border-top-color: rgb(15 23 42);
-  background: transparent;
-}
-
-.dark .feature-section-muted {
-  background:
-    linear-gradient(135deg, rgb(2 6 23), rgb(3 7 18) 52%, rgb(15 23 42)),
-    linear-gradient(90deg, rgb(37 99 235 / 0.09), transparent 46%, rgb(219 39 119 / 0.06));
-}
-
-.feature-section::before {
-  position: absolute;
-  inset: 0;
-  content: "";
-  background-image:
-    linear-gradient(rgb(15 23 42 / 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(15 23 42 / 0.035) 1px, transparent 1px);
-  background-size: 46px 46px;
-  mask-image: linear-gradient(90deg, transparent, black 18%, black 82%, transparent);
-  pointer-events: none;
-}
-
-.dark .feature-section::before {
-  background-image:
-    linear-gradient(rgb(255 255 255 / 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(255 255 255 / 0.045) 1px, transparent 1px);
-}
-
-.feature-row {
-  position: relative;
-  z-index: 1;
-}
-
-.feature-copy {
-  max-width: 34rem;
-}
-
-.feature-eyebrow,
-.feature-panel-label {
-  color: rgb(37 99 235);
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.dark .feature-eyebrow,
-.dark .feature-panel-label {
+.dark .kicker-badge {
+  border-color: rgb(96 165 250 / 0.24);
+  background: rgb(96 165 250 / 0.1);
   color: rgb(147 197 253);
 }
 
-.feature-eyebrow {
-  margin-bottom: 0.9rem;
-}
-
-.feature-panel {
-  position: relative;
-  border: 1px solid rgb(203 213 225 / 0.72);
-  border-radius: 8px;
-  background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.92), rgb(248 250 252 / 0.84)),
-    linear-gradient(135deg, rgb(37 99 235 / 0.08), transparent 42%, rgb(22 163 74 / 0.08));
-  padding: 1.25rem;
-  box-shadow: 0 22px 60px rgb(15 23 42 / 0.08);
-}
-
-.dark .feature-panel {
-  border-color: rgb(51 65 85 / 0.84);
-  background:
-    linear-gradient(180deg, rgb(15 23 42 / 0.86), rgb(2 6 23 / 0.9)),
-    linear-gradient(135deg, rgb(59 130 246 / 0.1), transparent 42%, rgb(34 197 94 / 0.08));
-  box-shadow: 0 22px 60px rgb(0 0 0 / 0.28);
-}
-
-.feature-panel::before {
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  content: "";
-  background: linear-gradient(135deg, rgb(255 255 255 / 0.5), transparent 34%);
-  pointer-events: none;
-}
-
-.dark .feature-panel::before {
-  background: linear-gradient(135deg, rgb(255 255 255 / 0.08), transparent 34%);
-}
-
-.feature-panel > * {
-  position: relative;
-  z-index: 1;
-}
-
-.feature-panel-label {
-  margin-bottom: 1rem;
-  color: rgb(71 85 105);
-}
-
-.dark .feature-panel-label {
-  color: rgb(203 213 225);
-}
-
-.component-stage {
-  background:
-    linear-gradient(135deg, rgb(37 99 235 / 0.06), rgb(22 163 74 / 0.06)),
-    rgb(255 255 255 / 0.72);
-}
-
-.dark .component-stage {
-  background:
-    linear-gradient(135deg, rgb(96 165 250 / 0.08), rgb(74 222 128 / 0.07)),
-    rgb(2 6 23 / 0.5);
-}
-
-.runtime-panel {
-  background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.94), rgb(239 246 255 / 0.74)),
-    linear-gradient(135deg, rgb(15 23 42 / 0.04), transparent);
-}
-
-.dark .runtime-panel {
-  background:
-    linear-gradient(180deg, rgb(15 23 42 / 0.9), rgb(2 6 23 / 0.94)),
-    linear-gradient(135deg, rgb(96 165 250 / 0.08), transparent);
-}
-
-.theme-panel {
-  background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.94), rgb(248 250 252 / 0.86)),
-    conic-gradient(from 160deg at 85% 12%, rgb(37 99 235 / 0.18), rgb(219 39 119 / 0.16), rgb(22 163 74 / 0.14), rgb(37 99 235 / 0.18));
-}
-
-.dark .theme-panel {
-  background:
-    linear-gradient(180deg, rgb(15 23 42 / 0.92), rgb(2 6 23 / 0.94)),
-    conic-gradient(from 160deg at 85% 12%, rgb(96 165 250 / 0.16), rgb(244 114 182 / 0.1), rgb(74 222 128 / 0.1), rgb(96 165 250 / 0.16));
-}
-
-.signup-showcase {
-  border: 1px solid rgb(226 232 240 / 0.8);
-  border-radius: 8px;
-  background: rgb(255 255 255 / 0.66);
-  padding: 1rem;
-}
-
-.dark .signup-showcase {
-  border-color: rgb(51 65 85 / 0.84);
-  background: rgb(2 6 23 / 0.42);
-}
-
-.install-visual {
-  overflow: hidden;
-}
-
-.install-track {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: stretch;
-  gap: 0.75rem;
-}
-
-.install-command {
-  display: flex;
-  min-width: 0;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 0.75rem;
-  border: 1px solid rgb(226 232 240);
-  border-radius: 8px;
-  background: rgb(255 255 255 / 0.68);
-  padding: 0.85rem;
-}
-
-.dark .install-command {
-  border-color: rgb(51 65 85);
-  background: rgb(2 6 23 / 0.48);
-}
-
-.install-command span {
-  color: rgb(71 85 105);
-  font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.dark .install-command span {
-  color: rgb(203 213 225);
-}
-
-.install-command code {
-  display: block;
-  overflow-wrap: anywhere;
-  border-radius: 8px;
-  background: rgb(15 23 42);
-  padding: 0.72rem;
-  color: rgb(226 232 240);
-  font-size: 0.72rem;
-  line-height: 1.5;
-}
-
-.install-command-full {
-  border-color: rgb(37 99 235 / 0.38);
-}
-
-.install-arrow {
-  display: grid;
-  place-items: center;
-  color: rgb(37 99 235);
-  font-size: 0.72rem;
-  font-weight: 900;
-  text-transform: uppercase;
-}
-
-.install-grid {
-  display: grid;
-  grid-template-columns: repeat(11, minmax(0, 1fr));
-  gap: 0.38rem;
-}
-
-.install-dot {
-  aspect-ratio: 1;
-  border-radius: 4px;
-  background: rgb(226 232 240);
-}
-
-.dark .install-dot {
-  background: rgb(30 41 59);
-}
-
-.install-dot.category {
-  background: rgb(147 197 253);
-}
-
-.install-dot.selected {
-  background: rgb(37 99 235);
-  box-shadow: 0 0 0 3px rgb(37 99 235 / 0.18);
-}
-
-.install-stat {
-  border: 1px solid rgb(226 232 240 / 0.82);
-  border-radius: 8px;
-  background: rgb(255 255 255 / 0.58);
-  padding: 0.75rem;
-}
-
-.dark .install-stat {
-  border-color: rgb(51 65 85 / 0.84);
-  background: rgb(2 6 23 / 0.38);
-}
-
-.install-stat strong,
-.install-stat span {
-  display: block;
-}
-
-.install-stat strong {
-  color: rgb(15 23 42);
-  font-size: 1.35rem;
-  line-height: 1;
-}
-
-.dark .install-stat strong {
-  color: white;
-}
-
-.install-stat span {
-  margin-top: 0.35rem;
-  color: rgb(71 85 105);
-  font-size: 0.72rem;
-  font-weight: 700;
-}
-
-.dark .install-stat span {
-  color: rgb(203 213 225);
-}
-
-.form-panel {
-  padding: 1.5rem;
-}
-
-.ai-panel {
-  background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.94), rgb(248 250 252 / 0.9)),
-    linear-gradient(135deg, rgb(37 99 235 / 0.1), transparent 36%, rgb(219 39 119 / 0.08));
-}
-
-.dark .ai-panel {
-  background:
-    linear-gradient(180deg, rgb(15 23 42 / 0.92), rgb(2 6 23 / 0.94)),
-    linear-gradient(135deg, rgb(96 165 250 / 0.1), transparent 36%, rgb(244 114 182 / 0.06));
-}
-
-.ai-console {
-  display: grid;
-  gap: 0.9rem;
-}
-
-.ai-prompt,
-.ai-answer {
-  border-radius: 8px;
-  padding: 1rem;
-}
-
-.ai-prompt {
-  margin-left: auto;
-  max-width: 23rem;
-  background: rgb(37 99 235);
-  color: white;
-}
-
-.ai-prompt span {
-  display: block;
-  margin-bottom: 0.45rem;
-  font-size: 0.65rem;
-  font-weight: 900;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  opacity: 0.78;
-}
-
-.ai-prompt p {
-  line-height: 1.55;
-}
-
-.ai-answer {
-  background: rgb(255 255 255 / 0.78);
-  box-shadow: 0 14px 34px rgb(15 23 42 / 0.08);
-}
-
-.dark .ai-answer {
-  background: rgb(15 23 42 / 0.76);
-  box-shadow: 0 14px 34px rgb(0 0 0 / 0.24);
-}
-
-.ai-answer pre {
-  overflow-x: auto;
-  border-radius: 8px;
-  background: rgb(15 23 42);
-  padding: 1rem;
-  color: rgb(226 232 240);
-  font-size: 0.76rem;
-  line-height: 1.65;
-}
-
-.ai-attrs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-}
-
-.ai-attrs span {
-  border: 1px solid rgb(191 219 254);
+.kicker-dot {
+  width: 0.25rem;
+  height: 0.25rem;
   border-radius: 999px;
-  background: rgb(239 246 255 / 0.74);
-  padding: 0.34rem 0.58rem;
-  color: rgb(30 64 175);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  font-size: 0.7rem;
-  font-weight: 700;
+  background: currentColor;
+  opacity: 0.6;
 }
 
-.dark .ai-attrs span {
-  border-color: rgb(30 64 175 / 0.7);
-  background: rgb(30 58 138 / 0.22);
-  color: rgb(191 219 254);
+.hero-underline {
+  text-decoration-line: underline;
+  text-decoration-color: rgb(37 99 235 / 0.32);
+  text-decoration-thickness: 0.4rem;
+  text-underline-offset: -0.05rem;
 }
 
-.ai-footer {
+.dark .hero-underline {
+  text-decoration-color: rgb(96 165 250 / 0.3);
+}
+
+.hero-bullet-icon {
   display: flex;
-  flex-wrap: wrap;
+  height: 2rem;
+  width: 2rem;
+  flex-shrink: 0;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.9rem;
-  border-top: 1px solid rgb(226 232 240 / 0.82);
-  padding-top: 1rem;
+  justify-content: center;
+  border-radius: 8px;
+  background: rgb(37 99 235 / 0.1);
+  color: rgb(37 99 235);
 }
 
-.dark .ai-footer {
-  border-top-color: rgb(51 65 85 / 0.84);
+.dark .hero-bullet-icon {
+  background: rgb(96 165 250 / 0.14);
+  color: rgb(147 197 253);
 }
 
-.ai-footer p {
-  max-width: 15rem;
+.hero-stage-glow {
+  position: absolute;
+  inset: -10% -10% 10%;
+  z-index: 0;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 30% 25%, rgb(37 99 235 / 0.16), transparent 60%),
+    radial-gradient(circle at 75% 70%, rgb(219 39 119 / 0.12), transparent 55%);
+  filter: blur(20px);
+}
+
+.dark .hero-stage-glow {
+  background:
+    radial-gradient(circle at 30% 25%, rgb(59 130 246 / 0.18), transparent 60%),
+    radial-gradient(circle at 75% 70%, rgb(244 114 182 / 0.12), transparent 55%);
+}
+
+.hero-float {
+  /* position comes from the Tailwind `absolute` utility in markup — declaring it here
+     too would tie its specificity with that utility class and risk winning the cascade
+     (this file loads after Tailwind's own utilities), turning `absolute` into a no-op. */
+  z-index: 1;
+  border-radius: 14px;
+  border: 1px solid rgb(226 232 240);
+  background: rgb(255 255 255 / 0.92);
+  padding: 1rem;
+  box-shadow: 0 16px 40px rgb(15 23 42 / 0.1);
+  backdrop-filter: blur(6px);
+}
+
+.dark .hero-float {
+  border-color: rgb(51 65 85);
+  background: rgb(15 23 42 / 0.88);
+  box-shadow: 0 16px 40px rgb(0 0 0 / 0.3);
+}
+
+.hero-float-round {
+  border-radius: 999px;
+  padding: 0.6rem 1.1rem;
+}
+
+.stack-card {
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid rgb(226 232 240);
+  background: white;
+  text-align: left;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+}
+
+.dark .stack-card {
+  border-color: rgb(51 65 85);
+  background: rgb(15 23 42 / 0.6);
+}
+
+.stack-card-code {
+  background: rgb(15 23 42);
+  padding: 1rem;
+}
+
+.stack-card-filename {
+  margin-bottom: 0.5rem;
+  color: rgb(148 163 184);
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.stack-card-code pre {
+  margin: 0;
+  overflow-x: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 0.72rem;
+  line-height: 1.6;
+  color: rgb(226 232 240);
+}
+
+.stack-card-render {
+  display: flex;
+  justify-content: center;
+  border-top: 1px solid rgb(226 232 240);
+  padding: 1.1rem;
+}
+
+.dark .stack-card-render {
+  border-top-color: rgb(51 65 85);
+}
+
+.filter-pill {
+  cursor: pointer;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  padding: 0.45rem 1rem;
   color: rgb(71 85 105);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.filter-pill:hover {
+  background: rgb(226 232 240 / 0.6);
+}
+
+.filter-pill[aria-pressed="true"] {
+  background: rgb(37 99 235);
+  color: white;
+}
+
+.dark .filter-pill {
+  color: rgb(203 213 225);
+}
+
+.dark .filter-pill:hover {
+  background: rgb(51 65 85 / 0.6);
+}
+
+.dark .filter-pill[aria-pressed="true"] {
+  background: rgb(96 165 250);
+  color: rgb(2 6 23);
+}
+
+.component-tile {
+  display: flex;
+  min-height: 8.5rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  border-radius: 12px;
+  border: 1px solid rgb(226 232 240);
+  background: white;
+  padding: 1.1rem 0.9rem;
+  text-align: center;
+}
+
+.dark .component-tile {
+  border-color: rgb(51 65 85);
+  background: rgb(15 23 42 / 0.6);
+}
+
+/* Filter pills toggle Tailwind's `hidden` utility on these — without this override it
+   ties with `.component-tile`'s own `display: flex` at equal specificity, and this
+   file's rules (loaded after Tailwind's utilities) would win, leaving tiles visible. */
+.component-tile.hidden {
+  display: none;
+}
+
+.component-tile-preview {
+  display: flex;
+  max-width: 100%;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+}
+
+.component-tile-label {
+  color: rgb(100 116 139);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.dark .component-tile-label {
+  color: rgb(148 163 184);
+}
+
+.theme-preview-card {
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid rgb(226 232 240);
+  background: white;
+  padding: 1.25rem 1rem;
+}
+
+.theme-preview-card.dark {
+  border-color: rgb(51 65 85);
+  background: rgb(2 6 23);
+}
+
+.theme-preview-card-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 0;
+}
+
+.theme-mini-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.theme-preview-card-split .theme-mini-stack {
+  padding: 1.25rem 1rem;
+}
+
+.theme-preview-card-split .theme-mini-stack:first-child {
+  border-right: 1px solid rgb(203 213 225 / 0.6);
+}
+
+.theme-mini-stack.dark {
+  background: rgb(2 6 23);
+}
+
+.theme-mini-stack loomi-input,
+.theme-mini-stack loomi-select {
+  width: 100%;
+}
+
+.theme-preview-label {
+  margin-top: 0.85rem;
+  text-align: center;
+  color: rgb(71 85 105);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.dark .theme-preview-label {
+  color: rgb(203 213 225);
+}
+
+.theme-card-brand {
+  --loomi-primary-50: #fff7ed;
+  --loomi-primary-100: #ffedd5;
+  --loomi-primary-200: #fed7aa;
+  --loomi-primary-300: #fdba74;
+  --loomi-primary-400: #fb923c;
+  --loomi-primary-500: #f97316;
+  --loomi-primary-600: #ea580c;
+  --loomi-primary-700: #c2410c;
+  --loomi-primary-800: #9a3412;
+  --loomi-primary-900: #7c2d12;
+  --loomi-primary-950: #431407;
+  border-color: rgb(254 215 170);
+  background: rgb(255 247 237 / 0.6);
+}
+
+.dark .theme-card-brand {
+  border-color: rgb(154 52 18 / 0.5);
+  background: rgb(67 20 7 / 0.3);
+}
+
+.stats-banner {
+  background: linear-gradient(120deg, rgb(79 70 229), rgb(124 58 237));
+}
+
+.cta-band {
+  background: rgb(2 6 23);
+}
+
+.cta-install-card {
+  border-radius: 14px;
+  border: 1px solid rgb(255 255 255 / 0.08);
+  background: rgb(255 255 255 / 0.04);
+  padding: 1.25rem;
+}
+
+.pm-tab {
+  cursor: pointer;
+  border-radius: 6px;
+  background: transparent;
+  padding: 0.4rem 0.9rem;
+  color: rgb(148 163 184);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.pm-tab[aria-selected="true"] {
+  background: white;
+  color: rgb(15 23 42);
+}
+
+.site-footer {
+  background: rgb(2 6 23);
+  color: rgb(203 213 225);
+}
+
+.footer-heading {
+  color: white;
   font-size: 0.78rem;
   font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
-.dark .ai-footer p {
-  color: rgb(203 213 225);
+.footer-link {
+  color: rgb(148 163 184);
+}
+
+.footer-link:hover {
+  color: white;
+}
+
+.footer-star-callout {
+  display: block;
+  margin-top: 1.5rem;
+  border-radius: 10px;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  background: rgb(255 255 255 / 0.04);
+  padding: 0.85rem 1rem;
+  font-size: 0.8rem;
+}
+
+.footer-star-callout:hover {
+  background: rgb(255 255 255 / 0.07);
 }
 
 .demo-band {
@@ -597,31 +552,7 @@
 }
 
 @media (max-width: 720px) {
-  .home-hero {
-    min-height: auto;
-  }
-
-  .hero-mesh-plane {
-    inset: -10% -52% 18%;
-    opacity: 0.78;
-    transform: skewY(-10deg);
-  }
-
-  .hero-mesh-lines {
-    opacity: 0.56;
-    transform: skewY(-10deg);
-  }
-
-  .install-track {
-    grid-template-columns: 1fr;
-  }
-
-  .install-arrow {
-    min-height: 1.2rem;
-  }
-
   .demo-card-bar {
     grid-template-columns: 1fr;
   }
-
 }

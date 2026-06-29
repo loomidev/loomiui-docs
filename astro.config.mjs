@@ -68,11 +68,18 @@ export default defineConfig({
         {
           label: "Start Here",
           items: [
-            { label: "Installation", slug: "installation" },
-            { label: "Customization", slug: "customization" },
-            { label: "Contributing", slug: "contributing" },
-            { label: "MCP", slug: "mcp-server" },
-            { label: "Architecture", slug: "architecture", collapsed: true },
+            // `data-icon` lands on the rendered <a> via Starlight's attrs-passthrough
+            // (its sidebar schema has no native `icon` field) and is turned into a
+            // <loomi-icon> by the script in src/components/Head.astro — Starlight
+            // hardcodes its own SidebarSublist internally, so it can't be overridden
+            // directly. Names are placeholders (any registered @loomidev/icons name
+            // works) — swap freely.
+            { label: "Installation", slug: "installation", attrs: { "data-icon": "arrow-down-tray" } },
+            { label: "Customization", slug: "customization", attrs: { "data-icon": "swatch" } },
+            { label: "Contributing", slug: "contributing", attrs: { "data-icon": "code-bracket" } },
+            { label: "RTL Support", slug: "rtl-support", attrs: { "data-icon": "language" } },
+            { label: "MCP", slug: "mcp-server", attrs: { "data-icon": "cpu-chip" } },
+            { label: "Architecture", slug: "architecture", collapsed: true, attrs: { "data-icon": "building-library" } },
           ],
         },
         {

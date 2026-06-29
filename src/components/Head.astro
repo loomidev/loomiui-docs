@@ -22,3 +22,18 @@ import Default from "@astrojs/starlight/components/Head.astro";
   import "@loomidev/tab";
   import "@loomidev/button";
 </script>
+<script type="module" is:inline>
+  // Turns the "Start Here" sidebar links' `data-icon` attr (set via `attrs` in
+  // astro.config.mjs's sidebar config) into a real <loomi-icon> — Starlight's sidebar
+  // schema has no native per-link `icon` field, and its SidebarSublist subcomponent is
+  // hardcoded internally (not part of the overridable `components` map), so this can't
+  // be done from a component override. A `type="module"` script is deferred until the
+  // DOM is parsed, and Starlight persists the sidebar across client-side navigations
+  // (see SidebarRestorePoint), so running this once per full page load is enough.
+  for (const link of document.querySelectorAll(".sidebar-content a[data-icon]:not(:has(loomi-icon))")) {
+    const icon = document.createElement("loomi-icon");
+    icon.setAttribute("name", link.dataset.icon);
+    icon.setAttribute("size", "1em");
+    link.prepend(icon);
+  }
+</script>

@@ -9,13 +9,13 @@ export const INFRA = ["theme", "core", "icons"];
 export const CATEGORY = {
   standalone: ["button", "icon", "spinner", "alert", "bell", "modal", "notification", "table"],
   forms: [
-    "input", "textarea", "select", "checkbox", "radio", "toggle", "number", "slider",
+    "input", "textarea", "select", "countries", "checkbox", "radio", "toggle", "number", "slider",
     "code", "checkcards", "datepicker", "timepicker", "colorpicker", "filepicker",
   ],
   content: [
     "card", "avatar", "accordion", "tag", "tooltip", "popover", "empty-state", "statistic",
     "rating", "timeline", "progress", "listview", "contact-card", "centered-content",
-    "sortable", "processing", "horizontal-line-graph", "chart",
+    "sortable", "processing", "horizontal-line-graph", "chart", "drawer"
   ],
   navigation: ["tab", "pagination", "dropmenu", "theme-switcher"],
 };

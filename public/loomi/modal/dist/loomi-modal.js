@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
-import { LoomiElement, loomiStyles, loomiT, accentVars } from "@loomidev/core";
+import { LoomiElement, loomiStyles, loomiT, accentVars, lockBodyScroll, unlockBodyScroll } from "@loomidev/core";
 import "@loomidev/button/loomi-button.js";
 import "@loomidev/icon/loomi-icon.js";
 import { componentStyles } from "./generated/styles.css.js";
@@ -35,27 +35,6 @@ function deepActiveElement() {
     return el;
 }
 const registry = new Map();
-let scrollLockCount = 0;
-let previousBodyOverflow = "";
-let previousDocumentOverflow = "";
-function lockDocumentScroll() {
-    if (scrollLockCount === 0) {
-        previousBodyOverflow = document.body.style.overflow;
-        previousDocumentOverflow = document.documentElement.style.overflow;
-        document.body.style.overflow = "hidden";
-        document.documentElement.style.overflow = "hidden";
-    }
-    scrollLockCount += 1;
-}
-function unlockDocumentScroll() {
-    if (scrollLockCount === 0)
-        return;
-    scrollLockCount -= 1;
-    if (scrollLockCount === 0) {
-        document.body.style.overflow = previousBodyOverflow;
-        document.documentElement.style.overflow = previousDocumentOverflow;
-    }
-}
 /** Open a modal by its `name`. */
 export function showLoomiModal(name) {
     registry.get(name)?.show();
@@ -211,7 +190,7 @@ let LoomiModal = class LoomiModal extends LoomiElement {
     syncScrollLock() {
         if (this.open && this.preventScroll) {
             if (!this.hasScrollLock) {
-                lockDocumentScroll();
+                lockBodyScroll();
                 this.hasScrollLock = true;
             }
         }
@@ -222,7 +201,7 @@ let LoomiModal = class LoomiModal extends LoomiElement {
     releaseScrollLock() {
         if (!this.hasScrollLock)
             return;
-        unlockDocumentScroll();
+        unlockBodyScroll();
         this.hasScrollLock = false;
     }
     /** Focusable elements in template order: close button, slotted body, footer buttons. */

@@ -26,11 +26,23 @@ export const en = {
     filepicker: {
         placeholderLine1: "Choose files or drag and drop to upload",
         placeholderLine2: "%s up to %s",
+        cropTitle: "Crop image",
+        cropApply: "Apply",
+        cropCancel: "Cancel",
+        fileTooLargeTitle: "File too large",
+        fileTooLarge: "\":name\" exceeds the :limit limit.",
     },
     select: {
         placeholder: "Select One",
         emptyPlaceholder: "No options available",
         searchPlaceholder: "Search…",
+    },
+    countries: {
+        placeholder: "Select a country",
+        emptyPlaceholder: "No countries found",
+        searchPlaceholder: "Search countries…",
+        phoneNumberLabel: "Phone number",
+        selectCountryCode: "Select country code",
     },
     table: {
         searchPlaceholder: "Search…",
@@ -46,6 +58,9 @@ export const en = {
         ok: "Okay",
         cancel: "Cancel",
         dialog: "Dialog",
+    },
+    drawer: {
+        dialog: "Drawer",
     },
     code: {
         errorMessage: "Verification code is invalid",

@@ -1,6 +1,9 @@
 /* loomi brand accent for the Starlight theme — same blue as the default --loomi-primary-600 */
 @import "tailwindcss";
+@import "./fonts.css";
 :root {
+  /* Falls back to Starlight's --sl-font-system automatically — see node_modules/@astrojs/starlight/style/props.css */
+  --sl-font: "Inter";
   --sl-color-accent-low: var(--color-blue-400);
   --sl-color-accent: var(--color-blue-600)
   --sl-color-accent-high: var(--color-blue-200);
@@ -113,7 +116,11 @@ starlight-toc nav ul li a{
 
 .sidebar-content li a {
   @apply rounded-none py-1.5 pl-3 border-l-2 border-l-transparent tracking-wide hover:border-l-slate-500
-  hover:bg-linear-to-r hover:from-slate-200/80 hover:to-white text-sm;
+  hover:bg-linear-to-r hover:from-slate-200/80 hover:to-white text-sm flex items-center gap-2;
+}
+
+.sidebar-content li a loomi-icon {
+  flex-shrink: 0;
 }
 
 .sidebar-content li {

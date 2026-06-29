@@ -7,15 +7,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import { LoomiElement, loomiT, themeStyles } from "@loomidev/core";
-import { componentStyles, quillStyles } from "./generated/styles.css.js";
+import { componentStyles } from "./generated/styles.css.js";
 /**
  * `<loomi-textarea>` — a themeable multi-line text input with a floating label
- * and inline validation. Set `toolbar` for a rich-text editor (powered by Quill)
- * with bold/italic/lists/links instead of a plain `<textarea>` — `value` then holds
- * HTML. Form-associated: its value submits with the form.
+ * and inline validation. Form-associated: its value submits with the form.
  *
  * @csspart field - The bordered container.
- * @csspart textarea - The native `<textarea>` (plain mode only).
+ * @csspart textarea - The native `<textarea>`.
  * @fires input - Native input event (composed).
  * @fires change - Native change event (composed).
  */
@@ -36,8 +34,6 @@ let LoomiTextarea = class LoomiTextarea extends LoomiElement {
         this.errorMessage = "";
         this.showErrorInline = false;
         this.invalid = false;
-        /** Rich-text mode with a Quill toolbar (bold/italic/lists/links). `value` then holds HTML. */
-        this.toolbar = false;
         this.onInput = (e) => {
             this.value = e.target.value;
             if (this.invalid)
@@ -45,57 +41,14 @@ let LoomiTextarea = class LoomiTextarea extends LoomiElement {
             this.emit("input");
         };
     }
-    static { this.styles = [themeStyles, componentStyles, quillStyles]; }
+    static { this.styles = [themeStyles, componentStyles]; }
     static { this.formAssociated = true; }
-    willUpdate(changed) {
+    willUpdate() {
         this.internals.setFormValue(this.value);
         this.syncValidity();
-        if (this.quill) {
-            if (changed.has("disabled") || changed.has("readonly")) {
-                this.quill.enable(!this.disabled && !this.readonly);
-            }
-        }
-    }
-    firstUpdated() {
-        if (this.toolbar)
-            this.initQuill();
-    }
-    disconnectedCallback() {
-        super.disconnectedCallback();
-        this.quill = undefined;
-    }
-    async initQuill() {
-        if (!this.quillRootEl)
-            return;
-        const { default: QuillEditor } = await import("quill");
-        if (!this.quillRootEl)
-            return;
-        this.quill = new QuillEditor(this.quillRootEl, {
-            theme: "snow",
-            placeholder: this.placeholder,
-            readOnly: this.disabled || this.readonly,
-        });
-        if (this.value)
-            this.quill.clipboard.dangerouslyPasteHTML(this.value);
-        this.quill.root.style.minHeight = `${this.rows * 1.5}em`;
-        this.quill.on("text-change", () => {
-            this.value = this.quill.getSemanticHTML();
-            if (this.invalid)
-                this.validate();
-            this.emit("input");
-        });
-        this.quill.on("selection-change", (range) => {
-            if (!range) {
-                this.showValidation();
-                this.emit("change");
-            }
-        });
     }
     focus() {
-        if (this.toolbar)
-            this.quill?.focus();
-        else
-            this.textareaEl?.focus();
+        this.textareaEl?.focus();
     }
     validate() {
         this.validationVisible = true;
@@ -111,14 +64,12 @@ let LoomiTextarea = class LoomiTextarea extends LoomiElement {
         return this.internals.reportValidity();
     }
     syncValidity(showInvalid = this.validationVisible) {
-        const text = this.toolbar ? (this.quill?.getText() ?? "") : this.value;
-        const empty = this.required && !this.disabled && !this.readonly && text.trim() === "";
+        const empty = this.required && !this.disabled && !this.readonly && this.value.trim() === "";
         this.invalid = empty && showInvalid;
         const validity = empty ? { valueMissing: true } : {};
         const message = empty ? this.errorMessage || loomiT("validation.requiredField", {}, this.locale) : "";
-        const anchor = (this.toolbar ? this.quillRootEl : this.textareaEl);
-        if (anchor)
-            this.internals.setValidity(validity, message, anchor);
+        if (this.textareaEl)
+            this.internals.setValidity(validity, message, this.textareaEl);
         else
             this.internals.setValidity(validity, message);
         return !empty;
@@ -134,19 +85,6 @@ let LoomiTextarea = class LoomiTextarea extends LoomiElement {
         const hasLabel = !!this.label;
         const placeholderAttr = hasLabel ? " " : this.placeholder || " ";
         const showError = this.invalid && this.showErrorInline && this.errorMessage;
-        if (this.toolbar) {
-            return html `
-        ${hasLabel
-                ? html `<label class="loomi-label loomi-label-static"
-              >${this.label}${this.required ? html `<span class="loomi-req">*</span>` : nothing}</label
-            >`
-                : nothing}
-        <div class="loomi-field loomi-field-quill" part="field">
-          <div class="loomi-quill-root"></div>
-        </div>
-        ${showError ? html `<p class="loomi-error">${this.errorMessage}</p>` : nothing}
-      `;
-        }
         return html `
       <div class="loomi-field" part="field">
         <textarea
@@ -210,14 +148,8 @@ __decorate([
     property({ type: Boolean, reflect: true })
 ], LoomiTextarea.prototype, "invalid", void 0);
 __decorate([
-    property({ type: Boolean, reflect: true })
-], LoomiTextarea.prototype, "toolbar", void 0);
-__decorate([
     query("textarea")
 ], LoomiTextarea.prototype, "textareaEl", void 0);
-__decorate([
-    query(".loomi-quill-root")
-], LoomiTextarea.prototype, "quillRootEl", void 0);
 LoomiTextarea = __decorate([
     customElement("loomi-textarea")
 ], LoomiTextarea);

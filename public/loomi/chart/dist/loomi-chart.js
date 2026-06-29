@@ -4,9 +4,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var LoomiChart_1;
 import { html, nothing, svg } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { LoomiElement, loomiStyles, accentVars, cssColor } from "@loomidev/core";
+import "@loomidev/tooltip/loomi-tooltip.js";
 import { componentStyles } from "./generated/styles.css.js";
 const PALETTE = ["primary", "green", "orange", "red", "purple", "cyan", "pink", "indigo"];
 // `show-border` defaults to `true`, so it needs the "false" string to actually disable it —
@@ -55,6 +57,24 @@ function roundedTopRectPath(x, y, w, h, r) {
     ].join(" ");
 }
 /**
+ * Outline for a bar's border: up the left edge, across the rounded top, down the right
+ * edge — and stops there instead of closing back across the bottom. Bars sit directly on
+ * the axis line, so a stroked bottom edge would just double up with it.
+ */
+function roundedTopRectBorderPath(x, y, w, h, r) {
+    const rr = Math.max(0, Math.min(r, w / 2, h));
+    if (rr <= 0)
+        return `M${x},${y + h} V${y} H${x + w} V${y + h}`;
+    return [
+        `M${x},${y + h}`,
+        `V${y + rr}`,
+        `A${rr},${rr} 0 0 1 ${x + rr},${y}`,
+        `H${x + w - rr}`,
+        `A${rr},${rr} 0 0 1 ${x + w},${y + rr}`,
+        `V${y + h}`,
+    ].join(" ");
+}
+/**
  * `<loomi-chart>` — a lightweight SVG chart: `bar`, `line`, `pie`, `donut`, `radar` or
  * `scatter`. Provide a single series via `data` (`{ label, value, color? }`).
  */
@@ -66,9 +86,11 @@ let LoomiChart = class LoomiChart extends LoomiElement {
         this.data = [];
         this.color = "primary";
         this.showLegend = false;
+        /** Where the legend renders relative to the chart canvas, when `show-legend` is on. */
+        this.legendPosition = "bottom";
         /** Inner-hole radius (SVG units, viewBox is 180x180 with outer radius 80) for `type="donut"`. */
         this.donutRadius = 44;
-        /** `light` uses paler fills (300/400), `dark` (default) keeps the original, more saturated look. */
+        /** `light` uses paler, "soft accent" fills with a higher-shade border (see `resolveBorder`); `dark` (default) keeps the original, more saturated look without borders. */
         this.shade = "dark";
         /** Outline shapes in a higher (darker) shade of their own color. Only visible when `shade="light"`. */
         this.showBorder = true;
@@ -77,22 +99,34 @@ let LoomiChart = class LoomiChart extends LoomiElement {
         /** `type="line"` only — transposes the chart so categories run top-to-bottom. */
         this.vertical = false;
     }
+    static { LoomiChart_1 = this; }
     static { this.styles = loomiStyles(componentStyles); }
-    /** Fill shade for bar/pie/donut/scatter segments: lighter in `light` mode, unchanged default in `dark`. */
+    /**
+     * Fill shade for bar/pie/donut/scatter segments. In `light` mode this is the same
+     * "softer" shade (50) used everywhere else in the library for a pale accent fill
+     * (see `accentVars`, `loomi-modal`, `loomi-accordion`); `dark` keeps the original,
+     * more saturated look. The old `light` fill (300) moved to `resolveBorder` below —
+     * it now reads as the border instead of fighting with it for attention.
+     */
     get segmentFillShade() {
-        return this.shade === "light" ? 300 : 500;
+        return this.shade === "light" ? 50 : 500;
     }
     /** Resolves a data point's fill. `usePalette` cycles the built-in palette (pie/donut); otherwise falls back to the chart's own `color`. */
     resolveFill(p, i, usePalette) {
         const c = p.color || (usePalette ? PALETTE[i % PALETTE.length] : this.color);
         return /^[a-z]+$/.test(c) ? cssColor(c, this.segmentFillShade) : c;
     }
-    /** Resolves a data point's border color, or `null` when borders are off/not applicable (named colors only — an explicit hex `color` has no "higher shade" to compute). */
+    /**
+     * Resolves a data point's border color, or `null` when borders are off/not applicable
+     * (named colors only — an explicit hex `color` has no "higher shade" to compute).
+     * Shade 200 matches `--_loomi-accent-border` — the library's standard border shade for
+     * a soft accent fill (same pairing `loomi-modal`/`loomi-accordion` use).
+     */
     resolveBorder(p, i, usePalette) {
         if (this.shade !== "light" || !this.showBorder)
             return null;
         const c = p.color || (usePalette ? PALETTE[i % PALETTE.length] : this.color);
-        return /^[a-z]+$/.test(c) ? cssColor(c, 600) : null;
+        return /^[a-z]+$/.test(c) ? cssColor(c, 200) : null;
     }
     /**
      * Single-accent CSS vars for line/radar (`--_loomi-accent` + `--_loomi-accent-softer`),
@@ -109,6 +143,95 @@ let LoomiChart = class LoomiChart extends LoomiElement {
     polar(cx, cy, deg, radius) {
         const a = ((deg - 90) * Math.PI) / 180;
         return [cx + radius * Math.cos(a), cy + radius * Math.sin(a)];
+    }
+    /** Hit-box size (percent of the chart's width/height) for point-style hover targets — line/scatter/radar dots and pie/donut slice centers. Bars get an exact rect instead (see `hoverTargets`). */
+    static { this.HOVER_HIT_PCT = 9; }
+    /** A small hit-box centered on `(x, y)` (in the `w`x`h` coordinate space the caller computed it in), as a percentage-based `LoomiChartHoverTarget`. */
+    pointTarget(x, y, w, h, d) {
+        const hit = LoomiChart_1.HOVER_HIT_PCT;
+        return { left: (x / w) * 100, top: (y / h) * 100, width: hit, height: hit, label: d.label, value: d.value, centered: true };
+    }
+    /**
+     * One hover hit-box per data point, in percent of the chart's own box — mirrors the
+     * geometry each `render*` method already computes, so the invisible tooltip triggers
+     * line up with what's actually drawn. Bars get an exact rect (the bar itself is already
+     * a generous target); every other shape gets a small fixed-size box centered on its
+     * point, since dots/wedges are too thin to reliably hover otherwise.
+     */
+    hoverTargets() {
+        if (this.type === "bar") {
+            const W = 320, H = 180, pad = 24;
+            const padLeft = this.showYAxis ? 34 : pad;
+            const max = Math.max(1, ...this.data.map((d) => d.value));
+            const n = this.data.length || 1;
+            const bw = (W - padLeft - pad) / n;
+            return this.data.map((d, i) => {
+                const h = (d.value / max) * (H - pad * 2);
+                const x = padLeft + i * bw + bw * 0.15;
+                const y = H - pad - h;
+                return { left: (x / W) * 100, top: (y / H) * 100, width: ((bw * 0.7) / W) * 100, height: (h / H) * 100, label: d.label, value: d.value };
+            });
+        }
+        if (this.type === "line" && this.vertical) {
+            const W = 320, H = 180, padLeft = 40, padTop = 16, padRight = 16;
+            const padBottom = this.showYAxis ? 32 : 16;
+            const max = Math.max(1, ...this.data.map((d) => d.value));
+            const n = this.data.length;
+            const step = n > 1 ? (H - padTop - padBottom) / (n - 1) : 0;
+            return this.data.map((d, i) => {
+                const x = padLeft + (d.value / max) * (W - padLeft - padRight);
+                const y = padTop + i * step;
+                return this.pointTarget(x, y, W, H, d);
+            });
+        }
+        if (this.type === "line" || this.type === "scatter") {
+            const W = 320, H = 180, pad = 24;
+            const padLeft = this.showYAxis ? 34 : pad;
+            const max = Math.max(1, ...this.data.map((d) => d.value));
+            const n = this.data.length;
+            const step = n > 1 ? (W - padLeft - pad) / (n - 1) : 0;
+            return this.data.map((d, i) => {
+                const x = this.type === "scatter" && n <= 1 ? (padLeft + (W - pad)) / 2 : padLeft + i * step;
+                const y = H - pad - (d.value / max) * (H - pad * 2);
+                return this.pointTarget(x, y, W, H, d);
+            });
+        }
+        if (this.type === "radar") {
+            const S = 180, cx = 90, cy = 90, R = 64;
+            const n = this.data.length || 1;
+            const max = Math.max(1, ...this.data.map((d) => d.value));
+            const step = 360 / n;
+            return this.data.map((d, i) => {
+                const [x, y] = this.polar(cx, cy, i * step, (d.value / max) * R);
+                return this.pointTarget(x, y, S, S, d);
+            });
+        }
+        // pie / donut — center each hit box on its slice's mid-angle, at the midpoint of the
+        // filled radius range, so it lands inside the wedge rather than at the chart's center.
+        const S = 180, cx = 90, cy = 90, r = 80;
+        const innerR = this.type === "donut" ? Math.max(0, Math.min(r - 4, this.donutRadius)) : 0;
+        const total = this.data.reduce((s, d) => s + d.value, 0) || 1;
+        let angle = 0;
+        return this.data.map((d) => {
+            const start = angle;
+            angle += (d.value / total) * 360;
+            const mid = (start + angle) / 2;
+            const midR = innerR > 0 ? (innerR + r) / 2 : r * 0.6;
+            const [x, y] = this.polar(cx, cy, mid, midR);
+            return this.pointTarget(x, y, S, S, d);
+        });
+    }
+    /** Invisible `<loomi-tooltip>` triggers layered over the chart so hovering any bar/point/slice shows its label and value — no markup or attribute needed to opt in. */
+    renderHoverLayer() {
+        if (!this.data.length)
+            return nothing;
+        return html `<div class="loomi-hits">
+      ${this.hoverTargets().map((t) => html `<loomi-tooltip
+          class="loomi-hit${t.centered ? " loomi-hit-point" : ""}"
+          content="${t.label}: ${t.value}"
+          style="left:${t.left}%;top:${t.top}%;width:${t.width}%;height:${t.height}%"
+        ></loomi-tooltip>`)}
+    </div>`;
     }
     renderBars() {
         const W = 320, H = 180, pad = 24;
@@ -127,8 +250,12 @@ let LoomiChart = class LoomiChart extends LoomiElement {
             const h = (d.value / max) * (H - pad * 2);
             const x = padLeft + i * bw + bw * 0.15;
             const y = H - pad - h;
+            const w = bw * 0.7;
             const border = this.resolveBorder(d, i, false);
-            return svg `<path d=${roundedTopRectPath(x, y, bw * 0.7, h, 3)} fill=${this.resolveFill(d, i, false)} stroke=${border ?? "none"} stroke-width=${border ? 1.5 : 0}></path>
+            return svg `<path class="loomi-bar-fill" d=${roundedTopRectPath(x, y, w, h, 3)} fill=${this.resolveFill(d, i, false)}></path>
+          ${border
+                ? svg `<path class="loomi-bar-border" d=${roundedTopRectBorderPath(x, y, w, h, 3)} fill="none" stroke=${border} stroke-width="1.5" stroke-linejoin="round"></path>`
+                : nothing}
           <text class="loomi-xlabel" x=${padLeft + i * bw + bw / 2} y=${H - pad + 12} text-anchor="middle">${d.label}</text>`;
         })}`;
     }
@@ -258,13 +385,20 @@ let LoomiChart = class LoomiChart extends LoomiElement {
         else
             body = this.renderPie(this.type === "donut");
         const usePalette = this.type === "pie" || this.type === "donut";
-        return html `<div class="loomi-chart" style=${this.accentStyle(this.type === "radar")}>
+        const canvas = html `<div class="loomi-canvas">
       <svg viewBox=${viewBox} role="img" aria-label="${this.type} chart">${body}</svg>
-      ${this.showLegend
+      ${this.renderHoverLayer()}
+    </div>`;
+        const legend = this.showLegend
             ? html `<div class="loomi-legend">
-            ${this.data.map((d, i) => html `<span class="loomi-key"><span class="loomi-keydot" style="background:${this.resolveFill(d, i, usePalette)}"></span>${d.label}</span>`)}
-          </div>`
-            : nothing}
+          ${this.data.map((d, i) => html `<span class="loomi-key"><span class="loomi-keydot" style="background:${this.resolveFill(d, i, usePalette)}"></span>${d.label}</span>`)}
+        </div>`
+            : nothing;
+        const legendFirst = this.legendPosition === "top" || this.legendPosition === "left";
+        return html `<div class="loomi-chart pos-${this.legendPosition}" style=${this.accentStyle(this.type === "radar")}>
+      ${legendFirst ? legend : nothing}
+      ${canvas}
+      ${legendFirst ? nothing : legend}
     </div>`;
     }
 };
@@ -281,6 +415,9 @@ __decorate([
     property({ type: Boolean, attribute: "show-legend" })
 ], LoomiChart.prototype, "showLegend", void 0);
 __decorate([
+    property({ attribute: "legend-position" })
+], LoomiChart.prototype, "legendPosition", void 0);
+__decorate([
     property({ type: Number, attribute: "donut-radius" })
 ], LoomiChart.prototype, "donutRadius", void 0);
 __decorate([
@@ -295,7 +432,7 @@ __decorate([
 __decorate([
     property({ type: Boolean })
 ], LoomiChart.prototype, "vertical", void 0);
-LoomiChart = __decorate([
+LoomiChart = LoomiChart_1 = __decorate([
     customElement("loomi-chart")
 ], LoomiChart);
 export { LoomiChart };
