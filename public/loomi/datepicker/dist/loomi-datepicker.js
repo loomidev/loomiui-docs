@@ -20,8 +20,9 @@ const parseISO = (s) => {
 };
 const sameDay = (a, b) => a.toDateString() === b.toDateString();
 /**
- * `<loomi-datepicker>` — a calendar date picker (single or range). Locale-aware month
- * and weekday names. Form-associated: submits the formatted date(s) under `name`.
+ * `<loomi-datepicker>` — a calendar date picker (single or range). `popup` (input +
+ * panel) or `inline` (calendar always visible, no triggering input). Locale-aware
+ * month and weekday names. Form-associated: submits the formatted date(s) under `name`.
  * `selected-value`/`min-date`/`max-date` are parsed as ISO `yyyy-mm-dd`.
  *
  * @fires change - `detail: { value, dates }` when the selection changes.
@@ -31,6 +32,8 @@ let LoomiDatepicker = class LoomiDatepicker extends LoomiElement {
         super(...arguments);
         this.internals = this.attachInternals();
         this.name = "";
+        /** `popup` (input + panel) or `inline`. Attribute is `dp-style` (`style` is reserved). */
+        this.dpStyle = "popup";
         this.range = false;
         this.selectedValue = "";
         this.minDate = "";
@@ -193,6 +196,38 @@ let LoomiDatepicker = class LoomiDatepicker extends LoomiElement {
         @click=${() => this.pickYear(year)}
       >${year}</button>`;
         });
+        const calendarBody = html `
+      <div class="loomi-head">
+        ${this.calendarView === "years"
+            ? html `<button class="loomi-nav" aria-label=${loomiT("datepicker.previousYears", {}, this.locale)} @click=${() => this.shiftYearRange(-1)}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">${PREV}</svg></button>
+            <span class="loomi-month">${this.yearRangeStart} - ${this.yearRangeStart + 11}</span>
+            <button class="loomi-nav" aria-label=${loomiT("datepicker.nextYears", {}, this.locale)} @click=${() => this.shiftYearRange(1)}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">${NEXT}</svg></button>`
+            : this.calendarView === "months"
+                ? html `<span class="loomi-nav-spacer"></span>
+              <button class="loomi-head-button" aria-label=${loomiT("datepicker.chooseYear", {}, this.locale)} @click=${() => this.showYears()}>${y}</button>
+              <span class="loomi-nav-spacer"></span>`
+                : html `<button class="loomi-nav" aria-label=${loomiT("datepicker.previousMonth", {}, this.locale)} @click=${() => this.shiftMonth(-1)}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">${PREV}</svg></button>
+              <span class="loomi-title">
+                <button class="loomi-head-button" aria-label=${loomiT("datepicker.chooseMonth", {}, this.locale)} @click=${() => this.showMonths()}>${loomiMonthName(this.locale, this.view.getMonth(), "long")}</button>
+                <button class="loomi-head-button" aria-label=${loomiT("datepicker.chooseYear", {}, this.locale)} @click=${() => this.showYears()}>${y}</button>
+              </span>
+              <button class="loomi-nav" aria-label=${loomiT("datepicker.nextMonth", {}, this.locale)} @click=${() => this.shiftMonth(1)}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">${NEXT}</svg></button>`}
+      </div>
+      ${this.calendarView === "years"
+            ? html `<div class="loomi-picker-grid years">${years}</div>`
+            : this.calendarView === "months"
+                ? html `<div class="loomi-picker-grid months">${months}</div>`
+                : html `<div class="loomi-grid">
+            ${this.weekdays().map((w) => html `<span class="loomi-wd">${w}</span>`)}
+            ${cells}
+          </div>`}
+    `;
+        if (this.dpStyle === "inline") {
+            return html `<div class="loomi-dp-inline">
+        ${this.label ? html `<span class="loomi-label">${this.label}${this.required ? html `<span class="loomi-req"> *</span>` : nothing}</span>` : nothing}
+        <div class="loomi-cal inline">${calendarBody}</div>
+      </div>`;
+        }
         return html `<div class="loomi-dp ${this.open ? "open" : ""}">
       ${this.label ? html `<span class="loomi-label">${this.label}${this.required ? html `<span class="loomi-req"> *</span>` : nothing}</span>` : nothing}
       <div class="loomi-field size-${this.size}" @click=${() => this.toggle()}>
@@ -200,32 +235,7 @@ let LoomiDatepicker = class LoomiDatepicker extends LoomiElement {
         <span class="loomi-text ${this.value ? "" : "placeholder"}">${this.value || placeholder}${!this.value && this.required ? html `<span class="loomi-req"> *</span>` : nothing}</span>
       </div>
       ${this.open
-            ? html `<div class="loomi-cal" @click=${(e) => e.stopPropagation()}>
-            <div class="loomi-head">
-              ${this.calendarView === "years"
-                ? html `<button class="loomi-nav" aria-label=${loomiT("datepicker.previousYears", {}, this.locale)} @click=${() => this.shiftYearRange(-1)}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">${PREV}</svg></button>
-                  <span class="loomi-month">${this.yearRangeStart} - ${this.yearRangeStart + 11}</span>
-                  <button class="loomi-nav" aria-label=${loomiT("datepicker.nextYears", {}, this.locale)} @click=${() => this.shiftYearRange(1)}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">${NEXT}</svg></button>`
-                : this.calendarView === "months"
-                    ? html `<span class="loomi-nav-spacer"></span>
-                    <button class="loomi-head-button" aria-label=${loomiT("datepicker.chooseYear", {}, this.locale)} @click=${() => this.showYears()}>${y}</button>
-                    <span class="loomi-nav-spacer"></span>`
-                    : html `<button class="loomi-nav" aria-label=${loomiT("datepicker.previousMonth", {}, this.locale)} @click=${() => this.shiftMonth(-1)}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">${PREV}</svg></button>
-                    <span class="loomi-title">
-                      <button class="loomi-head-button" aria-label=${loomiT("datepicker.chooseMonth", {}, this.locale)} @click=${() => this.showMonths()}>${loomiMonthName(this.locale, this.view.getMonth(), "long")}</button>
-                      <button class="loomi-head-button" aria-label=${loomiT("datepicker.chooseYear", {}, this.locale)} @click=${() => this.showYears()}>${y}</button>
-                    </span>
-                    <button class="loomi-nav" aria-label=${loomiT("datepicker.nextMonth", {}, this.locale)} @click=${() => this.shiftMonth(1)}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">${NEXT}</svg></button>`}
-            </div>
-            ${this.calendarView === "years"
-                ? html `<div class="loomi-picker-grid years">${years}</div>`
-                : this.calendarView === "months"
-                    ? html `<div class="loomi-picker-grid months">${months}</div>`
-                    : html `<div class="loomi-grid">
-                  ${this.weekdays().map((w) => html `<span class="loomi-wd">${w}</span>`)}
-                  ${cells}
-                </div>`}
-          </div>`
+            ? html `<div class="loomi-cal" @click=${(e) => e.stopPropagation()}>${calendarBody}</div>`
             : nothing}
     </div>`;
     }
@@ -233,6 +243,9 @@ let LoomiDatepicker = class LoomiDatepicker extends LoomiElement {
 __decorate([
     property({ reflect: true })
 ], LoomiDatepicker.prototype, "name", void 0);
+__decorate([
+    property({ attribute: "dp-style" })
+], LoomiDatepicker.prototype, "dpStyle", void 0);
 __decorate([
     property({ type: Boolean })
 ], LoomiDatepicker.prototype, "range", void 0);

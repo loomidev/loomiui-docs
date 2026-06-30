@@ -27,7 +27,7 @@ let LoomiTimeline = class LoomiTimeline extends LoomiElement {
         this.icon = "";
         this.avatar = "";
         this.last = false;
-        this.color = "blue";
+        this.color = "primary";
     }
     static { this.styles = loomiStyles(componentStyles); }
     renderDot() {
@@ -102,7 +102,7 @@ let LoomiTimelines = class LoomiTimelines extends LoomiElement {
         this.anchor = "small";
         this.icon = "";
         this.position = "center";
-        this.color = "blue";
+        this.color = "primary";
         this.sync = () => {
             const items = Array.from(this.querySelectorAll("loomi-timeline"));
             items.forEach((item, i) => {
@@ -114,7 +114,7 @@ let LoomiTimelines = class LoomiTimelines extends LoomiElement {
                     item.anchor = "big";
                 if (this.icon && !item.icon)
                     item.icon = this.icon;
-                if (this.color && item.color === "blue")
+                if (this.color && item.color === "primary")
                     item.color = this.color;
                 if (i === items.length - 1)
                     item.last = true;

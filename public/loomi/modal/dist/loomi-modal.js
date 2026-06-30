@@ -11,10 +11,10 @@ import "@loomidev/button/loomi-button.js";
 import "@loomidev/icon/loomi-icon.js";
 import { componentStyles } from "./generated/styles.css.js";
 const TYPE = {
-    info: { color: "blue", icon: "information-circle" },
-    error: { color: "red", icon: "exclamation-circle" },
-    warning: { color: "orange", icon: "exclamation-triangle" },
-    success: { color: "green", icon: "check-circle" },
+    info: { color: "primary", icon: "information-circle" },
+    error: { color: "error", icon: "exclamation-circle" },
+    warning: { color: "warning", icon: "exclamation-triangle" },
+    success: { color: "success", icon: "check-circle" },
 };
 const DEFAULT_OK_LABEL = "Okay";
 const DEFAULT_CANCEL_LABEL = "Cancel";

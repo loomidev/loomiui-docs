@@ -20,7 +20,7 @@ let LoomiAvatar = class LoomiAvatar extends LoomiElement {
         this.label = "";
         this.size = "regular";
         this.dotted = false;
-        this.dotColor = "green";
+        this.dotColor = "success";
         this.dotPosition = "bottom";
         this.bgColor = "gray";
         this.showRing = true;
@@ -84,14 +84,14 @@ let LoomiAvatars = class LoomiAvatars extends LoomiElement {
         super(...arguments);
         this.stacked = false;
         this.dotted = false;
-        this.dotColor = "green";
+        this.dotColor = "success";
         this.dotPosition = "bottom";
         this.plus = 0;
         this.size = "regular";
         this.syncChildren = () => {
             if (this.plus > 0)
                 this.stacked = true;
-            const hasGroupDotColor = this.hasAttribute("dot-color") || this.dotColor !== "green";
+            const hasGroupDotColor = this.hasAttribute("dot-color") || this.dotColor !== "success";
             const hasGroupDotPosition = this.hasAttribute("dot-position") || this.dotPosition !== "bottom";
             this.querySelectorAll("loomi-avatar").forEach((avatar) => {
                 avatar.setAttribute("size", this.size);

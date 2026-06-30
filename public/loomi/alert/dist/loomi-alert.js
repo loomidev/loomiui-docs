@@ -10,10 +10,10 @@ import { LoomiElement, loomiStyles, loomiT, accentVars } from "@loomidev/core";
 import { getLoomiIcon } from "@loomidev/icons";
 import { componentStyles } from "./generated/styles.css.js";
 const TYPE_COLOR = {
-    info: "blue",
-    error: "red",
-    warning: "orange",
-    success: "green",
+    info: "primary",
+    error: "error",
+    warning: "warning",
+    success: "success",
 };
 const TYPE_ICON = {
     info: "information-circle",

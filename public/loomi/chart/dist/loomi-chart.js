@@ -10,7 +10,7 @@ import { customElement, property } from "lit/decorators.js";
 import { LoomiElement, loomiStyles, accentVars, cssColor } from "@loomidev/core";
 import "@loomidev/tooltip/loomi-tooltip.js";
 import { componentStyles } from "./generated/styles.css.js";
-const PALETTE = ["primary", "green", "orange", "red", "purple", "cyan", "pink", "indigo"];
+const PALETTE = ["primary", "success", "warning", "error", "purple", "cyan", "pink", "blue"];
 // `show-border` defaults to `true`, so it needs the "false" string to actually disable it —
 // Lit's built-in Boolean converter treats any present attribute (including `="false"`) as true.
 const booleanAttribute = {

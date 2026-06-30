@@ -556,3 +556,221 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Shared "gallery page" sidebar chrome — used by both /components/ and /icons/, which
+   are both raw Astro pages (outside Starlight's Layout) with the same
+   search+nav-list+promo-card+help-card sidebar shape. Lives here rather than scoped to
+   one page's <style> block so a second gallery page doesn't have to duplicate it. */
+.search-icon {
+  position: absolute;
+  left: 0.7rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgb(148 163 184);
+  pointer-events: none;
+}
+.sidebar-search,
+.main-search {
+  width: 100%;
+  border-radius: 0.6rem;
+  border: 1px solid rgb(226 232 240);
+  background: white;
+  padding: 0.55rem 0.7rem 0.55rem 2.1rem;
+  font-size: 0.85rem;
+  color: rgb(15 23 42);
+}
+.sidebar-search::placeholder,
+.main-search::placeholder {
+  color: rgb(148 163 184);
+}
+.dark .sidebar-search,
+.dark .main-search {
+  border-color: rgb(51 65 85);
+  background: rgb(15 23 42 / 0.6);
+  color: white;
+}
+.sidebar-search {
+  padding-right: 2.6rem;
+}
+.search-kbd {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 1px solid rgb(226 232 240);
+  border-radius: 0.35rem;
+  background: rgb(248 250 252);
+  padding: 0.1rem 0.35rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: rgb(148 163 184);
+}
+.dark .search-kbd {
+  border-color: rgb(51 65 85);
+  background: rgb(30 41 59);
+}
+
+.category-link {
+  display: flex;
+  width: 100%;
+  cursor: pointer;
+  align-items: center;
+  gap: 0.6rem;
+  border-radius: 0.5rem;
+  border: 0;
+  background: transparent;
+  padding: 0.45rem 0.6rem;
+  color: rgb(71 85 105);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.category-link:hover {
+  background: rgb(241 245 249);
+}
+.category-link.is-active {
+  background: rgb(37 99 235 / 0.08);
+  color: rgb(29 78 216);
+  font-weight: 600;
+}
+.dark .category-link {
+  color: rgb(203 213 225);
+}
+.dark .category-link:hover {
+  background: rgb(30 41 59);
+}
+.dark .category-link.is-active {
+  background: rgb(96 165 250 / 0.12);
+  color: rgb(147 197 253);
+}
+.category-link-icon {
+  display: flex;
+  flex-shrink: 0;
+  color: currentColor;
+  opacity: 0.85;
+}
+.category-count {
+  color: rgb(148 163 184);
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.sidebar-section-label {
+  margin: 1.4rem 0 0.4rem 0.6rem;
+  color: rgb(148 163 184);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.promo-card {
+  margin-top: 1.75rem;
+  border-radius: 0.85rem;
+  border: 1px solid rgb(37 99 235 / 0.15);
+  background: linear-gradient(180deg, rgb(37 99 235 / 0.06), rgb(37 99 235 / 0.02));
+  padding: 1rem;
+}
+.dark .promo-card {
+  border-color: rgb(96 165 250 / 0.2);
+  background: linear-gradient(180deg, rgb(96 165 250 / 0.1), rgb(96 165 250 / 0.03));
+}
+.promo-card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.55rem;
+  background: rgb(37 99 235);
+  color: white;
+}
+.promo-card-title {
+  margin-top: 0.6rem;
+  color: rgb(15 23 42);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+.dark .promo-card-title {
+  color: white;
+}
+.promo-card-text {
+  margin-top: 0.25rem;
+  color: rgb(100 116 139);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+.dark .promo-card-text {
+  color: rgb(148 163 184);
+}
+.promo-card-link {
+  margin-top: 0.6rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: rgb(37 99 235);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+.promo-card-link:hover {
+  color: rgb(29 78 216);
+}
+.dark .promo-card-link {
+  color: rgb(96 165 250);
+}
+
+.help-card {
+  margin-top: 1rem;
+  border-radius: 0.85rem;
+  border: 1px solid rgb(226 232 240);
+  background: white;
+  padding: 1rem;
+}
+.dark .help-card {
+  border-color: rgb(51 65 85);
+  background: rgb(15 23 42 / 0.6);
+}
+.help-card-title {
+  color: rgb(15 23 42);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+.dark .help-card-title {
+  color: white;
+}
+.help-card-text {
+  margin-top: 0.25rem;
+  color: rgb(100 116 139);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+.dark .help-card-text {
+  color: rgb(148 163 184);
+}
+.help-card-link {
+  margin-top: 0.55rem;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: rgb(71 85 105);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+.help-card-link:hover {
+  color: rgb(37 99 235);
+}
+.dark .help-card-link {
+  color: rgb(203 213 225);
+}
+.dark .help-card-link:hover {
+  color: rgb(96 165 250);
+}
+
+.no-results {
+  margin-top: 2.5rem;
+  text-align: center;
+  color: rgb(100 116 139);
+  font-size: 0.9rem;
+}
+.dark .no-results {
+  color: rgb(148 163 184);
+}

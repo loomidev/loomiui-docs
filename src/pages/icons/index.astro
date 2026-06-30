@@ -1,0 +1,781 @@
+---
+// Gallery for /icons/ — every icon LoomiUI ships, browsable and click-to-copy. Same
+// "raw Astro page outside Starlight's Layout" shape as ../components/index.astro (see
+// that file's comments for why), reusing its sidebar chrome classes (now shared in
+// home.css) so both gallery pages look like one family.
+//
+// Data comes from two already-vendored build artifacts under public/loomi/icons/dist/
+// (copied there by scripts/copy-component-assets.mjs from @loomidev/icons — see
+// components/packages/icons/README.md for the source of truth on these two registries):
+//
+// - heroicons.js inlines every Heroicons icon as a Lit `svg\`<path .../>\`` tagged
+//   template per name. There's no per-icon .svg FILE for this source, so this page
+//   regex-parses the tagged-template bodies out of the built JS (no `lit` import
+//   needed in this Node-side frontmatter) and re-wraps each one in a standalone
+//   <svg> at build time — cheap, and avoids 648 extra HTTP requests for a source
+//   that's supposed to be free (inlined, no fetch) at runtime.
+// - disk-manifest.js lists every Iconsax/Untitled UI icon name per type; the actual
+//   .svg files it describes already sit on disk at dist/svg/<source>/<type>/<name>.svg
+//   (copied verbatim), so those render as plain <img loading="lazy"> instead — these
+//   sources are deliberately NOT inlined (some 3,800+ icons), so importing them as
+//   `<loomi-icon>` custom elements per tile here would mean ~3,860 live Lit elements;
+//   plain <img> keeps this a static page the browser can lazy-load and cache normally.
+import fs from "node:fs";
+import path from "node:path";
+import MarketingHeader from "../../components/MarketingHeader.astro";
+import { buildImportMap } from "../../lib/import-map.mjs";
+import "../../styles/home.css";
+
+const importMap = buildImportMap();
+const title = "Icons - LoomiUI";
+const description = "Browse every icon LoomiUI ships — Heroicons, Iconsax, and Untitled UI, outline/solid/twotone — and click any icon to copy its SVG.";
+const GITHUB_URL = "https://github.com/loomidev/loomiui-docs";
+const DEFAULT_SOURCE = "heroicons";
+
+function titleCase(s: string): string {
+  return s[0].toUpperCase() + s.slice(1);
+}
+
+// --- Heroicons: parse the inlined tagged-template registry ---------------------------
+const heroSrcPath = path.resolve("./public/loomi/icons/dist/heroicons.js");
+const heroSrc = fs.readFileSync(heroSrcPath, "utf8");
+
+function extractHeroBlock(src: string, blockName: string): Record<string, string> {
+  const blockMatch = src.match(new RegExp(`const ${blockName}[^{]*\\{([\\s\\S]*?)\\n\\};`));
+  const out: Record<string, string> = {};
+  if (!blockMatch) return out;
+  const entryPattern = /"([a-z0-9-]+)":\s*svg\s*`([^`]*)`/g;
+  let entry: RegExpExecArray | null;
+  while ((entry = entryPattern.exec(blockMatch[1]))) out[entry[1]] = entry[2];
+  return out;
+}
+
+const heroOutlineMarkup = extractHeroBlock(heroSrc, "OUTLINE_ICONS");
+const heroSolidMarkup = extractHeroBlock(heroSrc, "SOLID_ICONS");
+
+function heroIconHtml(markup: string, variant: "outline" | "solid"): string {
+  const attrs =
+    variant === "solid"
+      ? `fill="currentColor"`
+      : `fill="none" stroke="currentColor" stroke-width="1.5"`;
+  return `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" ${attrs}>${markup}</svg>`;
+}
+
+// --- Iconsax / Untitled UI: parse the disk-icon name manifest ------------------------
+const diskManifestPath = path.resolve("./public/loomi/icons/dist/generated/disk-manifest.js");
+const diskManifestSrc = fs.readFileSync(diskManifestPath, "utf8");
+const diskManifestMatch = diskManifestSrc.match(/export const DISK_ICON_NAMES = (\{[\s\S]*?\});/);
+if (!diskManifestMatch) throw new Error("icons page: could not parse disk-manifest.js — has its export shape changed?");
+const DISK_ICON_NAMES: Record<string, Record<string, string[]>> = JSON.parse(diskManifestMatch[1]);
+
+function diskIconHtml(source: string, type: string, name: string): { html: string; src: string } {
+  const src = `/loomi/icons/dist/svg/${source}/${type}/${encodeURIComponent(name)}.svg`;
+  return { src, html: `<img src="${src}" loading="lazy" decoding="async" width="24" height="24" alt="" />` };
+}
+
+// --- Assemble the unified source/type/icon tree the page renders from ----------------
+interface IconEntry {
+  name: string;
+  html: string;
+  src: string;
+  search: string;
+}
+interface TypeGroup {
+  key: string;
+  label: string;
+  icons: IconEntry[];
+}
+interface SourceGroup {
+  key: string;
+  label: string;
+  icon: string;
+  total: number;
+  types: TypeGroup[];
+}
+
+function buildHeroTypeGroup(key: "outline" | "solid", markupByName: Record<string, string>): TypeGroup {
+  const names = Object.keys(markupByName).sort((a, b) => a.localeCompare(b));
+  return {
+    key,
+    label: titleCase(key),
+    icons: names.map((name) => ({
+      name,
+      html: heroIconHtml(markupByName[name], key),
+      src: "",
+      search: `${name} heroicons ${key}`.toLowerCase(),
+    })),
+  };
+}
+
+function buildDiskTypeGroup(source: string, key: string, names: string[]): TypeGroup {
+  const sorted = names.slice().sort((a, b) => a.localeCompare(b));
+  return {
+    key,
+    label: titleCase(key),
+    icons: sorted.map((name) => {
+      const { html, src } = diskIconHtml(source, key, name);
+      return { name, html, src, search: `${name} ${source} ${key}`.toLowerCase() };
+    }),
+  };
+}
+
+const SOURCES: SourceGroup[] = [
+  {
+    key: "heroicons",
+    label: "Heroicons",
+    icon: "bolt",
+    total: Object.keys(heroOutlineMarkup).length + Object.keys(heroSolidMarkup).length,
+    types: [buildHeroTypeGroup("outline", heroOutlineMarkup), buildHeroTypeGroup("solid", heroSolidMarkup)],
+  },
+  {
+    key: "iconsax",
+    label: "Iconsax",
+    icon: "cube",
+    total: Object.values(DISK_ICON_NAMES.iconsax).reduce((sum, names) => sum + names.length, 0),
+    types: ["outline", "solid", "twotone"].map((type) => buildDiskTypeGroup("iconsax", type, DISK_ICON_NAMES.iconsax[type] ?? [])),
+  },
+  {
+    key: "untitledui",
+    label: "Untitled UI",
+    icon: "square-2-stack",
+    total: Object.values(DISK_ICON_NAMES.untitledui).reduce((sum, names) => sum + names.length, 0),
+    types: ["outline"].map((type) => buildDiskTypeGroup("untitledui", type, DISK_ICON_NAMES.untitledui[type] ?? [])),
+  },
+];
+
+const totalIcons = SOURCES.reduce((sum, s) => sum + s.total, 0);
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.png" />
+    <script type="importmap" is:inline set:html={JSON.stringify(importMap)} />
+  </head>
+  <body class="bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
+    <MarketingHeader />
+
+    <div class="mx-auto max-w-7xl px-6 py-10 lg:grid lg:grid-cols-[15rem_1fr] lg:items-start lg:gap-10">
+      <!-- Sidebar -->
+      <aside class="lg:sticky lg:top-20 lg:self-start">
+        <div class="relative">
+          <loomi-icon name="magnifying-glass" class="search-icon" style="width:1rem;height:1rem"></loomi-icon>
+          <input
+            type="text"
+            data-role="search-input"
+            placeholder="Search icons..."
+            class="sidebar-search"
+            aria-label="Search icons"
+          />
+          <kbd class="search-kbd">⌘K</kbd>
+        </div>
+
+        <nav class="mt-4 space-y-0.5">
+          <a href="/components/" class="category-link">
+            <span class="category-link-icon"><loomi-icon name="arrow-left" style="width:1.05rem;height:1.05rem"></loomi-icon></span>
+            <span class="grow text-left">All Components</span>
+          </a>
+          <button type="button" class="category-link" data-source-filter="all">
+            <span class="category-link-icon"><loomi-icon name="squares-2-x-2" style="width:1.05rem;height:1.05rem"></loomi-icon></span>
+            <span class="grow text-left">All Icons</span>
+            <span class="category-count">{totalIcons}</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-section-label">Sources</div>
+        <nav class="space-y-0.5">
+          {SOURCES.map((source) => (
+            <button
+              type="button"
+              class={`category-link${source.key === DEFAULT_SOURCE ? " is-active" : ""}`}
+              data-source-filter={source.key}
+            >
+              <span class="category-link-icon"><loomi-icon name={source.icon} style="width:1.05rem;height:1.05rem"></loomi-icon></span>
+              <span class="grow text-left">{source.label}</span>
+              <span class="category-count">{source.total}</span>
+            </button>
+          ))}
+        </nav>
+
+        <div class="promo-card">
+          <div class="promo-card-icon"><loomi-icon name="rocket-launch" style="width:1.15rem;height:1.15rem"></loomi-icon></div>
+          <div class="promo-card-title">Build faster with LoomiUI</div>
+          <p class="promo-card-text">Copy, paste and ship beautiful interfaces.</p>
+          <a href="/installation/" class="promo-card-link">
+            Get Started
+            <loomi-icon name="arrow-right" style="width:0.85rem;height:0.85rem"></loomi-icon>
+          </a>
+        </div>
+
+        <div class="help-card">
+          <div class="help-card-title">Need help?</div>
+          <p class="help-card-text">Join the conversation or report an issue on GitHub.</p>
+          <a href={`${GITHUB_URL}/discussions`} class="help-card-link">
+            <loomi-icon name="chat-bubble-left-right" style="width:0.95rem;height:0.95rem"></loomi-icon>
+            Discussions
+          </a>
+          <a href={`${GITHUB_URL}/issues`} class="help-card-link">
+            <loomi-icon name="exclamation-circle" style="width:0.95rem;height:0.95rem"></loomi-icon>
+            Report an issue
+          </a>
+        </div>
+      </aside>
+
+      <!-- Main -->
+      <div class="mt-10 min-w-0 lg:mt-0">
+        <div class="feature-kicker">Icons</div>
+        <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">Icon library</h1>
+        <p class="mt-3 max-w-2xl text-lg leading-7 text-gray-600 dark:text-gray-400">
+          Browse all {totalIcons}+ icons across Heroicons, Iconsax, and Untitled UI.
+          Click any icon to copy its SVG or name.
+        </p>
+
+        <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div class="relative grow">
+            <loomi-icon name="magnifying-glass" class="search-icon" style="width:1rem;height:1rem"></loomi-icon>
+            <input
+              type="text"
+              data-role="search-input"
+              placeholder="Search icons..."
+              class="main-search"
+              aria-label="Search icons"
+            />
+          </div>
+          <div class="copy-mode-control shrink-0">
+            <span class="copy-mode-prefix">Copy as</span>
+            <span class="copy-mode-label" data-copy-mode-label="svg">SVG</span>
+            <loomi-toggle data-role="copy-mode-toggle" aria-label="Toggle copy mode between SVG and icon name"></loomi-toggle>
+            <span class="copy-mode-label" data-copy-mode-label="name">Name</span>
+          </div>
+        </div>
+
+        <div class="mt-5 flex flex-wrap gap-2" id="source-pills">
+          {SOURCES.map((source) => (
+            <button
+              type="button"
+              class="filter-pill"
+              aria-pressed={source.key === DEFAULT_SOURCE ? "true" : "false"}
+              data-source-filter={source.key}
+            >
+              {source.label}
+            </button>
+          ))}
+        </div>
+
+        <p id="no-results" class="no-results hidden">No icons match your search.</p>
+
+        <div id="icon-sources">
+          {SOURCES.map((source) => (
+            <section
+              class={`icon-source-section${source.key === DEFAULT_SOURCE ? "" : " hidden"}`}
+              data-source={source.key}
+            >
+              <div class="icon-source-heading">
+                <h2 class="icon-source-title">{source.label}</h2>
+                <span class="icon-source-count">{source.total} icons</span>
+              </div>
+              {source.types.length > 1 && (
+                <div class="icon-type-tabs" role="tablist">
+                  {source.types.map((type, i) => (
+                    <button
+                      type="button"
+                      class={`icon-type-tab${i === 0 ? " is-active" : ""}`}
+                      role="tab"
+                      aria-selected={i === 0 ? "true" : "false"}
+                      data-type-tab={type.key}
+                    >
+                      {type.label} <span class="icon-type-tab-count">{type.icons.length}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+              {source.types.map((type, i) => (
+                <div class={`icon-type-group${i === 0 ? "" : " is-tab-hidden"}`} data-type={type.key}>
+                  <div class="icon-grid">
+                    {type.icons.map((icon) => (
+                      <button
+                        type="button"
+                        class="icon-tile"
+                        data-name={icon.name}
+                        data-search={icon.search}
+                        data-src={icon.src}
+                        aria-label={`Copy ${icon.name} SVG`}
+                      >
+                        <span class="icon-tile-glyph" set:html={icon.html} />
+                        <span class="icon-tile-name">{icon.name}</span>
+                        <span class="icon-tile-copied">Copied!</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </section>
+          ))}
+        </div>
+
+        <div class="mt-12 text-center">
+          <a href="/components/icon/" class="inline-flex items-center gap-1 text-sm font-semibold text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300">
+            Read the &lt;loomi-icon&gt; docs
+            <loomi-icon name="arrow-right" style="width:0.9rem;height:0.9rem"></loomi-icon>
+          </a>
+          <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Need a custom icon? Register one once with <code>@loomidev/icons</code> and use it everywhere.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-200 dark:border-gray-800">
+      <div class="mx-auto max-w-6xl px-6 py-10 text-sm text-gray-500 dark:text-gray-400">
+        <div class="flex flex-wrap justify-center gap-6">
+          <a href="/installation/" class="hover:text-primary-600 dark:hover:text-primary-400">Installation</a>
+          <a href="/components/" class="hover:text-primary-600 dark:hover:text-primary-400">Components</a>
+          <a href="/icons/" class="hover:text-primary-600 dark:hover:text-primary-400">Icons</a>
+          <a href="/mcp-server/" class="hover:text-primary-600 dark:hover:text-primary-400">MCP Server</a>
+          <a href="/contributing/" class="hover:text-primary-600 dark:hover:text-primary-400">Contributing</a>
+        </div>
+        <p class="mt-6 text-center">© {new Date().getFullYear()} LoomiUI.</p>
+      </div>
+    </footer>
+
+    <button type="button" id="back-to-top" class="back-to-top" aria-label="Back to top">
+      <loomi-icon name="arrow-up" style="width:0.9rem;height:0.9rem"></loomi-icon>
+      To top
+    </button>
+
+    <script type="module" is:inline>
+      import "@loomidev/icon";
+      import "@loomidev/toggle";
+    </script>
+
+    <script>
+      const sections = Array.from(document.querySelectorAll<HTMLElement>(".icon-source-section"));
+      const searchInputs = document.querySelectorAll<HTMLInputElement>("[data-role='search-input']");
+      const sourceButtons = document.querySelectorAll<HTMLElement>("[data-source-filter]");
+      const noResults = document.getElementById("no-results") as HTMLElement;
+
+      // Keep in sync with DEFAULT_SOURCE in this file's frontmatter — this plain
+      // <script> isn't processed by Astro's templating, so it can't read that constant.
+      const state = { query: "", source: "heroicons" };
+
+      function applyFilters() {
+        const q = state.query.trim().toLowerCase();
+        let totalVisible = 0;
+        for (const section of sections) {
+          const matchesSource = state.source === "all" || section.dataset.source === state.source;
+          if (!matchesSource) {
+            section.classList.add("hidden");
+            continue;
+          }
+          section.classList.remove("hidden");
+          let sectionVisible = 0;
+          for (const group of section.querySelectorAll<HTMLElement>(".icon-type-group")) {
+            // Inactive tab for this source — its tiles stay out of the search/count
+            // math entirely, so search never "leaks" results from a tab the user isn't on.
+            if (group.classList.contains("is-tab-hidden")) continue;
+            let groupVisible = 0;
+            for (const tile of group.querySelectorAll<HTMLElement>(".icon-tile")) {
+              const show = !q || tile.dataset.search!.includes(q);
+              tile.classList.toggle("hidden", !show);
+              if (show) {
+                groupVisible++;
+                sectionVisible++;
+                totalVisible++;
+              }
+            }
+            group.classList.toggle("hidden", groupVisible === 0);
+          }
+          section.classList.toggle("hidden", sectionVisible === 0);
+        }
+        noResults.classList.toggle("hidden", totalVisible !== 0);
+      }
+
+      searchInputs.forEach((input) => {
+        input.addEventListener("input", (e) => {
+          state.query = (e.target as HTMLInputElement).value;
+          searchInputs.forEach((other) => {
+            if (other !== e.target) other.value = state.query;
+          });
+          applyFilters();
+        });
+      });
+
+      sourceButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          state.source = btn.dataset.sourceFilter!;
+          sourceButtons.forEach((b) => {
+            const active = b.dataset.sourceFilter === state.source;
+            b.classList.toggle("is-active", active);
+            if (b.hasAttribute("aria-pressed")) b.setAttribute("aria-pressed", String(active));
+          });
+          applyFilters();
+        });
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+          e.preventDefault();
+          (searchInputs[0] as HTMLInputElement | undefined)?.focus();
+        }
+      });
+
+      // Type tabs: each source section switches its own active type independently —
+      // only the active tab's group stays in the DOM's visible/search-counted set
+      // (enforced in applyFilters above via the `is-tab-hidden` class).
+      document.querySelectorAll<HTMLElement>(".icon-type-tabs").forEach((tabs) => {
+        const section = tabs.closest<HTMLElement>(".icon-source-section")!;
+        const tabButtons = Array.from(tabs.querySelectorAll<HTMLElement>(".icon-type-tab"));
+        const groups = Array.from(section.querySelectorAll<HTMLElement>(".icon-type-group"));
+        tabButtons.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const type = btn.dataset.typeTab!;
+            tabButtons.forEach((b) => {
+              const active = b === btn;
+              b.classList.toggle("is-active", active);
+              b.setAttribute("aria-selected", String(active));
+            });
+            groups.forEach((g) => g.classList.toggle("is-tab-hidden", g.dataset.type !== type));
+            applyFilters();
+          });
+        });
+      });
+
+      // Copy-mode toggle: off (default) copies the icon's SVG markup, on copies its name.
+      const copyModeToggle = document.querySelector<HTMLElement & { checked: boolean }>("[data-role='copy-mode-toggle']");
+      let copyMode: "svg" | "name" = "svg";
+      function syncCopyModeLabels() {
+        document.querySelectorAll<HTMLElement>("[data-copy-mode-label]").forEach((label) => {
+          label.classList.toggle("is-active", label.dataset.copyModeLabel === copyMode);
+        });
+      }
+      copyModeToggle?.addEventListener("change", () => {
+        copyMode = copyModeToggle.checked ? "name" : "svg";
+        syncCopyModeLabels();
+      });
+      syncCopyModeLabels();
+
+      // Click-to-copy: heroicon tiles already have a live <svg> in the DOM (cheap,
+      // inlined at build time), so its outerHTML *is* the copyable markup. Iconsax/
+      // Untitled UI tiles only have an <img>, so their SVG text is fetched on click —
+      // same URL the <img> already loaded, so it's normally an instant cache hit.
+      document.addEventListener("click", async (e) => {
+        const tile = (e.target as HTMLElement)?.closest<HTMLElement>(".icon-tile");
+        if (!tile) return;
+
+        if (copyMode === "name") {
+          try {
+            await navigator.clipboard.writeText(tile.dataset.name ?? "");
+          } catch {
+            return;
+          }
+          tile.classList.add("is-copied");
+          setTimeout(() => tile.classList.remove("is-copied"), 1200);
+          return;
+        }
+
+        const inlineSvg = tile.querySelector("svg");
+        let svgText = inlineSvg ? inlineSvg.outerHTML : null;
+        if (!svgText && tile.dataset.src) {
+          try {
+            const res = await fetch(tile.dataset.src);
+            if (res.ok) svgText = await res.text();
+          } catch {
+            svgText = null;
+          }
+        }
+        if (!svgText) return;
+        try {
+          await navigator.clipboard.writeText(svgText);
+        } catch {
+          return;
+        }
+        tile.classList.add("is-copied");
+        setTimeout(() => tile.classList.remove("is-copied"), 1200);
+      });
+
+      // Back to top: hidden until the user has scrolled past the fold, so it isn't
+      // sitting there with nothing to do on first paint.
+      const backToTop = document.getElementById("back-to-top") as HTMLElement;
+      function syncBackToTop() {
+        backToTop.classList.toggle("is-visible", window.scrollY > 400);
+      }
+      backToTop.addEventListener("click", () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+      window.addEventListener("scroll", syncBackToTop, { passive: true });
+      syncBackToTop();
+
+      applyFilters();
+    </script>
+  </body>
+</html>
+
+<style>
+  #icon-sources,
+  #no-results {
+    margin-top: 15px;
+  }
+
+  .copy-mode-control {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    border-radius: 0.6rem;
+    border: 1px solid rgb(226 232 240);
+    background: white;
+    padding: 0.55rem 0.9rem;
+  }
+  .dark .copy-mode-control {
+    border-color: rgb(51 65 85);
+    background: rgb(15 23 42 / 0.6);
+  }
+  .copy-mode-prefix {
+    color: rgb(100 116 139);
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+  .dark .copy-mode-prefix {
+    color: rgb(148 163 184);
+  }
+  .copy-mode-label {
+    color: rgb(148 163 184);
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+  .copy-mode-label.is-active {
+    color: rgb(15 23 42);
+    font-weight: 600;
+  }
+  .dark .copy-mode-label.is-active {
+    color: white;
+  }
+
+  .icon-source-heading {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin-top: 3rem;
+  }
+  .icon-source-section:first-child .icon-source-heading {
+    margin-top: 0;
+  }
+  .icon-source-title {
+    color: rgb(2 6 23);
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+  .dark .icon-source-title {
+    color: white;
+  }
+  .icon-source-count {
+    color: rgb(148 163 184);
+    font-size: 0.85rem;
+  }
+  .icon-source-section.hidden {
+    display: none;
+  }
+
+  .icon-type-tabs {
+    display: flex;
+    gap: 1.25rem;
+    margin-top: 1.1rem;
+    border-bottom: 1px solid rgb(226 232 240);
+  }
+  .dark .icon-type-tabs {
+    border-color: rgb(51 65 85);
+  }
+  .icon-type-tab {
+    position: relative;
+    cursor: pointer;
+    border: 0;
+    background: transparent;
+    padding: 0.55rem 0.05rem;
+    margin-bottom: -1px;
+    color: rgb(100 116 139);
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+  .icon-type-tab:hover {
+    color: rgb(15 23 42);
+  }
+  .dark .icon-type-tab {
+    color: rgb(148 163 184);
+  }
+  .dark .icon-type-tab:hover {
+    color: white;
+  }
+  .icon-type-tab.is-active {
+    color: rgb(37 99 235);
+  }
+  .dark .icon-type-tab.is-active {
+    color: rgb(96 165 250);
+  }
+  .icon-type-tab.is-active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    background: rgb(37 99 235);
+  }
+  .dark .icon-type-tab.is-active::after {
+    background: rgb(96 165 250);
+  }
+  .icon-type-tab-count {
+    margin-left: 0.2rem;
+    color: rgb(148 163 184);
+    font-weight: 500;
+  }
+
+  .icon-type-group {
+    margin-top: 1.5rem;
+  }
+  .icon-type-group.hidden,
+  .icon-type-group.is-tab-hidden {
+    display: none;
+  }
+
+  .icon-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem;
+  }
+  @media (min-width: 480px) {
+    .icon-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  @media (min-width: 720px) {
+    .icon-grid {
+      grid-template-columns: repeat(5, 1fr);
+    }
+  }
+  @media (min-width: 960px) {
+    .icon-grid {
+      grid-template-columns: repeat(6, 1fr);
+    }
+  }
+  .icon-tile {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.45rem;
+    border-radius: 0.6rem;
+    border: 1px solid rgb(226 232 240);
+    background: white;
+    padding: 0.85rem 0.5rem 0.65rem;
+    cursor: pointer;
+    content-visibility: auto;
+    contain-intrinsic-size: 5.5rem 5.6rem;
+  }
+  .icon-tile:hover {
+    border-color: rgb(37 99 235 / 0.35);
+    background: rgb(248 250 252);
+  }
+  .dark .icon-tile {
+    border-color: rgb(51 65 85);
+    background: rgb(15 23 42 / 0.6);
+  }
+  .dark .icon-tile:hover {
+    background: rgb(30 41 59 / 0.6);
+  }
+  .icon-tile.hidden {
+    display: none;
+  }
+  .icon-tile-glyph {
+    display: flex;
+    height: 1.5rem;
+    width: 1.5rem;
+    align-items: center;
+    justify-content: center;
+    color: rgb(51 65 85);
+  }
+  .dark .icon-tile-glyph {
+    color: rgb(226 232 240);
+  }
+  .icon-tile-glyph svg,
+  .icon-tile-glyph img {
+    height: 100%;
+    width: 100%;
+  }
+  /* Disk-icon <img>s render in an isolated document, so the `currentColor` baked into
+     those files can't pick up this page's color — flip them white in dark mode with a
+     filter instead, the standard trick for theming a monochrome raster-loaded SVG. */
+  .dark .icon-tile-glyph img {
+    filter: invert(1);
+  }
+  .icon-tile-name {
+    width: 100%;
+    overflow: hidden;
+    color: rgb(100 116 139);
+    font-size: 0.65rem;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .dark .icon-tile-name {
+    color: rgb(148 163 184);
+  }
+  .icon-tile-copied {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: inherit;
+    background: rgb(37 99 235 / 0.95);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 600;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.12s ease;
+  }
+  .icon-tile.is-copied .icon-tile-copied {
+    opacity: 1;
+  }
+
+  .back-to-top {
+    position: fixed;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    border-radius: 9999px;
+    border: 1px solid rgb(226 232 240);
+    background: white;
+    padding: 0.6rem 1rem;
+    color: rgb(71 85 105);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 8px 20px -8px rgb(15 23 42 / 0.25);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(8px);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+  .back-to-top.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+  .back-to-top:hover {
+    border-color: rgb(37 99 235 / 0.35);
+    color: rgb(37 99 235);
+  }
+  .dark .back-to-top {
+    border-color: rgb(51 65 85);
+    background: rgb(15 23 42 / 0.9);
+    color: rgb(203 213 225);
+  }
+  .dark .back-to-top:hover {
+    color: rgb(96 165 250);
+  }
+</style>

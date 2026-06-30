@@ -7,9 +7,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { ifDefined } from "lit/directives/if-defined.js";
-import { LoomiElement, themeStyles, isLoomiColor } from "@loomidev/core";
+import { LoomiElement, themeStyles } from "@loomidev/core";
 import { getLoomiIcon } from "./icons.js";
 import { buttonStyles } from "./generated/styles.css.js";
+/** Closed palette for buttons: brand primary/secondary, plus semantic state colors. */
+const BUTTON_COLORS = ["primary", "secondary", "success", "error", "warning"];
+function isLoomiButtonColor(value) {
+    return (typeof value === "string" &&
+        BUTTON_COLORS.includes(value));
+}
 /** Padding + font-size per size. Literal strings so Tailwind's scanner picks them up. */
 const SIZE = {
     tiny: "px-2.5 py-1 text-xs",
@@ -46,9 +52,9 @@ const BORDER_WIDTH = {
 let LoomiButton = class LoomiButton extends LoomiElement {
     constructor() {
         super(...arguments);
-        /** Structural variant: `primary` (bold fill) or `secondary` (soft). */
+        /** Structural variant: both are a bold fill; `type` only picks the default hue (`color` overrides it). */
         this.type = "primary";
-        /** Palette override. Empty = derive from `type`. One of the loomi color names. */
+        /** Palette override. Empty = derive from `type`. `primary` | `secondary` | `success` | `error` | `warning`. */
         this.color = "";
         /** Size preset. */
         this.size = "regular";
@@ -98,25 +104,27 @@ let LoomiButton = class LoomiButton extends LoomiElement {
         this.showSpinner = false;
     }
     get effectiveColor() {
-        if (this.color && isLoomiColor(this.color))
+        if (this.color && isLoomiButtonColor(this.color))
             return this.color;
-        return this.type === "secondary"
-            ? "secondary"
-            : "primary";
+        return this.type === "secondary" ? "secondary" : "primary";
     }
     get spinning() {
         return this.hasSpinner && this.showSpinner;
     }
+    /** `type` only switches solid-fill vs. outline; `color` is the only thing that picks the hue. */
     treatmentClasses(c) {
         const w = BORDER_WIDTH[this.borderWidth] ?? BORDER_WIDTH[2];
         if (this.outline) {
-            return this.type === "secondary"
-                ? ["bg-transparent", `text-${c}-700`, w, "border-solid", `border-${c}-300`, `hover:bg-${c}-50`]
-                : ["bg-transparent", `text-${c}-600`, w, "border-solid", `border-${c}-600`, `hover:bg-${c}-50`];
+            return ["bg-transparent", `text-${c}-600`, w, "border-solid", `border-${c}-600`, `hover:bg-${c}-50`];
         }
-        return this.type === "secondary"
-            ? [`bg-${c}-100`, `text-${c}-700`, `hover:bg-${c}-200`, "border", "border-transparent"]
-            : [`bg-${c}-600`, "text-white", `hover:bg-${c}-700`, "border", "border-transparent"];
+        // Secondary's solid fill is lighter than the other colors' shared 600/700 fill —
+        // dark text instead of white keeps it readable on the lighter background. The
+        // disabled state (global opacity:0.5 on .loomi-btn) lands a couple shades lighter
+        // still, since it's blending this lighter base toward the page background.
+        if (c === "secondary") {
+            return ["bg-secondary-300", "text-secondary-600", "hover:bg-secondary-400", "border", "border-transparent"];
+        }
+        return [`bg-${c}-600`, "text-white", `hover:bg-${c}-700`, "border", "border-transparent"];
     }
     computeClasses() {
         const c = this.effectiveColor;

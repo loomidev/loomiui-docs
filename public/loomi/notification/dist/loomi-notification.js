@@ -10,10 +10,10 @@ import { LoomiElement, loomiStyles, loomiT, accentVars } from "@loomidev/core";
 import "@loomidev/icon/loomi-icon.js";
 import { componentStyles } from "./generated/styles.css.js";
 const TYPE = {
-    success: { color: "green", icon: "check-circle" },
-    info: { color: "blue", icon: "information-circle" },
-    warning: { color: "orange", icon: "exclamation-triangle" },
-    error: { color: "red", icon: "exclamation-circle" },
+    success: { color: "success", icon: "check-circle" },
+    info: { color: "primary", icon: "information-circle" },
+    warning: { color: "warning", icon: "exclamation-triangle" },
+    error: { color: "error", icon: "exclamation-circle" },
 };
 let uid = 0;
 const booleanAttribute = {

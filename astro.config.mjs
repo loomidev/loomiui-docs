@@ -51,8 +51,9 @@ export default defineConfig({
       },
       components: {
         // Dogfood LoomiUI's own components in the docs site's chrome — see
-        // src/components/{Head,Pagination,ThemeSelect}.astro for what/why.
+        // src/components/{Head,Header,Pagination,ThemeSelect}.astro for what/why.
         Head: "./src/components/Head.astro",
+        Header: "./src/components/Header.astro",
         Pagination: "./src/components/Pagination.astro",
         ThemeProvider: "./src/components/ThemeProvider.astro",
         ThemeSelect: "./src/components/ThemeSelect.astro",
@@ -78,6 +79,10 @@ export default defineConfig({
             { label: "Customization", slug: "customization", attrs: { "data-icon": "swatch" } },
             { label: "Contributing", slug: "contributing", attrs: { "data-icon": "code-bracket" } },
             { label: "RTL Support", slug: "rtl-support", attrs: { "data-icon": "language" } },
+            // Raw Astro page (src/pages/icons/index.astro), not a content-collection
+            // doc — `link`, not `slug`, same as how MarketingHeader/Header.astro link
+            // to /components/ rather than a Starlight slug.
+            { label: "Icons", link: "/icons/", attrs: { "data-icon": "squares-plus" } },
             { label: "MCP", slug: "mcp-server", attrs: { "data-icon": "cpu-chip" } },
             { label: "Architecture", slug: "architecture", collapsed: true, attrs: { "data-icon": "building-library" } },
           ],

@@ -448,7 +448,7 @@ let LoomiTable = class LoomiTable extends LoomiElement {
           <thead>
             <tr>
               ${this.checkable && hasData
-            ? html `<th class="loomi-check-col"><loomi-checkbox .checked=${this.allChecked} @change=${(e) => this.toggleAll(e.target.checked)}></loomi-checkbox></th>`
+            ? html `<th class="loomi-check-col"><loomi-checkbox no-clearing .checked=${this.allChecked} @change=${(e) => this.toggleAll(e.target.checked)}></loomi-checkbox></th>`
             : nothing}
               ${(this.showRowNumbersAlias ?? this.showRowNumbers) && hasData ? html `<th class="loomi-num-col ${this.uppercasing ? "uppercasing" : ""}">#</th>` : nothing}
               ${hasTemplateHeader

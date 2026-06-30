@@ -1,0 +1,159 @@
+---
+// Overrides Starlight's default <Header> to add a marketing-style nav row (Docs,
+// Components, Themes, a Resources dropdown) above/alongside the built-in search and
+// theme controls — Starlight's stock header has no concept of top-level nav links,
+// only a title + search + theme/language/social icons. This renders on every
+// Starlight-Layout page (everything except src/pages/index.astro, which uses its own
+// MarketingHeader.astro), so "Docs" is always the active tab here — there's no other
+// page this header could be rendering for.
+//
+// <Search /> and <ThemeSelect /> are Starlight's real components (Pagefind search,
+// and this repo's existing loomi-themed ThemeSelect override) — reused as-is and
+// restyled via custom.css, not reimplemented, so search/keyboard shortcuts/theme
+// persistence keep working exactly as Starlight wires them up.
+//
+// Imported directly (not via the `virtual:starlight/components/*` specifiers
+// Starlight's own internal Header.astro uses) — those virtual modules only ship
+// ambient types in virtual-internal.d.ts, which is reserved for Starlight's own
+// component files inside node_modules (type-checking is skipped there); importing
+// them from a project file makes `astro check` fail with "Cannot find module". Direct
+// imports are also more explicit here: SiteTitle/Search aren't overridden by this
+// project, so the real default is correct, and ThemeSelect is this project's own
+// override (the same file astro.config.mjs registers), imported directly rather than
+// indirected through the virtual resolver.
+import SiteTitle from "@astrojs/starlight/components/SiteTitle.astro";
+import Search from "@astrojs/starlight/components/Search.astro";
+import ThemeSelect from "./ThemeSelect.astro";
+
+const GITHUB_URL = "https://github.com/loomidev/loomiui-docs";
+---
+
+<div class="loomi-header">
+  <div class="loomi-header-title sl-flex">
+    <SiteTitle />
+  </div>
+
+  <nav class="loomi-header-nav sl-hidden lg:sl-flex">
+    <a href="/installation/" class="loomi-header-link" aria-current="page">Docs</a>
+    <a href="/components/" class="loomi-header-link">Components</a>
+    <a href="/customization/" class="loomi-header-link">Themes</a>
+    <loomi-dropmenu position="auto" hide-after-click>
+      <button slot="trigger" type="button" class="loomi-header-link loomi-header-resources">
+        Resources
+        <loomi-icon name="chevron-down" style="width:0.85rem;height:0.85rem"></loomi-icon>
+      </button>
+      <loomi-dropmenu-item icon="cpu-chip"><a href="/mcp-server/">MCP Server</a></loomi-dropmenu-item>
+      <loomi-dropmenu-item icon="building-library"><a href="/architecture/">Architecture</a></loomi-dropmenu-item>
+      <loomi-dropmenu-item icon="code-bracket"><a href="/contributing/">Contributing</a></loomi-dropmenu-item>
+      <loomi-dropmenu-item icon="language"><a href="/rtl-support/">RTL Support</a></loomi-dropmenu-item>
+      <loomi-dropmenu-item divider icon="star"><a href={GITHUB_URL}>Star on GitHub</a></loomi-dropmenu-item>
+    </loomi-dropmenu>
+  </nav>
+
+  <div class="loomi-header-controls sl-flex print:hidden">
+    <div class="loomi-header-search">
+      <Search />
+    </div>
+    <ThemeSelect />
+    <a href={GITHUB_URL} aria-label="GitHub" class="loomi-header-github">
+      <svg viewBox="0 0 24 24" class="h-5 w-5" fill="currentColor" aria-hidden="true">
+        <path
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.026 2.747-1.026.546 1.378.202 2.397.1 2.65.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0 0 22 12.017C22 6.484 17.522 2 12 2Z"
+        ></path>
+      </svg>
+    </a>
+  </div>
+</div>
+
+<style>
+  @layer starlight.core {
+    .loomi-header {
+      display: flex;
+      align-items: center;
+      height: 100%;
+    }
+    .loomi-header-title {
+      flex-shrink: 0;
+      min-width: 0;
+      padding: 0.25rem;
+      margin: -0.25rem;
+      overflow: clip;
+    }
+    /* Fixed gap from the logo (not `justify-content: space-between`, which floated
+       nav's position based on how wide the controls section happened to be — that
+       made it drift relative to MarketingHeader's nav, which has an extra "Get
+       Started" CTA the docs header doesn't. A fixed margin keeps nav's position
+       identical to MarketingHeader's regardless of what's in the controls section. */
+    .loomi-header-nav {
+      flex-shrink: 0;
+      align-items: center;
+      gap: 1.75rem;
+      margin-left: 2.5rem;
+    }
+    .loomi-header-link {
+      border: 0;
+      background: transparent;
+      padding: 0;
+      color: var(--sl-color-gray-2);
+      font-family: var(--sl-font);
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .loomi-header-link:hover {
+      color: var(--sl-color-text);
+    }
+    .loomi-header-link[aria-current="page"] {
+      position: relative;
+      color: var(--sl-color-accent);
+      font-weight: 600;
+    }
+    .loomi-header-link[aria-current="page"]::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -1.1rem;
+      height: 2px;
+      background: var(--sl-color-accent);
+    }
+    .loomi-header-resources {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .loomi-header-controls {
+      flex-shrink: 0;
+      align-items: center;
+      gap: 0.75rem;
+      margin-left: auto;
+    }
+    .loomi-header-search {
+      display: flex;
+    }
+    .loomi-header-github {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.4rem;
+      border-radius: 0.5rem;
+      color: var(--sl-color-gray-2);
+    }
+    .loomi-header-github:hover {
+      color: var(--sl-color-text);
+      background: var(--sl-color-gray-6);
+    }
+    :root[data-theme="dark"] .loomi-header-github:hover {
+      background: var(--sl-color-gray-5);
+    }
+  }
+</style>
+
+<script type="module" is:inline>
+  // <loomi-icon> is already registered site-wide by the Head override.
+  import "@loomidev/dropmenu";
+</script>

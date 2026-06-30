@@ -10,7 +10,7 @@ export const CATEGORY = {
   standalone: ["button", "icon", "spinner", "alert", "bell", "modal", "notification", "table"],
   forms: [
     "input", "textarea", "select", "countries", "checkbox", "radio", "toggle", "number", "slider",
-    "code", "checkcards", "datepicker", "timepicker", "colorpicker", "filepicker",
+    "code", "checkcards", "datepicker", "timepicker", "colorpicker", "filepicker", "creditcard",
   ],
   content: [
     "card", "avatar", "accordion", "tag", "tooltip", "popover", "empty-state", "statistic",
