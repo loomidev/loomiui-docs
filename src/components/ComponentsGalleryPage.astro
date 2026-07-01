@@ -1,31 +1,30 @@
 ---
-// Gallery shell for free and pro component indexes. Free components render the
-// live package preview grid; pro components currently reuse the same page chrome with
-// an empty data set.
+// Gallery shell for the /components/ index page.
 import { getCollection } from "astro:content";
 import MarketingHeader from "./MarketingHeader.astro";
 import { buildImportMap } from "../lib/import-map.mjs";
 import { COMPONENT_NAMES } from "../../scripts/loomiui-packages.mjs";
-import { DISPLAY_CATEGORIES, categoryKeyOf, categoryCounts } from "../lib/component-categories.mjs";
+import {
+  DISPLAY_CATEGORIES,
+  categoryKeyOf,
+  categoryCounts,
+} from "../lib/component-categories.mjs";
 import "../styles/home.css";
 
-interface Props {
-  variant?: "free" | "pro";
-}
-
 const importMap = buildImportMap();
-const variant = Astro.props.variant ?? "free";
-const isPro = variant === "pro";
-const componentLabel = isPro ? "Pro Components" : "Free Components";
-const componentHeading = isPro ? "Pro components" : "Free components";
-const title = `${componentLabel} - LoomiUI`;
-const description = isPro
-  ? "Browse LoomiUI pro components — framework-agnostic web components for advanced product interfaces."
-  : "Browse every free LoomiUI component — framework-agnostic web components for forms, navigation, and content, each with a one-line usage example and full docs.";
+const title = "Components - LoomiUI";
+const description =
+  "Browse every LoomiUI component — framework-agnostic web components for forms, navigation, and content, each with a one-line usage example and full docs.";
 const GITHUB_URL = "https://github.com/loomidev/loomiui-docs";
 
 function titleCase(name: string): string {
-  const special: Record<string, string> = { checkcards: "Checkcards" };
+  const special: Record<string, string> = {
+    checkcards: "Checkcards",
+    qrcode: "QR Code",
+    "copy-to-clipboard": "Copy to Clipboard",
+    "data-table": "Advanced Data Table",
+    calendar: "Calendar",
+  };
   if (special[name]) return special[name];
   return name.split("-").map((w) => w[0].toUpperCase() + w.slice(1)).join(" ");
 }
@@ -55,6 +54,9 @@ const PREVIEWS: Record<string, string> = {
   creditcard: `<loomi-creditcard cardholder-name="Ama Osei" number="4242424242424242" style="max-width:9rem" no-clearing></loomi-creditcard>`,
   "text-editor": `<div style="height:5.5rem;width:100%;overflow:hidden"><loomi-text-editor label="Comment" rows="2" style="display:block;transform:scale(.78);transform-origin:top left;width:128%"></loomi-text-editor></div>`,
   "tag-input": `<loomi-tag-input placeholder="Add tag" value="Design,Docs" size="small"></loomi-tag-input>`,
+  "emoji-picker": `<loomi-emoji-picker label="Reaction" selected-value="😎" size="small"></loomi-emoji-picker>`,
+  password: `<loomi-password label="Password" value="Loomi2026!" size="small" strength="Aa1#"></loomi-password>`,
+  pin: `<loomi-pin total-digits="4" size="small" style="transform:scale(.9)"></loomi-pin>`,
 
   // Feedback
   alert: `<loomi-alert type="success" class="w-full text-xs">Success! Your changes were saved.</loomi-alert>`,
@@ -69,6 +71,7 @@ const PREVIEWS: Record<string, string> = {
   pagination: `<loomi-pagination total="60" page-size="20" page="2" pagination-style="numbers" show-total="false"></loomi-pagination>`,
   dropmenu: `<loomi-dropmenu position="auto"><loomi-button slot="trigger" type="secondary" size="small" icon="chevron-down" icon-right>Open menu</loomi-button><loomi-dropmenu-item>Edit</loomi-dropmenu-item><loomi-dropmenu-item>Duplicate</loomi-dropmenu-item></loomi-dropmenu>`,
   "theme-switcher": `<loomi-theme-switcher style="display:block;transform:scale(.75)"></loomi-theme-switcher>`,
+  "context-menu": `<loomi-context-menu><button slot="target" style="border:1px solid var(--loomi-surface-border,#e5e7eb);border-radius:.45rem;padding:.45rem .65rem;font-size:.78rem;background:var(--loomi-surface,#fff)">Right-click file</button><loomi-context-menu-item icon="document-duplicate">Duplicate</loomi-context-menu-item><loomi-context-menu-item icon="pencil-square">Rename</loomi-context-menu-item></loomi-context-menu>`,
 
   // Overlay
   modal: `<loomi-button size="small" color="primary" onclick="showLoomiModal('prev-modal')">Open Modal</loomi-button><loomi-modal name="prev-modal" title="Preview">Preview content.</loomi-modal>`,
@@ -86,6 +89,8 @@ const PREVIEWS: Record<string, string> = {
   "contact-card": `<div style="transform:scale(.7)"><loomi-contact-card name="Olivia Rhye" position="Designer"></loomi-contact-card></div>`,
   chart: `<loomi-chart type="line" color="primary" data='[{"label":"1","value":12},{"label":"2","value":18},{"label":"3","value":15},{"label":"4","value":24},{"label":"5","value":21}]' style="height:3rem;width:100%;display:block"></loomi-chart>`,
   "horizontal-line-graph": `<loomi-horizontal-line-graph data='[{"label":"Direct","value":45,"color":"primary"},{"label":"Search","value":30,"color":"success"}]' style="width:100%;display:block"></loomi-horizontal-line-graph>`,
+  "copy-to-clipboard": `<loomi-copy-to-clipboard>INV-2048</loomi-copy-to-clipboard>`,
+  timer: `<loomi-timer duration="90" label="Sprint" style="font-size:14px"></loomi-timer>`,
 
   // Layout
   button: `<loomi-button color="primary">Button</loomi-button>`,
@@ -94,44 +99,46 @@ const PREVIEWS: Record<string, string> = {
   accordion: `<div style="width:100%;transform:scale(.88)"><loomi-accordion class="w-full"><loomi-accordion-item title="Section one" open></loomi-accordion-item><loomi-accordion-item title="Section two"></loomi-accordion-item></loomi-accordion></div>`,
   "centered-content": `<loomi-centered-content min-height="84px" style="display:block"><div style="font-size:.72rem;font-weight:600;text-align:center">Welcome back</div></loomi-centered-content>`,
   sortable: `<loomi-sortable items='[{"id":"a","label":"Tomatoes"},{"id":"b","label":"Lettuce"}]'></loomi-sortable>`,
+  divider: `<loomi-divider label="Today" style="display:block;width:100%"></loomi-divider>`,
 
   // Media
   icon: `<div style="display:flex;gap:.6rem"><loomi-icon name="bell-alert" style="width:1.4rem;height:1.4rem"></loomi-icon><loomi-icon name="check-circle" style="width:1.4rem;height:1.4rem"></loomi-icon><loomi-icon name="trash" style="width:1.4rem;height:1.4rem"></loomi-icon></div>`,
   avatar: `<loomi-avatar label="OR" bg-color="primary" size="regular"></loomi-avatar>`,
   "empty-state": `<div style="transform:scale(.55)"><loomi-empty-state message="No documents yet."></loomi-empty-state></div>`,
+  qrcode: `<loomi-qrcode url="https://loomiui.com" size="82" corner-borders gradient></loomi-qrcode>`,
+
+  "data-table": `<div style="height:5.5rem;width:100%;overflow:hidden"><loomi-data-table density="compact" selectable style="display:block;width:166%;transform:scale(.6);transform-origin:top left"></loomi-data-table></div>`,
+  "command-palette": `<loomi-command-palette placeholder="Search workspace"></loomi-command-palette>`,
+  "date-range-picker": `<div style="transform:scale(.78);transform-origin:center"><loomi-date-range-picker label="Range" start-date="2026-06-02" end-date="2026-07-01"></loomi-date-range-picker></div>`,
+  "filter-builder": `<div style="height:5.5rem;width:100%;overflow:hidden"><loomi-filter-builder style="display:block;width:150%;transform:scale(.66);transform-origin:top left"></loomi-filter-builder></div>`,
+  calendar: `<div style="height:5.5rem;width:100%;overflow:hidden"><loomi-calendar view="week" week-starts="monday" style="display:block;width:140%;transform:scale(.58);transform-origin:top left"></loomi-calendar></div>`,
 };
 
 interface ComponentDocEntry {
   id: string;
   data: { title: string; description?: string };
 }
-const allDocs = isPro ? [] : (await getCollection("docs")) as unknown as ComponentDocEntry[];
+const allDocs = (await getCollection("docs")) as unknown as ComponentDocEntry[];
 const docsEntries = allDocs.filter((entry) => entry.id.startsWith("components/"));
 const docsByName = new Map(docsEntries.map((entry) => [entry.id.replace(/^components\//, ""), entry] as const));
 
-const freeComponentCount = COMPONENT_NAMES.length;
-const proComponentCount = 0;
-const components = isPro
-  ? []
-  : COMPONENT_NAMES.slice()
-      .sort((a, b) => a.localeCompare(b))
-      .map((name) => {
-        const entry = docsByName.get(name);
-        const category = categoryKeyOf(name)!;
-        return {
-          name,
-          title: entry?.data.title ?? titleCase(name),
-          description: entry?.data.description ?? "",
-          href: `/components/${name}/`,
-          category,
-          preview: PREVIEWS[name] ?? "",
-        };
-      });
+const components = COMPONENT_NAMES.slice()
+  .sort((a, b) => a.localeCompare(b))
+  .map((name) => {
+    const entry = docsByName.get(name);
+    const category = categoryKeyOf(name)!;
+    return {
+      name,
+      title: entry?.data.title ?? titleCase(name),
+      description: entry?.data.description ?? "",
+      href: `/components/${name}/`,
+      category,
+      preview: PREVIEWS[name] ?? "",
+    };
+  });
 
-const counts = isPro
-  ? Object.fromEntries(DISPLAY_CATEGORIES.map((cat) => [cat.key, 0]))
-  : categoryCounts();
-const packagesToImport = isPro ? ["icon"] : COMPONENT_NAMES;
+const counts = categoryCounts();
+const packagesToImport = COMPONENT_NAMES;
 ---
 
 <html lang="en">
@@ -169,32 +176,11 @@ const packagesToImport = isPro ? ["icon"] : COMPONENT_NAMES;
         </nav>
 
         <nav class="mt-4 space-y-0.5">
-          {isPro ? (
-            <a href="/components/" class="category-link">
-              <span class="category-link-icon"><loomi-icon name="squares-2-x-2" style="width:1.05rem;height:1.05rem"></loomi-icon></span>
-              <span class="grow text-left">Free Components</span>
-              <span class="category-count">{freeComponentCount}</span>
-            </a>
-          ) : (
-            <button type="button" class="category-link is-active" data-category="all">
-              <span class="category-link-icon"><loomi-icon name="squares-2-x-2" style="width:1.05rem;height:1.05rem"></loomi-icon></span>
-              <span class="grow text-left">Free Components</span>
-              <span class="category-count">{freeComponentCount}</span>
-            </button>
-          )}
-          {isPro ? (
-            <button type="button" class="category-link is-active" data-category="all">
-              <span class="category-link-icon"><loomi-icon name="sparkles" style="width:1.05rem;height:1.05rem"></loomi-icon></span>
-              <span class="grow text-left">Pro Components</span>
-              <span class="category-count">{proComponentCount}</span>
-            </button>
-          ) : (
-            <a href="/pro-components/" class="category-link">
-              <span class="category-link-icon"><loomi-icon name="sparkles" style="width:1.05rem;height:1.05rem"></loomi-icon></span>
-              <span class="grow text-left">Pro Components</span>
-              <span class="category-count">{proComponentCount}</span>
-            </a>
-          )}
+          <button type="button" class="category-link is-active" data-category="all">
+            <span class="category-link-icon"><loomi-icon name="squares-2-x-2" style="width:1.05rem;height:1.05rem"></loomi-icon></span>
+            <span class="grow text-left">All Components</span>
+            <span class="category-count">{components.length}</span>
+          </button>
         </nav>
 
         <div class="sidebar-section-label">Categories</div>
@@ -235,13 +221,9 @@ const packagesToImport = isPro ? ["icon"] : COMPONENT_NAMES;
       <!-- Main -->
       <div class="mt-10 min-w-0 lg:mt-0">
         <div class="feature-kicker">Components</div>
-        <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">{componentHeading}</h1>
+        <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">Components</h1>
         <p class="mt-3 max-w-2xl text-lg leading-7 text-gray-600 dark:text-gray-400">
-          {isPro ? (
-            <>Explore our collection of pro components. New pro components will appear here as they are released.</>
-          ) : (
-            <>Explore our collection of {components.length}+ carefully crafted free components. Click on any component to view documentation and examples.</>
-          )}
+          Explore our collection of {components.length}+ carefully crafted components. Click on any component to view documentation and examples.
         </p>
 
         <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -271,7 +253,7 @@ const packagesToImport = isPro ? ["icon"] : COMPONENT_NAMES;
           ))}
         </div>
 
-        <p id="no-results" class="no-results hidden">{isPro ? "No pro components are available yet." : "No components match your search."}</p>
+        <p id="no-results" class="no-results hidden">No components match your search.</p>
 
         <div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" id="component-grid">
           {components.map((c) => (
@@ -295,7 +277,7 @@ const packagesToImport = isPro ? ["icon"] : COMPONENT_NAMES;
             Read the installation guide
             <loomi-icon name="arrow-right" style="width:0.9rem;height:0.9rem"></loomi-icon>
           </a>
-          <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">{componentLabel} are framework agnostic and work everywhere.</p>
+          <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Components are framework agnostic and work everywhere.</p>
         </div>
       </div>
     </div>
@@ -305,8 +287,7 @@ const packagesToImport = isPro ? ["icon"] : COMPONENT_NAMES;
       <div class="mx-auto max-w-6xl px-6 py-10 text-sm text-gray-500 dark:text-gray-400">
         <div class="flex flex-wrap justify-center gap-6">
           <a href="/installation/" class="hover:text-primary-600 dark:hover:text-primary-400">Installation</a>
-          <a href="/components/" class="hover:text-primary-600 dark:hover:text-primary-400">Free Components</a>
-          <a href="/pro-components/" class="hover:text-primary-600 dark:hover:text-primary-400">Pro Components</a>
+          <a href="/components/" class="hover:text-primary-600 dark:hover:text-primary-400">Components</a>
           <a href="/mcp-server/" class="hover:text-primary-600 dark:hover:text-primary-400">MCP Server</a>
           <a href="/contributing/" class="hover:text-primary-600 dark:hover:text-primary-400">Contributing</a>
         </div>
@@ -317,6 +298,36 @@ const packagesToImport = isPro ? ["icon"] : COMPONENT_NAMES;
     <script type="module" is:inline set:html={`
       const names = ${JSON.stringify(packagesToImport)};
       for (const name of names) { import("@loomidev/" + name); }
+
+      document.querySelectorAll("loomi-data-table").forEach((table) => {
+        table.columns = [
+          { key: "name", label: "Name", sortable: true },
+          { key: "role", label: "Role" },
+          { key: "status", label: "Status" },
+        ];
+        table.data = [
+          { id: "usr_001", name: "Ama Mensah", role: "Owner", status: "Active" },
+          { id: "usr_002", name: "Kojo Boateng", role: "Admin", status: "Invited" },
+        ];
+        table.pagination = false;
+        table.showExport = false;
+        table.showColumnManager = false;
+      });
+
+      document.querySelectorAll("loomi-command-palette").forEach((palette) => {
+        palette.items = [
+          { id: "go-users", label: "Open users", description: "Manage members", group: "Navigation", shortcut: "G U" },
+          { id: "invite", label: "Invite member", description: "Send an invitation", group: "Actions" },
+        ];
+      });
+
+      document.querySelectorAll("loomi-filter-builder").forEach((builder) => {
+        builder.fields = [
+          { key: "status", label: "Status", type: "select", options: [{ label: "Active", value: "Active" }, { label: "Invited", value: "Invited" }] },
+          { key: "createdAt", label: "Created", type: "date" },
+        ];
+        builder.rules = [{ id: "status-active", field: "status", operator: "equals", value: "Active" }];
+      });
     `} />
 
     <script>

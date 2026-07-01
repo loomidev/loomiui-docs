@@ -21,14 +21,18 @@ const MEMBERS = {
   "data-entry": [
     "input", "textarea", "select", "checkbox", "radio", "toggle", "number", "slider",
     "datepicker", "timepicker", "timezonepicker", "colorpicker", "filepicker", "checkcards",
-    "code", "countries", "creditcard", "text-editor", "tag-input",
+    "code", "countries", "creditcard", "text-editor", "tag-input", "emoji-picker", "password", "pin",
+    "date-range-picker", "filter-builder",
   ],
   feedback: ["alert", "notification", "bell", "spinner", "progress", "processing"],
-  navigation: ["tab", "pagination", "dropmenu", "theme-switcher"],
+  navigation: ["tab", "pagination", "dropmenu", "theme-switcher", "context-menu", "command-palette"],
   overlay: ["modal", "popover", "tooltip", "drawer"],
-  "data-display": ["table", "tag", "statistic", "rating", "timeline", "listview", "contact-card", "chart", "horizontal-line-graph"],
-  layout: ["button", "button-group", "card", "accordion", "centered-content", "sortable"],
-  media: ["icon", "avatar", "empty-state"],
+  "data-display": [
+    "table", "tag", "statistic", "rating", "timeline", "listview", "contact-card", "chart",
+    "horizontal-line-graph", "copy-to-clipboard", "timer", "data-table", "calendar",
+  ],
+  layout: ["button", "button-group", "card", "accordion", "centered-content", "sortable", "divider"],
+  media: ["icon", "avatar", "empty-state", "qrcode"],
 };
 
 // Every COMPONENT_NAMES entry must land in exactly one bucket above — fail fast at

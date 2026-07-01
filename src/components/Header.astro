@@ -55,6 +55,7 @@ const GITHUB_URL = "https://github.com/loomidev/loomiui-docs";
       <Search />
     </div>
     <ThemeSelect />
+    <a href="https://github.com/loomidev/loomiui-pro" class="loomi-header-pro">Starter Kits</a>
     <a href={GITHUB_URL} aria-label="GitHub" class="loomi-header-github">
       <svg viewBox="0 0 24 24" class="h-5 w-5" fill="currentColor" aria-hidden="true">
         <path
@@ -146,6 +147,26 @@ const GITHUB_URL = "https://github.com/loomidev/loomiui-docs";
     .loomi-header-github:hover {
       color: var(--sl-color-text);
       background: var(--sl-color-gray-6);
+    }
+    .loomi-header-pro {
+      display: inline-flex;
+      min-height: 2rem;
+      align-items: center;
+      border: 1px solid var(--sl-color-accent);
+      border-radius: 0.45rem;
+      background: var(--sl-color-accent);
+      color: #fff;
+      font-size: 0.82rem;
+      font-weight: 700;
+      line-height: 1;
+      padding: 0 0.8rem;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .loomi-header-pro:hover {
+      background: var(--sl-color-accent-high);
+      border-color: var(--sl-color-accent-high);
+      color: #fff;
     }
     :root[data-theme="dark"] .loomi-header-github:hover {
       background: var(--sl-color-gray-5);

@@ -15,7 +15,12 @@
 
 import { readFileSync, writeFileSync, mkdirSync, rmSync } from "node:fs";
 import { resolve } from "node:path";
-import { COMPONENT_NAMES, PACKAGE_PREFIX, categoryOf, tagNameFor } from "./loomiui-packages.mjs";
+import {
+  COMPONENT_NAMES,
+  PACKAGE_PREFIX,
+  categoryOf,
+  tagNameFor,
+} from "./loomiui-packages.mjs";
 
 const PACKAGES = resolve(import.meta.dirname, "../../components/packages");
 const DOCS = resolve(import.meta.dirname, "../src/content/docs/components");
@@ -26,9 +31,19 @@ const DOCS = resolve(import.meta.dirname, "../src/content/docs/components");
 const pathFor = (name) => (categoryOf(name) ? `/components/${name}/` : null);
 
 function titleCase(name) {
-  const special = { checkcards: "Checkcards" };
+  const special = {
+    checkcards: "Checkcards",
+    qrcode: "QR Code",
+    "copy-to-clipboard": "Copy to Clipboard",
+    "data-table": "Advanced Data Table",
+    calendar: "Calendar",
+  };
   if (special[name]) return special[name];
   return name.split("-").map((w) => w[0].toUpperCase() + w.slice(1)).join(" ");
+}
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function firstParagraph(bodyAfterH1) {
@@ -92,6 +107,123 @@ function fallbackReadme(name) {
   ].join("\n");
 }
 
+const PREVIEW_SETUP = {
+  "data-table": `
+const setupDocsPreview = () => {
+  document.querySelectorAll("loomi-data-table").forEach((table) => {
+    if (table.dataset.docsReady) return;
+    table.dataset.docsReady = "true";
+    table.columns = [
+      { key: "name", label: "Name", sortable: true },
+      { key: "email", label: "Email" },
+      { key: "role", label: "Role", filterable: true },
+      { key: "status", label: "Status", filterable: true },
+    ];
+    table.data = [
+      { id: "usr_001", name: "Ama Mensah", email: "ama@example.com", role: "Owner", status: "Active" },
+      { id: "usr_002", name: "Kojo Boateng", email: "kojo@example.com", role: "Admin", status: "Invited" },
+      { id: "usr_003", name: "Esi Owusu", email: "esi@example.com", role: "Member", status: "Active" },
+    ];
+    table.savedViews = [
+      { id: "active", label: "Active users", filters: [{ key: "status", value: "Active" }], pageSize: 10 },
+    ];
+  });
+};`,
+  "command-palette": `
+const setupDocsPreview = () => {
+  document.querySelectorAll("loomi-command-palette").forEach((palette) => {
+    if (palette.dataset.docsReady) return;
+    palette.dataset.docsReady = "true";
+    palette.items = [
+      {
+        id: "go-users",
+        label: "Open users",
+        description: "Manage members and invites",
+        group: "Navigation",
+        href: "/users",
+        keywords: ["members", "accounts"],
+        shortcut: "G U",
+      },
+      {
+        id: "invite-member",
+        label: "Invite member",
+        description: "Send a team invitation",
+        group: "Actions",
+      },
+      {
+        id: "open-billing",
+        label: "Open billing",
+        description: "Review invoices and plan details",
+        group: "Navigation",
+        shortcut: "G B",
+      },
+    ];
+  });
+};`,
+  "filter-builder": `
+const setupDocsPreview = () => {
+  document.querySelectorAll("loomi-filter-builder").forEach((builder) => {
+    if (builder.dataset.docsReady) return;
+    builder.dataset.docsReady = "true";
+    builder.fields = [
+      { key: "name", label: "Name", type: "text" },
+      {
+        key: "status",
+        label: "Status",
+        type: "select",
+        options: [
+          { label: "Active", value: "Active" },
+          { label: "Invited", value: "Invited" },
+        ],
+      },
+      { key: "createdAt", label: "Created date", type: "date" },
+    ];
+    builder.rules = [{ id: "status-active", field: "status", operator: "equals", value: "Active" }];
+  });
+};`,
+  calendar: `
+const setupDocsPreview = () => {
+  document.querySelectorAll("loomi-calendar").forEach((calendar) => {
+    if (calendar.dataset.docsReady) return;
+    calendar.dataset.docsReady = "true";
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth();
+    const day = today.getDate();
+    calendar.events = [
+      {
+        id: "evt_1",
+        title: "Product review",
+        start: new Date(year, month, day, 10, 0),
+        end: new Date(year, month, day, 11, 0),
+        color: "primary",
+        description: "Quarterly roadmap review",
+      },
+      {
+        id: "evt_2",
+        title: "Client lunch",
+        start: new Date(year, month, day, 12, 30),
+        end: new Date(year, month, day, 13, 30),
+        color: "success",
+      },
+      {
+        id: "evt_3",
+        title: "Team offsite",
+        start: new Date(year, month, day + 1, 0, 0),
+        end: new Date(year, month, day + 2, 23, 59),
+        color: "warning",
+        isAllDay: true,
+        recurrence: { frequency: "yearly", label: "Repeats yearly" },
+      },
+    ];
+    calendar.resources = [
+      { id: "room-a", label: "Room A", color: "primary" },
+      { id: "room-b", label: "Room B", color: "secondary" },
+    ];
+  });
+};`,
+};
+
 function fixLinks(md) {
   let out = md;
   // root README anchors -> the customization page
@@ -105,6 +237,28 @@ function fixLinks(md) {
   // anything else pointing at a relative path we don't have a page for -> unlink
   out = out.replace(/\[([^\]]+)\]\((?:\.\.?\/)[^)]*\)/g, "$1");
   return out;
+}
+
+function importScript(name) {
+  const setup = PREVIEW_SETUP[name];
+  const setupCall = setup
+    ? [
+        setup,
+        'if (document.readyState === "loading") {',
+        '  document.addEventListener("DOMContentLoaded", setupDocsPreview, { once: true });',
+        "} else {",
+        "  setupDocsPreview();",
+        "}",
+      ].join("\n")
+    : "";
+
+  return [
+    '<script type="module">',
+    `  import "${PACKAGE_PREFIX}/${name}";`,
+    setupCall,
+    "</script>",
+    "",
+  ].join("\n");
 }
 
 /**
@@ -167,12 +321,9 @@ for (const name of COMPONENT_NAMES) {
   }
 
   const frontmatter = ["---", `title: ${titleCase(name)}`, `description: "${description}"`, "---", ""].join("\n");
-  // One page-level import (registers the custom element) resolved via the browser
-  // import map declared in astro.config.mjs — every live preview on the page relies on it.
-  const importScript = `<script type="module">\n  import "${PACKAGE_PREFIX}/${name}";\n</script>\n\n`;
   const finalBody = withLivePreviews(fixLinks(body));
 
-  writeFileSync(resolve(DOCS, `${name}.md`), frontmatter + importScript + finalBody);
+  writeFileSync(resolve(DOCS, `${name}.md`), frontmatter + importScript(name) + finalBody);
   written++;
 }
 console.log(`Generated ${written} component doc pages with live previews.`);

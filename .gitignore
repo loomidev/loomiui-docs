@@ -11,4 +11,5 @@ yarn-error.log*
 .vscode/*
 /dist
 /src/content/docs/components
+/src/content/docs/pro-components
 /.astro
