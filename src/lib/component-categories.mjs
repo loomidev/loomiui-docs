@@ -20,7 +20,8 @@ export const DISPLAY_CATEGORIES = [
 const MEMBERS = {
   "data-entry": [
     "input", "textarea", "select", "checkbox", "radio", "toggle", "number", "slider",
-    "datepicker", "timepicker", "colorpicker", "filepicker", "checkcards", "code", "countries", "creditcard",
+    "datepicker", "timepicker", "timezonepicker", "colorpicker", "filepicker", "checkcards",
+    "code", "countries", "creditcard", "text-editor", "tag-input",
   ],
   feedback: ["alert", "notification", "bell", "spinner", "progress", "processing"],
   navigation: ["tab", "pagination", "dropmenu", "theme-switcher"],

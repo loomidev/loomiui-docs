@@ -32,8 +32,6 @@ const RADIUS = {
 };
 const BORDER_WIDTH = {
     2: "border-2",
-    4: "border-4",
-    8: "border-8",
 };
 /**
  * `<loomi-button>` — a themeable button web component.
@@ -115,14 +113,14 @@ let LoomiButton = class LoomiButton extends LoomiElement {
     treatmentClasses(c) {
         const w = BORDER_WIDTH[this.borderWidth] ?? BORDER_WIDTH[2];
         if (this.outline) {
-            return ["bg-transparent", `text-${c}-600`, w, "border-solid", `border-${c}-600`, `hover:bg-${c}-50`];
+            return ["bg-transparent", `text-${c}-600`, w, "border-solid", `border-${c}-300`, `hover:bg-${c}-50`];
         }
         // Secondary's solid fill is lighter than the other colors' shared 600/700 fill —
         // dark text instead of white keeps it readable on the lighter background. The
         // disabled state (global opacity:0.5 on .loomi-btn) lands a couple shades lighter
         // still, since it's blending this lighter base toward the page background.
         if (c === "secondary") {
-            return ["bg-secondary-300", "text-secondary-600", "hover:bg-secondary-400", "border", "border-transparent"];
+            return ["bg-secondary-200", "text-secondary-600", "hover:bg-secondary-300", "border", "border-transparent"];
         }
         return [`bg-${c}-600`, "text-white", `hover:bg-${c}-700`, "border", "border-transparent"];
     }

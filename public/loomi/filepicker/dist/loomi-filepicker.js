@@ -64,6 +64,11 @@ function loadImageElement(file) {
  * wrapper — the crop dialog is a `<loomi-modal>` and oversized-file errors surface
  * through `<loomi-notification>`.
  *
+ * Set `stealth` to hide the drop-zone and file list entirely — the native input and
+ * crop dialog still work, driven imperatively via `open()`/`clear()` from your own
+ * trigger element (e.g. `<loomi-avatar editable>` uses this to launch a crop dialog
+ * straight from an avatar click).
+ *
  * @fires change - `detail: { files }` whenever the selection changes.
  */
 let LoomiFilepicker = class LoomiFilepicker extends LoomiElement {
@@ -92,6 +97,7 @@ let LoomiFilepicker = class LoomiFilepicker extends LoomiElement {
         this.resize = false;
         this.resizeWidth = 0;
         this.resizeHeight = 0;
+        this.stealth = false;
         this.files = [];
         this.over = false;
         this.cropping = null;
@@ -140,6 +146,25 @@ let LoomiFilepicker = class LoomiFilepicker extends LoomiElement {
     /** Currently selected files. */
     get selectedFiles() {
         return this.files;
+    }
+    /**
+     * Opens the native file picker programmatically. Pairs with `stealth`, where there's
+     * no visible drop-zone for the user to click directly.
+     */
+    open() {
+        if (this.disabled || this.cropping)
+            return;
+        this.input?.click();
+    }
+    /**
+     * Clears the current selection and resyncs the underlying `<input>`/form value. Call
+     * this before `open()` when re-picking should replace rather than append — `add()`
+     * stops accepting new files once `max-files` is reached, so a `max-files="1"` picker
+     * (the common case for `stealth`) would otherwise ignore a second pick.
+     */
+    clear() {
+        this.files = [];
+        this.syncInput();
     }
     disconnectedCallback() {
         super.disconnectedCallback();
@@ -557,6 +582,9 @@ __decorate([
 __decorate([
     property({ type: Number, attribute: "resize-height" })
 ], LoomiFilepicker.prototype, "resizeHeight", void 0);
+__decorate([
+    property({ type: Boolean, reflect: true, converter: booleanAttribute })
+], LoomiFilepicker.prototype, "stealth", void 0);
 __decorate([
     state()
 ], LoomiFilepicker.prototype, "files", void 0);

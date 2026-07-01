@@ -5,12 +5,19 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { html, nothing } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { customElement, property, query, state } from "lit/decorators.js";
 import { LoomiElement, loomiStyles, accentVars, cssColor } from "@loomidev/core";
+import "@loomidev/icon/loomi-icon.js";
 import { componentStyles } from "./generated/styles.css.js";
 /**
  * `<loomi-avatar>` — a rounded image or initials avatar with optional status dot.
  * Wrap several in `<loomi-avatars>` to stack them.
+ *
+ * Set `editable` to let users replace the image themselves: clicking (or
+ * Enter/Space-ing) the avatar launches a crop dialog and swaps in the result. See the
+ * README for how to persist the picked file.
+ *
+ * @fires change - Fired after a new image is picked via `editable`. `detail: { file, image }`.
  */
 let LoomiAvatar = class LoomiAvatar extends LoomiElement {
     constructor() {
@@ -24,22 +31,96 @@ let LoomiAvatar = class LoomiAvatar extends LoomiElement {
         this.dotPosition = "bottom";
         this.bgColor = "gray";
         this.showRing = true;
+        this.verified = false;
+        this.editable = false;
+        this.editLabel = "Edit avatar";
+        // `<loomi-filepicker>` is a much heavier dependency (it pulls in @loomidev/modal and
+        // @loomidev/notification) than the rest of this component needs, so it's only loaded
+        // — via dynamic import, same pattern as @loomidev/text-editor's Quill — once `editable`
+        // is actually set, instead of bundled unconditionally for every avatar.
+        this.filepickerReady = false;
+        this.filepickerLoading = false;
+        this.imageObjectUrl = "";
     }
     static { this.styles = loomiStyles(componentStyles); }
+    disconnectedCallback() {
+        super.disconnectedCallback();
+        if (this.imageObjectUrl)
+            URL.revokeObjectURL(this.imageObjectUrl);
+    }
+    willUpdate(changed) {
+        if (changed.has("editable") && this.editable && !this.filepickerReady && !this.filepickerLoading) {
+            this.filepickerLoading = true;
+            import("@loomidev/filepicker/loomi-filepicker.js").then(() => {
+                this.filepickerReady = true;
+            });
+        }
+    }
+    openEditor() {
+        if (!this.editable)
+            return;
+        this.filepickerEl?.clear();
+        this.filepickerEl?.open();
+    }
+    onEditKeydown(e) {
+        if (e.key !== "Enter" && e.key !== " ")
+            return;
+        e.preventDefault();
+        this.openEditor();
+    }
+    onFilepickerChange(e) {
+        // The internal filepicker is an implementation detail — its own `change` event
+        // (composed, so it would otherwise cross out of this shadow root) is swallowed here
+        // in favor of this component's own `change` event, dispatched below.
+        e.stopPropagation();
+        const file = e.detail.files[0];
+        if (!file)
+            return;
+        if (this.imageObjectUrl)
+            URL.revokeObjectURL(this.imageObjectUrl);
+        this.imageObjectUrl = URL.createObjectURL(file);
+        this.image = this.imageObjectUrl;
+        this.dispatchEvent(new CustomEvent("change", { bubbles: true, composed: true, detail: { file, image: this.imageObjectUrl } }));
+    }
     render() {
         const useImage = this.image && this.image.length > 3;
         const inner = useImage
             ? html `<img src=${this.image} alt=${this.alt} />`
             : html `<span class="loomi-label">${this.label || this.image || "?"}</span>`;
         return html `<span
-      class="loomi-av size-${this.size} ${this.showRing ? "ring" : ""}"
+      class="loomi-av size-${this.size} ${this.showRing ? "ring" : ""} ${this.editable ? "editable" : ""}"
       style=${accentVars(this.bgColor)}
+      role=${this.editable ? "button" : nothing}
+      tabindex=${this.editable ? "0" : nothing}
+      aria-label=${this.editable ? this.editLabel : nothing}
+      @click=${this.editable ? this.openEditor : nothing}
+      @keydown=${this.editable ? this.onEditKeydown : nothing}
     >
       ${inner}
       ${this.dotted
             ? html `<span class="loomi-dot ${this.dotPosition}" style="background:${cssColor(this.dotColor, 500)}"></span>`
             : nothing}
-    </span>`;
+      ${this.verified
+            ? html `<span class="loomi-verified" part="verified">
+            <loomi-icon name="check-badge" variant="solid"></loomi-icon>
+          </span>`
+            : nothing}
+      ${this.editable
+            ? html `<span class="loomi-edit-overlay" part="edit-overlay">
+            <loomi-icon name="camera" variant="solid"></loomi-icon>
+          </span>`
+            : nothing}
+    </span>
+    ${this.editable && this.filepickerReady
+            ? html `<loomi-filepicker
+          class="loomi-edit-fp"
+          stealth
+          crop
+          crop-aspect-ratio="1:1"
+          accepted-file-types="image/*"
+          @change=${(e) => this.onFilepickerChange(e)}
+        ></loomi-filepicker>`
+            : nothing}`;
     }
 };
 __decorate([
@@ -69,6 +150,24 @@ __decorate([
 __decorate([
     property({ type: Boolean, attribute: "show-ring" })
 ], LoomiAvatar.prototype, "showRing", void 0);
+__decorate([
+    property({ type: Boolean, reflect: true })
+], LoomiAvatar.prototype, "verified", void 0);
+__decorate([
+    property({ type: Boolean, reflect: true })
+], LoomiAvatar.prototype, "editable", void 0);
+__decorate([
+    property({ attribute: "edit-label" })
+], LoomiAvatar.prototype, "editLabel", void 0);
+__decorate([
+    state()
+], LoomiAvatar.prototype, "filepickerReady", void 0);
+__decorate([
+    state()
+], LoomiAvatar.prototype, "imageObjectUrl", void 0);
+__decorate([
+    query(".loomi-edit-fp")
+], LoomiAvatar.prototype, "filepickerEl", void 0);
 LoomiAvatar = __decorate([
     customElement("loomi-avatar")
 ], LoomiAvatar);

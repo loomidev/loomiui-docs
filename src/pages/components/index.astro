@@ -38,12 +38,15 @@ const PREVIEWS: Record<string, string> = {
   slider: `<loomi-slider selected="60" max="100"></loomi-slider>`,
   datepicker: `<loomi-datepicker placeholder="Select date" size="small"></loomi-datepicker>`,
   timepicker: `<loomi-timepicker size="small"></loomi-timepicker>`,
+  timezonepicker: `<loomi-timezonepicker selection="Africa/Accra" size="small" label="Timezone"></loomi-timezonepicker>`,
   colorpicker: `<loomi-colorpicker></loomi-colorpicker>`,
   filepicker: `<div style="height:5.5rem;width:100%;overflow:hidden;display:flex;align-items:center;justify-content:center"><loomi-filepicker name="prev-files" placeholder-line1="Drag & drop files" placeholder-line2="or click to browse" style="display:block;transform:scale(.82)"></loomi-filepicker></div>`,
   checkcards: `<loomi-checkcards name="prev-host" style="display:block;width:11rem"><loomi-checkcard value="aws" title="AWS">Cloud hosting</loomi-checkcard></loomi-checkcards>`,
   code: `<div style="height:5.5rem;width:100%;overflow:hidden"><loomi-code style="display:block;transform:scale(.82);transform-origin:top left;width:122%"></loomi-code></div>`,
   countries: `<loomi-countries name="prev-country" label="Country"></loomi-countries>`,
   creditcard: `<loomi-creditcard cardholder-name="Ama Osei" number="4242424242424242" style="max-width:9rem" no-clearing></loomi-creditcard>`,
+  "text-editor": `<div style="height:5.5rem;width:100%;overflow:hidden"><loomi-text-editor label="Comment" rows="2" style="display:block;transform:scale(.78);transform-origin:top left;width:128%"></loomi-text-editor></div>`,
+  "tag-input": `<loomi-tag-input placeholder="Add tag" value="Design,Docs" size="small"></loomi-tag-input>`,
 
   // Feedback
   alert: `<loomi-alert type="success" class="w-full text-xs">Success! Your changes were saved.</loomi-alert>`,

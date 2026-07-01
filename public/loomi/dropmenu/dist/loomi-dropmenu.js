@@ -10,34 +10,80 @@ import { LoomiElement, loomiStyles, onClickOutside } from "@loomidev/core";
 import { getLoomiIcon } from "@loomidev/icons";
 import { componentStyles } from "./generated/styles.css.js";
 const ELLIPSIS = svg `<path d="M6 12a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0ZM13.5 12a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0ZM21 12a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" fill="currentColor" />`;
+const CHEVRON_RIGHT = svg `<path d="m9 18 6-6-6-6" />`;
 /**
  * `<loomi-dropmenu-item>` — a single menu line. Put links/handlers inside, or set `icon`.
  * @slot - Item content.
+ * @slot submenu - Nested `<loomi-dropmenu-item>` children.
  */
 let LoomiDropmenuItem = class LoomiDropmenuItem extends LoomiElement {
     constructor() {
         super(...arguments);
         this.icon = "";
+        this.shortcut = "";
         this.iconRight = false;
         this.header = false;
         this.divider = false;
         this.hover = true;
+        this.hasSubmenuItems = false;
+        this.menuIconRight = false;
+        this.submenuOpen = false;
+        this.onSubmenuSlotChange = (event) => {
+            const slot = event.target;
+            this.hasSubmenuItems = slot.assignedElements({ flatten: true }).length > 0;
+        };
     }
     static { this.styles = loomiStyles(componentStyles); }
+    get hasSubmenu() {
+        return this.hasSubmenuItems;
+    }
+    get selectable() {
+        return !this.header && !this.divider;
+    }
+    setMenuIconRight(value) {
+        this.menuIconRight = value;
+    }
+    focusItem() {
+        this.renderRoot.querySelector(".loomi-item")?.focus();
+    }
+    onItemClick() {
+        if (this.hasSubmenuItems)
+            this.submenuOpen = !this.submenuOpen;
+    }
     render() {
         if (this.divider)
             return html `<div class="loomi-divider"></div>`;
+        const iconRight = this.iconRight || this.menuIconRight;
         const path = this.icon ? getLoomiIcon(this.icon) : undefined;
-        const cls = `loomi-item ${this.iconRight ? "right" : ""} ${this.header ? "header" : this.hover ? "hoverable" : ""}`;
-        return html `<div class=${cls}>
+        const cls = `loomi-item ${iconRight ? "right" : ""} ${this.hasSubmenuItems ? "has-submenu" : ""} ${this.header ? "header" : this.hover ? "hoverable" : ""}`;
+        return html `<div
+        class=${cls}
+        role=${this.header ? "presentation" : "menuitem"}
+        tabindex=${this.header ? nothing : "-1"}
+        aria-haspopup=${this.hasSubmenuItems ? "menu" : nothing}
+        aria-expanded=${this.hasSubmenuItems ? (this.submenuOpen ? "true" : "false") : nothing}
+        @click=${this.onItemClick}
+      >
       ${path ? html `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">${path}</svg>` : nothing}
-      <span style="flex:1 1 auto"><slot></slot></span>
+      <span class="loomi-label"><slot></slot></span>
+      ${this.shortcut ? html `<kbd class="loomi-shortcut">${this.shortcut}</kbd>` : nothing}
+      ${this.hasSubmenuItems
+            ? html `<svg class="loomi-submenu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            ${CHEVRON_RIGHT}
+          </svg>`
+            : nothing}
+    </div>
+    <div class="loomi-submenu ${this.hasSubmenuItems ? "ready" : ""} ${this.submenuOpen ? "open" : ""}" role="menu">
+      <slot name="submenu" @slotchange=${this.onSubmenuSlotChange}></slot>
     </div>`;
     }
 };
 __decorate([
     property()
 ], LoomiDropmenuItem.prototype, "icon", void 0);
+__decorate([
+    property()
+], LoomiDropmenuItem.prototype, "shortcut", void 0);
 __decorate([
     property({ type: Boolean, attribute: "icon-right" })
 ], LoomiDropmenuItem.prototype, "iconRight", void 0);
@@ -50,6 +96,15 @@ __decorate([
 __decorate([
     property({ type: Boolean })
 ], LoomiDropmenuItem.prototype, "hover", void 0);
+__decorate([
+    state()
+], LoomiDropmenuItem.prototype, "hasSubmenuItems", void 0);
+__decorate([
+    state()
+], LoomiDropmenuItem.prototype, "menuIconRight", void 0);
+__decorate([
+    state()
+], LoomiDropmenuItem.prototype, "submenuOpen", void 0);
 LoomiDropmenuItem = __decorate([
     customElement("loomi-dropmenu-item")
 ], LoomiDropmenuItem);
@@ -74,11 +129,53 @@ let LoomiDropmenu = class LoomiDropmenu extends LoomiElement {
         this.iconRight = false;
         this.open = false;
         this.resolvedPosition = "left";
+        this.focusedIndex = -1;
         this.placementFrame = 0;
         this.onItemsClick = (e) => {
-            const item = e.target.closest("loomi-dropmenu-item");
-            if (item && !item.header && !item.divider && this.hideAfterClick)
+            const item = e.composedPath().find((target) => target instanceof LoomiDropmenuItem);
+            if (item && item.selectable && !item.hasSubmenu && this.hideAfterClick)
                 this.closeMenu();
+        };
+        this.onTriggerKeyDown = (event) => {
+            if (event.key !== "ArrowDown" && event.key !== "ArrowUp")
+                return;
+            event.preventDefault();
+            if (!this.open)
+                this.openMenu();
+            void this.updateComplete.then(() => this.focusItemAt(event.key === "ArrowUp" ? -1 : 0));
+        };
+        this.onMenuKeyDown = (event) => {
+            if (!this.open)
+                return;
+            const items = this.getTopLevelItems();
+            if (!items.length)
+                return;
+            if (event.key === "Escape") {
+                event.preventDefault();
+                this.closeMenu();
+                this.renderRoot.querySelector(".loomi-trigger")?.focus();
+                return;
+            }
+            if (event.key === "ArrowDown") {
+                event.preventDefault();
+                this.focusItemAt(this.focusedIndex + 1);
+            }
+            else if (event.key === "ArrowUp") {
+                event.preventDefault();
+                this.focusItemAt(this.focusedIndex - 1);
+            }
+            else if (event.key === "Home") {
+                event.preventDefault();
+                this.focusItemAt(0);
+            }
+            else if (event.key === "End") {
+                event.preventDefault();
+                this.focusItemAt(items.length - 1);
+            }
+            else if ((event.key === "Enter" || event.key === " ") && this.focusedIndex >= 0) {
+                event.preventDefault();
+                items[this.focusedIndex].click();
+            }
         };
     }
     static { this.styles = loomiStyles(componentStyles); }
@@ -98,12 +195,14 @@ let LoomiDropmenu = class LoomiDropmenu extends LoomiElement {
         if (this.open)
             return;
         this.open = true;
+        this.focusedIndex = -1;
         this.cleanupOutside = onClickOutside(this, () => this.closeMenu());
         this.cleanupPlacement = this.observePlacement();
         this.schedulePlacement();
     }
     closeMenu() {
         this.open = false;
+        this.focusedIndex = -1;
         this.cleanupOutside?.();
         this.cleanupOutside = undefined;
         this.cleanupPlacement?.();
@@ -166,6 +265,29 @@ let LoomiDropmenu = class LoomiDropmenu extends LoomiElement {
             this.resolvedPosition = "left";
         }
     }
+    getTopLevelItems() {
+        return Array.from(this.children).filter((child) => child instanceof LoomiDropmenuItem && child.selectable);
+    }
+    focusItemAt(index) {
+        const items = this.getTopLevelItems();
+        if (!items.length)
+            return;
+        const nextIndex = (index + items.length) % items.length;
+        this.focusedIndex = nextIndex;
+        items[nextIndex].focusItem();
+    }
+    applyItemDefaults() {
+        for (const item of this.querySelectorAll("loomi-dropmenu-item")) {
+            item.setMenuIconRight(this.iconRight);
+        }
+    }
+    onSlotChange() {
+        this.applyItemDefaults();
+    }
+    updated(changedProperties) {
+        if (changedProperties.has("iconRight"))
+            this.applyItemDefaults();
+    }
     render() {
         const triggerPath = this.trigger ? getLoomiIcon(this.trigger.replace(/-icon$/, "")) : undefined;
         return html `<button
@@ -174,6 +296,7 @@ let LoomiDropmenu = class LoomiDropmenu extends LoomiElement {
       aria-expanded=${this.open ? "true" : "false"}
       @click=${this.triggerOn === "click" ? () => this.toggle() : nothing}
       @mouseenter=${this.triggerOn === "mouseover" ? () => this.openMenu() : nothing}
+      @keydown=${this.onTriggerKeyDown}
     >
       <slot name="trigger">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
@@ -187,8 +310,9 @@ let LoomiDropmenu = class LoomiDropmenu extends LoomiElement {
           style=${this.scrollable ? `--loomi-menu-height:${this.height}px` : nothing}
           role="menu"
           @click=${this.onItemsClick}
+          @keydown=${this.onMenuKeyDown}
         >
-          <slot></slot>
+          <slot @slotchange=${this.onSlotChange}></slot>
         </div>`
             : nothing}`;
     }
@@ -223,6 +347,9 @@ __decorate([
 __decorate([
     state()
 ], LoomiDropmenu.prototype, "resolvedPosition", void 0);
+__decorate([
+    state()
+], LoomiDropmenu.prototype, "focusedIndex", void 0);
 LoomiDropmenu = __decorate([
     customElement("loomi-dropmenu")
 ], LoomiDropmenu);
