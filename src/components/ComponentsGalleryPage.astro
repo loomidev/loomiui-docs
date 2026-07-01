@@ -1,0 +1,499 @@
+---
+// Gallery shell for free and pro component indexes. Free components render the
+// live package preview grid; pro components currently reuse the same page chrome with
+// an empty data set.
+import { getCollection } from "astro:content";
+import MarketingHeader from "./MarketingHeader.astro";
+import { buildImportMap } from "../lib/import-map.mjs";
+import { COMPONENT_NAMES } from "../../scripts/loomiui-packages.mjs";
+import { DISPLAY_CATEGORIES, categoryKeyOf, categoryCounts } from "../lib/component-categories.mjs";
+import "../styles/home.css";
+
+interface Props {
+  variant?: "free" | "pro";
+}
+
+const importMap = buildImportMap();
+const variant = Astro.props.variant ?? "free";
+const isPro = variant === "pro";
+const componentLabel = isPro ? "Pro Components" : "Free Components";
+const componentHeading = isPro ? "Pro components" : "Free components";
+const title = `${componentLabel} - LoomiUI`;
+const description = isPro
+  ? "Browse LoomiUI pro components — framework-agnostic web components for advanced product interfaces."
+  : "Browse every free LoomiUI component — framework-agnostic web components for forms, navigation, and content, each with a one-line usage example and full docs.";
+const GITHUB_URL = "https://github.com/loomidev/loomiui-docs";
+
+function titleCase(name: string): string {
+  const special: Record<string, string> = { checkcards: "Checkcards" };
+  if (special[name]) return special[name];
+  return name.split("-").map((w) => w[0].toUpperCase() + w.slice(1)).join(" ");
+}
+
+// One small, real, live render per component — not a screenshot. Kept compact (small
+// sizes, 1-2 children, fixed-height container) so it reads at a glance inside a card.
+// Attributes here were verified against each package's own dist/loomi-*.js property
+// list and src/content/docs/components/*.md usage, not guessed.
+const PREVIEWS: Record<string, string> = {
+  // Data Entry
+  input: `<loomi-input placeholder="Type something..." size="small"></loomi-input>`,
+  textarea: `<loomi-textarea placeholder="Write a message..." rows="2"></loomi-textarea>`,
+  select: `<loomi-select placeholder="Select an option" size="small"></loomi-select>`,
+  checkbox: `<loomi-checkbox checked>Remember me</loomi-checkbox>`,
+  radio: `<loomi-radio label="Option one" name="prev-radio" checked></loomi-radio>`,
+  toggle: `<loomi-toggle checked></loomi-toggle>`,
+  number: `<loomi-number value="1"></loomi-number>`,
+  slider: `<loomi-slider selected="60" max="100"></loomi-slider>`,
+  datepicker: `<loomi-datepicker placeholder="Select date" size="small"></loomi-datepicker>`,
+  timepicker: `<loomi-timepicker size="small"></loomi-timepicker>`,
+  timezonepicker: `<loomi-timezonepicker selection="Africa/Accra" size="small" label="Timezone"></loomi-timezonepicker>`,
+  colorpicker: `<loomi-colorpicker></loomi-colorpicker>`,
+  filepicker: `<div style="height:5.5rem;width:100%;overflow:hidden;display:flex;align-items:center;justify-content:center"><loomi-filepicker name="prev-files" placeholder-line1="Drag & drop files" placeholder-line2="or click to browse" style="display:block;transform:scale(.82)"></loomi-filepicker></div>`,
+  checkcards: `<loomi-checkcards name="prev-host" style="display:block;width:11rem"><loomi-checkcard value="aws" title="AWS">Cloud hosting</loomi-checkcard></loomi-checkcards>`,
+  code: `<div style="height:5.5rem;width:100%;overflow:hidden"><loomi-code style="display:block;transform:scale(.82);transform-origin:top left;width:122%"></loomi-code></div>`,
+  countries: `<loomi-countries name="prev-country" label="Country"></loomi-countries>`,
+  creditcard: `<loomi-creditcard cardholder-name="Ama Osei" number="4242424242424242" style="max-width:9rem" no-clearing></loomi-creditcard>`,
+  "text-editor": `<div style="height:5.5rem;width:100%;overflow:hidden"><loomi-text-editor label="Comment" rows="2" style="display:block;transform:scale(.78);transform-origin:top left;width:128%"></loomi-text-editor></div>`,
+  "tag-input": `<loomi-tag-input placeholder="Add tag" value="Design,Docs" size="small"></loomi-tag-input>`,
+
+  // Feedback
+  alert: `<loomi-alert type="success" class="w-full text-xs">Success! Your changes were saved.</loomi-alert>`,
+  notification: `<loomi-button size="small" type="secondary" outline>Save</loomi-button><loomi-notification></loomi-notification>`,
+  bell: `<loomi-bell></loomi-bell>`,
+  spinner: `<loomi-spinner></loomi-spinner>`,
+  progress: `<loomi-progress-bar percentage="60" class="w-full"></loomi-progress-bar>`,
+  processing: `<div style="transform:scale(.82)"><loomi-processing state="processing" title="Uploading…"></loomi-processing></div>`,
+
+  // Navigation
+  tab: `<loomi-tabs class="w-full"><loomi-tab label="Tab 1" active></loomi-tab><loomi-tab label="Tab 2"></loomi-tab></loomi-tabs>`,
+  pagination: `<loomi-pagination total="60" page-size="20" page="2" pagination-style="numbers" show-total="false"></loomi-pagination>`,
+  dropmenu: `<loomi-dropmenu position="auto"><loomi-button slot="trigger" type="secondary" size="small" icon="chevron-down" icon-right>Open menu</loomi-button><loomi-dropmenu-item>Edit</loomi-dropmenu-item><loomi-dropmenu-item>Duplicate</loomi-dropmenu-item></loomi-dropmenu>`,
+  "theme-switcher": `<loomi-theme-switcher style="display:block;transform:scale(.75)"></loomi-theme-switcher>`,
+
+  // Overlay
+  modal: `<loomi-button size="small" color="primary" onclick="showLoomiModal('prev-modal')">Open Modal</loomi-button><loomi-modal name="prev-modal" title="Preview">Preview content.</loomi-modal>`,
+  popover: `<loomi-popover><p>This is the popover content.</p></loomi-popover>`,
+  tooltip: `<loomi-tooltip content="Tooltip text" position="top"><loomi-icon name="information-circle" style="width:1.4rem;height:1.4rem;color:var(--loomi-gray-400,#9ca3af)"></loomi-icon></loomi-tooltip>`,
+  drawer: `<loomi-button size="small" type="secondary" onclick="showLoomiDrawer('prev-drawer')">Open filters</loomi-button><loomi-drawer name="prev-drawer" title="Filters">Filter controls.</loomi-drawer>`,
+
+  // Data Display
+  table: `<loomi-table compact data='[{"Name":"Olivia Rhye","Status":"Active"},{"Name":"Liam Carter","Status":"Invited"}]' class="w-full"></loomi-table>`,
+  tag: `<loomi-tag label="New" color="primary"></loomi-tag>`,
+  statistic: `<loomi-statistic number="34,500" label="Total payments"></loomi-statistic>`,
+  rating: `<loomi-rating rating="4" name="prev-rating" clickable="false" color="orange"></loomi-rating>`,
+  timeline: `<div style="height:5.5rem;width:100%;overflow:hidden;display:flex;align-items:center;padding-left:0.5rem"><div style="transform:scale(.8);transform-origin:left center"><loomi-timelines><loomi-timeline date="2d ago" content="Activated"></loomi-timeline></loomi-timelines></div></div>`,
+  listview: `<loomi-card no-padding class="w-full"><loomi-listview><loomi-listview-item><loomi-avatar size="small" image="/avatars/john.svg"></loomi-avatar><div style="font-weight:500;font-size:.78rem">Olivia Rhye</div></loomi-listview-item></loomi-listview></loomi-card>`,
+  "contact-card": `<div style="transform:scale(.7)"><loomi-contact-card name="Olivia Rhye" position="Designer"></loomi-contact-card></div>`,
+  chart: `<loomi-chart type="line" color="primary" data='[{"label":"1","value":12},{"label":"2","value":18},{"label":"3","value":15},{"label":"4","value":24},{"label":"5","value":21}]' style="height:3rem;width:100%;display:block"></loomi-chart>`,
+  "horizontal-line-graph": `<loomi-horizontal-line-graph data='[{"label":"Direct","value":45,"color":"primary"},{"label":"Search","value":30,"color":"success"}]' style="width:100%;display:block"></loomi-horizontal-line-graph>`,
+
+  // Layout
+  button: `<loomi-button color="primary">Button</loomi-button>`,
+  "button-group": `<loomi-button-group size="small"><loomi-button-group-item label="Day" value="day" selected></loomi-button-group-item><loomi-button-group-item label="Week" value="week"></loomi-button-group-item><loomi-button-group-item label="Month" value="month"></loomi-button-group-item></loomi-button-group>`,
+  card: `<loomi-card no-shadow class="w-full text-left"><div class="mb-1.5 h-4 w-4 rounded bg-gray-200 dark:bg-gray-700"></div><div class="text-xs font-semibold text-gray-900 dark:text-white">Card title</div></loomi-card>`,
+  accordion: `<div style="width:100%;transform:scale(.88)"><loomi-accordion class="w-full"><loomi-accordion-item title="Section one" open></loomi-accordion-item><loomi-accordion-item title="Section two"></loomi-accordion-item></loomi-accordion></div>`,
+  "centered-content": `<loomi-centered-content min-height="84px" style="display:block"><div style="font-size:.72rem;font-weight:600;text-align:center">Welcome back</div></loomi-centered-content>`,
+  sortable: `<loomi-sortable items='[{"id":"a","label":"Tomatoes"},{"id":"b","label":"Lettuce"}]'></loomi-sortable>`,
+
+  // Media
+  icon: `<div style="display:flex;gap:.6rem"><loomi-icon name="bell-alert" style="width:1.4rem;height:1.4rem"></loomi-icon><loomi-icon name="check-circle" style="width:1.4rem;height:1.4rem"></loomi-icon><loomi-icon name="trash" style="width:1.4rem;height:1.4rem"></loomi-icon></div>`,
+  avatar: `<loomi-avatar label="OR" bg-color="primary" size="regular"></loomi-avatar>`,
+  "empty-state": `<div style="transform:scale(.55)"><loomi-empty-state message="No documents yet."></loomi-empty-state></div>`,
+};
+
+interface ComponentDocEntry {
+  id: string;
+  data: { title: string; description?: string };
+}
+const allDocs = isPro ? [] : (await getCollection("docs")) as unknown as ComponentDocEntry[];
+const docsEntries = allDocs.filter((entry) => entry.id.startsWith("components/"));
+const docsByName = new Map(docsEntries.map((entry) => [entry.id.replace(/^components\//, ""), entry] as const));
+
+const freeComponentCount = COMPONENT_NAMES.length;
+const proComponentCount = 0;
+const components = isPro
+  ? []
+  : COMPONENT_NAMES.slice()
+      .sort((a, b) => a.localeCompare(b))
+      .map((name) => {
+        const entry = docsByName.get(name);
+        const category = categoryKeyOf(name)!;
+        return {
+          name,
+          title: entry?.data.title ?? titleCase(name),
+          description: entry?.data.description ?? "",
+          href: `/components/${name}/`,
+          category,
+          preview: PREVIEWS[name] ?? "",
+        };
+      });
+
+const counts = isPro
+  ? Object.fromEntries(DISPLAY_CATEGORIES.map((cat) => [cat.key, 0]))
+  : categoryCounts();
+const packagesToImport = isPro ? ["icon"] : COMPONENT_NAMES;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.png" />
+    <script type="importmap" is:inline set:html={JSON.stringify(importMap)} />
+  </head>
+  <body class="bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
+    <MarketingHeader />
+
+    <div class="mx-auto max-w-7xl px-6 py-10 lg:grid lg:grid-cols-[15rem_1fr] lg:items-start lg:gap-10">
+      <!-- Sidebar -->
+      <aside class="lg:sticky lg:top-20 lg:self-start">
+        <div class="relative">
+          <loomi-icon name="magnifying-glass" class="search-icon" style="width:1rem;height:1rem"></loomi-icon>
+          <input
+            type="text"
+            data-role="search-input"
+            placeholder="Search components..."
+            class="sidebar-search"
+            aria-label="Search components"
+          />
+          <kbd class="search-kbd">⌘K</kbd>
+        </div>
+
+        <nav class="mt-4 space-y-0.5">
+          <a href="/icons/" class="category-link">
+            <span class="category-link-icon"><loomi-icon name="squares-plus" style="width:1.05rem;height:1.05rem"></loomi-icon></span>
+            <span class="grow text-left">Icons</span>
+          </a>
+        </nav>
+
+        <nav class="mt-4 space-y-0.5">
+          {isPro ? (
+            <a href="/components/" class="category-link">
+              <span class="category-link-icon"><loomi-icon name="squares-2-x-2" style="width:1.05rem;height:1.05rem"></loomi-icon></span>
+              <span class="grow text-left">Free Components</span>
+              <span class="category-count">{freeComponentCount}</span>
+            </a>
+          ) : (
+            <button type="button" class="category-link is-active" data-category="all">
+              <span class="category-link-icon"><loomi-icon name="squares-2-x-2" style="width:1.05rem;height:1.05rem"></loomi-icon></span>
+              <span class="grow text-left">Free Components</span>
+              <span class="category-count">{freeComponentCount}</span>
+            </button>
+          )}
+          {isPro ? (
+            <button type="button" class="category-link is-active" data-category="all">
+              <span class="category-link-icon"><loomi-icon name="sparkles" style="width:1.05rem;height:1.05rem"></loomi-icon></span>
+              <span class="grow text-left">Pro Components</span>
+              <span class="category-count">{proComponentCount}</span>
+            </button>
+          ) : (
+            <a href="/pro-components/" class="category-link">
+              <span class="category-link-icon"><loomi-icon name="sparkles" style="width:1.05rem;height:1.05rem"></loomi-icon></span>
+              <span class="grow text-left">Pro Components</span>
+              <span class="category-count">{proComponentCount}</span>
+            </a>
+          )}
+        </nav>
+
+        <div class="sidebar-section-label">Categories</div>
+        <nav class="space-y-0.5">
+          {DISPLAY_CATEGORIES.map((cat) => (
+            <button type="button" class="category-link" data-category={cat.key}>
+              <span class="category-link-icon"><loomi-icon name={cat.icon} style="width:1.05rem;height:1.05rem"></loomi-icon></span>
+              <span class="grow text-left">{cat.label}</span>
+              <span class="category-count">{counts[cat.key]}</span>
+            </button>
+          ))}
+        </nav>
+
+        <div class="promo-card">
+          <div class="promo-card-icon"><loomi-icon name="rocket-launch" style="width:1.15rem;height:1.15rem"></loomi-icon></div>
+          <div class="promo-card-title">Build faster with LoomiUI</div>
+          <p class="promo-card-text">Copy, paste and ship beautiful interfaces.</p>
+          <a href="/installation/" class="promo-card-link">
+            Get Started
+            <loomi-icon name="arrow-right" style="width:0.85rem;height:0.85rem"></loomi-icon>
+          </a>
+        </div>
+
+        <div class="help-card">
+          <div class="help-card-title">Need help?</div>
+          <p class="help-card-text">Join the conversation or report an issue on GitHub.</p>
+          <a href={`${GITHUB_URL}/discussions`} class="help-card-link">
+            <loomi-icon name="chat-bubble-left-right" style="width:0.95rem;height:0.95rem"></loomi-icon>
+            Discussions
+          </a>
+          <a href={`${GITHUB_URL}/issues`} class="help-card-link">
+            <loomi-icon name="exclamation-circle" style="width:0.95rem;height:0.95rem"></loomi-icon>
+            Report an issue
+          </a>
+        </div>
+      </aside>
+
+      <!-- Main -->
+      <div class="mt-10 min-w-0 lg:mt-0">
+        <div class="feature-kicker">Components</div>
+        <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">{componentHeading}</h1>
+        <p class="mt-3 max-w-2xl text-lg leading-7 text-gray-600 dark:text-gray-400">
+          {isPro ? (
+            <>Explore our collection of pro components. New pro components will appear here as they are released.</>
+          ) : (
+            <>Explore our collection of {components.length}+ carefully crafted free components. Click on any component to view documentation and examples.</>
+          )}
+        </p>
+
+        <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div class="relative grow">
+            <loomi-icon name="magnifying-glass" class="search-icon" style="width:1rem;height:1rem"></loomi-icon>
+            <input
+              type="text"
+              data-role="search-input"
+              placeholder="Search components..."
+              class="main-search"
+              aria-label="Search components"
+            />
+          </div>
+          <div class="relative shrink-0">
+            <select id="sort-select" class="sort-select" aria-label="Sort components">
+              <option value="name">Sort by: Name</option>
+              <option value="category">Sort by: Category</option>
+            </select>
+            <loomi-icon name="chevron-down" class="sort-select-chevron" style="width:0.85rem;height:0.85rem"></loomi-icon>
+          </div>
+        </div>
+
+        <div class="mt-5 flex flex-wrap gap-2" id="category-pills">
+          <button type="button" class="filter-pill" aria-pressed="true" data-category="all">All</button>
+          {DISPLAY_CATEGORIES.map((cat) => (
+            <button type="button" class="filter-pill" aria-pressed="false" data-category={cat.key}>{cat.label}</button>
+          ))}
+        </div>
+
+        <p id="no-results" class="no-results hidden">{isPro ? "No pro components are available yet." : "No components match your search."}</p>
+
+        <div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" id="component-grid">
+          {components.map((c) => (
+            <a
+              href={c.href}
+              class="component-card"
+              data-category={c.category}
+              data-name={c.name.toLowerCase()}
+              data-search={`${c.title} ${c.description}`.toLowerCase()}
+            >
+              <div class="component-card-preview" set:html={c.preview} />
+              <div class="component-card-title">{c.title}</div>
+              <p class="component-card-desc">{c.description}</p>
+              <loomi-icon name="chevron-right" class="component-card-arrow" style="width:0.95rem;height:0.95rem"></loomi-icon>
+            </a>
+          ))}
+        </div>
+
+        <div class="mt-12 text-center">
+          <a href="/installation/" class="inline-flex items-center gap-1 text-sm font-semibold text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300">
+            Read the installation guide
+            <loomi-icon name="arrow-right" style="width:0.9rem;height:0.9rem"></loomi-icon>
+          </a>
+          <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">{componentLabel} are framework agnostic and work everywhere.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-200 dark:border-gray-800">
+      <div class="mx-auto max-w-6xl px-6 py-10 text-sm text-gray-500 dark:text-gray-400">
+        <div class="flex flex-wrap justify-center gap-6">
+          <a href="/installation/" class="hover:text-primary-600 dark:hover:text-primary-400">Installation</a>
+          <a href="/components/" class="hover:text-primary-600 dark:hover:text-primary-400">Free Components</a>
+          <a href="/pro-components/" class="hover:text-primary-600 dark:hover:text-primary-400">Pro Components</a>
+          <a href="/mcp-server/" class="hover:text-primary-600 dark:hover:text-primary-400">MCP Server</a>
+          <a href="/contributing/" class="hover:text-primary-600 dark:hover:text-primary-400">Contributing</a>
+        </div>
+        <p class="mt-6 text-center">© {new Date().getFullYear()} LoomiUI.</p>
+      </div>
+    </footer>
+
+    <script type="module" is:inline set:html={`
+      const names = ${JSON.stringify(packagesToImport)};
+      for (const name of names) { import("@loomidev/" + name); }
+    `} />
+
+    <script>
+      const grid = document.getElementById("component-grid") as HTMLElement;
+      const cards = Array.from(grid.querySelectorAll<HTMLElement>(".component-card"));
+      const searchInputs = document.querySelectorAll<HTMLInputElement>("[data-role='search-input']");
+      const categoryButtons = document.querySelectorAll<HTMLElement>("[data-category]");
+      const sortSelect = document.getElementById("sort-select") as HTMLSelectElement | null;
+      const noResults = document.getElementById("no-results") as HTMLElement;
+
+      const state = { query: "", category: "all", sort: "name" };
+
+      function applyFilters() {
+        const q = state.query.trim().toLowerCase();
+        let visible = 0;
+        for (const card of cards) {
+          const matchesCategory = state.category === "all" || card.dataset.category === state.category;
+          const matchesQuery = !q || card.dataset.search!.includes(q);
+          const show = matchesCategory && matchesQuery;
+          card.classList.toggle("hidden", !show);
+          if (show) visible++;
+        }
+        noResults.classList.toggle("hidden", visible !== 0);
+      }
+
+      function applySort() {
+        const sorted = cards.slice().sort((a, b) => {
+          if (state.sort === "category") {
+            const c = a.dataset.category!.localeCompare(b.dataset.category!);
+            if (c !== 0) return c;
+          }
+          return a.dataset.name!.localeCompare(b.dataset.name!);
+        });
+        for (const card of sorted) grid.appendChild(card);
+      }
+
+      searchInputs.forEach((input) => {
+        input.addEventListener("input", (e) => {
+          state.query = (e.target as HTMLInputElement).value;
+          searchInputs.forEach((other) => {
+            if (other !== e.target) other.value = state.query;
+          });
+          applyFilters();
+        });
+      });
+
+      categoryButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          state.category = btn.dataset.category!;
+          categoryButtons.forEach((b) => {
+            const active = b.dataset.category === state.category;
+            b.classList.toggle("is-active", active);
+            if (b.hasAttribute("aria-pressed")) b.setAttribute("aria-pressed", String(active));
+          });
+          applyFilters();
+        });
+      });
+
+      sortSelect?.addEventListener("change", () => {
+        state.sort = sortSelect.value;
+        applySort();
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+          e.preventDefault();
+          (searchInputs[0] as HTMLInputElement | undefined)?.focus();
+        }
+      });
+
+      applySort();
+      applyFilters();
+    </script>
+  </body>
+</html>
+
+<style>
+  .sort-select {
+    appearance: none;
+    border-radius: 0.6rem;
+    border: 1px solid rgb(226 232 240);
+    background: white;
+    padding: 0.55rem 2rem 0.55rem 0.9rem;
+    color: rgb(15 23 42);
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  .dark .sort-select {
+    border-color: rgb(51 65 85);
+    background: rgb(15 23 42 / 0.6);
+    color: white;
+  }
+  .sort-select-chevron {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgb(148 163 184);
+    pointer-events: none;
+  }
+
+  .component-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-radius: 0.9rem;
+    border: 1px solid rgb(226 232 240);
+    background: white;
+    padding: 1rem;
+    text-decoration: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+  }
+  .component-card:hover {
+    border-color: rgb(37 99 235 / 0.35);
+    box-shadow: 0 8px 20px -10px rgb(15 23 42 / 0.18);
+    transform: translateY(-1px);
+  }
+  .dark .component-card {
+    border-color: rgb(51 65 85);
+    background: rgb(15 23 42 / 0.6);
+  }
+  .dark .component-card:hover {
+    border-color: rgb(96 165 250 / 0.4);
+  }
+  .component-card.hidden {
+    display: none;
+  }
+  .component-card-preview {
+    display: flex;
+    height: 6rem;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 0.6rem;
+    background: rgb(248 250 252);
+    pointer-events: none;
+  }
+  .dark .component-card-preview {
+    background: rgb(30 41 59 / 0.5);
+  }
+  .component-card-title {
+    margin-top: 0.85rem;
+    color: rgb(2 6 23);
+    font-size: 0.92rem;
+    font-weight: 600;
+  }
+  .dark .component-card-title {
+    color: white;
+  }
+  .component-card-desc {
+    margin-top: 0.15rem;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    color: rgb(100 116 139);
+    font-size: 0.78rem;
+    line-height: 1.4;
+  }
+  .dark .component-card-desc {
+    color: rgb(148 163 184);
+  }
+  .component-card-arrow {
+    position: absolute;
+    right: 1rem;
+    bottom: 1rem;
+    color: rgb(203 213 225);
+    opacity: 0;
+    transform: translateX(-3px);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+  .component-card:hover .component-card-arrow {
+    opacity: 1;
+    transform: translateX(0);
+    color: rgb(37 99 235);
+  }
+  .dark .component-card:hover .component-card-arrow {
+    color: rgb(96 165 250);
+  }
+</style>
