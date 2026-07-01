@@ -1,2 +1,2 @@
-export { LoomiCard } from "./loomi-card.js";
+export { LoomiCard, LoomiCardHeader, LoomiCardTitle, LoomiCardDescription, LoomiCardAction, LoomiCardContent, LoomiCardFooter, } from "./loomi-card.js";
 //# sourceMappingURL=index.js.map

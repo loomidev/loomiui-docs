@@ -13,21 +13,25 @@ const nextIcon = isRtl ? "arrow-left" : "arrow-right";
 <div class="loomi-pagination-links print:hidden" dir={dir}>
   {
     prev && (
-      <loomi-card has-hover url={prev.href} radius="medium" class="loomi-pagi-card">
-        <div class="loomi-pagi-row">
-          <loomi-icon name={prevIcon} size="1.4rem" />
-          <span class="loomi-pagi-title">{prev.label}</span>
-        </div>
+      <loomi-card has-hover url={prev.href} class="loomi-pagi-card">
+        <loomi-card-content>
+          <div class="loomi-pagi-row">
+            <loomi-icon name={prevIcon} size="1.4rem" />
+            <span class="loomi-pagi-title">{prev.label}</span>
+          </div>
+        </loomi-card-content>
       </loomi-card>
     )
   }
   {
     next && (
-      <loomi-card has-hover url={next.href} radius="medium" class="loomi-pagi-card loomi-pagi-next">
-        <div class="loomi-pagi-row">
-          <span class="loomi-pagi-title">{next.label}</span>
-          <loomi-icon name={nextIcon} size="1.4rem" />
-        </div>
+      <loomi-card has-hover url={next.href} class="loomi-pagi-card loomi-pagi-next">
+        <loomi-card-content>
+          <div class="loomi-pagi-row">
+            <span class="loomi-pagi-title">{next.label}</span>
+            <loomi-icon name={nextIcon} size="1.4rem" />
+          </div>
+        </loomi-card-content>
       </loomi-card>
     )
   }

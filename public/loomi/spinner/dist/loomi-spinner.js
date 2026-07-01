@@ -8,6 +8,14 @@ import { html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { LoomiElement, loomiStyles, loomiT, accentVars } from "@loomidev/core";
 import { componentStyles } from "./generated/styles.css.js";
+const TYPE_ALIASES = {
+    simple: "simple",
+    spinner: "spinner",
+    dot: "dot",
+    "line-simple": "simple",
+    "line-spinner": "spinner",
+    "dot-circle": "dot",
+};
 const SIZE_ALIASES = {
     sm: "small",
     md: "medium",
@@ -25,7 +33,7 @@ let LoomiSpinner = class LoomiSpinner extends LoomiElement {
     constructor() {
         super(...arguments);
         this.size = "small";
-        this.type = "line-simple";
+        this.type = "simple";
         this.color = "gray";
         this.label = "";
         this.locale = "";
@@ -33,6 +41,9 @@ let LoomiSpinner = class LoomiSpinner extends LoomiElement {
     static { this.styles = loomiStyles(componentStyles); }
     get normalizedSize() {
         return SIZE_ALIASES[this.size] ?? "small";
+    }
+    get normalizedType() {
+        return TYPE_ALIASES[this.type] ?? "simple";
     }
     render() {
         const label = this.label || loomiT("common.loading", {}, this.locale);
@@ -47,8 +58,8 @@ let LoomiSpinner = class LoomiSpinner extends LoomiElement {
     </span>`;
     }
     renderIndicator() {
-        switch (this.type) {
-            case "line-spinner":
+        switch (this.normalizedType) {
+            case "spinner":
                 return html `<svg class="loomi-spinner loomi-spinner-lines" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           ${Array.from({ length: 8 }, (_, index) => {
                     const rotation = index * 45;
@@ -66,7 +77,7 @@ let LoomiSpinner = class LoomiSpinner extends LoomiElement {
             ></line>`;
                 })}
         </svg>`;
-            case "dot-circle":
+            case "dot":
                 return html `<svg class="loomi-spinner loomi-spinner-dots" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           ${Array.from({ length: 8 }, (_, index) => {
                     const rotation = index * 45;
@@ -81,7 +92,7 @@ let LoomiSpinner = class LoomiSpinner extends LoomiElement {
             ></circle>`;
                 })}
         </svg>`;
-            case "line-simple":
+            case "simple":
             default:
                 return html `<svg class="loomi-spinner loomi-spinner-simple" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3"></circle>

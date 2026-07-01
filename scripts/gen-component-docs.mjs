@@ -190,7 +190,38 @@ const setupDocsPreview = () => {
     const year = today.getFullYear();
     const month = today.getMonth();
     const day = today.getDate();
+    calendar.editable = true;
+    calendar.view = calendar.getAttribute("view") || "week";
+    calendar.weekStarts = calendar.getAttribute("week-starts") || "monday";
+    const demoStart = new Date();
+    demoStart.setSeconds(0, 0);
+    demoStart.setMinutes(Math.ceil(demoStart.getMinutes() / 30) * 30 + 30);
+    const demoEnd = new Date(demoStart.getTime() + 2 * 60 * 60 * 1000);
+    const demoInviteeAvatars = [
+      "https://i.pravatar.cc/80?img=1",
+      "https://i.pravatar.cc/80?img=2",
+      "https://i.pravatar.cc/80?img=3",
+      "https://i.pravatar.cc/80?img=4",
+      "https://i.pravatar.cc/80?img=5",
+    ];
     calendar.events = [
+      {
+        id: "evt_demo",
+        title: "Product demo",
+        start: demoStart,
+        end: demoEnd,
+        color: "primary",
+        description: "Sienna is inviting you to a scheduled Zoom meeting.\\nTopic: Product demo for the new dashboard and Q&A session.\\n\\nJoin Zoom Meeting: https://us02web.zoom.us/j/86341969512\\nMeeting ID: 863 4196 9512",
+        reminder: { label: "10 min before", minutesBefore: 10 },
+        invitees: [
+          { id: "u1", name: "Sienna Reed", initials: "SR", status: "yes", avatarUrl: demoInviteeAvatars[0] },
+          { id: "u2", name: "Alex Kim", initials: "AK", status: "yes", avatarUrl: demoInviteeAvatars[1] },
+          { id: "u3", name: "Jordan Lee", initials: "JL", status: "yes", avatarUrl: demoInviteeAvatars[2] },
+          { id: "u4", name: "Morgan Patel", initials: "MP", status: "yes", avatarUrl: demoInviteeAvatars[3] },
+          { id: "u5", name: "Casey Wu", initials: "CW", status: "yes", avatarUrl: demoInviteeAvatars[4] },
+          { id: "u6", name: "Olivia Ross", initials: "OR", status: "awaiting" },
+        ],
+      },
       {
         id: "evt_1",
         title: "Product review",
@@ -215,11 +246,49 @@ const setupDocsPreview = () => {
         isAllDay: true,
         recurrence: { frequency: "yearly", label: "Repeats yearly" },
       },
+      {
+        id: "evt_4",
+        title: "Design sync",
+        start: new Date(year, month, day, 14, 0),
+        end: new Date(year, month, day, 15, 0),
+        color: "secondary",
+      },
+      {
+        id: "evt_5",
+        title: "Sprint planning",
+        start: new Date(year, month, day, 15, 30),
+        end: new Date(year, month, day, 16, 30),
+        color: "primary",
+      },
+      {
+        id: "evt_6",
+        title: "Investor call",
+        start: new Date(year, month, day, 9, 0),
+        end: new Date(year, month, day, 9, 45),
+        color: "error",
+      },
     ];
     calendar.resources = [
       { id: "room-a", label: "Room A", color: "primary" },
       { id: "room-b", label: "Room B", color: "secondary" },
     ];
+
+    calendar.addEventListener("loomi-event-create", (event) => {
+      calendar.events = [...calendar.events, event.detail.event];
+    });
+
+    calendar.addEventListener("loomi-event-duplicate", (event) => {
+      calendar.events = [...calendar.events, event.detail.event];
+    });
+
+    calendar.addEventListener("loomi-event-delete", (event) => {
+      calendar.events = calendar.events.filter((entry) => entry.id !== event.detail.event.id);
+    });
+
+    calendar.addEventListener("loomi-event-change", (event) => {
+      const { event: updated } = event.detail;
+      calendar.events = calendar.events.map((entry) => (entry.id === updated.id ? updated : entry));
+    });
   });
 };`,
 };

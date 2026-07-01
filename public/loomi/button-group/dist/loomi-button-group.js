@@ -140,7 +140,9 @@ let LoomiButtonGroup = class LoomiButtonGroup extends LoomiElement {
         /** Disable all items in the group at once. */
         this.disabled = false;
         this.onItemClick = (e) => {
-            const clicked = e.target;
+            const clicked = e
+                .composedPath()
+                .find((el) => el instanceof LoomiButtonGroupItem);
             if (!clicked || this.disabled || clicked.disabled)
                 return;
             const items = this.items;
@@ -162,7 +164,7 @@ let LoomiButtonGroup = class LoomiButtonGroup extends LoomiElement {
     get items() {
         return Array.from(this.querySelectorAll("loomi-button-group-item"));
     }
-    render() {
+    get groupStyleVars() {
         const sizeVars = SIZE_VARS[this.size] ?? SIZE_VARS.regular;
         const borderVar = `--loomi-bg-border:${cssColor(this.color, 300)}`;
         // Secondary uses a lighter fill (matching the solid secondary button) with dark text.
@@ -174,11 +176,32 @@ let LoomiButtonGroup = class LoomiButtonGroup extends LoomiElement {
             `--loomi-bg-sel-border:${isSec ? cssColor("secondary", 300) : "var(--_loomi-accent)"}`,
             `--loomi-bg-sel-hover:${isSec ? cssColor("secondary", 300) : "var(--_loomi-accent-strong)"}`,
         ].join(";");
+        return `${accentVars(this.color)};${sizeVars};${borderVar};${selVars}`;
+    }
+    applyGroupStyleVars() {
+        for (const decl of this.groupStyleVars.split(";")) {
+            if (!decl)
+                continue;
+            const idx = decl.indexOf(":");
+            if (idx === -1)
+                continue;
+            this.style.setProperty(decl.slice(0, idx).trim(), decl.slice(idx + 1).trim());
+        }
+    }
+    willUpdate(changed) {
+        if (changed.has("color") || changed.has("size")) {
+            this.applyGroupStyleVars();
+        }
+    }
+    connectedCallback() {
+        super.connectedCallback();
+        this.applyGroupStyleVars();
+    }
+    render() {
         return html `
       <div
         class="loomi-bg-group${this.disabled ? " disabled" : ""}"
         role="group"
-        style="${accentVars(this.color)};${sizeVars};${borderVar};${selVars}"
         @loomi-bg-click=${this.onItemClick}
       >
         <slot></slot>

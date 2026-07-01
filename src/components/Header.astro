@@ -55,8 +55,7 @@ const GITHUB_URL = "https://github.com/loomidev/loomiui-docs";
       <Search />
     </div>
     <ThemeSelect />
-    <a href="https://github.com/loomidev/loomiui-pro" class="loomi-header-pro">Starter Kits</a>
-    <a href={GITHUB_URL} aria-label="GitHub" class="loomi-header-github">
+    <a href={GITHUB_URL} aria-label="GitHub" class="loomi-header-github hidden sm:inline-flex">
       <svg viewBox="0 0 24 24" class="h-5 w-5" fill="currentColor" aria-hidden="true">
         <path
           fill-rule="evenodd"
@@ -65,6 +64,8 @@ const GITHUB_URL = "https://github.com/loomidev/loomiui-docs";
         ></path>
       </svg>
     </a>
+    <loomi-button class="hidden sm:inline-flex" type="secondary" size="small" tag="a" href="/installation/">Get Started</loomi-button>
+    <loomi-button class="hidden sm:inline-flex" color="primary" size="small" tag="a" href="https://github.com/loomidev/loomiui-pro">Starter Kits</loomi-button>
   </div>
 </div>
 
@@ -83,10 +84,8 @@ const GITHUB_URL = "https://github.com/loomidev/loomiui-docs";
       overflow: clip;
     }
     /* Fixed gap from the logo (not `justify-content: space-between`, which floated
-       nav's position based on how wide the controls section happened to be — that
-       made it drift relative to MarketingHeader's nav, which has an extra "Get
-       Started" CTA the docs header doesn't. A fixed margin keeps nav's position
-       identical to MarketingHeader's regardless of what's in the controls section. */
+       nav's position based on how wide the controls section happened to be). A fixed
+       margin keeps nav aligned with MarketingHeader regardless of controls width. */
     .loomi-header-nav {
       flex-shrink: 0;
       align-items: center;
@@ -137,7 +136,6 @@ const GITHUB_URL = "https://github.com/loomidev/loomiui-docs";
       display: flex;
     }
     .loomi-header-github {
-      display: inline-flex;
       align-items: center;
       justify-content: center;
       padding: 0.4rem;
@@ -148,26 +146,6 @@ const GITHUB_URL = "https://github.com/loomidev/loomiui-docs";
       color: var(--sl-color-text);
       background: var(--sl-color-gray-6);
     }
-    .loomi-header-pro {
-      display: inline-flex;
-      min-height: 2rem;
-      align-items: center;
-      border: 1px solid var(--sl-color-accent);
-      border-radius: 0.45rem;
-      background: var(--sl-color-accent);
-      color: #fff;
-      font-size: 0.82rem;
-      font-weight: 700;
-      line-height: 1;
-      padding: 0 0.8rem;
-      text-decoration: none;
-      white-space: nowrap;
-    }
-    .loomi-header-pro:hover {
-      background: var(--sl-color-accent-high);
-      border-color: var(--sl-color-accent-high);
-      color: #fff;
-    }
     :root[data-theme="dark"] .loomi-header-github:hover {
       background: var(--sl-color-gray-5);
     }
@@ -176,5 +154,6 @@ const GITHUB_URL = "https://github.com/loomidev/loomiui-docs";
 
 <script type="module" is:inline>
   // <loomi-icon> is already registered site-wide by the Head override.
+  import "@loomidev/button";
   import "@loomidev/dropmenu";
 </script>

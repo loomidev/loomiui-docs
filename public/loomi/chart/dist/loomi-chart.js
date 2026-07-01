@@ -4,402 +4,407 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var LoomiChart_1;
 import { html, nothing, svg } from "lit";
-import { customElement, property } from "lit/decorators.js";
-import { LoomiElement, loomiStyles, accentVars, cssColor } from "@loomidev/core";
+import { customElement, property, state } from "lit/decorators.js";
+import { LoomiElement, loomiStyles } from "@loomidev/core";
 import "@loomidev/tooltip/loomi-tooltip.js";
 import { componentStyles } from "./generated/styles.css.js";
-const PALETTE = ["primary", "success", "warning", "error", "purple", "cyan", "pink", "blue"];
-// `show-border` defaults to `true`, so it needs the "false" string to actually disable it —
-// Lit's built-in Boolean converter treats any present attribute (including `="false"`) as true.
-const booleanAttribute = {
-    fromAttribute(value) {
-        return value !== null && value.toLowerCase() !== "false";
-    },
-    toAttribute(value) {
-        return value ? "" : null;
-    },
-};
-// Lit's default `type: Array` converter falls back to `null` (not `[]`) when the `data`
-// attribute is missing or fails to parse — hand-written JSON in an attribute is an easy
-// place to typo, and `null` would crash every render method's `this.data.map(...)`.
-const dataAttribute = {
-    fromAttribute(value) {
-        if (!value)
-            return [];
-        try {
-            const parsed = JSON.parse(value);
-            return Array.isArray(parsed) ? parsed : [];
-        }
-        catch {
-            return [];
-        }
-    },
-    toAttribute(value) {
-        return JSON.stringify(value);
-    },
-};
-/** Draws a rect-like path with rounded top corners and square bottom corners. */
-function roundedTopRectPath(x, y, w, h, r) {
-    const rr = Math.max(0, Math.min(r, w / 2, h));
-    if (rr <= 0)
-        return `M${x},${y} H${x + w} V${y + h} H${x} Z`;
-    return [
-        `M${x + rr},${y}`,
-        `H${x + w - rr}`,
-        `A${rr},${rr} 0 0 1 ${x + w},${y + rr}`,
-        `V${y + h}`,
-        `H${x}`,
-        `V${y + rr}`,
-        `A${rr},${rr} 0 0 1 ${x + rr},${y}`,
-        "Z",
-    ].join(" ");
-}
+import { BAR_WIDTH_RATIO, CARTESIAN, POLAR, accentStyle, booleanAttribute, cartesianLayout, dataAttribute, formatValue, gridLineYs, hoverTargets, isPolarType, maxValue, nearestIndex, pieTotal, polar, resolveBorder, resolveFill, roundedTopRectBorderPath, roundedTopRectPath, usesPalette, verticalLineLayout, } from "./chart-utils.js";
 /**
- * Outline for a bar's border: up the left edge, across the rounded top, down the right
- * edge — and stops there instead of closing back across the bottom. Bars sit directly on
- * the axis line, so a stroked bottom edge would just double up with it.
- */
-function roundedTopRectBorderPath(x, y, w, h, r) {
-    const rr = Math.max(0, Math.min(r, w / 2, h));
-    if (rr <= 0)
-        return `M${x},${y + h} V${y} H${x + w} V${y + h}`;
-    return [
-        `M${x},${y + h}`,
-        `V${y + rr}`,
-        `A${rr},${rr} 0 0 1 ${x + rr},${y}`,
-        `H${x + w - rr}`,
-        `A${rr},${rr} 0 0 1 ${x + w},${y + rr}`,
-        `V${y + h}`,
-    ].join(" ");
-}
-/**
- * `<loomi-chart>` — a lightweight SVG chart: `bar`, `line`, `pie`, `donut`, `radar` or
- * `scatter`. Provide a single series via `data` (`{ label, value, color? }`).
+ * `<loomi-chart>` — SVG charts inspired by shadcn/ui and Untitled UI: `bar`, `line`,
+ * `area`, `pie`, `donut`, `radar`, `radial`, or `scatter`. Pass a single series via
+ * `data` (`{ label, value, color? }`).
  */
 let LoomiChart = class LoomiChart extends LoomiElement {
     constructor() {
         super(...arguments);
         this.type = "bar";
-        /** Property or a JSON-encoded `data` attribute, e.g. `data='[{"label":"Jan","value":30}]'`. */
         this.data = [];
         this.color = "primary";
         this.showLegend = false;
-        /** Where the legend renders relative to the chart canvas, when `show-legend` is on. */
         this.legendPosition = "bottom";
-        /** Inner-hole radius (SVG units, viewBox is 180x180 with outer radius 80) for `type="donut"`. */
         this.donutRadius = 44;
-        /** `light` uses paler, "soft accent" fills with a higher-shade border (see `resolveBorder`); `dark` (default) keeps the original, more saturated look without borders. */
         this.shade = "dark";
-        /** Outline shapes in a higher (darker) shade of their own color. Only visible when `shade="light"`. */
         this.showBorder = true;
-        /** Show a value axis line with min/max labels (`bar`, `line`, `scatter`). */
         this.showYAxis = false;
-        /** `type="line"` only — transposes the chart so categories run top-to-bottom. */
+        this.showGrid = true;
+        /** Show a tooltip while hovering chart points. Cartesian charts track the nearest point as you move across the plot. */
+        this.showTooltip = false;
         this.vertical = false;
+        this.hoverIndex = -1;
     }
-    static { LoomiChart_1 = this; }
     static { this.styles = loomiStyles(componentStyles); }
-    /**
-     * Fill shade for bar/pie/donut/scatter segments. In `light` mode this is the same
-     * "softer" shade (50) used everywhere else in the library for a pale accent fill
-     * (see `accentVars`, `loomi-modal`, `loomi-accordion`); `dark` keeps the original,
-     * more saturated look. The old `light` fill (300) moved to `resolveBorder` below —
-     * it now reads as the border instead of fighting with it for attention.
-     */
-    get segmentFillShade() {
-        return this.shade === "light" ? 50 : 500;
+    get colorCtx() {
+        return { color: this.color, shade: this.shade, showBorder: this.showBorder };
     }
-    /** Resolves a data point's fill. `usePalette` cycles the built-in palette (pie/donut); otherwise falls back to the chart's own `color`. */
-    resolveFill(p, i, usePalette) {
-        const c = p.color || (usePalette ? PALETTE[i % PALETTE.length] : this.color);
-        return /^[a-z]+$/.test(c) ? cssColor(c, this.segmentFillShade) : c;
+    layoutOpts() {
+        return { showYAxis: this.showYAxis, vertical: this.vertical, donutRadius: this.donutRadius };
     }
-    /**
-     * Resolves a data point's border color, or `null` when borders are off/not applicable
-     * (named colors only — an explicit hex `color` has no "higher shade" to compute).
-     * Shade 200 matches `--_loomi-accent-border` — the library's standard border shade for
-     * a soft accent fill (same pairing `loomi-modal`/`loomi-accordion` use).
-     */
-    resolveBorder(p, i, usePalette) {
-        if (this.shade !== "light" || !this.showBorder)
-            return null;
-        const c = p.color || (usePalette ? PALETTE[i % PALETTE.length] : this.color);
-        return /^[a-z]+$/.test(c) ? cssColor(c, 200) : null;
+    isBandTooltipType() {
+        return (this.type === "bar" ||
+            this.type === "line" ||
+            this.type === "area" ||
+            this.type === "scatter");
     }
-    /**
-     * Single-accent CSS vars for line/radar (`--_loomi-accent` + `--_loomi-accent-softer`),
-     * shade-aware. `withBorder` applies the bar/pie-style "fill + higher-shade border"
-     * treatment, for shapes that have a real fill region (radar's polygon). A plain line
-     * has no fill region to outline, so it just lightens its stroke directly in `light` mode.
-     */
-    accentStyle(withBorder = false) {
-        const light = this.shade === "light";
-        const strokeShade = light ? (withBorder && this.showBorder ? 600 : 400) : 600;
-        const fillShade = light ? 100 : 50;
-        return `${accentVars(this.color)}--_loomi-accent:${cssColor(this.color, strokeShade)};--_loomi-accent-softer:${cssColor(this.color, fillShade)};`;
+    isVerticalLine() {
+        return this.type === "line" && this.vertical;
     }
-    polar(cx, cy, deg, radius) {
-        const a = ((deg - 90) * Math.PI) / 180;
-        return [cx + radius * Math.cos(a), cy + radius * Math.sin(a)];
+    handlePointerMove(event) {
+        if (!this.showTooltip || !this.data.length || !this.isBandTooltipType())
+            return;
+        const canvas = event.currentTarget;
+        const rect = canvas.getBoundingClientRect();
+        if (rect.width <= 0 || rect.height <= 0)
+            return;
+        const ratio = this.isVerticalLine()
+            ? (event.clientY - rect.top) / rect.height
+            : (event.clientX - rect.left) / rect.width;
+        const next = nearestIndex(this.type, this.data, this.layoutOpts(), ratio);
+        if (next !== this.hoverIndex)
+            this.hoverIndex = next;
     }
-    /** Hit-box size (percent of the chart's width/height) for point-style hover targets — line/scatter/radar dots and pie/donut slice centers. Bars get an exact rect instead (see `hoverTargets`). */
-    static { this.HOVER_HIT_PCT = 9; }
-    /** A small hit-box centered on `(x, y)` (in the `w`x`h` coordinate space the caller computed it in), as a percentage-based `LoomiChartHoverTarget`. */
-    pointTarget(x, y, w, h, d) {
-        const hit = LoomiChart_1.HOVER_HIT_PCT;
-        return { left: (x / w) * 100, top: (y / h) * 100, width: hit, height: hit, label: d.label, value: d.value, centered: true };
+    handlePointerLeave() {
+        this.hoverIndex = -1;
     }
-    /**
-     * One hover hit-box per data point, in percent of the chart's own box — mirrors the
-     * geometry each `render*` method already computes, so the invisible tooltip triggers
-     * line up with what's actually drawn. Bars get an exact rect (the bar itself is already
-     * a generous target); every other shape gets a small fixed-size box centered on its
-     * point, since dots/wedges are too thin to reliably hover otherwise.
-     */
-    hoverTargets() {
-        if (this.type === "bar") {
-            const W = 320, H = 180, pad = 24;
-            const padLeft = this.showYAxis ? 34 : pad;
-            const max = Math.max(1, ...this.data.map((d) => d.value));
-            const n = this.data.length || 1;
-            const bw = (W - padLeft - pad) / n;
-            return this.data.map((d, i) => {
-                const h = (d.value / max) * (H - pad * 2);
-                const x = padLeft + i * bw + bw * 0.15;
-                const y = H - pad - h;
-                return { left: (x / W) * 100, top: (y / H) * 100, width: ((bw * 0.7) / W) * 100, height: (h / H) * 100, label: d.label, value: d.value };
-            });
-        }
-        if (this.type === "line" && this.vertical) {
-            const W = 320, H = 180, padLeft = 40, padTop = 16, padRight = 16;
-            const padBottom = this.showYAxis ? 32 : 16;
-            const max = Math.max(1, ...this.data.map((d) => d.value));
-            const n = this.data.length;
-            const step = n > 1 ? (H - padTop - padBottom) / (n - 1) : 0;
-            return this.data.map((d, i) => {
-                const x = padLeft + (d.value / max) * (W - padLeft - padRight);
-                const y = padTop + i * step;
-                return this.pointTarget(x, y, W, H, d);
-            });
-        }
-        if (this.type === "line" || this.type === "scatter") {
-            const W = 320, H = 180, pad = 24;
-            const padLeft = this.showYAxis ? 34 : pad;
-            const max = Math.max(1, ...this.data.map((d) => d.value));
-            const n = this.data.length;
-            const step = n > 1 ? (W - padLeft - pad) / (n - 1) : 0;
-            return this.data.map((d, i) => {
-                const x = this.type === "scatter" && n <= 1 ? (padLeft + (W - pad)) / 2 : padLeft + i * step;
-                const y = H - pad - (d.value / max) * (H - pad * 2);
-                return this.pointTarget(x, y, W, H, d);
-            });
-        }
-        if (this.type === "radar") {
-            const S = 180, cx = 90, cy = 90, R = 64;
-            const n = this.data.length || 1;
-            const max = Math.max(1, ...this.data.map((d) => d.value));
-            const step = 360 / n;
-            return this.data.map((d, i) => {
-                const [x, y] = this.polar(cx, cy, i * step, (d.value / max) * R);
-                return this.pointTarget(x, y, S, S, d);
-            });
-        }
-        // pie / donut — center each hit box on its slice's mid-angle, at the midpoint of the
-        // filled radius range, so it lands inside the wedge rather than at the chart's center.
-        const S = 180, cx = 90, cy = 90, r = 80;
-        const innerR = this.type === "donut" ? Math.max(0, Math.min(r - 4, this.donutRadius)) : 0;
-        const total = this.data.reduce((s, d) => s + d.value, 0) || 1;
-        let angle = 0;
-        return this.data.map((d) => {
-            const start = angle;
-            angle += (d.value / total) * 360;
-            const mid = (start + angle) / 2;
-            const midR = innerR > 0 ? (innerR + r) / 2 : r * 0.6;
-            const [x, y] = this.polar(cx, cy, mid, midR);
-            return this.pointTarget(x, y, S, S, d);
-        });
-    }
-    /** Invisible `<loomi-tooltip>` triggers layered over the chart so hovering any bar/point/slice shows its label and value — no markup or attribute needed to opt in. */
-    renderHoverLayer() {
-        if (!this.data.length)
+    renderGrid(layout) {
+        if (!this.showGrid)
             return nothing;
-        return html `<div class="loomi-hits">
-      ${this.hoverTargets().map((t) => html `<loomi-tooltip
-          class="loomi-hit${t.centered ? " loomi-hit-point" : ""}"
-          content="${t.label}: ${t.value}"
-          style="left:${t.left}%;top:${t.top}%;width:${t.width}%;height:${t.height}%"
-        ></loomi-tooltip>`)}
-    </div>`;
+        const { width: W, padLeft, padRight, padBottom, height: H } = layout;
+        const ys = gridLineYs(layout);
+        return svg `
+      ${ys.map((y) => svg `<line class="loomi-grid-line" x1=${padLeft} y1=${y} x2=${W - padRight} y2=${y} vector-effect="non-scaling-stroke"></line>`)}
+      <line class="loomi-axis" x1=${padLeft} y1=${H - padBottom} x2=${W - padRight} y2=${H - padBottom} vector-effect="non-scaling-stroke"></line>
+    `;
+    }
+    renderYAxis(layout) {
+        if (!this.showYAxis)
+            return nothing;
+        const { padLeft, padTop, padBottom, height: H, max } = layout;
+        return svg `
+      <line class="loomi-axis" x1=${padLeft} y1=${padTop} x2=${padLeft} y2=${H - padBottom} vector-effect="non-scaling-stroke"></line>
+      <text class="loomi-ylabel" x=${padLeft - 8} y=${padTop + 4} text-anchor="end">${max}</text>
+      <text class="loomi-ylabel" x=${padLeft - 8} y=${H - padBottom + 4} text-anchor="end">0</text>
+    `;
+    }
+    renderCrosshair(layout) {
+        if (!this.showTooltip || this.hoverIndex < 0)
+            return nothing;
+        const [x] = layout.points[this.hoverIndex] ?? [];
+        if (x == null)
+            return nothing;
+        const { padTop, height: H, padBottom } = layout;
+        return svg `<line class="loomi-crosshair" x1=${x} y1=${padTop} x2=${x} y2=${H - padBottom} vector-effect="non-scaling-stroke"></line>`;
+    }
+    renderGradientDef(id) {
+        return svg `
+      <defs>
+        <linearGradient id=${id} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="var(--_loomi-accent)" stop-opacity="0.35"></stop>
+          <stop offset="100%" stop-color="var(--_loomi-accent)" stop-opacity="0.02"></stop>
+        </linearGradient>
+      </defs>
+    `;
     }
     renderBars() {
-        const W = 320, H = 180, pad = 24;
-        const padLeft = this.showYAxis ? 34 : pad;
-        const max = Math.max(1, ...this.data.map((d) => d.value));
-        const n = this.data.length || 1;
-        const bw = (W - padLeft - pad) / n;
+        const layout = cartesianLayout(this.data, this.layoutOpts());
+        const { height: H, padLeft, padTop, padBottom, bandWidth, max } = layout;
+        const palette = usesPalette(this.type);
         return svg `
-      <line class="loomi-axis" x1=${padLeft} y1=${H - pad} x2=${W - pad} y2=${H - pad}></line>
-      ${this.showYAxis
-            ? svg `<line class="loomi-axis" x1=${padLeft} y1=${pad} x2=${padLeft} y2=${H - pad}></line>
-          <text class="loomi-ylabel" x=${padLeft - 6} y=${pad + 3} text-anchor="end">${max}</text>
-          <text class="loomi-ylabel" x=${padLeft - 6} y=${H - pad} text-anchor="end">0</text>`
-            : nothing}
+      ${this.renderGradientDef("loomi-bar-bg")}
+      ${this.renderGrid(layout)}
+      ${this.renderYAxis(layout)}
+      ${this.renderCrosshair(layout)}
       ${this.data.map((d, i) => {
-            const h = (d.value / max) * (H - pad * 2);
-            const x = padLeft + i * bw + bw * 0.15;
-            const y = H - pad - h;
-            const w = bw * 0.7;
-            const border = this.resolveBorder(d, i, false);
-            return svg `<path class="loomi-bar-fill" d=${roundedTopRectPath(x, y, w, h, 3)} fill=${this.resolveFill(d, i, false)}></path>
+            const h = (d.value / max) * (H - padTop - padBottom);
+            const w = bandWidth * BAR_WIDTH_RATIO;
+            const x = padLeft + i * bandWidth + (bandWidth - w) / 2;
+            const y = H - padBottom - h;
+            const r = Math.min(6, w / 2);
+            const border = resolveBorder(this.colorCtx, d, i, palette);
+            const active = this.hoverIndex === i;
+            return svg `
+          <path
+            class="loomi-bar-fill${active ? " is-active" : ""}"
+            d=${roundedTopRectPath(x, y, w, h, r)}
+            fill=${resolveFill(this.colorCtx, d, i, palette)}
+          ></path>
           ${border
-                ? svg `<path class="loomi-bar-border" d=${roundedTopRectBorderPath(x, y, w, h, 3)} fill="none" stroke=${border} stroke-width="1.5" stroke-linejoin="round"></path>`
+                ? svg `<path class="loomi-bar-border" d=${roundedTopRectBorderPath(x, y, w, h, r)} fill="none" stroke=${border} stroke-width="1.5" stroke-linejoin="round" vector-effect="non-scaling-stroke"></path>`
                 : nothing}
-          <text class="loomi-xlabel" x=${padLeft + i * bw + bw / 2} y=${H - pad + 12} text-anchor="middle">${d.label}</text>`;
-        })}`;
+          <text class="loomi-xlabel" x=${padLeft + i * bandWidth + bandWidth / 2} y=${H - padBottom + 14} text-anchor="middle">${d.label}</text>
+        `;
+        })}
+    `;
     }
-    renderLineHorizontal() {
-        const W = 320, H = 180, pad = 24;
-        const padLeft = this.showYAxis ? 34 : pad;
-        const max = Math.max(1, ...this.data.map((d) => d.value));
-        const n = this.data.length;
-        const step = n > 1 ? (W - padLeft - pad) / (n - 1) : 0;
-        const pts = this.data.map((d, i) => [padLeft + i * step, H - pad - (d.value / max) * (H - pad * 2)]);
-        const line = pts.map((p) => `${p[0]},${p[1]}`).join(" ");
-        const area = `${padLeft},${H - pad} ${line} ${padLeft + (n - 1) * step},${H - pad}`;
+    renderSeries(showDots, showArea) {
+        const vertical = this.type === "line" && this.vertical;
+        const layout = vertical
+            ? verticalLineLayout(this.data, this.showYAxis)
+            : cartesianLayout(this.data, this.layoutOpts());
+        const { width: W, height: H, padLeft, padTop, padRight, padBottom, max, points } = layout;
+        const line = points.map((p) => `${p[0]},${p[1]}`).join(" ");
+        const area = vertical
+            ? `${padLeft},${padTop} ${line} ${padLeft},${padTop + (points.length - 1) * layout.step}`
+            : `${padLeft},${H - padBottom} ${line} ${points.at(-1)?.[0] ?? padLeft},${H - padBottom}`;
         return svg `
-      <line class="loomi-axis" x1=${padLeft} y1=${H - pad} x2=${W - pad} y2=${H - pad}></line>
-      ${this.showYAxis
-            ? svg `<line class="loomi-axis" x1=${padLeft} y1=${pad} x2=${padLeft} y2=${H - pad}></line>
-          <text class="loomi-ylabel" x=${padLeft - 6} y=${pad + 3} text-anchor="end">${max}</text>
-          <text class="loomi-ylabel" x=${padLeft - 6} y=${H - pad} text-anchor="end">0</text>`
+      ${this.renderGradientDef("loomi-area-grad")}
+      ${vertical
+            ? svg `
+            <line class="loomi-axis" x1=${padLeft} y1=${padTop} x2=${padLeft} y2=${H - padBottom} vector-effect="non-scaling-stroke"></line>
+            ${this.showYAxis
+                ? svg `
+                  <line class="loomi-axis" x1=${padLeft} y1=${H - padBottom} x2=${W - padRight} y2=${H - padBottom} vector-effect="non-scaling-stroke"></line>
+                  <text class="loomi-ylabel" x=${padLeft} y=${H - padBottom + 14} text-anchor="middle">0</text>
+                  <text class="loomi-ylabel" x=${W - padRight} y=${H - padBottom + 14} text-anchor="middle">${max}</text>
+                `
+                : nothing}
+          `
+            : svg `
+            ${this.renderGrid(layout)}
+            ${this.renderYAxis(layout)}
+            ${this.renderCrosshair(layout)}
+          `}
+      ${showArea
+            ? svg `<polygon class="loomi-area" points=${area} fill="url(#loomi-area-grad)"></polygon>`
             : nothing}
-      <polygon class="loomi-area" points=${area}></polygon>
-      <polyline class="loomi-line" points=${line}></polyline>
-      ${pts.map((p, i) => svg `<circle class="loomi-dot" cx=${p[0]} cy=${p[1]} r="3.5"></circle>
-        <text class="loomi-xlabel" x=${p[0]} y=${H - pad + 12} text-anchor="middle">${this.data[i].label}</text>`)}`;
-    }
-    renderLineVertical() {
-        const W = 320, H = 180, padLeft = 40, padTop = 16, padRight = 16;
-        const padBottom = this.showYAxis ? 32 : 16;
-        const max = Math.max(1, ...this.data.map((d) => d.value));
-        const n = this.data.length;
-        const step = n > 1 ? (H - padTop - padBottom) / (n - 1) : 0;
-        const pts = this.data.map((d, i) => [padLeft + (d.value / max) * (W - padLeft - padRight), padTop + i * step]);
-        const line = pts.map((p) => `${p[0]},${p[1]}`).join(" ");
-        const area = `${padLeft},${padTop} ${line} ${padLeft},${padTop + (n - 1) * step}`;
-        return svg `
-      <line class="loomi-axis" x1=${padLeft} y1=${padTop} x2=${padLeft} y2=${H - padBottom}></line>
-      ${this.showYAxis
-            ? svg `<line class="loomi-axis" x1=${padLeft} y1=${H - padBottom} x2=${W - padRight} y2=${H - padBottom}></line>
-          <text class="loomi-ylabel" x=${padLeft} y=${H - padBottom + 12} text-anchor="middle">0</text>
-          <text class="loomi-ylabel" x=${W - padRight} y=${H - padBottom + 12} text-anchor="middle">${max}</text>`
-            : nothing}
-      <polygon class="loomi-area" points=${area}></polygon>
-      <polyline class="loomi-line" points=${line}></polyline>
-      ${pts.map((p, i) => svg `<circle class="loomi-dot" cx=${p[0]} cy=${p[1]} r="3.5"></circle>
-        <text class="loomi-xlabel" x=${padLeft - 6} y=${p[1] + 3} text-anchor="end">${this.data[i].label}</text>`)}`;
+      <polyline class="loomi-line" points=${line} fill="none" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></polyline>
+      ${showDots
+            ? points.map(([x, y], i) => {
+                const active = this.hoverIndex === i;
+                return svg `
+              <circle class="loomi-dot${active ? " is-active" : ""}" cx=${x} cy=${y} r=${active ? 5 : 3.5} vector-effect="non-scaling-stroke"></circle>
+              <text
+                class="loomi-xlabel"
+                x=${vertical ? padLeft - 8 : x}
+                y=${vertical ? y + 4 : H - padBottom + 14}
+                text-anchor=${vertical ? "end" : "middle"}
+              >${this.data[i].label}</text>
+            `;
+            })
+            : points.map(([x], i) => svg `<text class="loomi-xlabel" x=${x} y=${H - padBottom + 14} text-anchor="middle">${this.data[i].label}</text>`)}
+    `;
     }
     renderScatter() {
-        const W = 320, H = 180, pad = 24;
-        const padLeft = this.showYAxis ? 34 : pad;
-        const max = Math.max(1, ...this.data.map((d) => d.value));
-        const n = this.data.length;
-        const step = n > 1 ? (W - padLeft - pad) / (n - 1) : 0;
+        const layout = cartesianLayout(this.data, this.layoutOpts());
+        const { height: H, padLeft, padBottom, bandWidth, points } = layout;
         return svg `
-      <line class="loomi-axis" x1=${padLeft} y1=${H - pad} x2=${W - pad} y2=${H - pad}></line>
-      ${this.showYAxis
-            ? svg `<line class="loomi-axis" x1=${padLeft} y1=${pad} x2=${padLeft} y2=${H - pad}></line>
-          <text class="loomi-ylabel" x=${padLeft - 6} y=${pad + 3} text-anchor="end">${max}</text>
-          <text class="loomi-ylabel" x=${padLeft - 6} y=${H - pad} text-anchor="end">0</text>`
-            : nothing}
+      ${this.renderGrid(layout)}
+      ${this.renderYAxis(layout)}
+      ${this.renderCrosshair(layout)}
       ${this.data.map((d, i) => {
-            const x = n > 1 ? padLeft + i * step : (padLeft + (W - pad)) / 2;
-            const y = H - pad - (d.value / max) * (H - pad * 2);
-            const border = this.resolveBorder(d, i, false);
-            return svg `<circle cx=${x} cy=${y} r="5" fill=${this.resolveFill(d, i, false)} stroke=${border ?? "none"} stroke-width=${border ? 1.5 : 0}></circle>
-          <text class="loomi-xlabel" x=${x} y=${H - pad + 12} text-anchor="middle">${d.label}</text>`;
-        })}`;
+            const [x, y] = points[i];
+            const border = resolveBorder(this.colorCtx, d, i, false);
+            const active = this.hoverIndex === i;
+            return svg `
+          <circle
+            cx=${x}
+            cy=${y}
+            r=${active ? 6.5 : 5}
+            class="loomi-scatter${active ? " is-active" : ""}"
+            fill=${resolveFill(this.colorCtx, d, i, false)}
+            stroke=${border ?? "none"}
+            stroke-width=${border ? 1.5 : 0}
+            vector-effect="non-scaling-stroke"
+          ></circle>
+          <text class="loomi-xlabel" x=${padLeft + i * bandWidth + bandWidth / 2} y=${H - padBottom + 14} text-anchor="middle">${d.label}</text>
+        `;
+        })}
+    `;
     }
     renderRadar() {
-        const cx = 90, cy = 90, R = 64;
+        const { cx, cy, radarRadius: R } = POLAR;
         const n = this.data.length || 1;
-        const max = Math.max(1, ...this.data.map((d) => d.value));
+        const max = maxValue(this.data);
         const step = 360 / n;
-        const ring = (frac) => this.data.map((_, i) => this.polar(cx, cy, i * step, R * frac).join(",")).join(" ") ||
+        const rings = [0.25, 0.5, 0.75, 1];
+        const ring = (frac) => this.data.map((_, i) => polar(cx, cy, i * step, R * frac).join(",")).join(" ") ||
             `${cx},${cy - R * frac} ${cx + R * frac},${cy} ${cx},${cy + R * frac} ${cx - R * frac},${cy}`;
-        const dataPts = this.data.map((d, i) => this.polar(cx, cy, i * step, (d.value / max) * R));
+        const dataPts = this.data.map((d, i) => polar(cx, cy, i * step, (d.value / max) * R));
         return svg `
-      <polygon class="loomi-grid" points=${ring(1)} fill="none"></polygon>
-      <polygon class="loomi-grid" points=${ring(0.5)} fill="none"></polygon>
+      ${rings.map((frac) => svg `<polygon class="loomi-grid" points=${ring(frac)} fill="none" vector-effect="non-scaling-stroke"></polygon>`)}
       ${this.data.map((_, i) => {
-            const [x, y] = this.polar(cx, cy, i * step, R);
-            return svg `<line class="loomi-axis" x1=${cx} y1=${cy} x2=${x} y2=${y}></line>`;
+            const [x, y] = polar(cx, cy, i * step, R);
+            return svg `<line class="loomi-axis" x1=${cx} y1=${cy} x2=${x} y2=${y} vector-effect="non-scaling-stroke"></line>`;
         })}
-      <polygon class="loomi-radar-area" points=${dataPts.map((p) => p.join(",")).join(" ")}></polygon>
-      ${dataPts.map((p) => svg `<circle class="loomi-dot" cx=${p[0]} cy=${p[1]} r="3"></circle>`)}
+      <polygon class="loomi-radar-area" points=${dataPts.map((p) => p.join(",")).join(" ")} vector-effect="non-scaling-stroke"></polygon>
+      ${dataPts.map(([x, y], i) => {
+            const active = this.hoverIndex === i;
+            return svg `<circle class="loomi-dot${active ? " is-active" : ""}" cx=${x} cy=${y} r=${active ? 4.5 : 3} vector-effect="non-scaling-stroke"></circle>`;
+        })}
       ${this.data.map((d, i) => {
-            const [x, y] = this.polar(cx, cy, i * step, R + 14);
-            return svg `<text class="loomi-xlabel" x=${x} y=${y} text-anchor="middle">${d.label}</text>`;
-        })}`;
+            const [x, y] = polar(cx, cy, i * step, R + 14);
+            return svg `<text class="loomi-xlabel" x=${x} y=${y + 3} text-anchor="middle">${d.label}</text>`;
+        })}
+    `;
+    }
+    renderRadial() {
+        const { cx, cy, radius: outerR } = POLAR;
+        const innerR = Math.max(20, this.donutRadius * 0.55);
+        const total = pieTotal(this.data) || 1;
+        let angle = 0;
+        const trackR = (outerR + innerR) / 2;
+        const stroke = outerR - innerR;
+        return svg `
+      <circle class="loomi-radial-track" cx=${cx} cy=${cy} r=${trackR} fill="none" stroke-width=${stroke} vector-effect="non-scaling-stroke"></circle>
+      ${this.data.map((d, i) => {
+            const start = angle;
+            angle += (d.value / total) * 360;
+            const end = angle;
+            const large = end - start > 180 ? 1 : 0;
+            const [sx, sy] = polar(cx, cy, start, trackR);
+            const [ex, ey] = polar(cx, cy, end, trackR);
+            const fill = resolveFill(this.colorCtx, d, i, true);
+            const active = this.hoverIndex === i;
+            return svg `<path
+          class="loomi-radial-seg${active ? " is-active" : ""}"
+          d="M ${sx} ${sy} A ${trackR} ${trackR} 0 ${large} 1 ${ex} ${ey}"
+          fill="none"
+          stroke=${fill}
+          stroke-width=${active ? stroke + 2 : stroke}
+          stroke-linecap="round"
+          vector-effect="non-scaling-stroke"
+        ></path>`;
+        })}
+      <text class="loomi-radial-total" x=${cx} y=${cy - 2} text-anchor="middle">${formatValue(total)}</text>
+      <text class="loomi-radial-label" x=${cx} y=${cy + 12} text-anchor="middle">Total</text>
+    `;
     }
     renderPie(donut) {
-        const S = 180, cx = S / 2, cy = S / 2, r = 80;
+        const { cx, cy, radius: r } = POLAR;
         const innerR = donut ? Math.max(0, Math.min(r - 4, this.donutRadius)) : 0;
-        const total = this.data.reduce((s, d) => s + d.value, 0) || 1;
+        const total = pieTotal(this.data) || 1;
         let angle = 0;
         const slices = this.data.map((d, i) => {
             const start = angle;
             angle += (d.value / total) * 360;
             const end = angle;
             const large = end - start > 180 ? 1 : 0;
-            const [sx, sy] = this.polar(cx, cy, start, r);
-            const [ex, ey] = this.polar(cx, cy, end, r);
-            const fill = this.resolveFill(d, i, true);
-            const border = this.resolveBorder(d, i, true);
+            const [sx, sy] = polar(cx, cy, start, r);
+            const [ex, ey] = polar(cx, cy, end, r);
+            const fill = resolveFill(this.colorCtx, d, i, true);
+            const border = resolveBorder(this.colorCtx, d, i, true);
             const sw = border ? 1.5 : 0;
+            const active = this.hoverIndex === i;
             if (innerR <= 0) {
-                return svg `<path d="M ${cx} ${cy} L ${sx} ${sy} A ${r} ${r} 0 ${large} 1 ${ex} ${ey} Z" fill=${fill} stroke=${border ?? "none"} stroke-width=${sw}></path>`;
+                return svg `<path
+          class="loomi-slice${active ? " is-active" : ""}"
+          d="M ${cx} ${cy} L ${sx} ${sy} A ${r} ${r} 0 ${large} 1 ${ex} ${ey} Z"
+          fill=${fill}
+          stroke=${border ?? "none"}
+          stroke-width=${sw}
+          vector-effect="non-scaling-stroke"
+        ></path>`;
             }
-            // Ring segment (outer arc out, inner arc back) leaves a true hole — nothing painted in
-            // the center — instead of overlaying an opaque circle, which only looked right on white.
-            const [isx, isy] = this.polar(cx, cy, start, innerR);
-            const [iex, iey] = this.polar(cx, cy, end, innerR);
-            return svg `<path d="M ${sx} ${sy} A ${r} ${r} 0 ${large} 1 ${ex} ${ey} L ${iex} ${iey} A ${innerR} ${innerR} 0 ${large} 0 ${isx} ${isy} Z" fill=${fill} stroke=${border ?? "none"} stroke-width=${sw}></path>`;
+            const [isx, isy] = polar(cx, cy, start, innerR);
+            const [iex, iey] = polar(cx, cy, end, innerR);
+            return svg `<path
+        class="loomi-slice${active ? " is-active" : ""}"
+        d="M ${sx} ${sy} A ${r} ${r} 0 ${large} 1 ${ex} ${ey} L ${iex} ${iey} A ${innerR} ${innerR} 0 ${large} 0 ${isx} ${isy} Z"
+        fill=${fill}
+        stroke=${border ?? "none"}
+        stroke-width=${sw}
+        vector-effect="non-scaling-stroke"
+      ></path>`;
         });
-        return svg `${slices}`;
+        const center = donut && this.data.length
+            ? svg `
+            <text class="loomi-radial-total" x=${cx} y=${cy - 2} text-anchor="middle">${formatValue(total)}</text>
+            <text class="loomi-radial-label" x=${cx} y=${cy + 12} text-anchor="middle">Total</text>
+          `
+            : nothing;
+        return svg `${slices}${center}`;
+    }
+    renderPointTooltips() {
+        if (!this.showTooltip || !this.data.length)
+            return nothing;
+        if (this.isBandTooltipType()) {
+            return nothing;
+        }
+        return html `<div class="loomi-hits">
+      ${hoverTargets(this.type, this.data, this.layoutOpts()).map((t) => html `
+          <loomi-tooltip class="loomi-hit loomi-hit-point" shade="light">
+            <span class="loomi-hit-area" style="left:${t.left}%;top:${t.top}%;width:${t.width}%;height:${t.height}%"></span>
+            <div slot="content" class="loomi-chart-tip">
+              <span class="loomi-chart-tip-label">${t.label}</span>
+              <span class="loomi-chart-tip-value">${formatValue(t.value)}</span>
+            </div>
+          </loomi-tooltip>
+        `)}
+    </div>`;
+    }
+    renderFloatingTooltip() {
+        if (!this.showTooltip || this.hoverIndex < 0 || !this.isBandTooltipType())
+            return nothing;
+        const point = this.data[this.hoverIndex];
+        if (!point)
+            return nothing;
+        const layout = this.isVerticalLine()
+            ? verticalLineLayout(this.data, this.showYAxis)
+            : cartesianLayout(this.data, this.layoutOpts());
+        const [x, y] = layout.points[this.hoverIndex] ?? [0, 0];
+        const left = (x / layout.width) * 100;
+        const top = (y / layout.height) * 100;
+        return html `
+      <div class="loomi-floating-tip" style="left:${left}%;top:${top}%">
+        <div class="loomi-chart-tip">
+          <span class="loomi-chart-tip-label">${point.label}</span>
+          <span class="loomi-chart-tip-value">${formatValue(point.value)}</span>
+        </div>
+      </div>
+    `;
     }
     render() {
-        const isPolar = this.type === "pie" || this.type === "donut" || this.type === "radar";
-        const viewBox = isPolar ? "0 0 180 180" : "0 0 320 180";
+        const polar = isPolarType(this.type);
+        const viewBox = polar ? `0 0 ${POLAR.size} ${POLAR.size}` : `0 0 ${CARTESIAN.width} ${CARTESIAN.height}`;
         let body;
         if (this.type === "bar")
             body = this.renderBars();
         else if (this.type === "line")
-            body = this.vertical ? this.renderLineVertical() : this.renderLineHorizontal();
+            body = this.renderSeries(true, true);
+        else if (this.type === "area")
+            body = this.renderSeries(false, true);
         else if (this.type === "scatter")
             body = this.renderScatter();
         else if (this.type === "radar")
             body = this.renderRadar();
+        else if (this.type === "radial")
+            body = this.renderRadial();
         else
             body = this.renderPie(this.type === "donut");
-        const usePalette = this.type === "pie" || this.type === "donut";
-        const canvas = html `<div class="loomi-canvas">
-      <svg viewBox=${viewBox} role="img" aria-label="${this.type} chart">${body}</svg>
-      ${this.renderHoverLayer()}
-    </div>`;
+        const palette = usesPalette(this.type);
+        const interactive = this.showTooltip && this.isBandTooltipType();
+        const canvas = html `
+      <div
+        class="loomi-canvas${interactive ? " is-interactive" : ""}"
+        @pointermove=${this.handlePointerMove}
+        @pointerleave=${this.handlePointerLeave}
+      >
+        <svg viewBox=${viewBox} role="img" aria-label="${this.type} chart">${body}</svg>
+        ${this.renderPointTooltips()}
+        ${this.renderFloatingTooltip()}
+      </div>
+    `;
         const legend = this.showLegend
             ? html `<div class="loomi-legend">
-          ${this.data.map((d, i) => html `<span class="loomi-key"><span class="loomi-keydot" style="background:${this.resolveFill(d, i, usePalette)}"></span>${d.label}</span>`)}
+          ${this.data.map((d, i) => html `
+              <span class="loomi-key">
+                <span class="loomi-keydot" style="background:${resolveFill(this.colorCtx, d, i, palette)}"></span>
+                ${d.label}
+              </span>
+            `)}
         </div>`
             : nothing;
         const legendFirst = this.legendPosition === "top" || this.legendPosition === "left";
-        return html `<div class="loomi-chart pos-${this.legendPosition}" style=${this.accentStyle(this.type === "radar")}>
-      ${legendFirst ? legend : nothing}
-      ${canvas}
-      ${legendFirst ? nothing : legend}
-    </div>`;
+        return html `
+      <div
+        class="loomi-chart pos-${this.legendPosition}"
+        style=${accentStyle(this.color, this.shade, this.showBorder, this.type === "radar" || this.type === "area")}
+      >
+        ${legendFirst ? legend : nothing}
+        ${canvas}
+        ${legendFirst ? nothing : legend}
+      </div>
+    `;
     }
 };
 __decorate([
@@ -430,9 +435,18 @@ __decorate([
     property({ type: Boolean, attribute: "show-y-axis" })
 ], LoomiChart.prototype, "showYAxis", void 0);
 __decorate([
+    property({ type: Boolean, attribute: "show-grid" })
+], LoomiChart.prototype, "showGrid", void 0);
+__decorate([
+    property({ type: Boolean, attribute: "show-tooltip" })
+], LoomiChart.prototype, "showTooltip", void 0);
+__decorate([
     property({ type: Boolean })
 ], LoomiChart.prototype, "vertical", void 0);
-LoomiChart = LoomiChart_1 = __decorate([
+__decorate([
+    state()
+], LoomiChart.prototype, "hoverIndex", void 0);
+LoomiChart = __decorate([
     customElement("loomi-chart")
 ], LoomiChart);
 export { LoomiChart };

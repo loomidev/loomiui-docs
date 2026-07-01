@@ -8,6 +8,11 @@ import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { LoomiElement, loomiStyles, accentVars } from "@loomidev/core";
 import { componentStyles } from "./generated/styles.css.js";
+const booleanAttribute = {
+    fromAttribute(value) {
+        return value !== null && value.toLowerCase() !== "false" && value !== "0";
+    },
+};
 /**
  * `<loomi-slider>` — select a numeric value or numeric range with a slider.
  * Form-associated: submits the value under `name`.
@@ -61,12 +66,25 @@ let LoomiSlider = class LoomiSlider extends LoomiElement {
         return Math.max(this.selectedValue, this.selectedEndValue);
     }
     get progressStyle() {
-        const span = this.upperBound - this.lowerBound;
         const start = this.range ? this.startValue : this.lowerBound;
         const end = this.range ? this.endValue : this.startValue;
-        const startPercent = span ? ((start - this.lowerBound) / span) * 100 : 0;
-        const endPercent = span ? ((end - this.lowerBound) / span) * 100 : 0;
+        const startPercent = this.valuePercent(start);
+        const endPercent = this.valuePercent(end);
         return `${accentVars(this.color)} --loomi-range-start: ${startPercent}%; --loomi-range-end: ${endPercent}%;`;
+    }
+    valuePercent(value) {
+        const span = this.upperBound - this.lowerBound;
+        return span ? ((value - this.lowerBound) / span) * 100 : 0;
+    }
+    tooltipStyle(value) {
+        const percent = this.valuePercent(value);
+        const translate = percent <= 0 ? "0%" : percent >= 100 ? "-100%" : "-50%";
+        const arrowPosition = percent <= 0 ? "0.65rem" : percent >= 100 ? "calc(100% - 0.65rem)" : "50%";
+        return [
+            `--loomi-value-position: ${percent}%`,
+            `--loomi-value-translate: ${translate}`,
+            `--loomi-value-arrow-position: ${arrowPosition}`,
+        ].join("; ");
     }
     onInput(handle, e) {
         const next = Number(e.target.value);
@@ -114,8 +132,23 @@ let LoomiSlider = class LoomiSlider extends LoomiElement {
               @change=${this.onChange}
             />`
             : nothing}
+        ${this.showValues
+            ? html `<span
+                class="loomi-value-tooltip loomi-value-tooltip-start"
+                style=${this.tooltipStyle(this.startValue)}
+                aria-hidden="true"
+                >${this.startValue}</span
+              >
+              ${this.range
+                ? html `<span
+                    class="loomi-value-tooltip loomi-value-tooltip-end"
+                    style=${this.tooltipStyle(this.endValue)}
+                    aria-hidden="true"
+                    >${this.endValue}</span
+                  >`
+                : nothing}`
+            : nothing}
       </div>
-      ${this.showValues ? html `<span class="loomi-value">${this.value}</span>` : nothing}
     </div>`;
     }
 };
@@ -144,7 +177,7 @@ __decorate([
     property({ type: Boolean, reflect: true })
 ], LoomiSlider.prototype, "range", void 0);
 __decorate([
-    property({ type: Boolean, attribute: "show-values" })
+    property({ type: Boolean, attribute: "show-values", converter: booleanAttribute })
 ], LoomiSlider.prototype, "showValues", void 0);
 LoomiSlider = __decorate([
     customElement("loomi-slider")

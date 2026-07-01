@@ -7,10 +7,19 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { css, html, nothing, svg } from "lit";
 import { customElement } from "lit/decorators.js";
 import { LoomiElement, loomiDateFormatter, loomiMonthName, loomiStyles, loomiWeekdayNames } from "@loomidev/core";
+import "@loomidev/modal/loomi-modal.js";
 import { calendarStyles } from "./calendar-styles.js";
-import { ALL_DAY_HEIGHT, HOUR_HEIGHT, RESOURCE_LABEL_WIDTH, addMinutes, buildAgendaGroups, canDragEvent, cloneDate, dateFromGridPosition, dateFromResourcePosition, formatEventRange, formatTime, formatTimezoneLabel, getAllDayEventsForDate, getEventsForDate, getMonthGridDays, getNowOffset, getVisibleWeekDays, isSameDay, isToday, layoutResourceDayEvents, layoutTimedEvents, startOfDay } from "./calendar-utils.js";
+import { ALL_DAY_HEIGHT, HOUR_HEIGHT, RESOURCE_LABEL_WIDTH, TIME_AXIS_WIDTH, addDays, addMinutes, buildAgendaGroups, canDragEvent, chunkMonthWeeks, cloneDate, dateFromGridPosition, dateFromResourcePosition, endOfDay, formatEventRange, formatTime, formatTimezoneLabel, fromInputDateTime, getInviteeInitials, getMonthGridDays, getNextUpcomingEvent, getNowOffset, getSingleDayEventsForDate, hasEventsOnDate, getVisibleWeekDays, isSameDay, isToday, layoutResourceDayEvents, layoutSpanningEvents, layoutTimedEvents, minutesFromDayStart, startOfDay, summarizeInvitees, toInputDateTime } from "./calendar-utils.js";
 const PREV = svg `<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />`;
 const NEXT = svg `<path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />`;
+const PLUS = svg `<path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />`;
+const PANEL = svg `<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />`;
+const ICON_CALENDAR = svg `<path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />`;
+const ICON_CLOCK = svg `<path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />`;
+const ICON_BELL = svg `<path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />`;
+const ICON_COPY = svg `<path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9.75a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184" />`;
+const ICON_TRASH = svg `<path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />`;
+const ICON_EDIT = svg `<path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />`;
 const VIEW_OPTIONS = [
     { id: "month", label: "Month", shortcut: "M" },
     { id: "week", label: "Week", shortcut: "W" },
@@ -35,6 +44,9 @@ let LoomiCalendar = class LoomiCalendar extends LoomiElement {
         this.startHour = 6;
         this.endHour = 18;
         this.slotMinutes = 30;
+        this.showSidebar = true;
+        this.sidebarOpen = true;
+        this.createModalName = "loomi-calendar-create-event";
         this.boundPointerMove = (event) => this.handlePointerMove(event);
         this.boundPointerUp = (event) => this.handlePointerUp(event);
     }
@@ -54,13 +66,19 @@ let LoomiCalendar = class LoomiCalendar extends LoomiElement {
         startHour: { attribute: "start-hour", type: Number },
         endHour: { attribute: "end-hour", type: Number },
         slotMinutes: { attribute: "slot-minutes", type: Number },
-        _dragState: { state: true }
+        showSidebar: { attribute: "show-sidebar", type: Boolean },
+        sidebarOpen: { attribute: "sidebar-open", type: Boolean, reflect: true },
+        _dragState: { state: true },
+        _slotDragState: { state: true },
+        _miniCalendarDate: { state: true },
+        _eventDraft: { state: true }
     }; }
     static { this.styles = loomiStyles(calendarStyles, css `
     :host {
       --loomi-calendar-hour-height: ${HOUR_HEIGHT}px;
       --loomi-calendar-hour-count: 12;
       --loomi-calendar-resource-label-width: ${RESOURCE_LABEL_WIDTH}px;
+      --loomi-calendar-time-axis-width: ${TIME_AXIS_WIDTH}px;
     }
   `); }
     connectedCallback() {
@@ -71,47 +89,367 @@ let LoomiCalendar = class LoomiCalendar extends LoomiElement {
     }
     disconnectedCallback() {
         super.disconnectedCallback();
+        this._dragState = undefined;
+        this._slotDragState = undefined;
         this.detachPointerListeners();
     }
     render() {
         const hourCount = Math.max(1, this.endHour - this.startHour);
         this.style.setProperty("--loomi-calendar-hour-count", String(hourCount));
         return html `
-      <div class="shell" @keydown=${this.handleKeydown}>
-        ${this.renderToolbar()}
-        <div class="body">
-          ${this.loading ? html `<div class="loading-overlay">Loading calendar…</div>` : nothing}
-          ${this.view === "month" ? this.renderMonthView() : nothing}
-          ${this.view === "agenda" ? this.renderAgendaView() : nothing}
-          ${this.view === "resource" ? this.renderResourceView() : nothing}
-          ${this.view === "week" || this.view === "day" ? this.renderTimeView() : nothing}
+      <div class="shell ${this.showSidebar ? "has-sidebar" : ""} ${this.sidebarOpen ? "sidebar-open" : "sidebar-closed"}" @keydown=${this.handleKeydown}>
+        <div class="layout">
+          ${this.showSidebar ? this.renderSidebar() : nothing}
+          <div class="main">
+            ${this.renderToolbar()}
+            <div class="body">
+              ${this.loading ? html `<div class="loading-overlay">Loading calendar…</div>` : nothing}
+              ${this.view === "month" ? this.renderMonthView() : nothing}
+              ${this.view === "agenda" ? this.renderAgendaView() : nothing}
+              ${this.view === "resource" ? this.renderResourceView() : nothing}
+              ${this.view === "week" || this.view === "day" ? this.renderTimeView() : nothing}
+            </div>
+          </div>
+        </div>
+        ${this.renderEventModal()}
+      </div>
+    `;
+    }
+    renderSidebar() {
+        const miniDate = this._miniCalendarDate ?? this.date;
+        const nextEvent = getNextUpcomingEvent(this.events, new Date());
+        return html `
+      <aside class="sidebar" aria-label="Calendar sidebar">
+        <div class="sidebar-section">
+          ${this.renderMiniCalendar(miniDate)}
+        </div>
+        <div class="sidebar-section sidebar-events">
+          <div class="sidebar-heading">Upcoming</div>
+          ${nextEvent ? this.renderUpcomingDetail(nextEvent) : html `<div class="sidebar-empty">No upcoming events</div>`}
+        </div>
+      </aside>
+    `;
+    }
+    renderUpcomingDetail(event) {
+        const invitees = event.invitees ?? [];
+        const summary = summarizeInvitees(invitees);
+        const visibleInvitees = invitees.slice(0, 5);
+        const overflowInvitee = invitees[5];
+        const extraCount = Math.max(0, invitees.length - 6);
+        const startDate = new Date(event.start);
+        const dateLabel = loomiDateFormatter(this.resolvedLocale, {
+            weekday: "long",
+            month: "short",
+            day: "numeric",
+            year: "numeric"
+        }).format(startDate);
+        return html `
+      <article class="upcoming-detail">
+        <header class="upcoming-header">
+          <h3 class="upcoming-title">${event.title}</h3>
+          ${this.editable ? html `
+            <div class="upcoming-actions">
+              <button class="icon-btn" type="button" aria-label="Duplicate event" title="Duplicate" @click=${() => this.handleDuplicateEvent(event)}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">${ICON_COPY}</svg>
+              </button>
+              <button class="icon-btn" type="button" aria-label="Delete event" title="Delete" @click=${() => this.handleDeleteEvent(event)}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">${ICON_TRASH}</svg>
+              </button>
+              <button class="icon-btn" type="button" aria-label="Edit event" title="Edit" @click=${(clickEvent) => this.handleEventClick(clickEvent, event)}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">${ICON_EDIT}</svg>
+              </button>
+            </div>
+          ` : nothing}
+        </header>
+
+        <div class="upcoming-meta">
+          <div class="upcoming-meta-row">
+            <svg class="upcoming-meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">${ICON_CALENDAR}</svg>
+            <span>${dateLabel}</span>
+          </div>
+          <div class="upcoming-meta-row">
+            <svg class="upcoming-meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">${ICON_CLOCK}</svg>
+            <span>${formatEventRange(event, this.resolvedLocale, this.displayTimezone)}</span>
+          </div>
+          ${event.reminder?.label ? html `
+            <div class="upcoming-meta-row">
+              <svg class="upcoming-meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">${ICON_BELL}</svg>
+              <span>${event.reminder.label}</span>
+            </div>
+          ` : nothing}
+        </div>
+
+        ${invitees.length ? html `
+          <section class="upcoming-guests">
+            <div class="guest-avatars">
+              ${visibleInvitees.map((invitee) => html `
+                <span class="guest-avatar" title=${invitee.name}>
+                  ${invitee.avatarUrl
+            ? html `<img src=${invitee.avatarUrl} alt=${invitee.name} />`
+            : getInviteeInitials(invitee)}
+                </span>
+              `)}
+              ${overflowInvitee ? html `
+                <span class="guest-avatar guest-initials" title=${overflowInvitee.name}>
+                  ${extraCount > 0 ? `+${extraCount + 1}` : getInviteeInitials(overflowInvitee)}
+                </span>
+              ` : nothing}
+              ${this.editable ? html `
+                <button class="guest-add" type="button" aria-label="Add guest" title="Add guest">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">${PLUS}</svg>
+                </button>
+              ` : nothing}
+            </div>
+            <p class="guest-summary">
+              <strong>${summary.total} guest${summary.total === 1 ? "" : "s"}</strong>
+              ${summary.yes ? html ` | ${summary.yes} yes` : nothing}
+              ${summary.awaiting ? html ` | ${summary.awaiting} awaiting` : nothing}
+            </p>
+          </section>
+        ` : nothing}
+
+        ${event.description ? html `
+          <section class="upcoming-about">
+            <h4 class="upcoming-about-title">About this event</h4>
+            <div class="upcoming-description">${this.renderEventDescription(event.description)}</div>
+          </section>
+        ` : nothing}
+      </article>
+    `;
+    }
+    renderEventDescription(description) {
+        const lines = description.split(/\n+/).filter((line) => line.trim().length > 0);
+        return lines.map((line) => {
+            const meetingMatch = line.match(/^Meeting ID:\s*(.+)$/i);
+            if (meetingMatch) {
+                return html `<p class="upcoming-meeting-id">Meeting ID: ${meetingMatch[1]}</p>`;
+            }
+            const urlMatch = line.match(/(https?:\/\/[^\s]+)/);
+            if (urlMatch) {
+                const url = urlMatch[1];
+                const prefix = line.slice(0, urlMatch.index);
+                const suffix = line.slice((urlMatch.index ?? 0) + url.length);
+                return html `<p>${prefix}<a class="upcoming-link" href=${url} target="_blank" rel="noopener noreferrer">${url}</a>${suffix}</p>`;
+            }
+            return html `<p>${line}</p>`;
+        });
+    }
+    renderMiniCalendar(miniDate) {
+        const cells = getMonthGridDays(miniDate, this.weekStarts);
+        const weekdays = loomiWeekdayNames(this.resolvedLocale, this.weekStarts);
+        return html `
+      <div class="mini-calendar">
+        <div class="mini-calendar-header">
+          <button class="icon-btn" type="button" aria-label="Previous month" @click=${() => this.shiftMiniCalendar(-1)}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">${PREV}</svg>
+          </button>
+          <button class="mini-calendar-title" type="button" @click=${() => this.updateDate(cloneDate(miniDate))}>
+            ${loomiMonthName(this.resolvedLocale, miniDate.getMonth(), "short")} ${miniDate.getFullYear()}
+          </button>
+          <button class="icon-btn" type="button" aria-label="Next month" @click=${() => this.shiftMiniCalendar(1)}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">${NEXT}</svg>
+          </button>
+        </div>
+        <div class="mini-weekdays">
+          ${weekdays.map((label) => html `<div class="mini-weekday">${label.slice(0, 2)}</div>`)}
+        </div>
+        <div class="mini-grid">
+          ${cells.map(({ date, isOtherMonth }) => {
+            const selected = isSameDay(date, this.date);
+            const today = isToday(date);
+            const hasEvents = hasEventsOnDate(this.events, date);
+            return html `
+              <button
+                class="mini-day ${isOtherMonth ? "other-month" : ""} ${today ? "today" : ""} ${selected ? "selected" : ""} ${hasEvents ? "has-events" : ""}"
+                @click=${() => this.updateDate(startOfDay(date))}
+                aria-label=${loomiDateFormatter(this.resolvedLocale, { dateStyle: "full" }).format(date)}
+              >
+                <span class="mini-day-num">${date.getDate()}</span>
+                ${hasEvents ? html `<span class="mini-day-dot" aria-hidden="true"></span>` : nothing}
+              </button>
+            `;
+        })}
         </div>
       </div>
+    `;
+    }
+    renderEventModal() {
+        const draft = this._eventDraft;
+        if (!draft) {
+            return nothing;
+        }
+        return html `
+      <loomi-modal
+        name=${this.createModalName}
+        title="New event"
+        ok-button-label="Save"
+        cancel-button-label="Cancel"
+        size="medium"
+        ?open=${true}
+        @ok=${this.handleCreateEventSave}
+        @cancel=${this.handleCreateEventCancel}
+        @close=${this.handleCreateEventCancel}
+      >
+        <div class="event-form">
+          <label class="form-field">
+            <span class="form-label">Title</span>
+            <input
+              class="form-input"
+              name="title"
+              .value=${draft.title}
+              @input=${(event) => this.updateEventDraft("title", event.target.value)}
+            />
+          </label>
+          <label class="form-field">
+            <span class="form-label">Start</span>
+            <input
+              class="form-input"
+              type=${draft.allDay ? "date" : "datetime-local"}
+              .value=${draft.start}
+              @input=${(event) => this.updateEventDraft("start", event.target.value)}
+            />
+          </label>
+          <label class="form-field">
+            <span class="form-label">End</span>
+            <input
+              class="form-input"
+              type=${draft.allDay ? "date" : "datetime-local"}
+              .value=${draft.end}
+              @input=${(event) => this.updateEventDraft("end", event.target.value)}
+            />
+          </label>
+          <label class="form-check">
+            <input
+              type="checkbox"
+              .checked=${draft.allDay}
+              @change=${(event) => this.updateEventDraft("allDay", event.target.checked)}
+            />
+            All day
+          </label>
+          <label class="form-field">
+            <span class="form-label">Color</span>
+            <select
+              class="form-input"
+              .value=${draft.color}
+              @change=${(event) => this.updateEventDraft("color", event.target.value)}
+            >
+              <option value="primary">Primary</option>
+              <option value="secondary">Secondary</option>
+              <option value="success">Success</option>
+              <option value="warning">Warning</option>
+              <option value="error">Error</option>
+            </select>
+          </label>
+          ${this.resources.length ? html `
+            <label class="form-field">
+              <span class="form-label">Resource</span>
+              <select
+                class="form-input"
+                .value=${draft.resourceId}
+                @change=${(event) => this.updateEventDraft("resourceId", event.target.value)}
+              >
+                <option value="">None</option>
+                ${this.resources.map((resource) => html `
+                  <option value=${resource.id}>${resource.label}</option>
+                `)}
+              </select>
+            </label>
+          ` : nothing}
+          <label class="form-field">
+            <span class="form-label">Recurrence</span>
+            <select
+              class="form-input"
+              .value=${draft.recurrenceFrequency}
+              @change=${(event) => this.updateEventDraft("recurrenceFrequency", event.target.value)}
+            >
+              <option value="">Does not repeat</option>
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+              <option value="yearly">Yearly</option>
+            </select>
+          </label>
+          ${draft.recurrenceFrequency ? html `
+            <label class="form-field">
+              <span class="form-label">Recurrence label</span>
+              <input
+                class="form-input"
+                .value=${draft.recurrenceLabel}
+                placeholder="Repeats weekly"
+                @input=${(event) => this.updateEventDraft("recurrenceLabel", event.target.value)}
+              />
+            </label>
+          ` : nothing}
+          <label class="form-field">
+            <span class="form-label">Reminder</span>
+            <input
+              class="form-input"
+              .value=${draft.reminderLabel}
+              placeholder="10 min before"
+              @input=${(event) => this.updateEventDraft("reminderLabel", event.target.value)}
+            />
+          </label>
+          <label class="form-field">
+            <span class="form-label">Invitees</span>
+            <input
+              class="form-input"
+              .value=${draft.inviteesText}
+              placeholder="Ada Lovelace, Grace Hopper"
+              @input=${(event) => this.updateEventDraft("inviteesText", event.target.value)}
+            />
+          </label>
+          <label class="form-field">
+            <span class="form-label">Description</span>
+            <textarea
+              class="form-input form-textarea"
+              .value=${draft.description}
+              rows="4"
+              @input=${(event) => this.updateEventDraft("description", event.target.value)}
+            ></textarea>
+          </label>
+        </div>
+      </loomi-modal>
     `;
     }
     renderToolbar() {
         return html `
       <div class="toolbar">
         <div class="toolbar-group">
+          ${this.showSidebar ? html `
+            <button
+              class="icon-btn"
+              type="button"
+              aria-label=${this.sidebarOpen ? "Hide calendar list" : "Show calendar list"}
+              title=${this.sidebarOpen ? "Hide calendar list" : "Show calendar list"}
+              @click=${this.toggleSidebar}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">${PANEL}</svg>
+            </button>
+          ` : nothing}
           <div class="title">${this.getFormattedTitle()}</div>
           ${this.showTimezone && this.displayTimezone
             ? html `<span class="timezone-badge">${formatTimezoneLabel(this.displayTimezone, this.resolvedLocale)}</span>`
             : nothing}
         </div>
         <div class="toolbar-group">
-          <button class="btn" @click=${this.goToToday}>Today</button>
-          <button class="btn icon" aria-label="Previous" @click=${this.goPrev}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">${PREV}</svg>
+          ${this.editable ? html `
+            <button class="btn btn-primary" type="button" @click=${() => this.openCreateEventModal()}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">${PLUS}</svg>
+              Add event
+            </button>
+          ` : nothing}
+          <button class="btn" type="button" @click=${this.goToToday}>Today</button>
+          <button class="icon-btn" type="button" aria-label="Previous" @click=${this.goPrev}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">${PREV}</svg>
           </button>
-          <button class="btn icon" aria-label="Next" @click=${this.goNext}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">${NEXT}</svg>
+          <button class="icon-btn" type="button" aria-label="Next" @click=${this.goNext}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">${NEXT}</svg>
           </button>
-          <div class="segmented" role="tablist" aria-label="Calendar view">
+          <div class="view-switcher segmented" role="group" aria-label="Calendar view">
             ${VIEW_OPTIONS.map((option) => html `
               <button
                 class="seg-btn ${this.view === option.id ? "active" : ""}"
-                role="tab"
-                aria-selected=${this.view === option.id ? "true" : "false"}
+                type="button"
                 title=${`Shortcut: ${option.shortcut}`}
                 @click=${() => this.changeView(option.id)}
               >${option.label}</button>
@@ -122,34 +460,88 @@ let LoomiCalendar = class LoomiCalendar extends LoomiElement {
     `;
     }
     renderMonthView() {
-        const cells = getMonthGridDays(this.date, this.weekStarts);
         const weekdays = loomiWeekdayNames(this.resolvedLocale, this.weekStarts);
+        const weeks = chunkMonthWeeks(this.date, this.weekStarts);
+        const cells = getMonthGridDays(this.date, this.weekStarts);
+        const isOtherMonthMap = new Map(cells.map((cell) => [cell.date.toDateString(), cell.isOtherMonth]));
         return html `
       <div class="month-view">
         <div class="weekdays" style=${`grid-template-columns: repeat(7, minmax(0, 1fr))`}>
           ${weekdays.map((label) => html `<div class="weekday">${label}</div>`)}
         </div>
-        <div class="month-grid">
-          ${cells.map(({ date, isOtherMonth }) => this.renderMonthCell(date, isOtherMonth))}
+        <div class="month-weeks">
+          ${weeks.map((weekDays) => {
+            const spanning = layoutSpanningEvents(weekDays, this.events);
+            const laneCount = spanning.reduce((max, entry) => Math.max(max, entry.lane + 1), 0);
+            return html `
+              <section class="month-week">
+                ${laneCount > 0 ? html `
+                  <div class="month-week-lanes" style=${`--lane-count: ${laneCount}; --day-count: ${weekDays.length}`}>
+                    ${spanning.map((entry) => this.renderSpanningEvent(entry, weekDays.length))}
+                  </div>
+                ` : nothing}
+                <div class="month-grid month-week-days">
+                  ${weekDays.map((date) => this.renderMonthCell(date, isOtherMonthMap.get(date.toDateString()) ?? false))}
+                </div>
+              </section>
+            `;
+        })}
         </div>
       </div>
     `;
     }
     renderMonthCell(date, isOtherMonth) {
-        const dayEvents = getEventsForDate(this.events, date);
+        const dayEvents = getSingleDayEventsForDate(this.events, date);
         const today = isToday(date);
+        const hiddenCount = Math.max(0, dayEvents.length - 3);
         return html `
-      <div class="month-cell ${isOtherMonth ? "other-month" : ""} ${today ? "today" : ""}">
+      <div
+        class="month-cell ${isOtherMonth ? "other-month" : ""} ${today ? "today" : ""} ${this.editable ? "editable" : "interactive"}"
+        @click=${(event) => this.handleMonthCellClick(event, date)}
+      >
         <button
           class="day-num ${today ? "today" : ""}"
-          @click=${() => this.openDayView(date)}
+          @click=${(event) => {
+            event.stopPropagation();
+            this.openDayView(date);
+        }}
           aria-label=${loomiDateFormatter(this.resolvedLocale, { dateStyle: "full" }).format(date)}
         >${date.getDate()}</button>
         ${dayEvents.slice(0, 3).map((event) => this.renderEventPill(event))}
-        ${dayEvents.length > 3
-            ? html `<span class="event-pill more">+${dayEvents.length - 3} more</span>`
+        ${hiddenCount > 0
+            ? html `
+            <button
+              class="event-pill more"
+              @click=${(event) => {
+                event.stopPropagation();
+                this.openDayView(date);
+            }}
+            >+${hiddenCount} more</button>
+          `
             : nothing}
       </div>
+    `;
+    }
+    renderSpanningEvent(entry, dayCount) {
+        const { event, startIndex, endIndex, lane } = entry;
+        const preview = this.getSpanningDragPreview(event, dayCount);
+        const left = preview?.left ?? ((startIndex / dayCount) * 100);
+        const width = preview?.width ?? (((endIndex - startIndex + 1) / dayCount) * 100);
+        const draggable = canDragEvent(event, this.editable);
+        const dragging = this._dragState?.eventId === event.id;
+        return html `
+      <button
+        class="spanning-event event-${event.color || "primary"} ${draggable ? "draggable" : ""} ${dragging ? "dragging" : ""}"
+        style=${`left: calc(${left}% + 4px); width: calc(${width}% - 8px); top: calc(${lane * 24}px + 4px);`}
+        @click=${(clickEvent) => this.handleEventClick(clickEvent, event)}
+        @pointerdown=${(pointerEvent) => this.handleSpanningPointerDown(pointerEvent, event, entry)}
+      >
+        ${event.title}
+        ${draggable ? html `
+          <span class="resize-handle resize-start" @pointerdown=${(pointerEvent) => this.handleSpanningResizePointerDown(pointerEvent, event, entry, "resize-start")}></span>
+          <span class="resize-handle resize-end" @pointerdown=${(pointerEvent) => this.handleSpanningResizePointerDown(pointerEvent, event, entry, "resize-end")}></span>
+        ` : nothing}
+      </button>
     `;
     }
     renderTimeView() {
@@ -161,16 +553,22 @@ let LoomiCalendar = class LoomiCalendar extends LoomiElement {
       <div class="month-view">
         <div
           class="weekdays"
-          style=${`grid-template-columns: 64px repeat(${days.length}, minmax(0, 1fr))`}
+          style=${`grid-template-columns: var(--loomi-calendar-time-axis-width, ${TIME_AXIS_WIDTH}px) repeat(${days.length}, minmax(0, 1fr))`}
         >
           <div class="weekday"></div>
           ${days.map((day) => {
             const weekdayIndex = (day.getDay() - (this.weekStarts === "monday" ? 1 : 0) + 7) % 7;
             const weekdayLabel = loomiWeekdayNames(this.resolvedLocale, this.weekStarts)[weekdayIndex];
             return html `
-            <div class="weekday ${isToday(day) ? "is-today" : ""}">
-              ${weekdayLabel} ${day.getDate()}
-            </div>
+            <button
+              type="button"
+              class="weekday weekday-btn ${isToday(day) ? "is-today" : ""}"
+              @click=${() => this.openDayView(day)}
+              aria-label=${loomiDateFormatter(this.resolvedLocale, { weekday: "long", month: "long", day: "numeric" }).format(day)}
+            >
+              <span class="weekday-label">${weekdayLabel}</span>
+              <span class="weekday-date">${day.getDate()}</span>
+            </button>
           `;
         })}
         </div>
@@ -184,50 +582,75 @@ let LoomiCalendar = class LoomiCalendar extends LoomiElement {
         })}
           </div>
           <div class="time-grid-wrap">
-            ${days.map((day) => this.renderDayColumn(day))}
+            ${days.map((day) => this.renderDayColumn(day, days))}
           </div>
         </div>
       </div>
     `;
     }
     renderAllDayRow(days) {
+        const spanning = layoutSpanningEvents(days, this.events);
+        const laneCount = Math.max(1, spanning.reduce((max, entry) => Math.max(max, entry.lane + 1), 0));
         return html `
       <div
         class="all-day-row"
-        style=${`grid-template-columns: 64px repeat(${days.length}, minmax(0, 1fr))`}
+        style=${`grid-template-columns: var(--loomi-calendar-time-axis-width, ${TIME_AXIS_WIDTH}px) repeat(${days.length}, minmax(0, 1fr))`}
       >
         <div class="all-day-label">All day</div>
-        ${days.map((day) => html `
-          <div class="all-day-cell">
-            ${getAllDayEventsForDate(this.events, day).map((event) => this.renderEventPill(event))}
+        <div
+          class="all-day-track"
+          style=${`grid-column: span ${days.length}; --lane-count: ${laneCount}; --day-count: ${days.length}`}
+        >
+          <div class="all-day-columns">
+            ${days.map(() => html `<div class="all-day-column"></div>`)}
           </div>
-        `)}
+          ${spanning.map((entry) => this.renderSpanningEvent(entry, days.length))}
+        </div>
       </div>
     `;
     }
-    renderDayColumn(day) {
+    renderDayColumn(day, visibleDays) {
         const positioned = layoutTimedEvents(this.events, day, this.startHour, this.endHour);
         const nowOffset = isToday(day) ? getNowOffset(this.startHour, this.endHour, HOUR_HEIGHT) : null;
         const hourCount = this.endHour - this.startHour;
         return html `
-      <div class="day-column">
-        <div class="time-slots" style=${`height: ${hourCount * HOUR_HEIGHT}px`}>
-          ${Array.from({ length: hourCount }, (_, index) => html `
-            <div class="time-slot">
-              ${this.editable ? html `
-                <button
-                  class="time-slot-button"
-                  aria-label="Create event"
-                  @click=${(event) => this.handleSlotClick(event, day, index)}
-                ></button>
-              ` : nothing}
-            </div>
-          `)}
+      <div class="day-column" data-day=${day.toISOString()}>
+        <div
+          class="time-slots ${this.editable ? "editable" : ""}"
+          style=${`height: ${hourCount * HOUR_HEIGHT}px`}
+          @pointerdown=${this.editable ? (event) => this.handleTimeSlotsPointerDown(event, day) : nothing}
+        >
+          ${Array.from({ length: hourCount }, () => html `<div class="time-slot"></div>`)}
+          ${this.renderSlotSelection(day)}
           ${nowOffset !== null ? html `<div class="now-line" style=${`top: ${nowOffset}px`}></div>` : nothing}
-          ${positioned.map((entry) => this.renderTimedEvent(entry.event, day, entry.top, entry.height, entry.left, entry.width))}
+          ${positioned.map((entry) => this.renderTimedEvent(entry.event, day, visibleDays, entry.top, entry.height, entry.left, entry.width))}
         </div>
       </div>
     `;
+    }
+    renderSlotSelection(day) {
+        const preview = this.getSlotSelectionPreview(day);
+        if (!preview) {
+            return nothing;
+        }
+        return html `
+      <div
+        class="slot-selection"
+        style=${`top: ${preview.top}px; height: ${preview.height}px`}
+      ></div>
+    `;
+    }
+    getSlotSelectionPreview(day) {
+        if (!this._slotDragState || !isSameDay(this._slotDragState.day, day)) {
+            return null;
+        }
+        const { start, end } = this.normalizeSlotRange(this._slotDragState.start, this._slotDragState.end);
+        const startMinutes = Math.max(0, minutesFromDayStart(start, this.startHour));
+        const endMinutes = Math.max(startMinutes + this.slotMinutes, minutesFromDayStart(end, this.startHour));
+        return {
+            top: (startMinutes / 60) * HOUR_HEIGHT,
+            height: Math.max(22, ((endMinutes - startMinutes) / 60) * HOUR_HEIGHT)
+        };
     }
     renderAgendaView() {
         const rangeStart = new Date(this.date.getFullYear(), this.date.getMonth(), 1);
@@ -307,7 +730,7 @@ let LoomiCalendar = class LoomiCalendar extends LoomiElement {
               class="timed-event event-${event.color || resource.color || "primary"} ${canDragEvent(event, this.editable) ? "draggable" : ""}"
               style=${`left: ${left}%; width: ${width}%; top: 8px; height: calc(100% - 16px);`}
               @click=${(clickEvent) => this.handleEventClick(clickEvent, event)}
-              @pointerdown=${(pointerEvent) => this.handleEventPointerDown(pointerEvent, event, day, resource.id)}
+              @pointerdown=${(pointerEvent) => this.handleResourceEventPointerDown(pointerEvent, event, day, resource.id)}
             >
               <div class="timed-event-title">${event.title}</div>
               <div class="timed-event-meta">${formatEventRange(event, this.resolvedLocale, this.displayTimezone)}</div>
@@ -330,18 +753,19 @@ let LoomiCalendar = class LoomiCalendar extends LoomiElement {
       </button>
     `;
     }
-    renderTimedEvent(event, day, top, height, left, width) {
-        const preview = this.getDragPreview(event);
+    renderTimedEvent(event, day, visibleDays, top, height, left, width) {
+        const preview = this.getDragPreview(event, visibleDays.length);
         const displayTop = preview?.top ?? top;
         const displayHeight = preview?.height ?? height;
+        const displayTransform = preview?.transform;
         const draggable = canDragEvent(event, this.editable);
         const dragging = this._dragState?.eventId === event.id;
         return html `
       <button
         class="timed-event event-${event.color || "primary"} ${draggable ? "draggable" : ""} ${dragging ? "dragging" : ""}"
-        style=${`top: ${displayTop}px; height: ${displayHeight}px; left: calc(${left}% + 2px); width: calc(${width}% - 4px);`}
+        style=${`top: ${displayTop}px; height: ${displayHeight}px; left: calc(${left}% + 2px); width: calc(${width}% - 4px);${displayTransform ? ` transform: ${displayTransform};` : ""}`}
         @click=${(clickEvent) => this.handleEventClick(clickEvent, event)}
-        @pointerdown=${(pointerEvent) => this.handleEventPointerDown(pointerEvent, event, day)}
+        @pointerdown=${(pointerEvent) => this.handleEventPointerDown(pointerEvent, event, day, visibleDays)}
       >
         <div class="timed-event-title">${event.title}</div>
         ${displayHeight >= 40
@@ -350,22 +774,69 @@ let LoomiCalendar = class LoomiCalendar extends LoomiElement {
         ${event.recurrence?.label && displayHeight >= 56
             ? html `<div class="timed-event-meta">${event.recurrence.label}</div>`
             : nothing}
-        ${draggable ? html `<span class="resize-handle" @pointerdown=${(pointerEvent) => this.handleResizePointerDown(pointerEvent, event, day)}></span>` : nothing}
+        ${draggable ? html `<span class="resize-handle resize-bottom" @pointerdown=${(pointerEvent) => this.handleResizePointerDown(pointerEvent, event, day, visibleDays)}></span>` : nothing}
       </button>
     `;
     }
-    getDragPreview(event) {
-        if (!this._dragState || this._dragState.eventId !== event.id) {
+    getSpanningDragPreview(event, dayCount) {
+        if (!this._dragState || this._dragState.eventId !== event.id || !this._dragState.spanning) {
+            return null;
+        }
+        const dayOffset = Math.round(this._dragState.currentDeltaX / this._dragState.columnWidth);
+        const originalStartDay = startOfDay(this._dragState.originalStart);
+        const originalEndDay = startOfDay(this._dragState.originalEnd);
+        const durationDays = Math.max(0, Math.round((originalEndDay.getTime() - originalStartDay.getTime()) / 86400000));
+        if (this._dragState.mode === "move") {
+            const nextStart = addDays(originalStartDay, dayOffset);
+            const nextEnd = addDays(nextStart, durationDays);
+            const startIndex = Math.max(0, this._dragState.visibleDays.findIndex((day) => isSameDay(day, nextStart)));
+            const endIndex = Math.max(startIndex, this._dragState.visibleDays.findIndex((day) => isSameDay(day, nextEnd)));
+            if (startIndex === -1) {
+                return null;
+            }
+            const resolvedEnd = endIndex === -1 ? dayCount - 1 : endIndex;
+            return {
+                left: (startIndex / dayCount) * 100,
+                width: ((resolvedEnd - startIndex + 1) / dayCount) * 100
+            };
+        }
+        if (this._dragState.mode === "resize-start") {
+            const nextStart = addDays(originalStartDay, dayOffset);
+            const endIndex = this._dragState.visibleDays.findIndex((day) => isSameDay(day, originalEndDay));
+            const startIndex = this._dragState.visibleDays.findIndex((day) => isSameDay(day, nextStart));
+            if (startIndex === -1 || endIndex === -1 || startIndex > endIndex) {
+                return null;
+            }
+            return {
+                left: (startIndex / dayCount) * 100,
+                width: ((endIndex - startIndex + 1) / dayCount) * 100
+            };
+        }
+        const nextEnd = addDays(originalEndDay, dayOffset);
+        const startIndex = this._dragState.visibleDays.findIndex((day) => isSameDay(day, originalStartDay));
+        const endIndex = this._dragState.visibleDays.findIndex((day) => isSameDay(day, nextEnd));
+        if (startIndex === -1 || endIndex === -1 || endIndex < startIndex) {
+            return null;
+        }
+        return {
+            left: (startIndex / dayCount) * 100,
+            width: ((endIndex - startIndex + 1) / dayCount) * 100
+        };
+    }
+    getDragPreview(event, dayCount) {
+        if (!this._dragState || this._dragState.eventId !== event.id || this._dragState.spanning) {
             return null;
         }
         const deltaMinutes = Math.round(((this._dragState.currentDeltaY / HOUR_HEIGHT) * 60) / this.slotMinutes) * this.slotMinutes;
+        const dayOffset = dayCount > 1 ? Math.round(this._dragState.currentDeltaX / this._dragState.columnWidth) : 0;
         if (this._dragState.mode === "resize") {
             const nextEnd = addMinutes(this._dragState.originalEnd, deltaMinutes);
             const startMinutes = Math.max(0, (this._dragState.originalStart.getHours() - this.startHour) * 60 + this._dragState.originalStart.getMinutes());
             const endMinutes = Math.max(startMinutes + this.slotMinutes, (nextEnd.getHours() - this.startHour) * 60 + nextEnd.getMinutes());
             return {
                 top: (startMinutes / 60) * HOUR_HEIGHT,
-                height: Math.max(22, ((endMinutes - startMinutes) / 60) * HOUR_HEIGHT)
+                height: Math.max(22, ((endMinutes - startMinutes) / 60) * HOUR_HEIGHT),
+                transform: dayOffset ? `translateX(${dayOffset * this._dragState.columnWidth}px)` : undefined
             };
         }
         const nextStart = addMinutes(this._dragState.originalStart, deltaMinutes);
@@ -375,76 +846,215 @@ let LoomiCalendar = class LoomiCalendar extends LoomiElement {
         const endMinutes = Math.max(startMinutes + this.slotMinutes, (nextEnd.getHours() - this.startHour) * 60 + nextEnd.getMinutes());
         return {
             top: (startMinutes / 60) * HOUR_HEIGHT,
-            height: Math.max(22, ((endMinutes - startMinutes) / 60) * HOUR_HEIGHT)
+            height: Math.max(22, ((endMinutes - startMinutes) / 60) * HOUR_HEIGHT),
+            transform: dayOffset ? `translateX(${dayOffset * this._dragState.columnWidth}px)` : undefined
         };
     }
-    handleEventPointerDown(pointerEvent, event, day, resourceId) {
+    handleEventPointerDown(pointerEvent, event, day, visibleDays) {
         if (!canDragEvent(event, this.editable)) {
             return;
         }
         pointerEvent.stopPropagation();
+        const grid = pointerEvent.currentTarget;
+        const column = grid.closest(".day-column");
+        const columnWidth = column?.getBoundingClientRect().width ?? 0;
         this._dragState = {
             eventId: event.id,
             mode: "move",
             pointerId: pointerEvent.pointerId,
+            startPointerX: pointerEvent.clientX,
             startPointerY: pointerEvent.clientY,
+            currentDeltaX: 0,
             currentDeltaY: 0,
             originalStart: cloneDate(event.start),
             originalEnd: cloneDate(event.end),
             originalResourceId: event.resourceId,
             day,
-            resourceId
+            resourceId: event.resourceId,
+            visibleDays,
+            columnWidth
         };
         this.attachPointerListeners();
-        pointerEvent.currentTarget.setPointerCapture(pointerEvent.pointerId);
+        grid.setPointerCapture(pointerEvent.pointerId);
     }
-    handleResizePointerDown(pointerEvent, event, day) {
+    handleSpanningPointerDown(pointerEvent, event, _entry) {
         if (!canDragEvent(event, this.editable)) {
             return;
         }
         pointerEvent.stopPropagation();
+        const track = pointerEvent.currentTarget;
+        const container = track.closest(".all-day-track, .month-week-lanes");
+        const visibleDays = this.view === "month"
+            ? chunkMonthWeeks(this.date, this.weekStarts).find((week) => week.some((day) => isSameDay(day, startOfDay(event.start)))) ?? [startOfDay(event.start)]
+            : getVisibleWeekDays(this.date, this.weekStarts, this.showWeekends);
+        const columnWidth = container ? container.clientWidth / visibleDays.length : 1;
         this._dragState = {
             eventId: event.id,
-            mode: "resize",
+            mode: "move",
             pointerId: pointerEvent.pointerId,
+            startPointerX: pointerEvent.clientX,
             startPointerY: pointerEvent.clientY,
+            currentDeltaX: 0,
             currentDeltaY: 0,
             originalStart: cloneDate(event.start),
             originalEnd: cloneDate(event.end),
             originalResourceId: event.resourceId,
-            day
+            day: startOfDay(event.start),
+            visibleDays,
+            columnWidth,
+            spanning: true
         };
         this.attachPointerListeners();
-        pointerEvent.currentTarget.setPointerCapture(pointerEvent.pointerId);
+        track.setPointerCapture(pointerEvent.pointerId);
+    }
+    handleSpanningResizePointerDown(pointerEvent, event, _entry, mode) {
+        if (!canDragEvent(event, this.editable)) {
+            return;
+        }
+        pointerEvent.stopPropagation();
+        const handle = pointerEvent.currentTarget;
+        const container = handle.closest(".all-day-track, .month-week-lanes");
+        const visibleDays = this.view === "month"
+            ? chunkMonthWeeks(this.date, this.weekStarts).find((week) => week.some((day) => isSameDay(day, startOfDay(event.start)))) ?? [startOfDay(event.start)]
+            : getVisibleWeekDays(this.date, this.weekStarts, this.showWeekends);
+        const columnWidth = container ? container.clientWidth / visibleDays.length : 1;
+        this._dragState = {
+            eventId: event.id,
+            mode,
+            pointerId: pointerEvent.pointerId,
+            startPointerX: pointerEvent.clientX,
+            startPointerY: pointerEvent.clientY,
+            currentDeltaX: 0,
+            currentDeltaY: 0,
+            originalStart: cloneDate(event.start),
+            originalEnd: cloneDate(event.end),
+            originalResourceId: event.resourceId,
+            day: startOfDay(event.start),
+            visibleDays,
+            columnWidth,
+            spanning: true
+        };
+        this.attachPointerListeners();
+        handle.setPointerCapture(pointerEvent.pointerId);
+    }
+    handleResizePointerDown(pointerEvent, event, day, visibleDays) {
+        if (!canDragEvent(event, this.editable)) {
+            return;
+        }
+        pointerEvent.stopPropagation();
+        const handle = pointerEvent.currentTarget;
+        const column = handle.closest(".day-column");
+        const columnWidth = column?.getBoundingClientRect().width ?? 0;
+        this._dragState = {
+            eventId: event.id,
+            mode: "resize",
+            pointerId: pointerEvent.pointerId,
+            startPointerX: pointerEvent.clientX,
+            startPointerY: pointerEvent.clientY,
+            currentDeltaX: 0,
+            currentDeltaY: 0,
+            originalStart: cloneDate(event.start),
+            originalEnd: cloneDate(event.end),
+            originalResourceId: event.resourceId,
+            day,
+            visibleDays,
+            columnWidth
+        };
+        this.attachPointerListeners();
+        handle.setPointerCapture(pointerEvent.pointerId);
     }
     handlePointerMove(pointerEvent) {
+        if (this._slotDragState && pointerEvent.pointerId === this._slotDragState.pointerId) {
+            const rect = this._slotDragState.container.getBoundingClientRect();
+            const offsetY = pointerEvent.clientY - rect.top;
+            const end = dateFromGridPosition(this._slotDragState.day, offsetY, this.startHour, HOUR_HEIGHT, this.slotMinutes);
+            this._slotDragState = {
+                ...this._slotDragState,
+                end
+            };
+            this.requestUpdate();
+            return;
+        }
         if (!this._dragState || pointerEvent.pointerId !== this._dragState.pointerId) {
             return;
         }
         this._dragState = {
             ...this._dragState,
+            currentDeltaX: pointerEvent.clientX - this._dragState.startPointerX,
             currentDeltaY: pointerEvent.clientY - this._dragState.startPointerY
         };
         this.requestUpdate();
     }
     handlePointerUp(pointerEvent) {
+        if (this._slotDragState && pointerEvent.pointerId === this._slotDragState.pointerId) {
+            const { start, end } = this.normalizeSlotRange(this._slotDragState.start, this._slotDragState.end);
+            let nextStart = start;
+            let nextEnd = end;
+            if (nextEnd.getTime() - nextStart.getTime() < this.slotMinutes * 60 * 1000) {
+                nextEnd = addMinutes(nextStart, this.slotMinutes);
+            }
+            this.openCreateEventModal(nextStart, nextEnd, false);
+            this._slotDragState = undefined;
+            this.detachPointerListeners();
+            this.requestUpdate();
+            return;
+        }
         if (!this._dragState || pointerEvent.pointerId !== this._dragState.pointerId) {
             return;
         }
         const event = this.events.find((entry) => entry.id === this._dragState.eventId);
         if (event) {
-            const deltaMinutes = Math.round(((this._dragState.currentDeltaY / HOUR_HEIGHT) * 60) / this.slotMinutes) * this.slotMinutes;
-            const durationMs = this._dragState.originalEnd.getTime() - this._dragState.originalStart.getTime();
-            let nextStart = this._dragState.originalStart;
-            let nextEnd = this._dragState.originalEnd;
-            if (this._dragState.mode === "move") {
+            let nextStart = cloneDate(this._dragState.originalStart);
+            let nextEnd = cloneDate(this._dragState.originalEnd);
+            if (this._dragState.spanning) {
+                const dayOffset = Math.round(this._dragState.currentDeltaX / this._dragState.columnWidth);
+                const originalStartDay = startOfDay(this._dragState.originalStart);
+                const originalEndDay = startOfDay(this._dragState.originalEnd);
+                const durationDays = Math.max(0, Math.round((originalEndDay.getTime() - originalStartDay.getTime()) / 86400000));
+                if (this._dragState.mode === "move") {
+                    nextStart = startOfDay(addDays(originalStartDay, dayOffset));
+                    nextStart.setHours(this._dragState.originalStart.getHours(), this._dragState.originalStart.getMinutes(), 0, 0);
+                    nextEnd = startOfDay(addDays(originalStartDay, dayOffset + durationDays));
+                    nextEnd.setHours(this._dragState.originalEnd.getHours(), this._dragState.originalEnd.getMinutes(), 0, 0);
+                    if (event.isAllDay) {
+                        nextStart = startOfDay(nextStart);
+                        nextEnd = endOfDay(nextEnd);
+                    }
+                }
+                else if (this._dragState.mode === "resize-start") {
+                    const resizedStart = startOfDay(addDays(originalStartDay, dayOffset));
+                    if (resizedStart.getTime() <= originalEndDay.getTime()) {
+                        nextStart = event.isAllDay ? startOfDay(resizedStart) : addDays(this._dragState.originalStart, dayOffset);
+                    }
+                }
+                else if (this._dragState.mode === "resize-end") {
+                    const resizedEnd = startOfDay(addDays(originalEndDay, dayOffset));
+                    if (resizedEnd.getTime() >= originalStartDay.getTime()) {
+                        nextEnd = event.isAllDay ? endOfDay(resizedEnd) : addDays(this._dragState.originalEnd, dayOffset);
+                    }
+                }
+            }
+            else if (this._dragState.resourceId) {
+                const deltaMinutes = Math.round((this._dragState.currentDeltaX / this._dragState.columnWidth) / this.slotMinutes) * this.slotMinutes;
+                const durationMs = this._dragState.originalEnd.getTime() - this._dragState.originalStart.getTime();
                 nextStart = addMinutes(this._dragState.originalStart, deltaMinutes);
                 nextEnd = new Date(nextStart.getTime() + durationMs);
             }
             else {
-                nextEnd = addMinutes(this._dragState.originalEnd, deltaMinutes);
-                if (nextEnd <= nextStart) {
-                    nextEnd = addMinutes(nextStart, this.slotMinutes);
+                const deltaMinutes = Math.round(((this._dragState.currentDeltaY / HOUR_HEIGHT) * 60) / this.slotMinutes) * this.slotMinutes;
+                const dayOffset = this._dragState.visibleDays.length > 1
+                    ? Math.round(this._dragState.currentDeltaX / this._dragState.columnWidth)
+                    : 0;
+                const durationMs = this._dragState.originalEnd.getTime() - this._dragState.originalStart.getTime();
+                if (this._dragState.mode === "move") {
+                    nextStart = addMinutes(addDays(this._dragState.originalStart, dayOffset), deltaMinutes);
+                    nextEnd = new Date(nextStart.getTime() + durationMs);
+                }
+                else {
+                    nextEnd = addMinutes(this._dragState.originalEnd, deltaMinutes);
+                    if (nextEnd <= nextStart) {
+                        nextEnd = addMinutes(nextStart, this.slotMinutes);
+                    }
                 }
             }
             const changed = nextStart.getTime() !== event.start.getTime() || nextEnd.getTime() !== event.end.getTime();
@@ -479,15 +1089,45 @@ let LoomiCalendar = class LoomiCalendar extends LoomiElement {
         window.removeEventListener("pointermove", this.boundPointerMove);
         window.removeEventListener("pointerup", this.boundPointerUp);
     }
-    handleSlotClick(event, day, hourIndex) {
-        if (!this.editable) {
+    handleTimeSlotsPointerDown(pointerEvent, day) {
+        if (!this.editable || pointerEvent.button !== 0) {
             return;
         }
-        const rect = event.currentTarget.getBoundingClientRect();
-        const offsetY = event.clientY - rect.top;
-        const start = dateFromGridPosition(day, offsetY + hourIndex * HOUR_HEIGHT, this.startHour, HOUR_HEIGHT, this.slotMinutes);
-        const end = addMinutes(start, this.slotMinutes);
-        this.dispatchSlotSelect({ start, end, allDay: false });
+        const target = pointerEvent.target;
+        if (target.closest(".timed-event") || target.closest(".resize-handle")) {
+            return;
+        }
+        const container = pointerEvent.currentTarget;
+        const rect = container.getBoundingClientRect();
+        const offsetY = pointerEvent.clientY - rect.top;
+        const start = dateFromGridPosition(day, offsetY, this.startHour, HOUR_HEIGHT, this.slotMinutes);
+        pointerEvent.preventDefault();
+        this._slotDragState = {
+            pointerId: pointerEvent.pointerId,
+            day,
+            start,
+            end: start,
+            container
+        };
+        this.attachPointerListeners();
+        container.setPointerCapture(pointerEvent.pointerId);
+    }
+    handleMonthCellClick(event, date) {
+        const target = event.target;
+        if (target.closest(".event-pill:not(.more)") || target.closest(".day-num")) {
+            return;
+        }
+        if (this.editable) {
+            this.openCreateEventModal(startOfDay(date), endOfDay(date), true);
+            return;
+        }
+        this.openDayView(date);
+    }
+    normalizeSlotRange(start, end) {
+        if (start.getTime() <= end.getTime()) {
+            return { start, end };
+        }
+        return { start: end, end: start };
     }
     handleResourceTrackClick(event, day, resourceId) {
         if (!this.editable) {
@@ -584,8 +1224,159 @@ let LoomiCalendar = class LoomiCalendar extends LoomiElement {
     }
     updateDate(date) {
         this.date = date;
+        this._miniCalendarDate = cloneDate(date);
         this.dispatchEvent(new CustomEvent("loomi-date-change", {
             detail: { date },
+            bubbles: true,
+            composed: true
+        }));
+    }
+    handleResourceEventPointerDown(pointerEvent, event, day, resourceId) {
+        if (!canDragEvent(event, this.editable)) {
+            return;
+        }
+        pointerEvent.stopPropagation();
+        const track = pointerEvent.currentTarget;
+        const timeline = track.closest(".resource-timeline");
+        const columnWidth = timeline ? timeline.clientWidth / Math.max(1, this.endHour - this.startHour) : 0;
+        this._dragState = {
+            eventId: event.id,
+            mode: "move",
+            pointerId: pointerEvent.pointerId,
+            startPointerX: pointerEvent.clientX,
+            startPointerY: pointerEvent.clientY,
+            currentDeltaX: 0,
+            currentDeltaY: 0,
+            originalStart: cloneDate(event.start),
+            originalEnd: cloneDate(event.end),
+            originalResourceId: event.resourceId,
+            day,
+            resourceId,
+            visibleDays: [day],
+            columnWidth
+        };
+        this.attachPointerListeners();
+        track.setPointerCapture(pointerEvent.pointerId);
+    }
+    toggleSidebar() {
+        this.sidebarOpen = !this.sidebarOpen;
+        this.dispatchEvent(new CustomEvent("loomi-sidebar-toggle", {
+            detail: { open: this.sidebarOpen },
+            bubbles: true,
+            composed: true
+        }));
+    }
+    shiftMiniCalendar(deltaMonths) {
+        const next = cloneDate(this._miniCalendarDate ?? this.date);
+        next.setMonth(next.getMonth() + deltaMonths);
+        this._miniCalendarDate = next;
+    }
+    openCreateEventModal(start, end, allDay = false) {
+        const defaultStart = start ?? this.getDefaultEventStart();
+        const defaultEnd = end ?? addMinutes(defaultStart, this.slotMinutes);
+        this._eventDraft = {
+            title: "",
+            start: allDay ? toInputDateTime(startOfDay(defaultStart)).slice(0, 10) : toInputDateTime(defaultStart),
+            end: allDay ? toInputDateTime(startOfDay(defaultEnd)).slice(0, 10) : toInputDateTime(defaultEnd),
+            allDay,
+            color: "primary",
+            description: "",
+            resourceId: "",
+            recurrenceFrequency: "",
+            recurrenceLabel: "",
+            reminderLabel: "",
+            inviteesText: ""
+        };
+    }
+    getDefaultEventStart() {
+        const next = cloneDate(this.date);
+        const now = new Date();
+        next.setHours(now.getHours(), Math.ceil(now.getMinutes() / this.slotMinutes) * this.slotMinutes, 0, 0);
+        return next;
+    }
+    updateEventDraft(key, value) {
+        if (!this._eventDraft) {
+            return;
+        }
+        this._eventDraft = { ...this._eventDraft, [key]: value };
+    }
+    handleCreateEventSave(event) {
+        event.preventDefault();
+        const draft = this._eventDraft;
+        if (!draft || !draft.title.trim()) {
+            return;
+        }
+        let start = draft.allDay
+            ? fromInputDateTime(`${draft.start}T00:00`)
+            : fromInputDateTime(draft.start);
+        let end = draft.allDay
+            ? fromInputDateTime(`${draft.end}T23:59`)
+            : fromInputDateTime(draft.end);
+        if (!start || !end) {
+            return;
+        }
+        if (draft.allDay) {
+            start = startOfDay(start);
+            end = endOfDay(end);
+        }
+        if (end <= start) {
+            end = draft.allDay ? endOfDay(start) : addMinutes(start, this.slotMinutes);
+        }
+        const created = {
+            id: `evt_${Date.now()}`,
+            title: draft.title.trim(),
+            start,
+            end,
+            color: draft.color,
+            isAllDay: draft.allDay,
+            description: draft.description.trim() || undefined,
+            resourceId: draft.resourceId || undefined,
+            recurrence: draft.recurrenceFrequency
+                ? {
+                    frequency: draft.recurrenceFrequency,
+                    label: draft.recurrenceLabel.trim() || undefined
+                }
+                : undefined,
+            reminder: draft.reminderLabel.trim()
+                ? { label: draft.reminderLabel.trim() }
+                : undefined,
+            invitees: draft.inviteesText
+                .split(",")
+                .map((name) => name.trim())
+                .filter(Boolean)
+                .map((name, index) => ({
+                id: `inv_${Date.now()}_${index}`,
+                name,
+                status: "awaiting"
+            }))
+        };
+        this.dispatchEvent(new CustomEvent("loomi-event-create", {
+            detail: { event: created },
+            bubbles: true,
+            composed: true
+        }));
+        this._eventDraft = undefined;
+    }
+    handleCreateEventCancel() {
+        this._eventDraft = undefined;
+    }
+    handleDeleteEvent(event) {
+        this.dispatchEvent(new CustomEvent("loomi-event-delete", {
+            detail: { event },
+            bubbles: true,
+            composed: true
+        }));
+    }
+    handleDuplicateEvent(event) {
+        const duplicate = {
+            ...event,
+            id: `evt_${Date.now()}`,
+            title: `${event.title} (copy)`,
+            start: addMinutes(cloneDate(event.start), this.slotMinutes),
+            end: addMinutes(cloneDate(event.end), this.slotMinutes)
+        };
+        this.dispatchEvent(new CustomEvent("loomi-event-duplicate", {
+            detail: { event: duplicate },
             bubbles: true,
             composed: true
         }));

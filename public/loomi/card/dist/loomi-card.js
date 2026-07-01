@@ -9,23 +9,16 @@ import { customElement, property } from "lit/decorators.js";
 import { LoomiElement, loomiStyles } from "@loomidev/core";
 import { componentStyles } from "./generated/styles.css.js";
 /**
- * `<loomi-card>` — a content card with an optional title and header/footer slots.
- * When a `header` slot is present, the body padding is removed (match it yourself).
+ * `<loomi-card>` — shadcn/ui-style card root. Compose with the `loomi-card-*` parts.
  *
- * @slot - The card body.
- * @slot header - Fixed header region.
- * @slot footer - Fixed footer region.
+ * @slot - Card sections (`loomi-card-header`, `loomi-card-content`, `loomi-card-footer`, …).
  */
 let LoomiCard = class LoomiCard extends LoomiElement {
     constructor() {
         super(...arguments);
-        this.title = "";
-        this.compact = false;
-        this.noPadding = false;
-        this.hasShadow = true;
-        this.hasHover = false;
-        this.radius = "small";
+        this.size = "default";
         this.url = "";
+        this.hasHover = false;
         this.onClick = () => {
             if (!this.url)
                 return;
@@ -38,56 +31,114 @@ let LoomiCard = class LoomiCard extends LoomiElement {
         };
     }
     static { this.styles = loomiStyles(componentStyles); }
-    get hasHeader() {
-        return !!this.querySelector('[slot="header"]');
-    }
-    get hasFooter() {
-        return !!this.querySelector('[slot="footer"]');
-    }
     render() {
-        const bodyCls = this.hasHeader || this.noPadding
-            ? "flush"
-            : this.compact
-                ? "compact"
-                : "";
-        const cls = [
-            "loomi-card",
-            `r-${this.radius}`,
-            this.hasShadow ? "shadow" : "",
-            this.hasHover ? "hover" : "",
-            this.url ? "clickable" : "",
-        ].join(" ");
-        return html `<div class=${cls} @click=${this.url ? this.onClick : nothing}>
-      ${this.hasHeader ? html `<div class="loomi-header"><slot name="header"></slot></div>` : nothing}
-      ${this.title && !this.hasHeader ? html `<div class="loomi-title">${this.title}</div>` : nothing}
-      <div class="loomi-body ${bodyCls}"><slot></slot></div>
-      ${this.hasFooter ? html `<div class="loomi-footer"><slot name="footer"></slot></div>` : nothing}
-    </div>`;
+        const cls = ["card", this.url ? "clickable" : "", this.hasHover ? "hover" : ""]
+            .filter(Boolean)
+            .join(" ");
+        return html `<div class=${cls} @click=${this.url ? this.onClick : nothing}><slot></slot></div>`;
     }
 };
 __decorate([
-    property()
-], LoomiCard.prototype, "title", void 0);
-__decorate([
-    property({ type: Boolean })
-], LoomiCard.prototype, "compact", void 0);
-__decorate([
-    property({ type: Boolean, attribute: "no-padding" })
-], LoomiCard.prototype, "noPadding", void 0);
-__decorate([
-    property({ type: Boolean, attribute: "has-shadow" })
-], LoomiCard.prototype, "hasShadow", void 0);
-__decorate([
-    property({ type: Boolean, attribute: "has-hover" })
-], LoomiCard.prototype, "hasHover", void 0);
-__decorate([
-    property()
-], LoomiCard.prototype, "radius", void 0);
+    property({ reflect: true })
+], LoomiCard.prototype, "size", void 0);
 __decorate([
     property()
 ], LoomiCard.prototype, "url", void 0);
+__decorate([
+    property({ type: Boolean, attribute: "has-hover" })
+], LoomiCard.prototype, "hasHover", void 0);
 LoomiCard = __decorate([
     customElement("loomi-card")
 ], LoomiCard);
 export { LoomiCard };
+/**
+ * `<loomi-card-header>` — title, description, and optional action region.
+ *
+ * @slot - `loomi-card-title`, `loomi-card-description`, and/or `loomi-card-action`.
+ */
+let LoomiCardHeader = class LoomiCardHeader extends LoomiElement {
+    static { this.styles = loomiStyles(componentStyles); }
+    render() {
+        return html `<div class="header" data-slot="card-header"><slot></slot></div>`;
+    }
+};
+LoomiCardHeader = __decorate([
+    customElement("loomi-card-header")
+], LoomiCardHeader);
+export { LoomiCardHeader };
+/**
+ * `<loomi-card-title>` — card heading.
+ *
+ * @slot - Title text.
+ */
+let LoomiCardTitle = class LoomiCardTitle extends LoomiElement {
+    static { this.styles = loomiStyles(componentStyles); }
+    render() {
+        return html `<div class="title" data-slot="card-title"><slot></slot></div>`;
+    }
+};
+LoomiCardTitle = __decorate([
+    customElement("loomi-card-title")
+], LoomiCardTitle);
+export { LoomiCardTitle };
+/**
+ * `<loomi-card-description>` — helper text under the title.
+ *
+ * @slot - Description text.
+ */
+let LoomiCardDescription = class LoomiCardDescription extends LoomiElement {
+    static { this.styles = loomiStyles(componentStyles); }
+    render() {
+        return html `<div class="description" data-slot="card-description"><slot></slot></div>`;
+    }
+};
+LoomiCardDescription = __decorate([
+    customElement("loomi-card-description")
+], LoomiCardDescription);
+export { LoomiCardDescription };
+/**
+ * `<loomi-card-action>` — top-right header action (button, badge, link, …).
+ *
+ * @slot - Action content.
+ */
+let LoomiCardAction = class LoomiCardAction extends LoomiElement {
+    static { this.styles = loomiStyles(componentStyles); }
+    render() {
+        return html `<div class="action" data-slot="card-action"><slot></slot></div>`;
+    }
+};
+LoomiCardAction = __decorate([
+    customElement("loomi-card-action")
+], LoomiCardAction);
+export { LoomiCardAction };
+/**
+ * `<loomi-card-content>` — main card body.
+ *
+ * @slot - Card content.
+ */
+let LoomiCardContent = class LoomiCardContent extends LoomiElement {
+    static { this.styles = loomiStyles(componentStyles); }
+    render() {
+        return html `<div class="content" data-slot="card-content"><slot></slot></div>`;
+    }
+};
+LoomiCardContent = __decorate([
+    customElement("loomi-card-content")
+], LoomiCardContent);
+export { LoomiCardContent };
+/**
+ * `<loomi-card-footer>` — actions and secondary content at the bottom.
+ *
+ * @slot - Footer content.
+ */
+let LoomiCardFooter = class LoomiCardFooter extends LoomiElement {
+    static { this.styles = loomiStyles(componentStyles); }
+    render() {
+        return html `<div class="footer" data-slot="card-footer"><slot></slot></div>`;
+    }
+};
+LoomiCardFooter = __decorate([
+    customElement("loomi-card-footer")
+], LoomiCardFooter);
+export { LoomiCardFooter };
 //# sourceMappingURL=loomi-card.js.map

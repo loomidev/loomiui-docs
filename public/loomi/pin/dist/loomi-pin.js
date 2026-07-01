@@ -10,18 +10,20 @@ import { LoomiElement, loomiDefaultText, loomiStyles, loomiT } from "@loomidev/c
 import { componentStyles } from "./generated/styles.css.js";
 const DEFAULT_ERROR_MESSAGE = "Verification code is invalid";
 /**
- * `<loomi-code>` — a verification-code (PIN) input of N boxes. Form-associated: submits
- * the joined code under `name`.
+ * `<loomi-pin>` — a verification-code (PIN) input of N boxes. Form-associated: submits
+ * the joined PIN under `name`.
  *
- * @fires verify - `detail: { code }` when the last box is filled.
+ * @fires verify - `detail: { pin, code }` when the last box is filled.
  */
-let LoomiCode = class LoomiCode extends LoomiElement {
+let LoomiPin = class LoomiPin extends LoomiElement {
     constructor() {
         super(...arguments);
         this.internals = this.attachInternals();
         this.name = "";
         this.totalDigits = 4;
         this.size = "small";
+        this.separator = false;
+        this.hideDigits = false;
         this.mask = false;
         this.errorMessage = DEFAULT_ERROR_MESSAGE;
         this.locale = "";
@@ -34,9 +36,13 @@ let LoomiCode = class LoomiCode extends LoomiElement {
         super.connectedCallback();
         this.digits = Array(this.totalDigits).fill("");
     }
-    /** The current code. */
-    get code() {
+    /** The current PIN. */
+    get pin() {
         return this.digits.join("");
+    }
+    /** @deprecated Use `pin` instead. */
+    get code() {
+        return this.pin;
     }
     /** Clear all boxes and focus the first. */
     clear() {
@@ -50,10 +56,32 @@ let LoomiCode = class LoomiCode extends LoomiElement {
         this.invalid = true;
     }
     commit() {
-        this.internals.setFormValue(this.code);
-        if (this.code.length === this.totalDigits) {
-            this.dispatchEvent(new CustomEvent("verify", { bubbles: true, composed: true, detail: { code: this.code } }));
+        this.internals.setFormValue(this.pin);
+        if (this.pin.length === this.totalDigits) {
+            this.dispatchEvent(new CustomEvent("verify", { bubbles: true, composed: true, detail: { pin: this.pin, code: this.pin } }));
         }
+    }
+    get masked() {
+        return this.mask || this.hideDigits;
+    }
+    get separatorIndex() {
+        return Math.floor(this.totalDigits / 2);
+    }
+    renderBox(i) {
+        const value = this.digits[i] ?? "";
+        return html `<span class="loomi-box-wrap">
+      <input
+        class="loomi-box ${this.masked && value ? "is-masked" : ""}"
+        type="text"
+        inputmode="numeric"
+        maxlength="1"
+        aria-label=${loomiT("pin.digitLabel", { number: i + 1 }, this.locale)}
+        .value=${value}
+        @input=${(e) => this.onInput(i, e)}
+        @keydown=${(e) => this.onKeydown(i, e)}
+      />
+      ${this.masked && value ? html `<span class="loomi-dot" aria-hidden="true"></span>` : nothing}
+    </span>`;
     }
     onInput(i, e) {
         const input = e.target;
@@ -84,50 +112,50 @@ let LoomiCode = class LoomiCode extends LoomiElement {
         this.updateComplete.then(() => this.boxes[Math.min(text.length, this.totalDigits - 1)]?.focus());
     }
     render() {
-        return html `<div class="loomi-code size-${this.size}" @paste=${(e) => this.onPaste(e)}>
-      ${Array.from({ length: this.totalDigits }, (_, i) => html `<input
-        class="loomi-box"
-        type=${this.mask ? "password" : "text"}
-        inputmode="numeric"
-        maxlength="1"
-        aria-label=${loomiT("code.digitLabel", { number: i + 1 }, this.locale)}
-        .value=${this.digits[i] ?? ""}
-        @input=${(e) => this.onInput(i, e)}
-        @keydown=${(e) => this.onKeydown(i, e)}
-      />`)}
+        return html `<div class="loomi-pin size-${this.size}" @paste=${(e) => this.onPaste(e)}>
+      ${Array.from({ length: this.totalDigits }, (_, i) => html `
+        ${this.renderBox(i)}
+        ${this.separator && this.totalDigits > 1 && i === this.separatorIndex - 1 ? html `<span class="loomi-separator" aria-hidden="true">-</span>` : nothing}
+      `)}
     </div>
-    ${this.invalid ? html `<p class="loomi-error">${loomiDefaultText(this.errorMessage, DEFAULT_ERROR_MESSAGE, "code.errorMessage", this.locale)}</p>` : nothing}`;
+    ${this.invalid ? html `<p class="loomi-error">${loomiDefaultText(this.errorMessage, DEFAULT_ERROR_MESSAGE, "pin.errorMessage", this.locale)}</p>` : nothing}`;
     }
 };
 __decorate([
     property({ reflect: true })
-], LoomiCode.prototype, "name", void 0);
+], LoomiPin.prototype, "name", void 0);
 __decorate([
     property({ type: Number, attribute: "total-digits" })
-], LoomiCode.prototype, "totalDigits", void 0);
+], LoomiPin.prototype, "totalDigits", void 0);
 __decorate([
     property()
-], LoomiCode.prototype, "size", void 0);
-__decorate([
-    property({ type: Boolean })
-], LoomiCode.prototype, "mask", void 0);
-__decorate([
-    property({ attribute: "error-message" })
-], LoomiCode.prototype, "errorMessage", void 0);
-__decorate([
-    property()
-], LoomiCode.prototype, "locale", void 0);
+], LoomiPin.prototype, "size", void 0);
 __decorate([
     property({ type: Boolean, reflect: true })
-], LoomiCode.prototype, "invalid", void 0);
+], LoomiPin.prototype, "separator", void 0);
+__decorate([
+    property({ type: Boolean, attribute: "hide-digits" })
+], LoomiPin.prototype, "hideDigits", void 0);
+__decorate([
+    property({ type: Boolean })
+], LoomiPin.prototype, "mask", void 0);
+__decorate([
+    property({ attribute: "error-message" })
+], LoomiPin.prototype, "errorMessage", void 0);
+__decorate([
+    property()
+], LoomiPin.prototype, "locale", void 0);
+__decorate([
+    property({ type: Boolean, reflect: true })
+], LoomiPin.prototype, "invalid", void 0);
 __decorate([
     state()
-], LoomiCode.prototype, "digits", void 0);
+], LoomiPin.prototype, "digits", void 0);
 __decorate([
     queryAll("input")
-], LoomiCode.prototype, "boxes", void 0);
-LoomiCode = __decorate([
-    customElement("loomi-code")
-], LoomiCode);
-export { LoomiCode };
-//# sourceMappingURL=loomi-code.js.map
+], LoomiPin.prototype, "boxes", void 0);
+LoomiPin = __decorate([
+    customElement("loomi-pin")
+], LoomiPin);
+export { LoomiPin };
+//# sourceMappingURL=loomi-pin.js.map

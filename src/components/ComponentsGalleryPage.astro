@@ -85,7 +85,7 @@ const PREVIEWS: Record<string, string> = {
   statistic: `<loomi-statistic number="34,500" label="Total payments"></loomi-statistic>`,
   rating: `<loomi-rating rating="4" name="prev-rating" clickable="false" color="orange"></loomi-rating>`,
   timeline: `<div style="height:5.5rem;width:100%;overflow:hidden;display:flex;align-items:center;padding-left:0.5rem"><div style="transform:scale(.8);transform-origin:left center"><loomi-timelines><loomi-timeline date="2d ago" content="Activated"></loomi-timeline></loomi-timelines></div></div>`,
-  listview: `<loomi-card no-padding class="w-full"><loomi-listview><loomi-listview-item><loomi-avatar size="small" image="/avatars/john.svg"></loomi-avatar><div style="font-weight:500;font-size:.78rem">Olivia Rhye</div></loomi-listview-item></loomi-listview></loomi-card>`,
+  listview: `<loomi-card class="w-full"><loomi-card-content style="padding:0"><loomi-listview><loomi-listview-item><loomi-avatar size="small" image="/avatars/john.svg"></loomi-avatar><div style="font-weight:500;font-size:.78rem">Olivia Rhye</div></loomi-listview-item></loomi-listview></loomi-card-content></loomi-card>`,
   "contact-card": `<div style="transform:scale(.7)"><loomi-contact-card name="Olivia Rhye" position="Designer"></loomi-contact-card></div>`,
   chart: `<loomi-chart type="line" color="primary" data='[{"label":"1","value":12},{"label":"2","value":18},{"label":"3","value":15},{"label":"4","value":24},{"label":"5","value":21}]' style="height:3rem;width:100%;display:block"></loomi-chart>`,
   "horizontal-line-graph": `<loomi-horizontal-line-graph data='[{"label":"Direct","value":45,"color":"primary"},{"label":"Search","value":30,"color":"success"}]' style="width:100%;display:block"></loomi-horizontal-line-graph>`,
@@ -95,7 +95,7 @@ const PREVIEWS: Record<string, string> = {
   // Layout
   button: `<loomi-button color="primary">Button</loomi-button>`,
   "button-group": `<loomi-button-group size="small"><loomi-button-group-item label="Day" value="day" selected></loomi-button-group-item><loomi-button-group-item label="Week" value="week"></loomi-button-group-item><loomi-button-group-item label="Month" value="month"></loomi-button-group-item></loomi-button-group>`,
-  card: `<loomi-card no-shadow class="w-full text-left"><div class="mb-1.5 h-4 w-4 rounded bg-gray-200 dark:bg-gray-700"></div><div class="text-xs font-semibold text-gray-900 dark:text-white">Card title</div></loomi-card>`,
+  card: `<loomi-card class="w-full text-left"><loomi-card-header><loomi-card-title>Card title</loomi-card-title><loomi-card-description>Card description</loomi-card-description></loomi-card-header></loomi-card>`,
   accordion: `<div style="width:100%;transform:scale(.88)"><loomi-accordion class="w-full"><loomi-accordion-item title="Section one" open></loomi-accordion-item><loomi-accordion-item title="Section two"></loomi-accordion-item></loomi-accordion></div>`,
   "centered-content": `<loomi-centered-content min-height="84px" style="display:block"><div style="font-size:.72rem;font-weight:600;text-align:center">Welcome back</div></loomi-centered-content>`,
   sortable: `<loomi-sortable items='[{"id":"a","label":"Tomatoes"},{"id":"b","label":"Lettuce"}]'></loomi-sortable>`,

@@ -36,7 +36,7 @@ let LoomiAvatar = class LoomiAvatar extends LoomiElement {
         this.editLabel = "Edit avatar";
         // `<loomi-filepicker>` is a much heavier dependency (it pulls in @loomidev/modal and
         // @loomidev/notification) than the rest of this component needs, so it's only loaded
-        // — via dynamic import, same pattern as @loomidev/text-editor's Quill — once `editable`
+        // — via dynamic import, matching other optional-heavy integrations — once `editable`
         // is actually set, instead of bundled unconditionally for every avatar.
         this.filepickerReady = false;
         this.filepickerLoading = false;

@@ -250,10 +250,12 @@ const componentCategories = ["All", "Data Entry", "Feedback", "Navigation", "Ove
 
           <div class="component-tile" data-cat="layout">
             <div class="component-tile-preview w-full">
-              <loomi-card no-shadow class="w-full text-left">
-                <div class="mb-2 h-6 w-6 rounded bg-gray-200 dark:bg-gray-700"></div>
-                <div class="text-sm font-semibold text-gray-900 dark:text-white">Card title</div>
-                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">This is a card component.</p>
+              <loomi-card class="w-full text-left">
+                <loomi-card-header>
+                  <div class="mb-2 h-6 w-6 rounded bg-gray-200 dark:bg-gray-700"></div>
+                  <loomi-card-title>Card title</loomi-card-title>
+                  <loomi-card-description>This is a card component.</loomi-card-description>
+                </loomi-card-header>
               </loomi-card>
             </div>
             <div class="component-tile-label">Card</div>
@@ -395,7 +397,7 @@ const componentCategories = ["All", "Data Entry", "Feedback", "Navigation", "Ove
         </p>
       </div>
 
-      <loomi-card class="demo-card mx-auto mt-10 block max-w-6xl overflow-hidden" no-padding has-hover="false">
+      <loomi-card class="demo-card mx-auto mt-10 block max-w-6xl overflow-hidden" style="--loomi-card-spacing: 0">
         <div class="demo-card-bar border-b border-gray-200 px-5 py-3 dark:border-gray-800">
           <div class="flex items-center gap-2">
             <span></span>

@@ -19,6 +19,7 @@ let LoomiTooltip = class LoomiTooltip extends LoomiElement {
         super(...arguments);
         this.content = "";
         this.position = "top";
+        this.shade = "dark";
     }
     static { this.styles = loomiStyles(componentStyles); }
     render() {
@@ -36,6 +37,9 @@ __decorate([
 __decorate([
     property()
 ], LoomiTooltip.prototype, "position", void 0);
+__decorate([
+    property({ reflect: true })
+], LoomiTooltip.prototype, "shade", void 0);
 LoomiTooltip = __decorate([
     customElement("loomi-tooltip")
 ], LoomiTooltip);

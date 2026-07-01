@@ -217,9 +217,11 @@ h2#starlight__on-this-page {
 :root[data-theme="dark"] h2#starlight__on-this-page {
   @apply text-slate-400;
 }
-
+.sidebar-content > .starlight__sidebar{
+  @apply border-0!;
+}
 .content-panel {
-  @apply border-0 pt-0;
+  @apply border-0 pt-0 px-0;
 }
 
 /* Bold, tracking-tight headings matching the /components/ gallery page's "All

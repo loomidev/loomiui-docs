@@ -23,6 +23,26 @@ const FLIP_ICON = svg `
 function digitsOnly(raw) {
     return raw.replace(/\D/g, "");
 }
+function hasMaskedCardNumber(raw) {
+    return /[•●*xX]/.test(raw);
+}
+function formatMaskedCardNumber(raw, brand) {
+    const groups = LOOMI_CARD_BRAND_GROUPS[brand];
+    const max = LOOMI_CARD_BRAND_LENGTH[brand];
+    const clipped = raw
+        .replace(/[•●*xX]/g, "•")
+        .replace(/[^\d•]/g, "")
+        .slice(0, max);
+    const parts = [];
+    let i = 0;
+    for (const size of groups) {
+        if (i >= clipped.length)
+            break;
+        parts.push(clipped.slice(i, i + size));
+        i += size;
+    }
+    return parts.join(" ");
+}
 function formatCardNumber(digits, brand) {
     const groups = LOOMI_CARD_BRAND_GROUPS[brand];
     const max = LOOMI_CARD_BRAND_LENGTH[brand];
@@ -160,7 +180,9 @@ let LoomiCreditcard = class LoomiCreditcard extends LoomiElement {
     willUpdate(changed) {
         if (changed.has("number") || changed.has("brand")) {
             const brand = this.brand || detectCardBrand(digitsOnly(this.number));
-            this.number = formatCardNumber(digitsOnly(this.number), brand);
+            this.number = hasMaskedCardNumber(this.number)
+                ? formatMaskedCardNumber(this.number, brand)
+                : formatCardNumber(digitsOnly(this.number), brand);
         }
     }
     get accentColor() {
