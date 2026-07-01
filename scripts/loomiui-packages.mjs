@@ -7,7 +7,7 @@
 export const INFRA = ["theme", "core", "icons"];
 
 export const CATEGORY = {
-  standalone: ["button", "icon", "spinner", "alert", "bell", "modal", "notification", "table"],
+  standalone: ["button", "button-group", "icon", "spinner", "alert", "bell", "modal", "notification", "table"],
   forms: [
     "input", "textarea", "select", "countries", "checkbox", "radio", "toggle", "number", "slider",
     "code", "checkcards", "datepicker", "timepicker", "timezonepicker", "colorpicker", "filepicker",

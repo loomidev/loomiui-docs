@@ -11,6 +11,7 @@
      page background — flatten it to match the page so the top bar reads as the same
      white/near-black surface as MarketingHeader's `bg-white/80` on the marketing pages. */
   --sl-color-bg-nav: var(--sl-color-bg);
+  --sl-sidebar-width: 16.875rem;
 }
 :root[data-theme="dark"] {
   --sl-color-accent-low: #1e3a8a;
@@ -164,6 +165,10 @@ starlight-toc nav ul li a{
   @apply rounded-lg py-1.5 px-2.5 text-sm font-medium text-slate-600 flex items-center gap-2.5
   hover:bg-slate-100;
 }
+
+.sidebar-content .top-level > li:first-child ul a {
+  @apply font-bold;
+}
 :root[data-theme="dark"] .sidebar-content li a {
   @apply text-slate-300;
 }
@@ -251,7 +256,8 @@ h2#starlight__on-this-page {
 }
 
 .main-pane .sl-container {
-  @apply max-w-full px-3 lg:px-14;
+  max-width: min(100%, calc(var(--sl-content-width) + 6rem));
+  @apply px-3 lg:px-14;
 }
 loomi-alert > p {
   @apply leading-none;
@@ -267,6 +273,15 @@ loomi-alert > p {
 
 .expressive-code pre {
   @apply border-0 rounded-xl;
+}
+.expressive-code,
+.expressive-code .frame,
+.expressive-code .frame .header {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+.expressive-code .frame {
+  overflow: hidden;
 }
 .frame pre, .expressive-code .frame.is-terminal .header::after {
   @apply border-0;

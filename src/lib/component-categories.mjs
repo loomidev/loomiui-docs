@@ -27,7 +27,7 @@ const MEMBERS = {
   navigation: ["tab", "pagination", "dropmenu", "theme-switcher"],
   overlay: ["modal", "popover", "tooltip", "drawer"],
   "data-display": ["table", "tag", "statistic", "rating", "timeline", "listview", "contact-card", "chart", "horizontal-line-graph"],
-  layout: ["button", "card", "accordion", "centered-content", "sortable"],
+  layout: ["button", "button-group", "card", "accordion", "centered-content", "sortable"],
   media: ["icon", "avatar", "empty-state"],
 };
 

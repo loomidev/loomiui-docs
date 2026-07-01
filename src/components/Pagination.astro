@@ -6,8 +6,6 @@
 const { dir, pagination } = Astro.locals.starlightRoute;
 const { prev, next } = pagination;
 const isRtl = dir === "rtl";
-const prevLabel = Astro.locals.t("page.previousLink");
-const nextLabel = Astro.locals.t("page.nextLink");
 const prevIcon = isRtl ? "arrow-right" : "arrow-left";
 const nextIcon = isRtl ? "arrow-left" : "arrow-right";
 ---
@@ -18,10 +16,7 @@ const nextIcon = isRtl ? "arrow-left" : "arrow-right";
       <loomi-card has-hover url={prev.href} radius="medium" class="loomi-pagi-card">
         <div class="loomi-pagi-row">
           <loomi-icon name={prevIcon} size="1.4rem" />
-          <span>
-            <span class="loomi-pagi-eyebrow">{prevLabel}</span>
-            <span class="loomi-pagi-title">{prev.label}</span>
-          </span>
+          <span class="loomi-pagi-title">{prev.label}</span>
         </div>
       </loomi-card>
     )
@@ -30,10 +25,7 @@ const nextIcon = isRtl ? "arrow-left" : "arrow-right";
     next && (
       <loomi-card has-hover url={next.href} radius="medium" class="loomi-pagi-card loomi-pagi-next">
         <div class="loomi-pagi-row">
-          <span>
-            <span class="loomi-pagi-eyebrow">{nextLabel}</span>
-            <span class="loomi-pagi-title">{next.label}</span>
-          </span>
+          <span class="loomi-pagi-title">{next.label}</span>
           <loomi-icon name={nextIcon} size="1.4rem" />
         </div>
       </loomi-card>
@@ -45,7 +37,7 @@ const nextIcon = isRtl ? "arrow-left" : "arrow-right";
   @layer starlight.core {
     .loomi-pagination-links {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 1rem;
     }
     .loomi-pagi-card {
@@ -56,6 +48,7 @@ const nextIcon = isRtl ? "arrow-left" : "arrow-right";
       display: flex;
       align-items: center;
       gap: 0.65rem;
+      min-width: 0;
       /* sets `currentColor` for the icon — these spans are light-DOM (slotted into
          loomi-card, not inside its shadow root), so they're free to use Starlight's
          own theme-aware variables and adapt with the site's toggle automatically. */
@@ -65,13 +58,12 @@ const nextIcon = isRtl ? "arrow-left" : "arrow-right";
       justify-content: flex-end;
       text-align: right;
     }
-    .loomi-pagi-eyebrow {
-      display: block;
-      font-size: var(--sl-text-xs);
-      color: var(--sl-color-gray-3);
-    }
     .loomi-pagi-title {
-      display: block;
+      display: inline;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
       font-size: var(--sl-text-lg);
       font-weight: 600;
       color: var(--sl-color-text);

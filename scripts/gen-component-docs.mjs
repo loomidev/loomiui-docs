@@ -15,7 +15,7 @@
 
 import { readFileSync, writeFileSync, mkdirSync, rmSync } from "node:fs";
 import { resolve } from "node:path";
-import { COMPONENT_NAMES, PACKAGE_PREFIX, categoryOf } from "./loomiui-packages.mjs";
+import { COMPONENT_NAMES, PACKAGE_PREFIX, categoryOf, tagNameFor } from "./loomiui-packages.mjs";
 
 const PACKAGES = resolve(import.meta.dirname, "../../components/packages");
 const DOCS = resolve(import.meta.dirname, "../src/content/docs/components");
@@ -44,6 +44,52 @@ function firstParagraph(bodyAfterH1) {
     out.push(line.trim());
   }
   return out.join(" ");
+}
+
+const FALLBACK_EXAMPLES = {
+  "button-group": `<loomi-button-group color="primary">
+  <loomi-button-group-item label="Day" value="day" icon="calendar" selected></loomi-button-group-item>
+  <loomi-button-group-item label="Week" value="week" icon="calendar-days"></loomi-button-group-item>
+  <loomi-button-group-item label="Month" value="month"></loomi-button-group-item>
+</loomi-button-group>`,
+};
+
+function packageDescription(name) {
+  try {
+    const pkg = JSON.parse(readFileSync(resolve(PACKAGES, name, "package.json"), "utf8"));
+    return pkg.description || `${titleCase(name)} component.`;
+  } catch {
+    return `${titleCase(name)} component.`;
+  }
+}
+
+function fallbackReadme(name) {
+  const tag = tagNameFor(name);
+  const example = FALLBACK_EXAMPLES[name] ?? `<${tag}></${tag}>`;
+  return [
+    `# ${titleCase(name)}`,
+    "",
+    packageDescription(name),
+    "",
+    "## Installation",
+    "",
+    "```bash",
+    `npm install ${PACKAGE_PREFIX}/${name} lit`,
+    "```",
+    "",
+    "## Import",
+    "",
+    "```js",
+    `import "${PACKAGE_PREFIX}/${name}";`,
+    "```",
+    "",
+    "## Usage",
+    "",
+    "```html",
+    example,
+    "```",
+    "",
+  ].join("\n");
 }
 
 function fixLinks(md) {
@@ -103,8 +149,8 @@ for (const name of COMPONENT_NAMES) {
   try {
     raw = readFileSync(readmePath, "utf8");
   } catch {
-    console.warn("skip (no README found):", name);
-    continue;
+    console.warn("fallback (no README found):", name);
+    raw = fallbackReadme(name);
   }
   const lines = raw.split("\n");
   const h1Index = lines.findIndex((l) => l.startsWith("# "));
