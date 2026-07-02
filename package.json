@@ -11,7 +11,7 @@
     "build": "astro check && astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "prepare:content": "node scripts/copy-component-assets.mjs && node scripts/copy-pro-template-screenshots.mjs && node scripts/gen-component-docs.mjs && node scripts/gen-contributing-doc.mjs",
+    "prepare:content": "node scripts/copy-component-assets.mjs && node scripts/copy-pro-theme-assets.mjs && node scripts/copy-pro-template-screenshots.mjs && node scripts/gen-component-docs.mjs && node scripts/gen-contributing-doc.mjs",
     "gen:components": "node scripts/gen-component-docs.mjs",
     "gen:contributing": "node scripts/gen-contributing-doc.mjs",
     "copy:assets": "node scripts/copy-component-assets.mjs"

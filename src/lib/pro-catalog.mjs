@@ -18,7 +18,13 @@ export const PRO_CATEGORIES = [
     icon: "variable",
     href: "/pro/themes/token-system/",
   },
-  { key: "theme-presets", label: "Theme Presets", area: "themes", icon: "paint-brush" },
+  {
+    key: "theme-presets",
+    label: "Theme Presets",
+    area: "themes",
+    icon: "paint-brush",
+    href: "/pro/themes/theme-presets/",
+  },
   {
     key: "theme-builder",
     label: "Theme Builder",
@@ -140,6 +146,8 @@ const ITEMS = {
     "E-commerce admin theme",
     "Enterprise neutral theme",
     "High contrast accessibility theme",
+    "Marketing growth theme",
+    "Legal compliance theme",
   ],
   "theme-builder": [
     "Web-based theme editor",
@@ -236,6 +244,18 @@ const FEATURE_PAGES = {
       "Surface, text, and focus-ring tokens consumed by LoomiUI components",
       "Typography, spacing, radius, shadow, border, motion, and z-index scales",
       "Density and component-level tokens for shells, panels, and tables",
+    ],
+  },
+  "theme-presets": {
+    title: "Theme Presets",
+    kicker: "Themes",
+    description:
+      "Browse all twelve LoomiUI Pro theme presets with live light and dark previews, token scales, component samples, and starter kit pairings.",
+    highlights: [
+      "Interactive preset switcher with real generated CSS variables",
+      "Primary, semantic, surface, typography, radius, and shadow previews",
+      "Mini app shell showing sidebar, header, and panel surfaces",
+      "Copy-ready CSS import lines and starter kit mapping",
     ],
   },
   "theme-builder": {
