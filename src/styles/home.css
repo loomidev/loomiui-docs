@@ -617,7 +617,6 @@
 
 .demo-view-nav {
   padding: 0 var(--demo-shell-pad);
-  margin-top: 10px;
   margin-bottom: 1rem;
 }
 
@@ -639,8 +638,9 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 1.25rem;
-  padding-bottom: 1.25rem;
+  margin-top: 10px;
+  margin-bottom: 0;
+  padding: 0 var(--demo-shell-pad) 1.25rem;
   border-bottom: 1px solid rgb(226 232 240);
 }
 
@@ -663,7 +663,7 @@
 }
 
 .demo-dash-title {
-  margin: calc(0.85rem + 10px) 0 0;
+  margin: 0.85rem 0 0;
   font-size: 1.4rem;
   font-weight: 700;
   line-height: 1.25;
