@@ -1,8 +1,8 @@
 /** Pro catalog derived from strategy/templates.md and strategy/themes.md */
 
 export const PRO_AREAS = [
-  { key: "templates", label: "Templates", icon: "rectangle-stack" },
-  { key: "themes", label: "Themes", icon: "swatch" },
+  { key: "templates", label: "Templates", icon: "rectangle-stack", href: "/pro/templates/" },
+  { key: "themes", label: "Themes", icon: "swatch", href: "/pro/themes/" },
 ];
 
 export const PRO_CATEGORIES = [
@@ -405,6 +405,10 @@ function inferDescription(title) {
   return `${title} included with LoomiUI Pro.`;
 }
 
+export function getProArea(key) {
+  return PRO_AREAS.find((area) => area.key === key);
+}
+
 export function getProCategory(key) {
   return PRO_CATEGORIES.find((cat) => cat.key === key);
 }
@@ -413,16 +417,21 @@ export function getProFeaturePage(key) {
   return FEATURE_PAGES[key] ?? null;
 }
 
-export function categoryHref(categoryKey) {
-  return getProCategory(categoryKey)?.href ?? null;
+export function categoryHref(categoryKey, areaKey) {
+  const category = getProCategory(categoryKey);
+  if (category?.href) return category.href;
+  const area = getProArea(areaKey);
+  if (area?.href) return `${area.href}?category=${categoryKey}`;
+  return `/pro/?category=${categoryKey}`;
 }
 
 export function proCatalogItems(options = {}) {
-  const { category: onlyCategory } = options;
+  const { category: onlyCategory, area: onlyArea } = options;
   const items = [];
 
   for (const category of PRO_CATEGORIES) {
     if (onlyCategory && category.key !== onlyCategory) continue;
+    if (onlyArea && category.area !== onlyArea) continue;
 
     const pageHref = category.href ?? null;
     for (const title of ITEMS[category.key] ?? []) {

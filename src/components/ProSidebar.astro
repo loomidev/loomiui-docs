@@ -2,6 +2,7 @@
 import {
   PRO_AREAS,
   PRO_CATEGORIES,
+  categoryHref,
   proCatalogItems,
   proCategoryCounts,
   proAreaCounts,
@@ -62,7 +63,7 @@ const GITHUB_URL = "https://github.com/loomidev/loomiui-pro";
           <span class="category-count">{areaCounts[area.key]}</span>
         </button>
       ) : (
-        <a href={`/pro/?area=${area.key}`} class="category-link">
+        <a href={area.href ?? `/pro/?area=${area.key}`} class:list={["category-link", currentPath === area.href && "is-active"]}>
           <span class="category-link-icon"><loomi-icon name={area.icon} style="width:1.05rem;height:1.05rem"></loomi-icon></span>
           <span class="grow text-left">{area.label}</span>
           <span class="category-count">{areaCounts[area.key]}</span>
@@ -87,8 +88,8 @@ const GITHUB_URL = "https://github.com/loomidev/loomiui-pro";
         </button>
       ) : (
         <a
-          href={cat.href ?? `/pro/?category=${cat.key}`}
-          class:list={["category-link", currentPath === cat.href && "is-active"]}
+          href={categoryHref(cat.key, cat.area)}
+          class:list={["category-link", (currentPath === cat.href || activeCategory === cat.key) && "is-active"]}
         >
           <span class="category-link-icon"><loomi-icon name={cat.icon} style="width:1.05rem;height:1.05rem"></loomi-icon></span>
           <span class="grow text-left">{cat.label}</span>
@@ -119,7 +120,7 @@ const GITHUB_URL = "https://github.com/loomidev/loomiui-pro";
           <span class="category-count">{categoryCounts[cat.key]}</span>
         </button>
       ) : (
-        <a href={`/pro/?category=${cat.key}`} class="category-link">
+        <a href={categoryHref(cat.key, cat.area)} class:list={["category-link", activeCategory === cat.key && "is-active"]}>
           <span class="category-link-icon"><loomi-icon name={cat.icon} style="width:1.05rem;height:1.05rem"></loomi-icon></span>
           <span class="grow text-left">{cat.label}</span>
           <span class="category-count">{categoryCounts[cat.key]}</span>

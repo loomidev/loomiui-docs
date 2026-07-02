@@ -1,0 +1,519 @@
+---
+import MarketingHeader from "./MarketingHeader.astro";
+import ProSidebar from "./ProSidebar.astro";
+import { readFileSync, existsSync } from "node:fs";
+import { resolve } from "node:path";
+import { buildImportMap } from "../lib/import-map.mjs";
+import { getProFeaturePage } from "../lib/pro-catalog.mjs";
+import "../styles/home.css";
+
+const GITHUB_URL = "https://github.com/loomidev/loomiui-pro";
+const feature = getProFeaturePage("theme-builder")!;
+const importMap = buildImportMap();
+const title = `${feature.title} - LoomiUI Pro`;
+
+function loadThemeBundle() {
+  const docsRoot = process.cwd();
+  const publicRoot = resolve(docsRoot, "public/pro/themes");
+  const manifestFile = resolve(publicRoot, "json/manifest.json");
+  if (!existsSync(manifestFile)) {
+    return {
+      manifest: { presets: [{ name: "default", label: "Loomi Default", primary500: "#3b82f6", css: "css/default.css" }] },
+      assetsBase: null,
+    };
+  }
+
+  return {
+    manifest: JSON.parse(readFileSync(manifestFile, "utf8")),
+    assetsBase: "/pro/themes",
+  };
+}
+
+const themeBundle = loadThemeBundle();
+const initialPreset = themeBundle.manifest.presets[0];
+const initialStylesheet = themeBundle.assetsBase ? `${themeBundle.assetsBase}/${initialPreset.css}` : null;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={feature.description} />
+    <link rel="icon" href="/favicon.png" />
+    {initialStylesheet && <link id="pro-theme-stylesheet" rel="stylesheet" href={initialStylesheet} />}
+    <script type="importmap" is:inline set:html={JSON.stringify(importMap)} />
+  </head>
+  <body class="bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
+    <MarketingHeader />
+
+    <div class="mx-auto max-w-7xl px-6 py-10 lg:grid lg:grid-cols-[15rem_1fr] lg:items-start lg:gap-10">
+      <ProSidebar currentPath="/pro/themes/theme-builder/" activeCategory="theme-builder" />
+
+      <div class="mt-10 min-w-0 lg:mt-0">
+        <div class="feature-kicker">{feature.kicker}</div>
+        <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">{feature.title}</h1>
+        <p class="mt-3 max-w-3xl text-lg leading-7 text-gray-600 dark:text-gray-400">{feature.description}</p>
+
+        <ul class="mt-6 grid gap-3 sm:grid-cols-2">
+          {feature.highlights.map((line: string) => (
+            <li class="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-300">
+              <loomi-icon name="check-circle" style="width:1rem;height:1rem;color:rgb(37 99 235);flex-shrink:0;margin-top:0.1rem"></loomi-icon>
+              <span>{line}</span>
+            </li>
+          ))}
+        </ul>
+
+        <div class="builder-layout">
+          <aside class="builder-panel" aria-label="Theme builder controls">
+            <h2 class="builder-panel-title">Controls</h2>
+
+            <label class="builder-field">
+              <span>Base preset</span>
+              <select id="base-preset">
+                {themeBundle.manifest.presets.map((preset: any) => (
+                  <option value={preset.name} data-css={themeBundle.assetsBase ? `${themeBundle.assetsBase}/${preset.css}` : ""} data-primary={preset.primary500}>
+                    {preset.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label class="builder-field">
+              <span>Primary accent</span>
+              <input id="primary-color" type="color" value={initialPreset.primary500 ?? "#3b82f6"} />
+            </label>
+
+            <label class="builder-field">
+              <span>Corner radius</span>
+              <select id="radius-profile">
+                <option value="sharp">Sharp (4–6px)</option>
+                <option value="default" selected>Default (6–12px)</option>
+                <option value="rounded">Rounded (8–16px)</option>
+              </select>
+            </label>
+
+            <label class="builder-field">
+              <span>Density</span>
+              <select id="density-profile">
+                <option value="compact">Compact</option>
+                <option value="default" selected>Default</option>
+                <option value="spacious">Spacious</option>
+              </select>
+            </label>
+
+            <div class="builder-field">
+              <span>Color mode</span>
+              <div class="mode-toggle" role="group" aria-label="Preview color mode">
+                <button type="button" class="mode-btn is-active" data-mode="light">Light</button>
+                <button type="button" class="mode-btn" data-mode="dark">Dark</button>
+              </div>
+            </div>
+
+            <h3 class="builder-subtitle">Export</h3>
+            <pre class="export-snippet"><code id="export-code"></code></pre>
+            <pre class="export-snippet export-snippet-secondary"><code id="css-import-code"></code></pre>
+          </aside>
+
+          <section class="builder-preview-wrap" aria-label="Live theme preview">
+            <h2 class="builder-panel-title">Live preview</h2>
+            <div class="component-showcase">
+              <div class="component-group">
+                <div class="component-group-label">Buttons</div>
+                <div class="component-group-row">
+                  <loomi-button color="primary" size="small">Primary</loomi-button>
+                  <loomi-button type="secondary" size="small">Secondary</loomi-button>
+                  <loomi-button type="danger" size="small">Danger</loomi-button>
+                </div>
+              </div>
+              <div class="component-group">
+                <div class="component-group-label">Form</div>
+                <loomi-input placeholder="Work email" size="small"></loomi-input>
+              </div>
+              <div class="component-group">
+                <div class="component-group-label">Tags & alerts</div>
+                <div class="component-group-row">
+                  <loomi-tag label="Active" color="success"></loomi-tag>
+                  <loomi-tag label="Draft" color="warning"></loomi-tag>
+                </div>
+                <loomi-alert type="success" class="text-xs">Theme tokens applied to LoomiUI components.</loomi-alert>
+              </div>
+            </div>
+
+            <div class="shell-preview">
+              <aside class="shell-sidebar">
+                <strong id="shell-brand">{initialPreset.label}</strong>
+                <span class="shell-muted">Preview workspace</span>
+                <span class="shell-nav-item is-active">Dashboard</span>
+                <span class="shell-nav-item">Settings</span>
+              </aside>
+              <section class="shell-main">
+                <header class="shell-header">
+                  <div>
+                    <span class="shell-muted">Overview</span>
+                    <strong>Weekly summary</strong>
+                  </div>
+                  <button type="button" class="shell-button">Export</button>
+                </header>
+                <div class="shell-cards">
+                  <div class="shell-card"><span class="shell-muted">Active users</span><strong>1,284</strong></div>
+                  <div class="shell-card"><span class="shell-muted">Conversion</span><strong>4.8%</strong></div>
+                  <div class="shell-card"><span class="shell-muted">MRR</span><strong>$12.8k</strong></div>
+                </div>
+              </section>
+            </div>
+          </section>
+        </div>
+
+        <div class="mt-12 flex flex-wrap gap-3">
+          <loomi-button color="primary" size="small" tag="a" href={GITHUB_URL}>Buy Pro</loomi-button>
+          <loomi-button type="secondary" size="small" tag="a" href="/pro/themes/theme-presets/">Theme presets</loomi-button>
+          <loomi-button type="secondary" size="small" tag="a" href="/pro/">Back to all Pro</loomi-button>
+        </div>
+      </div>
+    </div>
+
+    <script type="application/json" id="theme-builder-data" set:html={JSON.stringify(themeBundle)}></script>
+
+    <script type="module" is:inline>
+      import "@loomidev/button";
+      import "@loomidev/icon";
+      import "@loomidev/input";
+      import "@loomidev/tag";
+      import "@loomidev/alert";
+    </script>
+
+    <script>
+      const bundle = JSON.parse(document.getElementById("theme-builder-data")!.textContent || "{}");
+      const presets = bundle.manifest?.presets ?? [];
+      const stylesheet = document.getElementById("pro-theme-stylesheet") as HTMLLinkElement | null;
+      const presetSelect = document.getElementById("base-preset") as HTMLSelectElement;
+      const primaryInput = document.getElementById("primary-color") as HTMLInputElement;
+      const radiusSelect = document.getElementById("radius-profile") as HTMLSelectElement;
+      const densitySelect = document.getElementById("density-profile") as HTMLSelectElement;
+      const exportCode = document.getElementById("export-code") as HTMLElement;
+      const cssImportCode = document.getElementById("css-import-code") as HTMLElement;
+      const shellBrand = document.getElementById("shell-brand") as HTMLElement;
+      const modeButtons = Array.from(document.querySelectorAll<HTMLButtonElement>(".mode-btn"));
+
+      const radiusProfiles = {
+        sharp: { sm: "4px", md: "6px", lg: "8px", panel: "6px" },
+        default: { sm: "6px", md: "8px", lg: "12px", panel: "8px" },
+        rounded: { sm: "8px", md: "12px", lg: "16px", panel: "12px" },
+      } as const;
+
+      const densityProfiles = {
+        compact: { controlHeight: "30px", tableRowHeight: "36px", gapInline: "8px" },
+        default: { controlHeight: "36px", tableRowHeight: "44px", gapInline: "12px" },
+        spacious: { controlHeight: "44px", tableRowHeight: "52px", gapInline: "16px" },
+      } as const;
+
+      const state = {
+        preset: presetSelect.value,
+        primary: primaryInput.value,
+        radius: radiusSelect.value as keyof typeof radiusProfiles,
+        density: densitySelect.value as keyof typeof densityProfiles,
+        mode: "light" as "light" | "dark",
+      };
+
+      function selectedPreset() {
+        return presets.find((entry: any) => entry.name === state.preset) ?? presets[0];
+      }
+
+      function applyTheme() {
+        const preset = selectedPreset();
+        const root = document.documentElement;
+        root.dataset.loomMode = state.mode === "dark" ? "dark" : "";
+
+        root.style.setProperty("--loomi-primary-500", state.primary);
+        root.style.setProperty("--loomi-primary-600", state.primary);
+        root.style.setProperty("--loomi-primary-700", state.primary);
+
+        const radius = radiusProfiles[state.radius];
+        root.style.setProperty("--loomi-radius-sm", radius.sm);
+        root.style.setProperty("--loomi-radius-md", radius.md);
+        root.style.setProperty("--loomi-radius-lg", radius.lg);
+        root.style.setProperty("--loomi-component-panel-radius", radius.panel);
+
+        const density = densityProfiles[state.density];
+        root.style.setProperty("--loomi-density-control-height", density.controlHeight);
+        root.style.setProperty("--loomi-density-table-row-height", density.tableRowHeight);
+        root.style.setProperty("--loomi-density-gap-inline", density.gapInline);
+
+        if (stylesheet) {
+          const option = presetSelect.selectedOptions[0];
+          const cssHref = option?.dataset.css;
+          if (cssHref) stylesheet.href = cssHref;
+        }
+
+        shellBrand.textContent = preset?.label ?? "Brand theme";
+        exportCode.textContent = `import { createTheme, palettes } from "@loomdev-pro/themes";
+
+const brand = createTheme({
+  name: "brand",
+  label: "Brand",
+  description: "Based on ${preset?.label ?? "Loomi Default"}.",
+  primary: palettes.blue,
+  overrides: {
+    shared: {
+      radius: { sm: "${radius.sm}", md: "${radius.md}", lg: "${radius.lg}" },
+      component: { panelRadius: "${radius.panel}" },
+      density: {
+        controlHeight: "${density.controlHeight}",
+        tableRowHeight: "${density.tableRowHeight}",
+        gapInline: "${density.gapInline}",
+      },
+    },
+  },
+});`;
+        cssImportCode.textContent = `import "@loomdev-pro/themes/css/${state.preset}.css";\n/* Override accent at runtime */\ndocument.documentElement.style.setProperty("--loomi-primary-500", "${state.primary}");`;
+      }
+
+      presetSelect.addEventListener("change", () => {
+        state.preset = presetSelect.value;
+        const option = presetSelect.selectedOptions[0];
+        if (option?.dataset.primary) {
+          state.primary = option.dataset.primary;
+          primaryInput.value = option.dataset.primary;
+        }
+        applyTheme();
+      });
+
+      primaryInput.addEventListener("input", () => {
+        state.primary = primaryInput.value;
+        applyTheme();
+      });
+
+      radiusSelect.addEventListener("change", () => {
+        state.radius = radiusSelect.value as keyof typeof radiusProfiles;
+        applyTheme();
+      });
+
+      densitySelect.addEventListener("change", () => {
+        state.density = densitySelect.value as keyof typeof densityProfiles;
+        applyTheme();
+      });
+
+      modeButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          state.mode = button.dataset.mode as "light" | "dark";
+          modeButtons.forEach((entry) => entry.classList.toggle("is-active", entry === button));
+          applyTheme();
+        });
+      });
+
+      applyTheme();
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  .builder-layout {
+    margin-top: 2rem;
+    display: grid;
+    gap: 1.25rem;
+  }
+  @media (min-width: 1024px) {
+    .builder-layout {
+      grid-template-columns: 18rem 1fr;
+    }
+  }
+  .builder-panel,
+  .builder-preview-wrap {
+    border: 1px solid rgb(226 232 240);
+    border-radius: 1rem;
+    padding: 1.1rem 1.25rem;
+    background: rgb(248 250 252 / 0.65);
+  }
+  .dark .builder-panel,
+  .dark .builder-preview-wrap {
+    border-color: rgb(51 65 85);
+    background: rgb(15 23 42 / 0.45);
+  }
+  .builder-panel-title {
+    margin: 0 0 1rem;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+  .builder-subtitle {
+    margin: 1.25rem 0 0.65rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: rgb(100 116 139);
+  }
+  .builder-field {
+    display: grid;
+    gap: 0.35rem;
+    margin-bottom: 0.85rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: rgb(51 65 85);
+  }
+  .dark .builder-field {
+    color: rgb(203 213 225);
+  }
+  .builder-field select,
+  .builder-field input[type="color"] {
+    width: 100%;
+    min-height: 2.35rem;
+    border-radius: 0.6rem;
+    border: 1px solid rgb(226 232 240);
+    background: white;
+    padding: 0.35rem 0.55rem;
+    font: inherit;
+  }
+  .dark .builder-field select {
+    border-color: rgb(51 65 85);
+    background: rgb(15 23 42);
+    color: white;
+  }
+  .mode-toggle {
+    display: inline-flex;
+    border: 1px solid rgb(226 232 240);
+    border-radius: 999px;
+    padding: 0.15rem;
+    background: white;
+  }
+  .dark .mode-toggle {
+    border-color: rgb(51 65 85);
+    background: rgb(15 23 42);
+  }
+  .mode-btn {
+    border: 0;
+    background: transparent;
+    color: rgb(71 85 105);
+    border-radius: 999px;
+    padding: 0.35rem 0.85rem;
+    font-size: 0.82rem;
+    cursor: pointer;
+  }
+  .mode-btn.is-active {
+    background: rgb(239 246 255);
+    color: rgb(29 78 216);
+  }
+  .dark .mode-btn.is-active {
+    background: rgb(30 58 138);
+    color: rgb(191 219 254);
+  }
+  .export-snippet {
+    overflow-x: auto;
+    border-radius: 0.75rem;
+    background: rgb(15 23 42);
+    color: rgb(226 232 240);
+    padding: 0.85rem 1rem;
+    font-size: 0.72rem;
+    line-height: 1.55;
+    white-space: pre-wrap;
+  }
+  .export-snippet-secondary {
+    margin-top: 0.65rem;
+  }
+  .component-showcase {
+    display: grid;
+    gap: 0.85rem;
+  }
+  .component-group {
+    border: 1px solid rgb(226 232 240);
+    border-radius: 0.85rem;
+    background: var(--loomi-surface, white);
+    padding: 0.85rem 0.95rem;
+  }
+  .dark .component-group {
+    border-color: rgb(51 65 85);
+    background: rgb(15 23 42 / 0.35);
+  }
+  .component-group-label {
+    margin-bottom: 0.65rem;
+    color: rgb(100 116 139);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .component-group-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.55rem;
+  }
+  .shell-preview {
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: 9rem 1fr;
+    min-height: 12rem;
+    border-radius: var(--loomi-component-panel-radius, 0.75rem);
+    overflow: hidden;
+    border: 1px solid var(--loomi-surface-border, rgb(226 232 240));
+    background: var(--loomi-surface-muted, rgb(248 250 252));
+  }
+  .shell-sidebar {
+    padding: 0.85rem;
+    background: var(--loomi-surface, white);
+    border-right: 1px solid var(--loomi-surface-border, rgb(226 232 240));
+    display: grid;
+    gap: 0.35rem;
+    align-content: start;
+  }
+  .shell-sidebar strong {
+    font-size: 0.82rem;
+    color: var(--loomi-text, rgb(15 23 42));
+  }
+  .shell-muted {
+    color: var(--loomi-text-muted, rgb(100 116 139));
+    font-size: 0.72rem;
+  }
+  .shell-nav-item {
+    display: block;
+    margin-top: 0.35rem;
+    padding: 0.35rem 0.45rem;
+    border-radius: var(--loomi-radius-sm, 0.45rem);
+    font-size: 0.72rem;
+    color: var(--loomi-text-secondary, rgb(71 85 105));
+  }
+  .shell-nav-item.is-active {
+    background: var(--loomi-primary-50, rgb(239 246 255));
+    color: var(--loomi-primary-700, rgb(29 78 216));
+  }
+  .shell-main {
+    padding: 0.85rem;
+    display: grid;
+    gap: 0.75rem;
+  }
+  .shell-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .shell-header strong {
+    display: block;
+    color: var(--loomi-text, rgb(15 23 42));
+    font-size: 0.88rem;
+  }
+  .shell-button {
+    border: 1px solid var(--loomi-surface-border, rgb(226 232 240));
+    background: var(--loomi-surface, white);
+    color: var(--loomi-text, rgb(15 23 42));
+    border-radius: var(--loomi-radius-sm, 0.45rem);
+    padding: 0.35rem 0.65rem;
+    font-size: 0.72rem;
+  }
+  .shell-cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.55rem;
+  }
+  .shell-card {
+    background: var(--loomi-surface, white);
+    border: 1px solid var(--loomi-surface-border, rgb(226 232 240));
+    border-radius: var(--loomi-component-panel-radius, 0.75rem);
+    padding: 0.65rem;
+    box-shadow: var(--loomi-component-card-shadow, none);
+    display: grid;
+    gap: 0.2rem;
+  }
+  .shell-card strong {
+    color: var(--loomi-text, rgb(15 23 42));
+    font-size: 0.95rem;
+  }
+</style>

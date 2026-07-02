@@ -1,0 +1,378 @@
+---
+// Area gallery for /pro/templates/ or /pro/themes/.
+import MarketingHeader from "./MarketingHeader.astro";
+import ProSidebar from "./ProSidebar.astro";
+import { buildImportMap } from "../lib/import-map.mjs";
+import {
+  PRO_CATEGORIES,
+  getProArea,
+  proCatalogItems,
+} from "../lib/pro-catalog.mjs";
+import "../styles/home.css";
+
+interface Props {
+  area: "templates" | "themes";
+}
+
+const { area } = Astro.props;
+const areaMeta = getProArea(area)!;
+const categories = PRO_CATEGORIES.filter((cat) => cat.area === area);
+const items = proCatalogItems({ area });
+const categoryParam = Astro.url.searchParams.get("category");
+const importMap = buildImportMap();
+const title = `${areaMeta.label} - LoomiUI Pro`;
+const description =
+  area === "templates"
+    ? "Browse Pro application templates, starter kits, page templates, and framework variants."
+    : "Browse Pro theme presets, token system, Figma kit, and brand assets.";
+const galleryPath = areaMeta.href!;
+const badgeLabel = area === "templates" ? "Template" : "Theme";
+const GITHUB_URL = "https://github.com/loomidev/loomiui-pro";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.png" />
+    <script type="importmap" is:inline set:html={JSON.stringify(importMap)} />
+  </head>
+  <body class="bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
+    <MarketingHeader />
+
+    <div class="mx-auto max-w-7xl px-6 py-10 lg:grid lg:grid-cols-[15rem_1fr] lg:items-start lg:gap-10">
+      <ProSidebar currentPath={galleryPath} activeArea={area} activeCategory={categoryParam ?? undefined} />
+
+      <div class="mt-10 min-w-0 lg:mt-0">
+        <div class="feature-kicker">Pro</div>
+        <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">{areaMeta.label}</h1>
+        <p class="mt-3 max-w-2xl text-lg leading-7 text-gray-600 dark:text-gray-400">
+          {description} Browse {items.length} items.
+        </p>
+
+        <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div class="relative grow">
+            <loomi-icon name="magnifying-glass" class="search-icon" style="width:1rem;height:1rem"></loomi-icon>
+            <input
+              type="text"
+              data-role="search-input"
+              placeholder={`Search ${areaMeta.label.toLowerCase()}...`}
+              class="main-search"
+              aria-label={`Search ${areaMeta.label}`}
+            />
+          </div>
+          <div class="relative shrink-0">
+            <select id="sort-select" class="sort-select" aria-label="Sort Pro catalog">
+              <option value="title">Sort by: Name</option>
+              <option value="category">Sort by: Category</option>
+            </select>
+            <loomi-icon name="chevron-down" class="sort-select-chevron" style="width:0.85rem;height:0.85rem"></loomi-icon>
+          </div>
+        </div>
+
+        <div class="mt-5 flex flex-wrap gap-2" id="category-pills">
+          <button type="button" class="filter-pill is-active" aria-pressed="true" data-filter="all" data-filter-type="category">All</button>
+          {categories.map((cat) => (
+            <button
+              type="button"
+              class="filter-pill"
+              aria-pressed="false"
+              data-filter={cat.key}
+              data-filter-type="category"
+            >
+              {cat.label}
+            </button>
+          ))}
+        </div>
+
+        <p id="no-results" class="no-results hidden">No items match your search.</p>
+
+        <div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" id="pro-grid">
+          {items.map((item) => {
+            const Tag = item.href ? "a" : "article";
+            return (
+              <Tag
+                href={item.href ?? undefined}
+                class="pro-card"
+                data-category={item.category}
+                data-title={item.title.toLowerCase()}
+                data-search={item.search}
+              >
+                <div class="pro-card-preview">
+                  {item.previewImage ? (
+                    <img src={item.previewImage} alt={`${item.title} preview`} loading="lazy" decoding="async" />
+                  ) : (
+                    <loomi-icon name={item.icon} style="width:2rem;height:2rem;color:rgb(37 99 235)"></loomi-icon>
+                  )}
+                </div>
+                <div class="pro-card-badge">{badgeLabel}</div>
+                <div class="pro-card-title">{item.title}</div>
+                <p class="pro-card-desc">{item.description}</p>
+                <div class="pro-card-meta">{PRO_CATEGORIES.find((cat) => cat.key === item.category)?.label}</div>
+                {item.href && (
+                  <loomi-icon name="chevron-right" class="pro-card-arrow" style="width:0.95rem;height:0.95rem"></loomi-icon>
+                )}
+              </Tag>
+            );
+          })}
+        </div>
+
+        <div class="mt-12 flex flex-wrap gap-3">
+          <loomi-button color="primary" size="small" tag="a" href={GITHUB_URL}>Buy Pro</loomi-button>
+          <loomi-button type="secondary" size="small" tag="a" href="/pro/">All Pro</loomi-button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="border-t border-gray-200 dark:border-gray-800">
+      <div class="mx-auto max-w-6xl px-6 py-10 text-sm text-gray-500 dark:text-gray-400">
+        <div class="flex flex-wrap justify-center gap-6">
+          <a href="/installation/" class="hover:text-primary-600 dark:hover:text-primary-400">Installation</a>
+          <a href="/components/" class="hover:text-primary-600 dark:hover:text-primary-400">Components</a>
+          <a href="/pro/" class="hover:text-primary-600 dark:hover:text-primary-400">Pro</a>
+          <a href="/contributing/" class="hover:text-primary-600 dark:hover:text-primary-400">Contributing</a>
+        </div>
+        <p class="mt-6 text-center">© {new Date().getFullYear()} LoomiUI.</p>
+      </div>
+    </footer>
+
+    <script type="module" is:inline>
+      import "@loomidev/button";
+      import "@loomidev/icon";
+    </script>
+
+    <script define:vars={{ galleryPath }}>
+      const grid = document.getElementById("pro-grid");
+      const cards = Array.from(grid.querySelectorAll(".pro-card"));
+      const searchInputs = document.querySelectorAll("[data-role='search-input']");
+      const filterButtons = document.querySelectorAll("[data-filter]");
+      const sortSelect = document.getElementById("sort-select");
+      const noResults = document.getElementById("no-results");
+
+      const categoryLabels = new Map(
+        Array.from(cards).map((card) => [card.dataset.category, card.querySelector(".pro-card-meta")?.textContent ?? ""]),
+      );
+
+      const params = new URLSearchParams(window.location.search);
+      const state = {
+        query: "",
+        filter: params.get("category") ?? "all",
+        sort: "title",
+      };
+
+      function syncUrl() {
+        const url = new URL(window.location.href);
+        if (state.filter === "all") url.searchParams.delete("category");
+        else url.searchParams.set("category", state.filter);
+        window.history.replaceState({}, "", url);
+      }
+
+      function setActivePill() {
+        filterButtons.forEach((btn) => {
+          const active = btn.dataset.filter === state.filter && btn.dataset.filterType === "category";
+          btn.classList.toggle("is-active", active);
+          if (btn.hasAttribute("aria-pressed")) btn.setAttribute("aria-pressed", String(active));
+        });
+      }
+
+      function matchesFilter(card) {
+        if (state.filter === "all") return true;
+        return card.dataset.category === state.filter;
+      }
+
+      function applyFilters() {
+        const q = state.query.trim().toLowerCase();
+        let visible = 0;
+        for (const card of cards) {
+          const show = matchesFilter(card) && (!q || card.dataset.search.includes(q));
+          card.classList.toggle("hidden", !show);
+          if (show) visible++;
+        }
+        noResults.classList.toggle("hidden", visible !== 0);
+      }
+
+      function applySort() {
+        const sorted = cards.slice().sort((a, b) => {
+          if (state.sort === "category") {
+            const c = (categoryLabels.get(a.dataset.category) ?? "").localeCompare(categoryLabels.get(b.dataset.category) ?? "");
+            if (c !== 0) return c;
+          }
+          return a.dataset.title.localeCompare(b.dataset.title);
+        });
+        for (const card of sorted) grid.appendChild(card);
+      }
+
+      searchInputs.forEach((input) => {
+        input.addEventListener("input", (e) => {
+          state.query = e.target.value;
+          searchInputs.forEach((other) => {
+            if (other !== e.target) other.value = state.query;
+          });
+          applyFilters();
+        });
+      });
+
+      filterButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          state.filter = btn.dataset.filter;
+          setActivePill();
+          syncUrl();
+          applyFilters();
+        });
+      });
+
+      sortSelect?.addEventListener("change", () => {
+        state.sort = sortSelect.value;
+        applySort();
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+          e.preventDefault();
+          searchInputs[0]?.focus();
+        }
+      });
+
+      setActivePill();
+      applySort();
+      applyFilters();
+    </script>
+  </body>
+</html>
+
+<style>
+  .sort-select {
+    appearance: none;
+    border-radius: 0.6rem;
+    border: 1px solid rgb(226 232 240);
+    background: white;
+    padding: 0.55rem 2rem 0.55rem 0.9rem;
+    color: rgb(15 23 42);
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  .dark .sort-select {
+    border-color: rgb(51 65 85);
+    background: rgb(15 23 42 / 0.6);
+    color: white;
+  }
+  .sort-select-chevron {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgb(148 163 184);
+    pointer-events: none;
+  }
+
+  .pro-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-radius: 0.9rem;
+    border: 1px solid rgb(226 232 240);
+    background: white;
+    padding: 1rem;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+  }
+  .pro-card:hover {
+    border-color: rgb(37 99 235 / 0.35);
+    box-shadow: 0 8px 20px -10px rgb(15 23 42 / 0.18);
+    transform: translateY(-1px);
+  }
+  .dark .pro-card {
+    border-color: rgb(51 65 85);
+    background: rgb(15 23 42 / 0.6);
+  }
+  .dark .pro-card:hover {
+    border-color: rgb(96 165 250 / 0.4);
+  }
+  .pro-card.hidden {
+    display: none;
+  }
+  .pro-card-preview {
+    display: flex;
+    height: 6rem;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 0.6rem;
+    background: linear-gradient(135deg, rgb(239 246 255), rgb(248 250 252));
+  }
+  .pro-card-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top left;
+    display: block;
+  }
+  .dark .pro-card-preview {
+    background: linear-gradient(135deg, rgb(30 41 59 / 0.8), rgb(15 23 42 / 0.6));
+  }
+  .pro-card-badge {
+    margin-top: 0.85rem;
+    width: fit-content;
+    border-radius: 999px;
+    background: rgb(37 99 235 / 0.08);
+    padding: 0.15rem 0.55rem;
+    color: rgb(37 99 235);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .dark .pro-card-badge {
+    background: rgb(96 165 250 / 0.12);
+    color: rgb(147 197 253);
+  }
+  .pro-card-title {
+    margin-top: 0.55rem;
+    color: rgb(2 6 23);
+    font-size: 0.92rem;
+    font-weight: 600;
+    line-height: 1.35;
+  }
+  .dark .pro-card-title {
+    color: white;
+  }
+  .pro-card-desc {
+    margin-top: 0.25rem;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    color: rgb(100 116 139);
+    font-size: 0.78rem;
+    line-height: 1.4;
+  }
+  .dark .pro-card-desc {
+    color: rgb(148 163 184);
+  }
+  .pro-card-meta {
+    margin-top: 0.65rem;
+    color: rgb(148 163 184);
+    font-size: 0.72rem;
+    font-weight: 500;
+  }
+  .pro-card-arrow {
+    position: absolute;
+    right: 1rem;
+    bottom: 1rem;
+    color: rgb(203 213 225);
+    opacity: 0;
+    transform: translateX(-3px);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+  .pro-card:hover .pro-card-arrow {
+    opacity: 1;
+    transform: translateX(0);
+    color: rgb(37 99 235);
+  }
+  .dark .pro-card:hover .pro-card-arrow {
+    color: rgb(96 165 250);
+  }
+</style>
