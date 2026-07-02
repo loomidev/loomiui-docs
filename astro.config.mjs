@@ -84,6 +84,7 @@ export default defineConfig({
             // to /components/ rather than a Starlight slug.
             { label: "Icons", link: "/icons/", attrs: { "data-icon": "squares-plus" } },
             { label: "MCP", slug: "mcp-server", attrs: { "data-icon": "cpu-chip" } },
+            { label: "CLI", slug: "cli", attrs: { "data-icon": "command-line" } },
             { label: "Architecture", slug: "architecture", collapsed: true, attrs: { "data-icon": "building-library" } },
           ],
         },

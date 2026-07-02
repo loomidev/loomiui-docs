@@ -6,10 +6,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { css, html, nothing, svg } from "lit";
 import { customElement } from "lit/decorators.js";
-import { LoomiElement, loomiDateFormatter, loomiMonthName, loomiStyles, loomiWeekdayNames } from "@loomidev/core";
+import { LoomiElement, getLoomiLocale, loomiDateFormatter, loomiMonthName, loomiStyles, loomiT, loomiWeekdayNames } from "@loomidev/core";
+import "@loomidev/datepicker/loomi-datepicker.js";
+import "@loomidev/input/loomi-input.js";
 import "@loomidev/modal/loomi-modal.js";
+import "@loomidev/select/loomi-select.js";
+import "@loomidev/tag-input/loomi-tag-input.js";
+import "@loomidev/textarea/loomi-textarea.js";
+import "@loomidev/timepicker/loomi-timepicker.js";
+import "@loomidev/toggle/loomi-toggle.js";
+import "@loomidev/tooltip/loomi-tooltip.js";
 import { calendarStyles } from "./calendar-styles.js";
-import { ALL_DAY_HEIGHT, HOUR_HEIGHT, RESOURCE_LABEL_WIDTH, TIME_AXIS_WIDTH, addDays, addMinutes, buildAgendaGroups, canDragEvent, chunkMonthWeeks, cloneDate, dateFromGridPosition, dateFromResourcePosition, endOfDay, formatEventRange, formatTime, formatTimezoneLabel, fromInputDateTime, getInviteeInitials, getMonthGridDays, getNextUpcomingEvent, getNowOffset, getSingleDayEventsForDate, hasEventsOnDate, getVisibleWeekDays, isSameDay, isToday, layoutResourceDayEvents, layoutSpanningEvents, layoutTimedEvents, minutesFromDayStart, startOfDay, summarizeInvitees, toInputDateTime } from "./calendar-utils.js";
+import { ALL_DAY_HEIGHT, HOUR_HEIGHT, RESOURCE_LABEL_WIDTH, TIME_AXIS_WIDTH, addDays, addMinutes, buildAgendaGroups, canDragEvent, chunkMonthWeeks, cloneDate, combineDateAndTime, dateFromGridPosition, dateFromResourcePosition, endOfDay, formatEventRange, formatTime, formatTimepickerValue, formatTimezoneLabel, getInviteeInitials, getMonthGridDays, getNextUpcomingEvent, getNowOffset, getSingleDayEventsForDate, hasEventsOnDate, getVisibleWeekDays, isSameDay, isToday, layoutResourceDayEvents, layoutSpanningEvents, layoutTimedEvents, minutesFromDayStart, parseInputDate, startOfDay, summarizeInvitees, toInputDate } from "./calendar-utils.js";
 const PREV = svg `<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />`;
 const NEXT = svg `<path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />`;
 const PLUS = svg `<path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />`;
@@ -20,13 +28,16 @@ const ICON_BELL = svg `<path stroke-linecap="round" stroke-linejoin="round" d="M
 const ICON_COPY = svg `<path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0 0 13.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 0 1-.75.75H9.75a.75.75 0 0 1-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 0 1-2.25 2.25H6.75A2.25 2.25 0 0 1 4.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 0 1 1.927-.184" />`;
 const ICON_TRASH = svg `<path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />`;
 const ICON_EDIT = svg `<path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />`;
+const SIDEBAR_STORAGE_KEY = "loomi-calendar-sidebar-open";
 const VIEW_OPTIONS = [
-    { id: "month", label: "Month", shortcut: "M" },
-    { id: "week", label: "Week", shortcut: "W" },
-    { id: "day", label: "Day", shortcut: "D" },
-    { id: "agenda", label: "Agenda", shortcut: "A" },
-    { id: "resource", label: "Resources", shortcut: "R" }
+    { id: "day", shortcut: "D" },
+    { id: "week", shortcut: "W" },
+    { id: "month", shortcut: "M" },
+    { id: "agenda", shortcut: "A" },
+    { id: "resource", shortcut: "R" }
 ];
+const EVENT_COLORS = ["primary", "secondary", "success", "warning", "error"];
+const REMINDER_MINUTES = ["0", "5", "10", "15", "30", "60", "1440"];
 let LoomiCalendar = class LoomiCalendar extends LoomiElement {
     constructor() {
         super(...arguments);
@@ -45,10 +56,15 @@ let LoomiCalendar = class LoomiCalendar extends LoomiElement {
         this.endHour = 18;
         this.slotMinutes = 30;
         this.showSidebar = true;
-        this.sidebarOpen = true;
+        this.sidebarOpen = false;
         this.createModalName = "loomi-calendar-create-event";
         this.boundPointerMove = (event) => this.handlePointerMove(event);
         this.boundPointerUp = (event) => this.handlePointerUp(event);
+        this.localeChangeHandler = () => {
+            if (!this.locale) {
+                this.requestUpdate();
+            }
+        };
     }
     static { this.properties = {
         ...LoomiElement.properties,
@@ -86,12 +102,15 @@ let LoomiCalendar = class LoomiCalendar extends LoomiElement {
         if (!this.hasAttribute("tabindex")) {
             this.tabIndex = 0;
         }
+        this.sidebarOpen = this.readSidebarPreference();
+        globalThis.addEventListener("loomi-locale-change", this.localeChangeHandler);
     }
     disconnectedCallback() {
         super.disconnectedCallback();
         this._dragState = undefined;
         this._slotDragState = undefined;
         this.detachPointerListeners();
+        globalThis.removeEventListener("loomi-locale-change", this.localeChangeHandler);
     }
     render() {
         const hourCount = Math.max(1, this.endHour - this.startHour);
@@ -278,12 +297,13 @@ let LoomiCalendar = class LoomiCalendar extends LoomiElement {
         if (!draft) {
             return nothing;
         }
+        const timeFormat = this.getTimepickerFormat();
         return html `
       <loomi-modal
         name=${this.createModalName}
-        title="New event"
-        ok-button-label="Save"
-        cancel-button-label="Cancel"
+        title=${this.t("calendar.form.newEvent")}
+        ok-button-label=${this.t("calendar.form.save")}
+        .locale=${this.locale}
         size="medium"
         ?open=${true}
         @ok=${this.handleCreateEventSave}
@@ -291,136 +311,140 @@ let LoomiCalendar = class LoomiCalendar extends LoomiElement {
         @close=${this.handleCreateEventCancel}
       >
         <div class="event-form">
-          <label class="form-field">
-            <span class="form-label">Title</span>
-            <input
-              class="form-input"
-              name="title"
-              .value=${draft.title}
-              @input=${(event) => this.updateEventDraft("title", event.target.value)}
-            />
-          </label>
-          <label class="form-field">
-            <span class="form-label">Start</span>
-            <input
-              class="form-input"
-              type=${draft.allDay ? "date" : "datetime-local"}
-              .value=${draft.start}
-              @input=${(event) => this.updateEventDraft("start", event.target.value)}
-            />
-          </label>
-          <label class="form-field">
-            <span class="form-label">End</span>
-            <input
-              class="form-input"
-              type=${draft.allDay ? "date" : "datetime-local"}
-              .value=${draft.end}
-              @input=${(event) => this.updateEventDraft("end", event.target.value)}
-            />
-          </label>
-          <label class="form-check">
-            <input
-              type="checkbox"
-              .checked=${draft.allDay}
-              @change=${(event) => this.updateEventDraft("allDay", event.target.checked)}
-            />
-            All day
-          </label>
-          <label class="form-field">
-            <span class="form-label">Color</span>
-            <select
-              class="form-input"
-              .value=${draft.color}
-              @change=${(event) => this.updateEventDraft("color", event.target.value)}
-            >
-              <option value="primary">Primary</option>
-              <option value="secondary">Secondary</option>
-              <option value="success">Success</option>
-              <option value="warning">Warning</option>
-              <option value="error">Error</option>
-            </select>
-          </label>
+          <loomi-input
+            name="title"
+            .locale=${this.locale}
+            label=${this.t("calendar.form.title")}
+            .value=${draft.title}
+            required
+            @input=${this.handleDraftInput("title")}
+          ></loomi-input>
+
+          <loomi-toggle
+            name="allDay"
+            label=${this.t("calendar.form.allDay")}
+            label-position="right"
+            ?checked=${draft.allDay}
+            @change=${this.handleAllDayToggle}
+          ></loomi-toggle>
+
+          <div class="event-form-row">
+            <loomi-datepicker
+              name="startDate"
+              .locale=${this.locale}
+              label=${this.t("calendar.form.startDate")}
+              week-starts=${this.weekStarts}
+              selected-value=${draft.startDate}
+              required
+              @change=${this.handleDraftDateChange("startDate")}
+            ></loomi-datepicker>
+            ${draft.allDay ? nothing : html `
+              <loomi-timepicker
+                name="startTime"
+                .locale=${this.locale}
+                label=${this.t("calendar.form.startTime")}
+                format=${timeFormat}
+                selected-value=${draft.startTime}
+                required
+                @change=${this.handleDraftTimeChange("startTime")}
+              ></loomi-timepicker>
+            `}
+          </div>
+
+          <div class="event-form-row">
+            <loomi-datepicker
+              name="endDate"
+              .locale=${this.locale}
+              label=${this.t("calendar.form.endDate")}
+              week-starts=${this.weekStarts}
+              selected-value=${draft.endDate}
+              required
+              @change=${this.handleDraftDateChange("endDate")}
+            ></loomi-datepicker>
+            ${draft.allDay ? nothing : html `
+              <loomi-timepicker
+                name="endTime"
+                .locale=${this.locale}
+                label=${this.t("calendar.form.endTime")}
+                format=${timeFormat}
+                selected-value=${draft.endTime}
+                required
+                @change=${this.handleDraftTimeChange("endTime")}
+              ></loomi-timepicker>
+            `}
+          </div>
+
+          <loomi-select
+            name="color"
+            .locale=${this.locale}
+            label=${this.t("calendar.form.color")}
+            .data=${this.getColorSelectOptions()}
+            selected-value=${draft.color}
+            @select=${this.handleDraftSelect("color")}
+          ></loomi-select>
+
           ${this.resources.length ? html `
-            <label class="form-field">
-              <span class="form-label">Resource</span>
-              <select
-                class="form-input"
-                .value=${draft.resourceId}
-                @change=${(event) => this.updateEventDraft("resourceId", event.target.value)}
-              >
-                <option value="">None</option>
-                ${this.resources.map((resource) => html `
-                  <option value=${resource.id}>${resource.label}</option>
-                `)}
-              </select>
-            </label>
+            <loomi-select
+              name="resource"
+              .locale=${this.locale}
+              label=${this.t("calendar.form.resource")}
+              .data=${this.getResourceSelectOptions()}
+              selected-value=${draft.resourceId}
+              @select=${this.handleDraftSelect("resourceId")}
+            ></loomi-select>
           ` : nothing}
-          <label class="form-field">
-            <span class="form-label">Recurrence</span>
-            <select
-              class="form-input"
-              .value=${draft.recurrenceFrequency}
-              @change=${(event) => this.updateEventDraft("recurrenceFrequency", event.target.value)}
-            >
-              <option value="">Does not repeat</option>
-              <option value="daily">Daily</option>
-              <option value="weekly">Weekly</option>
-              <option value="monthly">Monthly</option>
-              <option value="yearly">Yearly</option>
-            </select>
-          </label>
-          ${draft.recurrenceFrequency ? html `
-            <label class="form-field">
-              <span class="form-label">Recurrence label</span>
-              <input
-                class="form-input"
-                .value=${draft.recurrenceLabel}
-                placeholder="Repeats weekly"
-                @input=${(event) => this.updateEventDraft("recurrenceLabel", event.target.value)}
-              />
-            </label>
-          ` : nothing}
-          <label class="form-field">
-            <span class="form-label">Reminder</span>
-            <input
-              class="form-input"
-              .value=${draft.reminderLabel}
-              placeholder="10 min before"
-              @input=${(event) => this.updateEventDraft("reminderLabel", event.target.value)}
-            />
-          </label>
-          <label class="form-field">
-            <span class="form-label">Invitees</span>
-            <input
-              class="form-input"
-              .value=${draft.inviteesText}
-              placeholder="Ada Lovelace, Grace Hopper"
-              @input=${(event) => this.updateEventDraft("inviteesText", event.target.value)}
-            />
-          </label>
-          <label class="form-field">
-            <span class="form-label">Description</span>
-            <textarea
-              class="form-input form-textarea"
-              .value=${draft.description}
-              rows="4"
-              @input=${(event) => this.updateEventDraft("description", event.target.value)}
-            ></textarea>
-          </label>
+
+          <loomi-select
+            name="recurrence"
+            .locale=${this.locale}
+            label=${this.t("calendar.form.recurrence")}
+            .data=${this.getRecurrenceSelectOptions()}
+            selected-value=${draft.recurrenceFrequency}
+            @select=${this.handleDraftSelect("recurrenceFrequency")}
+          ></loomi-select>
+
+          <loomi-select
+            name="reminder"
+            .locale=${this.locale}
+            label=${this.t("calendar.form.reminder")}
+            .data=${this.getReminderSelectOptions()}
+            selected-value=${draft.reminderMinutes}
+            @select=${this.handleDraftSelect("reminderMinutes")}
+          ></loomi-select>
+
+          <loomi-tag-input
+            name="invitees"
+            .locale=${this.locale}
+            label=${this.t("calendar.form.invitees")}
+            placeholder=${this.t("calendar.form.inviteesPlaceholder")}
+            .value=${draft.invitees}
+            @change=${this.handleDraftInput("invitees")}
+          ></loomi-tag-input>
+
+          <loomi-textarea
+            name="description"
+            .locale=${this.locale}
+            label=${this.t("calendar.form.description")}
+            placeholder=${this.t("calendar.form.descriptionPlaceholder")}
+            rows="4"
+            .value=${draft.description}
+            @input=${this.handleDraftInput("description")}
+          ></loomi-textarea>
         </div>
       </loomi-modal>
     `;
     }
     renderToolbar() {
+        const viewOptions = this.getViewSelectOptions();
         return html `
       <div class="toolbar">
-        <div class="toolbar-group">
+        <div class="toolbar-start">
           ${this.showSidebar ? html `
             <button
-              class="icon-btn"
+              class="toolbar-btn icon-only"
               type="button"
-              aria-label=${this.sidebarOpen ? "Hide calendar list" : "Show calendar list"}
-              title=${this.sidebarOpen ? "Hide calendar list" : "Show calendar list"}
+              aria-label=${this.sidebarOpen ? this.t("calendar.hideSidebar") : this.t("calendar.showSidebar")}
+              title=${this.sidebarOpen ? this.t("calendar.hideSidebar") : this.t("calendar.showSidebar")}
               @click=${this.toggleSidebar}
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">${PANEL}</svg>
@@ -431,33 +455,49 @@ let LoomiCalendar = class LoomiCalendar extends LoomiElement {
             ? html `<span class="timezone-badge">${formatTimezoneLabel(this.displayTimezone, this.resolvedLocale)}</span>`
             : nothing}
         </div>
-        <div class="toolbar-group">
-          ${this.editable ? html `
-            <button class="btn btn-primary" type="button" @click=${() => this.openCreateEventModal()}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">${PLUS}</svg>
-              Add event
-            </button>
-          ` : nothing}
-          <button class="btn" type="button" @click=${this.goToToday}>Today</button>
-          <button class="icon-btn" type="button" aria-label="Previous" @click=${this.goPrev}>
+        <div class="toolbar-end">
+          <button class="toolbar-btn icon-only" type="button" aria-label=${this.t("calendar.previous")} title=${this.t("calendar.previous")} @click=${this.goPrev}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">${PREV}</svg>
           </button>
-          <button class="icon-btn" type="button" aria-label="Next" @click=${this.goNext}>
+          <button class="toolbar-btn" type="button" @click=${this.goToToday}>${this.t("calendar.today")}</button>
+          <button class="toolbar-btn icon-only" type="button" aria-label=${this.t("calendar.next")} title=${this.t("calendar.next")} @click=${this.goNext}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">${NEXT}</svg>
           </button>
-          <div class="view-switcher segmented" role="group" aria-label="Calendar view">
-            ${VIEW_OPTIONS.map((option) => html `
-              <button
-                class="seg-btn ${this.view === option.id ? "active" : ""}"
-                type="button"
-                title=${`Shortcut: ${option.shortcut}`}
-                @click=${() => this.changeView(option.id)}
-              >${option.label}</button>
-            `)}
-          </div>
+          <loomi-select
+            class="toolbar-view-select"
+            no-clearing
+            size="small"
+            .locale=${this.locale}
+            .data=${viewOptions}
+            selected-value=${this.view}
+            aria-label=${this.t("calendar.viewLabel")}
+            @select=${this.handleViewSelect}
+          ></loomi-select>
+          ${this.editable ? html `
+            <loomi-tooltip content=${this.t("calendar.addEvent")} position="bottom">
+              <button class="toolbar-btn icon-only" type="button" aria-label=${this.t("calendar.addEvent")} @click=${() => this.openCreateEventModal()}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">${PLUS}</svg>
+              </button>
+            </loomi-tooltip>
+          ` : nothing}
         </div>
       </div>
     `;
+    }
+    getViewSelectOptions() {
+        return VIEW_OPTIONS.map((option) => ({
+            value: option.id,
+            label: this.t(`calendar.views.${option.id}`)
+        }));
+    }
+    handleViewSelect(event) {
+        const nextView = event.detail.value;
+        if (VIEW_OPTIONS.some((option) => option.id === nextView)) {
+            this.changeView(nextView);
+        }
+    }
+    t(path, params = {}) {
+        return loomiT(path, params, this.locale);
     }
     renderMonthView() {
         const weekdays = loomiWeekdayNames(this.resolvedLocale, this.weekStarts);
@@ -550,39 +590,43 @@ let LoomiCalendar = class LoomiCalendar extends LoomiElement {
             : getVisibleWeekDays(this.date, this.weekStarts, this.showWeekends);
         const hourCount = this.endHour - this.startHour;
         return html `
-      <div class="month-view">
-        <div
-          class="weekdays"
-          style=${`grid-template-columns: var(--loomi-calendar-time-axis-width, ${TIME_AXIS_WIDTH}px) repeat(${days.length}, minmax(0, 1fr))`}
-        >
-          <div class="weekday"></div>
-          ${days.map((day) => {
+      <div class="month-view time-view">
+        <div class="time-view-header">
+          <div
+            class="weekdays"
+            style=${`grid-template-columns: var(--loomi-calendar-time-axis-width, ${TIME_AXIS_WIDTH}px) repeat(${days.length}, minmax(0, 1fr))`}
+          >
+            <div class="weekday"></div>
+            ${days.map((day) => {
             const weekdayIndex = (day.getDay() - (this.weekStarts === "monday" ? 1 : 0) + 7) % 7;
             const weekdayLabel = loomiWeekdayNames(this.resolvedLocale, this.weekStarts)[weekdayIndex];
             return html `
-            <button
-              type="button"
-              class="weekday weekday-btn ${isToday(day) ? "is-today" : ""}"
-              @click=${() => this.openDayView(day)}
-              aria-label=${loomiDateFormatter(this.resolvedLocale, { weekday: "long", month: "long", day: "numeric" }).format(day)}
-            >
-              <span class="weekday-label">${weekdayLabel}</span>
-              <span class="weekday-date">${day.getDate()}</span>
-            </button>
-          `;
+              <button
+                type="button"
+                class="weekday weekday-btn ${isToday(day) ? "is-today" : ""}"
+                @click=${() => this.openDayView(day)}
+                aria-label=${loomiDateFormatter(this.resolvedLocale, { weekday: "long", month: "long", day: "numeric" }).format(day)}
+              >
+                <span class="weekday-label">${weekdayLabel}</span>
+                <span class="weekday-date">${day.getDate()}</span>
+              </button>
+            `;
         })}
+          </div>
+          ${this.renderAllDayRow(days)}
         </div>
-        ${this.renderAllDayRow(days)}
-        <div class="time-layout">
-          <div class="time-axis">
-            ${Array.from({ length: hourCount }, (_, index) => {
+        <div class="time-view-scroll">
+          <div class="time-layout">
+            <div class="time-axis">
+              ${Array.from({ length: hourCount }, (_, index) => {
             const hour = this.startHour + index;
             const labelDate = new Date(2023, 0, 1, hour, 0, 0);
             return html `<div class="time-axis-label">${formatTime(labelDate, this.resolvedLocale, this.displayTimezone)}</div>`;
         })}
-          </div>
-          <div class="time-grid-wrap">
-            ${days.map((day) => this.renderDayColumn(day, days))}
+            </div>
+            <div class="time-grid-wrap">
+              ${days.map((day) => this.renderDayColumn(day, days))}
+            </div>
           </div>
         </div>
       </div>
@@ -1260,11 +1304,32 @@ let LoomiCalendar = class LoomiCalendar extends LoomiElement {
     }
     toggleSidebar() {
         this.sidebarOpen = !this.sidebarOpen;
+        this.persistSidebarPreference(this.sidebarOpen);
         this.dispatchEvent(new CustomEvent("loomi-sidebar-toggle", {
             detail: { open: this.sidebarOpen },
             bubbles: true,
             composed: true
         }));
+    }
+    readSidebarPreference() {
+        try {
+            const stored = localStorage.getItem(SIDEBAR_STORAGE_KEY);
+            if (stored !== null) {
+                return stored === "true";
+            }
+        }
+        catch {
+            // Ignore storage access errors (private mode, blocked storage, etc.).
+        }
+        return this.hasAttribute("sidebar-open");
+    }
+    persistSidebarPreference(open) {
+        try {
+            localStorage.setItem(SIDEBAR_STORAGE_KEY, open ? "true" : "false");
+        }
+        catch {
+            // Ignore storage access errors.
+        }
     }
     shiftMiniCalendar(deltaMonths) {
         const next = cloneDate(this._miniCalendarDate ?? this.date);
@@ -1274,19 +1339,132 @@ let LoomiCalendar = class LoomiCalendar extends LoomiElement {
     openCreateEventModal(start, end, allDay = false) {
         const defaultStart = start ?? this.getDefaultEventStart();
         const defaultEnd = end ?? addMinutes(defaultStart, this.slotMinutes);
+        const timeFormat = this.getTimepickerFormat();
         this._eventDraft = {
             title: "",
-            start: allDay ? toInputDateTime(startOfDay(defaultStart)).slice(0, 10) : toInputDateTime(defaultStart),
-            end: allDay ? toInputDateTime(startOfDay(defaultEnd)).slice(0, 10) : toInputDateTime(defaultEnd),
+            startDate: toInputDate(defaultStart),
+            startTime: allDay ? "" : formatTimepickerValue(defaultStart, timeFormat),
+            endDate: toInputDate(defaultEnd),
+            endTime: allDay ? "" : formatTimepickerValue(defaultEnd, timeFormat),
             allDay,
             color: "primary",
             description: "",
             resourceId: "",
             recurrenceFrequency: "",
-            recurrenceLabel: "",
-            reminderLabel: "",
-            inviteesText: ""
+            reminderMinutes: "",
+            invitees: ""
         };
+    }
+    getTimepickerFormat() {
+        try {
+            const hour12 = new Intl.DateTimeFormat(this.resolvedLocale.replace("_", "-"), { hour: "numeric" }).resolvedOptions().hour12;
+            return hour12 === false ? "24" : "12";
+        }
+        catch {
+            return "12";
+        }
+    }
+    getColorSelectOptions() {
+        return EVENT_COLORS.map((color) => ({
+            value: color,
+            label: this.t(`calendar.form.colors.${color}`)
+        }));
+    }
+    getResourceSelectOptions() {
+        return [
+            { value: "", label: this.t("calendar.form.none") },
+            ...this.resources.map((resource) => ({
+                value: resource.id,
+                label: resource.label
+            }))
+        ];
+    }
+    getRecurrenceSelectOptions() {
+        return [
+            { value: "", label: this.t("calendar.form.recurrenceOptions.none") },
+            { value: "daily", label: this.t("calendar.form.recurrenceOptions.daily") },
+            { value: "weekly", label: this.t("calendar.form.recurrenceOptions.weekly") },
+            { value: "monthly", label: this.t("calendar.form.recurrenceOptions.monthly") },
+            { value: "yearly", label: this.t("calendar.form.recurrenceOptions.yearly") }
+        ];
+    }
+    getReminderSelectOptions() {
+        return [
+            { value: "", label: this.t("calendar.form.reminders.none") },
+            { value: "0", label: this.t("calendar.form.reminders.atTime") },
+            ...REMINDER_MINUTES.filter((minutes) => minutes !== "0").map((minutes) => ({
+                value: minutes,
+                label: this.getReminderOptionLabel(minutes)
+            }))
+        ];
+    }
+    getReminderOptionLabel(minutes) {
+        if (minutes === "0") {
+            return this.t("calendar.form.reminders.atTime");
+        }
+        if (minutes === "60") {
+            return this.t("calendar.form.reminders.hourBefore");
+        }
+        if (minutes === "1440") {
+            return this.t("calendar.form.reminders.dayBefore");
+        }
+        return this.t("calendar.form.reminders.minutesBefore", { minutes });
+    }
+    getReminderLabel(minutes) {
+        return this.getReminderOptionLabel(minutes);
+    }
+    getRecurrenceLabel(frequency) {
+        if (!frequency) {
+            return undefined;
+        }
+        return this.t(`calendar.form.recurrenceLabels.${frequency}`);
+    }
+    handleDraftInput(key) {
+        return (event) => {
+            const source = event.currentTarget;
+            if (source.value !== undefined) {
+                this.updateEventDraft(key, source.value);
+            }
+        };
+    }
+    handleDraftSelect(key) {
+        return (event) => {
+            this.updateEventDraft(key, event.detail.value);
+        };
+    }
+    handleDraftDateChange(key) {
+        return (event) => {
+            const nextDate = event.detail.dates?.[0];
+            if (nextDate) {
+                this.updateEventDraft(key, nextDate);
+            }
+        };
+    }
+    handleDraftTimeChange(key) {
+        return (event) => {
+            this.updateEventDraft(key, event.detail.value);
+        };
+    }
+    handleAllDayToggle(event) {
+        const checked = event.currentTarget.checked ?? false;
+        if (!this._eventDraft) {
+            return;
+        }
+        const timeFormat = this.getTimepickerFormat();
+        const next = { ...this._eventDraft, allDay: checked };
+        if (checked) {
+            next.startTime = "";
+            next.endTime = "";
+        }
+        else {
+            const defaultStartTime = timeFormat === "24" ? "09:00" : "9:00AM";
+            const defaultEndTime = timeFormat === "24" ? "10:00" : "10:00AM";
+            const baseStart = combineDateAndTime(next.startDate, defaultStartTime) ?? new Date();
+            const baseEnd = combineDateAndTime(next.endDate, defaultEndTime) ?? addMinutes(baseStart, this.slotMinutes);
+            next.startTime = formatTimepickerValue(baseStart, timeFormat);
+            next.endTime = formatTimepickerValue(baseEnd, timeFormat);
+        }
+        this._eventDraft = next;
     }
     getDefaultEventStart() {
         const next = cloneDate(this.date);
@@ -1306,18 +1484,24 @@ let LoomiCalendar = class LoomiCalendar extends LoomiElement {
         if (!draft || !draft.title.trim()) {
             return;
         }
-        let start = draft.allDay
-            ? fromInputDateTime(`${draft.start}T00:00`)
-            : fromInputDateTime(draft.start);
-        let end = draft.allDay
-            ? fromInputDateTime(`${draft.end}T23:59`)
-            : fromInputDateTime(draft.end);
+        let start;
+        let end;
+        if (draft.allDay) {
+            start = parseInputDate(draft.startDate);
+            end = parseInputDate(draft.endDate);
+            if (start) {
+                start = startOfDay(start);
+            }
+            if (end) {
+                end = endOfDay(end);
+            }
+        }
+        else {
+            start = combineDateAndTime(draft.startDate, draft.startTime);
+            end = combineDateAndTime(draft.endDate, draft.endTime);
+        }
         if (!start || !end) {
             return;
-        }
-        if (draft.allDay) {
-            start = startOfDay(start);
-            end = endOfDay(end);
         }
         if (end <= start) {
             end = draft.allDay ? endOfDay(start) : addMinutes(start, this.slotMinutes);
@@ -1334,13 +1518,16 @@ let LoomiCalendar = class LoomiCalendar extends LoomiElement {
             recurrence: draft.recurrenceFrequency
                 ? {
                     frequency: draft.recurrenceFrequency,
-                    label: draft.recurrenceLabel.trim() || undefined
+                    label: this.getRecurrenceLabel(draft.recurrenceFrequency)
                 }
                 : undefined,
-            reminder: draft.reminderLabel.trim()
-                ? { label: draft.reminderLabel.trim() }
+            reminder: draft.reminderMinutes
+                ? {
+                    minutesBefore: Number(draft.reminderMinutes),
+                    label: this.getReminderLabel(draft.reminderMinutes)
+                }
                 : undefined,
-            invitees: draft.inviteesText
+            invitees: draft.invitees
                 .split(",")
                 .map((name) => name.trim())
                 .filter(Boolean)
@@ -1406,7 +1593,7 @@ let LoomiCalendar = class LoomiCalendar extends LoomiElement {
         return this.resources.find((resource) => resource.id === resourceId)?.label ?? resourceId;
     }
     get resolvedLocale() {
-        return this.locale || "en";
+        return this.locale || getLoomiLocale();
     }
     get displayTimezone() {
         if (this.timezone) {

@@ -59,6 +59,7 @@ let LoomiModal = class LoomiModal extends LoomiElement {
         this.title = "";
         this.type = "";
         this.icon = "";
+        this.iconSource = "heroicons";
         this.size = "medium";
         this.locale = "";
         this.open = false;
@@ -253,7 +254,7 @@ let LoomiModal = class LoomiModal extends LoomiElement {
         <div class="loomi-content">
           ${iconName
             ? html `<div class="loomi-icon-wrap">
-                <loomi-icon class="loomi-ico" name=${iconName} size="1.5rem"></loomi-icon>
+                <loomi-icon class="loomi-ico" name=${iconName} source=${this.iconSource} size="1.5rem"></loomi-icon>
               </div>`
             : nothing}
           <div class="loomi-main">
@@ -301,6 +302,9 @@ __decorate([
 __decorate([
     property()
 ], LoomiModal.prototype, "icon", void 0);
+__decorate([
+    property({ attribute: "icon-source" })
+], LoomiModal.prototype, "iconSource", void 0);
 __decorate([
     property()
 ], LoomiModal.prototype, "size", void 0);

@@ -151,6 +151,21 @@ function keywordsFrom(value) {
         .map((item) => item.trim())
         .filter(Boolean);
 }
+/**
+ * Lit's default `type: Boolean` converter treats ANY attribute presence — including
+ * the literal string `"false"` — as `true` (`fromAttribute: (v) => v !== null`), so
+ * `show-text="false"` written as plain HTML markup silently does nothing. This
+ * converter fixes `fromAttribute` to honor a literal `"false"` while keeping the
+ * usual presence-based `toAttribute` semantics for default-true boolean properties.
+ */
+const literalFalseBooleanConverter = {
+    fromAttribute(value) {
+        return value !== null && value !== "false";
+    },
+    toAttribute(value) {
+        return value ? "" : null;
+    },
+};
 function normalizeDataItem(row) {
     const emoji = String(row.emoji ?? row.icon ?? row.value ?? "").trim();
     if (!emoji)
@@ -188,6 +203,7 @@ let LoomiEmojiPicker = class LoomiEmojiPicker extends LoomiElement {
         this.inline = false;
         this.searchable = true;
         this.showCategories = true;
+        this.showText = true;
         this.disabled = false;
         this.readonly = false;
         this.required = false;
@@ -438,13 +454,14 @@ let LoomiEmojiPicker = class LoomiEmojiPicker extends LoomiElement {
       ${this.inline
             ? this.renderPanel("inline")
             : html `<button
-            class="loomi-trigger"
+            class="loomi-trigger ${this.showText ? "" : "no-text"}"
             part="trigger"
             type="button"
             ?disabled=${this.disabled}
             aria-haspopup="listbox"
             aria-expanded=${open ? "true" : "false"}
             aria-activedescendant=${activeId}
+            aria-label=${this.showText ? nothing : (selected?.name ?? placeholder)}
             @click=${this.togglePanel}
             @blur=${() => {
                 if (!this.open)
@@ -452,7 +469,9 @@ let LoomiEmojiPicker = class LoomiEmojiPicker extends LoomiElement {
             }}
           >
             <span class="loomi-selected-emoji" aria-hidden="true">${selected?.emoji ?? "☺"}</span>
-            <span class="loomi-value ${selected ? "" : "placeholder"}">${selected?.name ?? placeholder}</span>
+            ${this.showText
+                ? html `<span class="loomi-value ${selected ? "" : "placeholder"}">${selected?.name ?? placeholder}</span>`
+                : nothing}
             <span class="loomi-chevron" aria-hidden="true">▾</span>
           </button>
           ${open ? this.renderPanel("floating") : nothing}`}
@@ -491,11 +510,14 @@ __decorate([
     property({ type: Boolean, reflect: true })
 ], LoomiEmojiPicker.prototype, "inline", void 0);
 __decorate([
-    property({ type: Boolean })
+    property({ type: Boolean, converter: literalFalseBooleanConverter })
 ], LoomiEmojiPicker.prototype, "searchable", void 0);
 __decorate([
-    property({ type: Boolean, attribute: "show-categories" })
+    property({ type: Boolean, attribute: "show-categories", converter: literalFalseBooleanConverter })
 ], LoomiEmojiPicker.prototype, "showCategories", void 0);
+__decorate([
+    property({ type: Boolean, attribute: "show-text", converter: literalFalseBooleanConverter })
+], LoomiEmojiPicker.prototype, "showText", void 0);
 __decorate([
     property({ type: Boolean, reflect: true })
 ], LoomiEmojiPicker.prototype, "disabled", void 0);

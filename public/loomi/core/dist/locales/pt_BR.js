@@ -24,7 +24,7 @@ export const pt_BR = {
     pagination: { totalLabel: "Mostrando :a a :b de :c", noRecords: "Nenhum registro", pageOf: "Página :page de :pages" },
     modal: { ok: "OK", cancel: "Cancelar", dialog: "Diálogo" },
     drawer: { dialog: "Painel lateral" },
-    pin: { errorMessage: "O código de verificação é inválido", digitLabel: "Dígito :number" },
+    pin: { errorMessage: "O código de verificação é inválido", digitLabel: "Dígito :number", validating: "Verificando código…", valid: "Código verificado" },
     colorpicker: { pickColor: "Escolher cor" },
     input: { togglePassword: "Alternar visibilidade da senha" },
     number: { increment: "Aumentar", decrement: "Diminuir" },

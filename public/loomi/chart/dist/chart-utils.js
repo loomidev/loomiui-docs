@@ -11,7 +11,15 @@ export const PALETTE = [
 ];
 export const BAR_WIDTH_RATIO = 0.45;
 export const HOVER_HIT_PCT = 9;
-export const CARTESIAN = { width: 320, height: 180, pad: 24 };
+export const CARTESIAN = { width: 320, height: 132, pad: 18 };
+/** Skip crowded x-axis labels so month names stay legible without overlapping. */
+export function showXLabel(index, bandWidth) {
+    if (bandWidth >= 20)
+        return true;
+    if (bandWidth >= 14)
+        return index % 2 === 0;
+    return index % 3 === 0;
+}
 export const POLAR = { size: 180, cx: 90, cy: 90, radius: 80, radarRadius: 64 };
 export const booleanAttribute = {
     fromAttribute(value) {
@@ -43,27 +51,57 @@ export function isPolarType(type) {
 export function usesPalette(type) {
     return type === "pie" || type === "donut" || type === "radial";
 }
+export function hasSecondarySeries(data) {
+    return data.some((d) => d.value2 != null);
+}
 export function maxValue(data) {
-    return Math.max(1, ...data.map((d) => d.value));
+    return Math.max(1, ...data.flatMap((d) => [d.value, d.value2].filter((v) => v != null)));
 }
 export function segmentFillShade(shade) {
     return shade === "light" ? 50 : 500;
 }
-export function resolveFill(ctx, p, i, usePalette) {
-    const c = p.color || (usePalette ? PALETTE[i % PALETTE.length] : ctx.color);
+export function resolveFill(ctx, p, i, usePalette, secondary = false) {
+    const c = secondary
+        ? p.color2 || ctx.color2 || ctx.color
+        : p.color || (usePalette ? PALETTE[i % PALETTE.length] : ctx.color);
     return /^[a-z]+$/.test(c) ? cssColor(c, segmentFillShade(ctx.shade)) : c;
 }
-export function resolveBorder(ctx, p, i, usePalette) {
+export function resolveBorder(ctx, p, i, usePalette, secondary = false) {
     if (ctx.shade !== "light" || !ctx.showBorder)
         return null;
-    const c = p.color || (usePalette ? PALETTE[i % PALETTE.length] : ctx.color);
+    const c = secondary
+        ? p.color2 || ctx.color2 || ctx.color
+        : p.color || (usePalette ? PALETTE[i % PALETTE.length] : ctx.color);
     return /^[a-z]+$/.test(c) ? cssColor(c, 200) : null;
 }
-export function accentStyle(color, shade, showBorder, withBorder = false) {
+export function accentStyle(color, shade, showBorder, withBorder = false, color2) {
     const light = shade === "light";
     const strokeShade = light ? (withBorder && showBorder ? 600 : 400) : 600;
     const fillShade = light ? 100 : 50;
-    return `${accentVars(color)}--_loomi-accent:${cssColor(color, strokeShade)};--_loomi-accent-softer:${cssColor(color, fillShade)};`;
+    let style = `${accentVars(color)}--_loomi-accent:${cssColor(color, strokeShade)};--_loomi-accent-softer:${cssColor(color, fillShade)};`;
+    if (color2) {
+        style += `--_loomi-accent-2:${cssColor(color2, strokeShade)};--_loomi-accent-2-softer:${cssColor(color2, fillShade)};`;
+    }
+    return style;
+}
+/** Pixel anchor for a cartesian tooltip — band center x, top of the hovered category. */
+export function tooltipAnchor(type, data, index, opts) {
+    const layout = cartesianLayout(data, opts);
+    const { height: H, padLeft, padTop, padBottom, bandWidth, max, points } = layout;
+    const d = data[index];
+    if (!d)
+        return [0, 0];
+    if (type === "bar") {
+        const x = padLeft + index * bandWidth + bandWidth / 2;
+        const topVal = Math.max(d.value, d.value2 ?? 0);
+        const y = H - padBottom - (topVal / max) * (H - padTop - padBottom);
+        return [x, y];
+    }
+    const [x, y1] = points[index] ?? [0, 0];
+    if (d.value2 == null)
+        return [x, y1];
+    const y2 = H - padBottom - (d.value2 / max) * (H - padTop - padBottom);
+    return [x, Math.min(y1, y2)];
 }
 export function polar(cx, cy, deg, radius) {
     const a = ((deg - 90) * Math.PI) / 180;
@@ -244,10 +282,47 @@ export function nearestIndex(type, data, opts, ratio) {
     if (n === 1)
         return 0;
     if (type === "line" && opts.vertical) {
-        return Math.max(0, Math.min(n - 1, Math.round(clamped * (n - 1))));
+        const layout = verticalLineLayout(data, opts.showYAxis);
+        const y = clamped * layout.height;
+        let best = 0;
+        let bestDist = Infinity;
+        for (let i = 0; i < n; i++) {
+            const cy = layout.padTop + i * layout.bandWidth + layout.bandWidth / 2;
+            const dist = Math.abs(cy - y);
+            if (dist < bestDist) {
+                bestDist = dist;
+                best = i;
+            }
+        }
+        return best;
     }
     if (type === "bar" || type === "line" || type === "area" || type === "scatter") {
-        return Math.max(0, Math.min(n - 1, Math.round(clamped * (n - 1))));
+        const layout = cartesianLayout(data, opts);
+        const x = clamped * layout.width;
+        if (type === "bar") {
+            let best = 0;
+            let bestDist = Infinity;
+            for (let i = 0; i < n; i++) {
+                const cx = layout.padLeft + i * layout.bandWidth + layout.bandWidth / 2;
+                const dist = Math.abs(cx - x);
+                if (dist < bestDist) {
+                    bestDist = dist;
+                    best = i;
+                }
+            }
+            return best;
+        }
+        let best = 0;
+        let bestDist = Infinity;
+        for (let i = 0; i < n; i++) {
+            const cx = layout.points[i]?.[0] ?? 0;
+            const dist = Math.abs(cx - x);
+            if (dist < bestDist) {
+                bestDist = dist;
+                best = i;
+            }
+        }
+        return best;
     }
     return -1;
 }

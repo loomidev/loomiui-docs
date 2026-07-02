@@ -42,7 +42,12 @@ const items = proCatalogItems();
           Browse {items.length} customer-facing items included with Pro.
         </p>
 
-        <div class="mt-8 grid gap-4 sm:grid-cols-3">
+        <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <a href="/cli/" class="pro-hub-card">
+            <loomi-icon name="command-line" style="width:1.25rem;height:1.25rem;color:rgb(37 99 235)"></loomi-icon>
+            <div class="pro-hub-card-title">CLI</div>
+            <p class="pro-hub-card-desc">Scaffold starter kits, apply themes, and manage blocks with loomi-pro.</p>
+          </a>
           {PRO_CATEGORIES.filter((cat) => cat.href).map((cat) => (
             <a href={cat.href} class="pro-hub-card">
               <loomi-icon name={cat.icon} style="width:1.25rem;height:1.25rem;color:rgb(37 99 235)"></loomi-icon>
@@ -119,6 +124,7 @@ const items = proCatalogItems();
           </p>
           <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
             <loomi-button color="primary" size="small" tag="a" href={GITHUB_URL}>Buy Pro</loomi-button>
+            <loomi-button type="secondary" size="small" tag="a" href="/cli/">CLI docs</loomi-button>
             <loomi-button type="secondary" size="small" tag="a" href="/components/">Browse free components</loomi-button>
           </div>
         </div>
@@ -131,6 +137,8 @@ const items = proCatalogItems();
           <a href="/installation/" class="hover:text-primary-600 dark:hover:text-primary-400">Installation</a>
           <a href="/components/" class="hover:text-primary-600 dark:hover:text-primary-400">Components</a>
           <a href="/pro/" class="hover:text-primary-600 dark:hover:text-primary-400">Pro</a>
+          <a href="/cli/" class="hover:text-primary-600 dark:hover:text-primary-400">CLI</a>
+          <a href="/mcp-server/" class="hover:text-primary-600 dark:hover:text-primary-400">MCP Server</a>
           <a href="/contributing/" class="hover:text-primary-600 dark:hover:text-primary-400">Contributing</a>
         </div>
         <p class="mt-6 text-center">© {new Date().getFullYear()} LoomiUI.</p>

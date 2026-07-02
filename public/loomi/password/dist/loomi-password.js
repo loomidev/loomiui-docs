@@ -49,6 +49,11 @@ let LoomiPassword = class LoomiPassword extends LoomiElement {
         this.showPlaceholderAlways = false;
         this.invalid = false;
         this.revealed = false;
+        this.prefixOpen = false;
+        this.onDocClick = (e) => {
+            if (this.prefixOpen && !e.composedPath().includes(this))
+                this.prefixOpen = false;
+        };
         this.onInput = (e) => {
             this.value = e.target.value;
             if (this.invalid)
@@ -58,9 +63,21 @@ let LoomiPassword = class LoomiPassword extends LoomiElement {
         this.onChange = () => {
             this.emit("change");
         };
+        this.onPrefixTriggerKeydown = (e) => {
+            if (e.key === "Escape")
+                this.prefixOpen = false;
+        };
     }
     static { this.styles = [themeStyles, componentStyles]; }
     static { this.formAssociated = true; }
+    connectedCallback() {
+        super.connectedCallback();
+        document.addEventListener("click", this.onDocClick, true);
+    }
+    disconnectedCallback() {
+        super.disconnectedCallback();
+        document.removeEventListener("click", this.onDocClick, true);
+    }
     willUpdate(_changed) {
         this.internals.setFormValue(this.value);
         this.syncValidity();
@@ -143,17 +160,47 @@ let LoomiPassword = class LoomiPassword extends LoomiElement {
     selectedPrefix(options) {
         return this.prefixValue || this.prefix || options[0] || "";
     }
-    onPrefixChange(e) {
-        const value = e.target.value;
+    togglePrefixOpen() {
+        if (this.disabled || this.readonly)
+            return;
+        this.prefixOpen = !this.prefixOpen;
+    }
+    choosePrefix(value) {
         this.prefixValue = value;
         this.prefix = value;
+        this.prefixOpen = false;
         this.dispatchEvent(new CustomEvent("prefix-change", { detail: { value }, bubbles: true, composed: true }));
     }
-    renderPrefixSelect(options) {
+    renderPrefixDropdown(options) {
         const value = this.selectedPrefix(options);
-        return html `<select class="loomi-affix-select" .value=${value} aria-label="prefix" @change=${this.onPrefixChange}>
-      ${options.map((option) => html `<option value=${option} ?selected=${option === value}>${option}</option>`)}
-    </select>`;
+        return html `<span class="loomi-affix-dropdown ${this.prefixOpen ? "open" : ""}">
+      <button
+        type="button"
+        class="loomi-affix-trigger"
+        aria-haspopup="listbox"
+        aria-expanded=${this.prefixOpen ? "true" : "false"}
+        aria-label="prefix"
+        ?disabled=${this.disabled || this.readonly}
+        @click=${() => this.togglePrefixOpen()}
+        @keydown=${this.onPrefixTriggerKeydown}
+      >
+        <span class="loomi-affix-value">${value}</span>
+        ${this.renderIcon("chevron-down", "loomi-affix-chevron")}
+      </button>
+      ${this.prefixOpen
+            ? html `<div class="loomi-affix-panel" role="listbox">
+            ${options.map((option) => html `<div
+                class="loomi-affix-option ${option === value ? "selected" : ""}"
+                role="option"
+                aria-selected=${option === value ? "true" : "false"}
+                @click=${() => this.choosePrefix(option)}
+              >
+                <span>${option}</span>
+                ${option === value ? this.renderIcon("check", "loomi-affix-check") : nothing}
+              </div>`)}
+          </div>`
+            : nothing}
+    </span>`;
     }
     renderPrefix() {
         const options = this.parseOptions(this.prefixOptions);
@@ -162,7 +209,7 @@ let LoomiPassword = class LoomiPassword extends LoomiElement {
             return nothing;
         const cls = `loomi-prefix${this.transparentPrefix ? "" : " loomi-affix-solid"}`;
         return html `<span class=${cls}>
-      <slot name="prefix">${options.length > 0 ? this.renderPrefixSelect(options) : this.prefixIcon ? this.renderIcon(this.prefixIcon) : this.prefix}</slot>
+      <slot name="prefix">${options.length > 0 ? this.renderPrefixDropdown(options) : this.prefixIcon ? this.renderIcon(this.prefixIcon) : this.prefix}</slot>
     </span>`;
     }
     renderSuffix() {
@@ -302,6 +349,9 @@ __decorate([
 __decorate([
     state()
 ], LoomiPassword.prototype, "revealed", void 0);
+__decorate([
+    state()
+], LoomiPassword.prototype, "prefixOpen", void 0);
 __decorate([
     query("input")
 ], LoomiPassword.prototype, "inputEl", void 0);

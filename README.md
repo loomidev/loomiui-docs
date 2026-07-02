@@ -4,7 +4,7 @@ The documentation site for [LoomiUI](../components), built with
 [Astro](https://astro.build) + [Starlight](https://starlight.astro.build), deployed at
 **https://loomiui.com**.
 
-It contains setup guides, customization notes, MCP server docs, and generated
+It contains setup guides, customization notes, MCP server docs, Pro CLI docs, and generated
 component references with live, runnable previews. Content is sourced from the
 component monorepo where possible, so package-level README updates can be
 regenerated into docs pages consistently.
@@ -17,6 +17,7 @@ src/content/docs/
 ├─ installation.md
 ├─ customization.mdx    # uses Starlight components, hence .mdx
 ├─ mcp-server.mdx       # uses Starlight components, hence .mdx
+├─ cli.mdx              # Pro CLI reference
 └─ components/
    ├─ standalone/   (button, icon, spinner, alert, bell, modal, notification, table)
    ├─ forms/        (input, select, datepicker, …)

@@ -4,7 +4,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { html } from "lit";
+import { html, svg } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { LoomiElement, loomiStyles, loomiT, accentVars } from "@loomidev/core";
 import { componentStyles } from "./generated/styles.css.js";
@@ -64,7 +64,10 @@ let LoomiSpinner = class LoomiSpinner extends LoomiElement {
           ${Array.from({ length: 8 }, (_, index) => {
                     const rotation = index * 45;
                     const opacity = 0.22 + index * 0.09;
-                    return html `<line
+                    // Nested fragments inserted into an existing <svg> must use the `svg` tag
+                    // function — `html` parses them outside any SVG context, so the browser
+                    // creates them in the HTML namespace and silently drops them.
+                    return svg `<line
               x1="12"
               y1="3"
               x2="12"
@@ -82,7 +85,7 @@ let LoomiSpinner = class LoomiSpinner extends LoomiElement {
           ${Array.from({ length: 8 }, (_, index) => {
                     const rotation = index * 45;
                     const opacity = 0.2 + index * 0.1;
-                    return html `<circle
+                    return svg `<circle
               cx="12"
               cy="4"
               r="1.7"

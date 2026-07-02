@@ -26,6 +26,14 @@ let LoomiQrCode = class LoomiQrCode extends LoomiElement {
         this.url = "";
         this.value = "";
         this.size = 220;
+        /**
+         * QR error correction level, trading data density for resilience to damage or overlays:
+         * - `L` (Low): recovers ~7% of the code. Highest data capacity, use for clean digital display.
+         * - `M` (Medium): recovers ~15% of the code. Balanced default for most use cases.
+         * - `Q` (Quartile): recovers ~25% of the code. Good when printing on materials that may wear or get dirty.
+         * - `H` (High): recovers ~30% of the code. Most resilient; recommended when overlaying a logo or using
+         *   visual effects (`corner-borders`, `gradient`) on top of the modules.
+         */
         this.errorCorrection = "M";
         this.quietZone = 4;
         this.foreground = "var(--loomi-text)";
@@ -42,6 +50,11 @@ let LoomiQrCode = class LoomiQrCode extends LoomiElement {
         this.gradientScan = false;
         this.scanColor = "rgba(14, 165, 233, 0.72)";
         this.scanDuration = "2.4s";
+        /**
+         * Number of times the scan beam sweeps down and back up. Accepts a positive integer, or
+         * `"infinite"` (default) to loop forever.
+         */
+        this.scanCount = "infinite";
         this.accessibilityLabel = "";
         this.gradientId = `loomi-qrcode-gradient-${++nextGradientId}`;
     }
@@ -57,6 +70,12 @@ let LoomiQrCode = class LoomiQrCode extends LoomiElement {
     get normalizedRadius() {
         return this.radius in RADIUS_CLASS ? this.radius : "medium";
     }
+    get normalizedScanCount() {
+        if (this.scanCount === "infinite")
+            return "infinite";
+        const parsed = Number(this.scanCount);
+        return Number.isFinite(parsed) && parsed > 0 ? String(Math.floor(parsed)) : "infinite";
+    }
     get wrapperStyle() {
         return [
             `--_loomi-qrcode-size:${Math.max(96, this.size)}px`,
@@ -66,6 +85,7 @@ let LoomiQrCode = class LoomiQrCode extends LoomiElement {
             `--_loomi-qrcode-corner-length:${this.cornerBorderLength}`,
             `--_loomi-qrcode-scan-color:${this.scanColor}`,
             `--_loomi-qrcode-scan-duration:${this.scanDuration}`,
+            `--_loomi-qrcode-scan-count:${this.normalizedScanCount}`,
         ].join(";");
     }
     render() {
@@ -211,6 +231,9 @@ __decorate([
 __decorate([
     property({ attribute: "scan-duration" })
 ], LoomiQrCode.prototype, "scanDuration", void 0);
+__decorate([
+    property({ attribute: "scan-count" })
+], LoomiQrCode.prototype, "scanCount", void 0);
 __decorate([
     property({ attribute: "aria-label" })
 ], LoomiQrCode.prototype, "accessibilityLabel", void 0);

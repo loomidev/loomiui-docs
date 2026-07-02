@@ -11,10 +11,13 @@ import { getLoomiIcon } from "@loomidev/icons";
 import { componentStyles } from "./generated/styles.css.js";
 const ELLIPSIS = svg `<path d="M6 12a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0ZM13.5 12a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0ZM21 12a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" fill="currentColor" />`;
 const CHEVRON_RIGHT = svg `<path d="m9 18 6-6-6-6" />`;
+const CHECK = svg `<path d="M20 6 9 17l-5-5" />`;
 /**
  * `<loomi-dropmenu-item>` — a single menu line. Put links/handlers inside, or set `icon`.
+ * Set `checkbox` or `radio` to turn it into a toggle row (see `checked`, `group`).
  * @slot - Item content.
  * @slot submenu - Nested `<loomi-dropmenu-item>` children.
+ * @fires change - Fired when a `checkbox` or `radio` item's `checked` state changes (composed).
  */
 let LoomiDropmenuItem = class LoomiDropmenuItem extends LoomiElement {
     constructor() {
@@ -25,6 +28,13 @@ let LoomiDropmenuItem = class LoomiDropmenuItem extends LoomiElement {
         this.header = false;
         this.divider = false;
         this.hover = true;
+        this.disabled = false;
+        this.variant = "default";
+        this.checkbox = false;
+        this.radio = false;
+        this.group = "";
+        this.value = "";
+        this.checked = false;
         this.hasSubmenuItems = false;
         this.menuIconRight = false;
         this.submenuOpen = false;
@@ -32,13 +42,40 @@ let LoomiDropmenuItem = class LoomiDropmenuItem extends LoomiElement {
             const slot = event.target;
             this.hasSubmenuItems = slot.assignedElements({ flatten: true }).length > 0;
         };
+        this.onItemClick = (event) => {
+            if (this.disabled) {
+                event.stopPropagation();
+                event.preventDefault();
+                return;
+            }
+            if (this.hasSubmenuItems) {
+                this.submenuOpen = !this.submenuOpen;
+                return;
+            }
+            if (this.checkbox) {
+                this.checked = !this.checked;
+                this.dispatchEvent(new Event("change", { bubbles: true, composed: true }));
+                return;
+            }
+            if (this.radio) {
+                if (this.checked)
+                    return;
+                this.uncheckRadioSiblings();
+                this.checked = true;
+                this.dispatchEvent(new Event("change", { bubbles: true, composed: true }));
+            }
+        };
     }
     static { this.styles = loomiStyles(componentStyles); }
     get hasSubmenu() {
         return this.hasSubmenuItems;
     }
+    /** `true` for `checkbox`/`radio` items — clicking one shouldn't auto-close the menu. */
+    get isToggle() {
+        return this.checkbox || this.radio;
+    }
     get selectable() {
-        return !this.header && !this.divider;
+        return !this.header && !this.divider && !this.disabled;
     }
     setMenuIconRight(value) {
         this.menuIconRight = value;
@@ -46,36 +83,88 @@ let LoomiDropmenuItem = class LoomiDropmenuItem extends LoomiElement {
     focusItem() {
         this.renderRoot.querySelector(".loomi-item")?.focus();
     }
-    onItemClick() {
-        if (this.hasSubmenuItems)
-            this.submenuOpen = !this.submenuOpen;
+    uncheckRadioSiblings() {
+        const root = this.getRootNode() ?? document;
+        for (const sibling of root.querySelectorAll("loomi-dropmenu-item[radio]")) {
+            if (sibling !== this && sibling.group === this.group)
+                sibling.checked = false;
+        }
+    }
+    get itemClass() {
+        const iconRight = this.iconRight || this.menuIconRight;
+        return [
+            "loomi-item",
+            iconRight && "right",
+            this.hasSubmenuItems && "has-submenu",
+            this.variant === "destructive" && "destructive",
+            this.disabled && "disabled",
+            this.header ? "header" : this.hover && "hoverable",
+        ]
+            .filter(Boolean)
+            .join(" ");
+    }
+    get itemRole() {
+        if (this.header)
+            return "presentation";
+        if (this.checkbox)
+            return "menuitemcheckbox";
+        if (this.radio)
+            return "menuitemradio";
+        return "menuitem";
     }
     render() {
         if (this.divider)
             return html `<div class="loomi-divider"></div>`;
-        const iconRight = this.iconRight || this.menuIconRight;
         const path = this.icon ? getLoomiIcon(this.icon) : undefined;
-        const cls = `loomi-item ${iconRight ? "right" : ""} ${this.hasSubmenuItems ? "has-submenu" : ""} ${this.header ? "header" : this.hover ? "hoverable" : ""}`;
-        return html `<div
-        class=${cls}
-        role=${this.header ? "presentation" : "menuitem"}
-        tabindex=${this.header ? nothing : "-1"}
+        return html `
+      <div
+        class=${this.itemClass}
+        role=${this.itemRole}
+        tabindex=${this.header || this.disabled ? nothing : "-1"}
         aria-haspopup=${this.hasSubmenuItems ? "menu" : nothing}
         aria-expanded=${this.hasSubmenuItems ? (this.submenuOpen ? "true" : "false") : nothing}
+        aria-checked=${this.isToggle ? (this.checked ? "true" : "false") : nothing}
+        aria-disabled=${this.disabled ? "true" : nothing}
         @click=${this.onItemClick}
       >
-      ${path ? html `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">${path}</svg>` : nothing}
-      <span class="loomi-label"><slot></slot></span>
-      ${this.shortcut ? html `<kbd class="loomi-shortcut">${this.shortcut}</kbd>` : nothing}
-      ${this.hasSubmenuItems
-            ? html `<svg class="loomi-submenu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-            ${CHEVRON_RIGHT}
-          </svg>`
+        ${this.isToggle
+            ? html `<span class="loomi-indicator" aria-hidden="true">
+              ${this.checked
+                ? this.radio
+                    ? html `<span class="loomi-radio-dot"></span>`
+                    : html `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                      ${CHECK}
+                    </svg>`
+                : nothing}
+            </span>`
             : nothing}
-    </div>
-    <div class="loomi-submenu ${this.hasSubmenuItems ? "ready" : ""} ${this.submenuOpen ? "open" : ""}" role="menu">
-      <slot name="submenu" @slotchange=${this.onSubmenuSlotChange}></slot>
-    </div>`;
+        ${path
+            ? html `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              ${path}
+            </svg>`
+            : nothing}
+        <span class="loomi-label"><slot></slot></span>
+        ${this.shortcut ? html `<kbd class="loomi-shortcut">${this.shortcut}</kbd>` : nothing}
+        ${this.hasSubmenuItems
+            ? html `<svg
+              class="loomi-submenu-icon"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              aria-hidden="true"
+            >
+              ${CHEVRON_RIGHT}
+            </svg>`
+            : nothing}
+      </div>
+      <div
+        class="loomi-submenu ${this.hasSubmenuItems ? "ready" : ""} ${this.submenuOpen ? "open" : ""}"
+        role="menu"
+      >
+        <slot name="submenu" @slotchange=${this.onSubmenuSlotChange}></slot>
+      </div>
+    `;
     }
 };
 __decorate([
@@ -96,6 +185,27 @@ __decorate([
 __decorate([
     property({ type: Boolean })
 ], LoomiDropmenuItem.prototype, "hover", void 0);
+__decorate([
+    property({ type: Boolean, reflect: true })
+], LoomiDropmenuItem.prototype, "disabled", void 0);
+__decorate([
+    property()
+], LoomiDropmenuItem.prototype, "variant", void 0);
+__decorate([
+    property({ type: Boolean })
+], LoomiDropmenuItem.prototype, "checkbox", void 0);
+__decorate([
+    property({ type: Boolean })
+], LoomiDropmenuItem.prototype, "radio", void 0);
+__decorate([
+    property()
+], LoomiDropmenuItem.prototype, "group", void 0);
+__decorate([
+    property()
+], LoomiDropmenuItem.prototype, "value", void 0);
+__decorate([
+    property({ type: Boolean, reflect: true })
+], LoomiDropmenuItem.prototype, "checked", void 0);
 __decorate([
     state()
 ], LoomiDropmenuItem.prototype, "hasSubmenuItems", void 0);
@@ -133,7 +243,7 @@ let LoomiDropmenu = class LoomiDropmenu extends LoomiElement {
         this.placementFrame = 0;
         this.onItemsClick = (e) => {
             const item = e.composedPath().find((target) => target instanceof LoomiDropmenuItem);
-            if (item && item.selectable && !item.hasSubmenu && this.hideAfterClick)
+            if (item && item.selectable && !item.hasSubmenu && !item.isToggle && this.hideAfterClick)
                 this.closeMenu();
         };
         this.onTriggerKeyDown = (event) => {
@@ -288,33 +398,38 @@ let LoomiDropmenu = class LoomiDropmenu extends LoomiElement {
         if (changedProperties.has("iconRight"))
             this.applyItemDefaults();
     }
+    get menuClass() {
+        return ["loomi-menu", this.resolvedPosition, this.scrollable && "scrollable"].filter(Boolean).join(" ");
+    }
     render() {
         const triggerPath = this.trigger ? getLoomiIcon(this.trigger.replace(/-icon$/, "")) : undefined;
-        return html `<button
-      class="loomi-trigger"
-      aria-haspopup="menu"
-      aria-expanded=${this.open ? "true" : "false"}
-      @click=${this.triggerOn === "click" ? () => this.toggle() : nothing}
-      @mouseenter=${this.triggerOn === "mouseover" ? () => this.openMenu() : nothing}
-      @keydown=${this.onTriggerKeyDown}
-    >
-      <slot name="trigger">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
-          ${triggerPath ?? ELLIPSIS}
-        </svg>
-      </slot>
-    </button>
-    ${this.open
+        return html `
+      <button
+        class="loomi-trigger"
+        aria-haspopup="menu"
+        aria-expanded=${this.open ? "true" : "false"}
+        @click=${this.triggerOn === "click" ? () => this.toggle() : nothing}
+        @mouseenter=${this.triggerOn === "mouseover" ? () => this.openMenu() : nothing}
+        @keydown=${this.onTriggerKeyDown}
+      >
+        <slot name="trigger">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            ${triggerPath ?? ELLIPSIS}
+          </svg>
+        </slot>
+      </button>
+      ${this.open
             ? html `<div
-          class="loomi-menu ${this.resolvedPosition} ${this.scrollable ? "scrollable" : ""}"
-          style=${this.scrollable ? `--loomi-menu-height:${this.height}px` : nothing}
-          role="menu"
-          @click=${this.onItemsClick}
-          @keydown=${this.onMenuKeyDown}
-        >
-          <slot @slotchange=${this.onSlotChange}></slot>
-        </div>`
-            : nothing}`;
+            class=${this.menuClass}
+            style=${this.scrollable ? `--loomi-menu-height:${this.height}px` : nothing}
+            role="menu"
+            @click=${this.onItemsClick}
+            @keydown=${this.onMenuKeyDown}
+          >
+            <slot @slotchange=${this.onSlotChange}></slot>
+          </div>`
+            : nothing}
+    `;
     }
 };
 __decorate([

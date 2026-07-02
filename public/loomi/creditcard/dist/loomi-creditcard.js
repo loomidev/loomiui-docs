@@ -115,6 +115,9 @@ let LoomiCreditcard = class LoomiCreditcard extends LoomiElement {
         /** Force a specific network logo instead of auto-detecting it from `number`. Leave unset to auto-detect. */
         this.brand = "";
         this.color = "primary";
+        /** `"gradient"` (default) for the full-color accent face, or `"outline"` for a bare
+         * silhouette — soft gray border, no background fill. */
+        this.variant = "gradient";
         this.locale = "";
         this.flipped = false;
         this.disabled = false;
@@ -405,6 +408,9 @@ __decorate([
 __decorate([
     property()
 ], LoomiCreditcard.prototype, "color", void 0);
+__decorate([
+    property({ reflect: true })
+], LoomiCreditcard.prototype, "variant", void 0);
 __decorate([
     property()
 ], LoomiCreditcard.prototype, "locale", void 0);

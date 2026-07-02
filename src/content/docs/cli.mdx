@@ -1,0 +1,300 @@
+---
+title: CLI
+description: Scaffold LoomiUI Pro starter kits, apply themes, and manage blocks with the loomi-pro CLI.
+---
+
+Use the LoomiUI Pro CLI to scaffold starter kits, apply themes, add blocks, and keep
+projects aligned with the Pro registry.
+
+The CLI is modeled after the [shadcn/ui CLI](https://ui.shadcn.com/docs/cli): it installs
+source into your project rather than hiding implementation behind opaque packages.
+
+## Installation
+
+Install globally from the private Pro registry after configuring npm auth:
+
+```sh
+# ~/.npmrc
+@loomdev-pro:registry=https://registry.pro.loomiui.com
+//registry.pro.loomiui.com/:_authToken=${LOOMI_PRO_TOKEN}
+```
+
+```sh
+pnpm add -g @loomdev-pro/cli
+loomi-pro --help
+```
+
+The CLI requires a [Pro license](/pro/licensing/) and access to the `@loomdev-pro` private
+registry.
+
+## Quick start
+
+### Create a new project
+
+```sh
+# Interactive
+loomi-pro create acme-admin
+
+# Non-interactive (CI / automation)
+loomi-pro create acme-admin \
+  -d \
+  --template admin \
+  --variant next-react \
+  --theme default
+```
+
+This scaffolds the selected template variant, copies shared route content, writes
+`loomi.json`, and applies the theme CSS import.
+
+### Initialize an existing project
+
+If you already have a Pro starter kit checkout:
+
+```sh
+loomi-pro init
+loomi-pro init -d --template saas --variant vite-lit --theme saas-admin
+```
+
+### Validate your setup
+
+```sh
+loomi-pro doctor
+```
+
+Checks:
+
+- `loomi.json` exists and parses
+- Required `@loomdev-pro/*` dependencies are installed
+- Framework variant matches detected tooling (Next.js vs Vite)
+- Private registry auth is configured
+
+## Commands
+
+| Command | Description |
+| --- | --- |
+| `init` | Initialize `loomi.json` in an existing project |
+| `create` | Scaffold a new starter kit project |
+| `add` | Add a theme preset or block from the registry |
+| `theme` | Apply or list theme presets |
+| `diff` | Compare local files against the registry template |
+| `doctor` | Validate config, dependencies, and registry auth |
+| `migrate` | Run codemods for breaking package changes |
+
+### `init`
+
+Initialize configuration for an existing project.
+
+```sh
+loomi-pro init [options]
+```
+
+| Option | Description |
+| --- | --- |
+| `-t, --template` | Starter kit: `admin`, `saas`, `crm`, `analytics` |
+| `-v, --variant` | Framework: `vite-lit`, `next-react` |
+| `--theme` | Theme preset name |
+| `-d, --defaults` | Skip prompts and use supplied/default values |
+| `-f, --force` | Overwrite an existing `loomi.json` |
+| `-c, --cwd` | Working directory (default: current directory) |
+
+```sh
+loomi-pro init -d --template admin --variant next-react
+```
+
+### `create`
+
+Create a new project from a starter kit template.
+
+```sh
+loomi-pro create <name> [options]
+```
+
+| Option | Description |
+| --- | --- |
+| `-t, --template` | Starter kit |
+| `-v, --variant` | Framework variant |
+| `--theme` | Theme preset |
+| `-d, --defaults` | Skip prompts |
+
+```sh
+loomi-pro create my-crm --template crm --variant next-react --theme fintech -d
+loomi-pro create analytics-app --template analytics --variant vite-lit -d
+```
+
+`create` copies template source from the Pro monorepo when `LOOMI_PRO_ROOT` is set or
+auto-detected. Published releases fetch templates from `@loomdev-pro/registry` tarballs.
+
+### `add`
+
+Add registry items to your project.
+
+```sh
+loomi-pro add [items...] [options]
+```
+
+| Option | Description |
+| --- | --- |
+| `-a, --all` | Add all blocks for the current template |
+| `-o, --overwrite` | Overwrite existing files |
+| `--dry-run` | Preview changes without writing files |
+| `-p, --path` | Custom install path |
+
+```sh
+loomi-pro add theme:fintech
+loomi-pro add dashboard-metrics
+loomi-pro add theme:healthcare --dry-run
+loomi-pro add --all
+```
+
+**Available blocks**
+
+| Block | Templates |
+| --- | --- |
+| `dashboard-metrics` | admin, saas, crm, analytics |
+| `data-table` | admin, saas, crm, analytics |
+| `activity-feed` | admin, crm |
+| `command-palette` | all |
+| `filter-builder` | admin, analytics |
+
+### `theme`
+
+Apply or list theme presets from `@loomdev-pro/themes`.
+
+```sh
+loomi-pro theme [name] [options]
+```
+
+| Option | Description |
+| --- | --- |
+| `--list` | List available presets |
+| `--dry-run` | Preview import changes |
+
+```sh
+loomi-pro theme --list
+loomi-pro theme healthcare
+loomi-pro theme enterprise-neutral --dry-run
+```
+
+Browse all presets on the [Theme Presets](/pro/themes/theme-presets/) page.
+
+### `diff`
+
+Compare local project files against the registry template.
+
+```sh
+loomi-pro diff [target] [options]
+```
+
+```sh
+loomi-pro diff
+loomi-pro diff admin-shell
+```
+
+When `LOOMI_PRO_ROOT` is unavailable, `diff` falls back to a config summary.
+
+### `doctor`
+
+Validate project health — `loomi.json`, Pro package dependencies, framework detection,
+and `.npmrc` registry auth.
+
+```sh
+loomi-pro doctor
+```
+
+### `migrate`
+
+Run codemods when Pro packages introduce breaking changes.
+
+```sh
+loomi-pro migrate [migration] [path] [options]
+```
+
+| Option | Description |
+| --- | --- |
+| `-l, --list` | List available migrations |
+| `-c, --cwd` | Working directory |
+
+```sh
+loomi-pro migrate --list
+loomi-pro migrate theme-imports
+loomi-pro migrate mock-api src
+```
+
+| Migration | Description |
+| --- | --- |
+| `theme-imports` | Normalize `@loomdev-pro/themes` CSS import paths |
+| `mock-api` | Align mock API imports with route modules |
+
+Always commit or back up your code before running migrations.
+
+## Configuration
+
+The CLI stores project settings in `loomi.json`:
+
+```json
+{
+  "$schema": "https://pro.loomiui.com/schema/loomi.json",
+  "template": "admin",
+  "variant": "next-react",
+  "theme": "default",
+  "registry": "@loomdev-pro/registry",
+  "css": "src/app/globals.css",
+  "aliases": {
+    "components": "@/components",
+    "pages": "@/app"
+  }
+}
+```
+
+| Field | Description |
+| --- | --- |
+| `template` | Starter kit family |
+| `variant` | Framework implementation |
+| `theme` | Active `@loomdev-pro/themes` preset |
+| `registry` | Registry package for add/diff |
+| `css` | Global stylesheet path |
+| `aliases` | Path aliases for generated files |
+
+## Starter kits
+
+| Template | Variants | Primary routes |
+| --- | --- | --- |
+| `admin` | vite-lit, next-react | Dashboard, users, roles, billing, reports |
+| `saas` | vite-lit, next-react | Auth, onboarding, billing, API keys |
+| `crm` | vite-lit, next-react | Pipeline, leads, deals, import |
+| `analytics` | vite-lit, next-react | Metrics, segments, cohorts, alerts |
+
+Browse the full catalog on [Pro templates](/pro/templates/).
+
+## Usage examples
+
+### CI: scaffold and validate
+
+```sh
+loomi-pro create ci-admin -d --template admin --variant next-react
+cd ci-admin
+loomi-pro doctor
+pnpm install
+pnpm build
+```
+
+### Switch theme in an existing app
+
+```sh
+loomi-pro theme fintech
+loomi-pro doctor
+```
+
+### Check for upstream template changes
+
+```sh
+loomi-pro diff
+loomi-pro add dashboard-metrics --dry-run
+```
+
+## Related
+
+- **[MCP Server →](/mcp-server/)** — give AI tools access to LoomiUI component docs.
+- **[Pro templates →](/pro/templates/)** — starter kits the CLI scaffolds.
+- **[Theme presets →](/pro/themes/theme-presets/)** — presets you can apply with `loomi-pro theme`.
+- **[Pro licensing →](/pro/licensing/)** — get access to `@loomdev-pro/cli`.

@@ -5,8 +5,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { css, html, nothing } from "lit";
-import { customElement } from "lit/decorators.js";
+import { customElement, state } from "lit/decorators.js";
 import { LoomiElement, loomiStyles, onClickOutside } from "@loomidev/core";
+import "@loomidev/button/loomi-button.js";
+import "@loomidev/datepicker/loomi-datepicker.js";
 const DATE_FORMATTER = new Intl.DateTimeFormat("en", {
     month: "short",
     day: "numeric",
@@ -72,6 +74,9 @@ let LoomiDateRangePicker = class LoomiDateRangePicker extends LoomiElement {
         this.max = "";
         this.comparison = false;
         this.showPresets = true;
+        this.popoverX = 0;
+        this.popoverY = 0;
+        this.placementFrame = 0;
         this.toggleOpen = (event) => {
             event.stopPropagation();
             this.open = !this.open;
@@ -101,6 +106,7 @@ let LoomiDateRangePicker = class LoomiDateRangePicker extends LoomiElement {
                 this.setDefaultComparisonRange();
             }
             this.dispatchChange();
+            this.schedulePlacement();
         };
         this.handleDocumentKeydown = (event) => {
             if (!this.open || event.key !== "Escape") {
@@ -181,12 +187,12 @@ let LoomiDateRangePicker = class LoomiDateRangePicker extends LoomiElement {
     }
 
     .popover {
-      position: absolute;
-      z-index: 100;
-      top: calc(100% + 8px);
-      right: 0;
+      position: fixed;
+      z-index: var(--loomi-date-range-picker-z-index, 1000);
+      top: var(--loomi-date-range-picker-y, 0px);
+      left: var(--loomi-date-range-picker-x, 0px);
       width: min(640px, calc(100vw - 32px));
-      overflow: hidden;
+      overflow: visible;
       border: 1px solid var(--loomi-date-border);
       border-radius: 8px;
       background: var(--loomi-date-surface);
@@ -210,8 +216,7 @@ let LoomiDateRangePicker = class LoomiDateRangePicker extends LoomiElement {
       padding: 8px;
     }
 
-    .preset,
-    .footer button {
+    .preset {
       min-height: 34px;
       border: 1px solid transparent;
       border-radius: 6px;
@@ -253,21 +258,15 @@ let LoomiDateRangePicker = class LoomiDateRangePicker extends LoomiElement {
       font-weight: 600;
     }
 
-    input[type="date"] {
-      min-height: 36px;
-      border: 1px solid var(--loomi-date-border);
-      border-radius: 6px;
-      background: var(--loomi-date-surface);
-      color: inherit;
-      padding: 0 10px;
-      font: inherit;
-    }
-
     .compare-toggle {
       display: inline-flex;
       align-items: center;
       gap: 8px;
       width: fit-content;
+    }
+
+    .range-grid loomi-datepicker {
+      width: 100%;
     }
 
     .footer {
@@ -278,23 +277,7 @@ let LoomiDateRangePicker = class LoomiDateRangePicker extends LoomiElement {
       padding: 12px;
     }
 
-    .footer button {
-      border-color: var(--loomi-date-border);
-      text-align: center;
-    }
-
-    .footer .apply {
-      border-color: var(--loomi-date-accent);
-      background: var(--loomi-date-accent);
-      color: #ffffff;
-    }
-
     @media (max-width: 640px) {
-      .popover {
-        left: 0;
-        right: auto;
-      }
-
       .content,
       .range-grid {
         grid-template-columns: 1fr;
@@ -319,7 +302,14 @@ let LoomiDateRangePicker = class LoomiDateRangePicker extends LoomiElement {
     disconnectedCallback() {
         document.removeEventListener("keydown", this.handleDocumentKeydown);
         this.cleanupOutside?.();
+        this.cleanupPlacement?.();
+        cancelAnimationFrame(this.placementFrame);
         super.disconnectedCallback();
+    }
+    updated(changed) {
+        if (changed.has("open")) {
+            this.syncPlacement();
+        }
     }
     render() {
         return html `
@@ -335,7 +325,11 @@ let LoomiDateRangePicker = class LoomiDateRangePicker extends LoomiElement {
     }
     renderPopover() {
         return html `
-      <section class="popover" @click=${(event) => event.stopPropagation()}>
+      <section
+        class="popover"
+        style=${`--loomi-date-range-picker-x:${this.popoverX}px;--loomi-date-range-picker-y:${this.popoverY}px`}
+        @click=${(event) => event.stopPropagation()}
+      >
         <div class="content">
           ${this.showPresets ? this.renderPresets() : nothing}
           <div class="ranges">
@@ -348,8 +342,8 @@ let LoomiDateRangePicker = class LoomiDateRangePicker extends LoomiElement {
           </div>
         </div>
         <div class="footer">
-          <button type="button" @click=${this.closePicker}>Cancel</button>
-          <button class="apply" type="button" @click=${this.applyRange}>Apply</button>
+          <loomi-button type="secondary" size="small" @click=${this.closePicker}>Cancel</loomi-button>
+          <loomi-button size="small" @click=${this.applyRange}>Apply</loomi-button>
         </div>
       </section>
     `;
@@ -380,23 +374,27 @@ let LoomiDateRangePicker = class LoomiDateRangePicker extends LoomiElement {
         <div class="range-grid">
           <label class="input-field">
             <span>Start</span>
-            <input
-              type="date"
-              .value=${this[startProperty]}
-              min=${this.min || nothing}
-              max=${this.max || nothing}
-              @input=${(event) => this.handleDateInput(event, startProperty)}
-            />
+            <loomi-datepicker
+              size="small"
+              format="yyyy-mm-dd"
+              placeholder="Select start date"
+              .selectedValue=${this[startProperty]}
+              min-date=${this.min || nothing}
+              max-date=${this.max || nothing}
+              @change=${(event) => this.handleDatepickerChange(event, startProperty)}
+            ></loomi-datepicker>
           </label>
           <label class="input-field">
             <span>End</span>
-            <input
-              type="date"
-              .value=${this[endProperty]}
-              min=${this.min || nothing}
-              max=${this.max || nothing}
-              @input=${(event) => this.handleDateInput(event, endProperty)}
-            />
+            <loomi-datepicker
+              size="small"
+              format="yyyy-mm-dd"
+              placeholder="Select end date"
+              .selectedValue=${this[endProperty]}
+              min-date=${this.min || nothing}
+              max-date=${this.max || nothing}
+              @change=${(event) => this.handleDatepickerChange(event, endProperty)}
+            ></loomi-datepicker>
           </label>
         </div>
       </section>
@@ -405,8 +403,13 @@ let LoomiDateRangePicker = class LoomiDateRangePicker extends LoomiElement {
     handlePresetClick(preset) {
         this.applyPresetValue(preset, true);
     }
-    handleDateInput(event, property) {
-        this[property] = event.target.value;
+    handleDatepickerChange(event, property) {
+        const detail = event.detail;
+        const isoDate = detail?.dates?.[0];
+        if (!isoDate) {
+            return;
+        }
+        this[property] = isoDate;
         this.presetId = "custom";
         this.normalizeRange();
         this.dispatchChange();
@@ -414,6 +417,50 @@ let LoomiDateRangePicker = class LoomiDateRangePicker extends LoomiElement {
     syncOutsideClick() {
         this.cleanupOutside?.();
         this.cleanupOutside = this.open ? onClickOutside(this, () => this.closePicker()) : undefined;
+    }
+    syncPlacement() {
+        this.cleanupPlacement?.();
+        cancelAnimationFrame(this.placementFrame);
+        if (!this.open) {
+            this.cleanupPlacement = undefined;
+            return;
+        }
+        const reposition = () => this.schedulePlacement();
+        window.addEventListener("resize", reposition);
+        window.addEventListener("scroll", reposition, true);
+        this.cleanupPlacement = () => {
+            window.removeEventListener("resize", reposition);
+            window.removeEventListener("scroll", reposition, true);
+        };
+        this.schedulePlacement();
+    }
+    schedulePlacement() {
+        cancelAnimationFrame(this.placementFrame);
+        this.placementFrame = requestAnimationFrame(() => {
+            void this.updateComplete.then(() => this.resolvePlacement());
+        });
+    }
+    resolvePlacement() {
+        if (!this.open)
+            return;
+        const popover = this.renderRoot.querySelector(".popover");
+        const trigger = this.renderRoot.querySelector(".trigger");
+        if (!popover || !trigger)
+            return;
+        const triggerRect = trigger.getBoundingClientRect();
+        const popoverRect = popover.getBoundingClientRect();
+        const margin = 8;
+        const viewportWidth = document.documentElement.clientWidth || window.innerWidth;
+        const viewportHeight = document.documentElement.clientHeight || window.innerHeight;
+        const popoverWidth = popoverRect.width || Math.min(640, viewportWidth - margin * 2);
+        const popoverHeight = popoverRect.height || 420;
+        const alignLeft = viewportWidth <= 640;
+        let x = alignLeft ? triggerRect.left : triggerRect.right - popoverWidth;
+        let y = triggerRect.bottom + margin;
+        x = Math.min(Math.max(margin, x), Math.max(margin, viewportWidth - margin - popoverWidth));
+        y = Math.min(Math.max(margin, y), Math.max(margin, viewportHeight - margin - popoverHeight));
+        this.popoverX = x;
+        this.popoverY = y;
     }
     applyPresetValue(preset, emitChange) {
         this.startDate = preset.startDate;
@@ -490,6 +537,12 @@ let LoomiDateRangePicker = class LoomiDateRangePicker extends LoomiElement {
         return `${primary} compared with ${formatDate(this.compareStartDate)} - ${formatDate(this.compareEndDate)}`;
     }
 };
+__decorate([
+    state()
+], LoomiDateRangePicker.prototype, "popoverX", void 0);
+__decorate([
+    state()
+], LoomiDateRangePicker.prototype, "popoverY", void 0);
 LoomiDateRangePicker = __decorate([
     customElement("loomi-date-range-picker")
 ], LoomiDateRangePicker);

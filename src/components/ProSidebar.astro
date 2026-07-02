@@ -128,6 +128,18 @@ const GITHUB_URL = "https://github.com/loomidev/loomiui-pro";
     ))}
   </nav>
 
+  <div class="sidebar-section-label">Tooling</div>
+  <nav class="space-y-0.5">
+    <a href="/cli/" class:list={["category-link", currentPath === "/cli/" && "is-active"]}>
+      <span class="category-link-icon"><loomi-icon name="command-line" style="width:1.05rem;height:1.05rem"></loomi-icon></span>
+      <span class="grow text-left">CLI</span>
+    </a>
+    <a href="/mcp-server/" class:list={["category-link", currentPath === "/mcp-server/" && "is-active"]}>
+      <span class="category-link-icon"><loomi-icon name="cpu-chip" style="width:1.05rem;height:1.05rem"></loomi-icon></span>
+      <span class="grow text-left">MCP Server</span>
+    </a>
+  </nav>
+
   <div class="promo-card">
     <div class="promo-card-icon"><loomi-icon name="star" style="width:1.15rem;height:1.15rem"></loomi-icon></div>
     <div class="promo-card-title">Ship production apps faster</div>

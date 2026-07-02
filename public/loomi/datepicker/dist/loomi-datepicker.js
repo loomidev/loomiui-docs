@@ -55,11 +55,11 @@ let LoomiDatepicker = class LoomiDatepicker extends LoomiElement {
     }
     static { this.styles = loomiStyles(componentStyles); }
     static { this.formAssociated = true; }
-    willUpdate() {
-        if (!this.parsed && this.selectedValue) {
+    willUpdate(changed) {
+        if (changed.has("selectedValue") || (!this.parsed && this.selectedValue)) {
             const parts = this.selectedValue.split(" - ");
-            this.start = parseISO(parts[0]) ?? null;
-            this.end = parts[1] ? parseISO(parts[1]) : null;
+            this.start = parts[0] ? parseISO(parts[0]) ?? null : null;
+            this.end = parts[1] ? parseISO(parts[1]) ?? null : null;
             if (this.start)
                 this.view = new Date(this.start);
             this.parsed = true;
@@ -231,8 +231,8 @@ let LoomiDatepicker = class LoomiDatepicker extends LoomiElement {
         return html `<div class="loomi-dp ${this.open ? "open" : ""}">
       ${this.label ? html `<span class="loomi-label">${this.label}${this.required ? html `<span class="loomi-req"> *</span>` : nothing}</span>` : nothing}
       <div class="loomi-field size-${this.size}" @click=${() => this.toggle()}>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">${CAL}</svg>
         <span class="loomi-text ${this.value ? "" : "placeholder"}">${this.value || placeholder}${!this.value && this.required ? html `<span class="loomi-req"> *</span>` : nothing}</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">${CAL}</svg>
       </div>
       ${this.open
             ? html `<div class="loomi-cal" @click=${(e) => e.stopPropagation()}>${calendarBody}</div>`

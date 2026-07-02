@@ -169,7 +169,6 @@ let LoomiDataGrid = class LoomiDataGrid extends LoomiElement {
     static { this.styles = loomiStyles(dataGridStyles); }
     connectedCallback() {
         super.connectedCallback();
-        this.setAttribute("role", "table");
     }
     disconnectedCallback() {
         super.disconnectedCallback();
