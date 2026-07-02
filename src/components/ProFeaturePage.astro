@@ -34,6 +34,29 @@ const THEME_PRESETS = [
   { name: "Education", color: "#7c3aed" },
   { name: "High Contrast", color: "#1d4ed8" },
 ];
+
+const THEME_BUILDER_HIGHLIGHTS = [
+  {
+    step: "01",
+    icon: "swatch",
+    text: "Start from any Pro preset or compose a brand theme with createTheme()",
+  },
+  {
+    step: "02",
+    icon: "adjustments-horizontal",
+    text: "Override shared, light, or dark tokens without breaking component contracts",
+  },
+  {
+    step: "03",
+    icon: "arrow-down-tray",
+    text: "Export runtime CSS variables, static stylesheets, or JSON token files",
+  },
+  {
+    step: "04",
+    icon: "check-badge",
+    text: "Import existing themes and validate tokens before shipping",
+  },
+];
 ---
 
 <html lang="en">
@@ -58,14 +81,16 @@ const THEME_PRESETS = [
           {feature.description}
         </p>
 
-        <ul class="mt-6 grid gap-3 sm:grid-cols-2">
-          {feature.highlights.map((line: string) => (
-            <li class="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-300">
-              <loomi-icon name="check-circle" style="width:1rem;height:1rem;color:rgb(37 99 235);flex-shrink:0;margin-top:0.1rem"></loomi-icon>
-              <span>{line}</span>
-            </li>
-          ))}
-        </ul>
+        {category !== "theme-builder" && (
+          <ul class="mt-6 grid gap-3 sm:grid-cols-2">
+            {feature.highlights.map((line: string) => (
+              <li class="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-300">
+                <loomi-icon name="check-circle" style="width:1rem;height:1rem;color:rgb(37 99 235);flex-shrink:0;margin-top:0.1rem"></loomi-icon>
+                <span>{line}</span>
+              </li>
+            ))}
+          </ul>
+        )}
 
         {category === "token-system" && (
           <div class="mt-10 rounded-2xl border border-gray-200 p-5 dark:border-gray-800">
@@ -86,10 +111,28 @@ applyTheme(themePresets.fintech, "dark");`}</code></pre>
         )}
 
         {category === "theme-builder" && (
-          <div class="mt-10 rounded-2xl border border-gray-200 p-5 dark:border-gray-800">
-            <div class="text-sm font-semibold text-gray-900 dark:text-white">Compose a brand theme</div>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Start from a preset, override tokens, then export to CSS, JSON, or TypeScript.</p>
-            <pre class="token-code"><code>{`import { createTheme, palettes, themeToCss } from "@loomdev-pro/themes";
+          <div class="mt-10 space-y-6">
+            <div class="builder-highlights">
+              <div class="builder-highlights-label">How it works</div>
+              <div class="builder-highlights-grid">
+                {THEME_BUILDER_HIGHLIGHTS.map((item) => (
+                  <div class="builder-highlight-card">
+                    <div class="builder-highlight-top">
+                      <span class="builder-highlight-step">{item.step}</span>
+                      <span class="builder-highlight-icon">
+                        <loomi-icon name={item.icon} style="width:1.1rem;height:1.1rem"></loomi-icon>
+                      </span>
+                    </div>
+                    <p class="builder-highlight-text">{item.text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div class="rounded-2xl border border-gray-200 p-5 dark:border-gray-800">
+              <div class="text-sm font-semibold text-gray-900 dark:text-white">Compose a brand theme</div>
+              <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Start from a preset, override tokens, then export to CSS, JSON, or TypeScript.</p>
+              <pre class="token-code"><code>{`import { createTheme, palettes, themeToCss } from "@loomdev-pro/themes";
 
 const brand = createTheme({
   name: "brand",
@@ -100,17 +143,18 @@ const brand = createTheme({
 });
 
 const css = themeToCss(brand);`}</code></pre>
-            <div class="mt-5 grid gap-3 sm:grid-cols-3">
-              <div class="builder-preview">
-                <loomi-button color="primary" size="small">Primary</loomi-button>
-                <loomi-button type="secondary" size="small">Secondary</loomi-button>
-              </div>
-              <div class="builder-preview">
-                <loomi-input placeholder="Email" size="small"></loomi-input>
-              </div>
-              <div class="builder-preview">
-                <loomi-tag label="Active" color="success"></loomi-tag>
-                <loomi-tag label="Draft" color="warning"></loomi-tag>
+              <div class="mt-5 grid gap-3 sm:grid-cols-3">
+                <div class="builder-preview">
+                  <loomi-button color="primary" size="small">Primary</loomi-button>
+                  <loomi-button type="secondary" size="small">Secondary</loomi-button>
+                </div>
+                <div class="builder-preview">
+                  <loomi-input placeholder="Email" size="small"></loomi-input>
+                </div>
+                <div class="builder-preview">
+                  <loomi-tag label="Active" color="success"></loomi-tag>
+                  <loomi-tag label="Draft" color="warning"></loomi-tag>
+                </div>
               </div>
             </div>
           </div>
@@ -251,6 +295,98 @@ const css = themeToCss(brand);`}</code></pre>
   .dark .builder-preview {
     border-color: rgb(51 65 85);
     background: rgb(30 41 59 / 0.5);
+  }
+  .builder-highlights {
+    border-radius: 1rem;
+    border: 1px solid rgb(191 219 254);
+    background:
+      linear-gradient(135deg, rgb(239 246 255), rgb(248 250 252)),
+      radial-gradient(circle at 100% 0%, rgb(37 99 235 / 0.12), transparent 42%);
+    padding: 1.25rem;
+  }
+  .dark .builder-highlights {
+    border-color: rgb(30 58 138 / 0.45);
+    background:
+      linear-gradient(135deg, rgb(15 23 42 / 0.92), rgb(30 41 59 / 0.72)),
+      radial-gradient(circle at 100% 0%, rgb(59 130 246 / 0.18), transparent 42%);
+  }
+  .builder-highlights-label {
+    margin-bottom: 1rem;
+    color: rgb(29 78 216);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .dark .builder-highlights-label {
+    color: rgb(147 197 253);
+  }
+  .builder-highlights-grid {
+    display: grid;
+    gap: 0.85rem;
+  }
+  @media (min-width: 640px) {
+    .builder-highlights-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  .builder-highlight-card {
+    border-radius: 0.85rem;
+    border: 1px solid rgb(255 255 255 / 0.85);
+    background: rgb(255 255 255 / 0.88);
+    box-shadow: 0 10px 24px -18px rgb(37 99 235 / 0.45);
+    padding: 1rem 1rem 1.05rem;
+  }
+  .dark .builder-highlight-card {
+    border-color: rgb(51 65 85);
+    background: rgb(15 23 42 / 0.78);
+    box-shadow: 0 12px 28px -20px rgb(0 0 0 / 0.55);
+  }
+  .builder-highlight-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+  }
+  .builder-highlight-step {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    border-radius: 999px;
+    background: rgb(37 99 235);
+    padding: 0.2rem 0.55rem;
+    color: white;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+  }
+  .dark .builder-highlight-step {
+    background: rgb(59 130 246);
+  }
+  .builder-highlight-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.65rem;
+    background: rgb(37 99 235 / 0.1);
+    color: rgb(37 99 235);
+  }
+  .dark .builder-highlight-icon {
+    background: rgb(96 165 250 / 0.14);
+    color: rgb(147 197 253);
+  }
+  .builder-highlight-text {
+    margin: 0;
+    color: rgb(15 23 42);
+    font-size: 0.92rem;
+    font-weight: 600;
+    line-height: 1.55;
+  }
+  .dark .builder-highlight-text {
+    color: rgb(241 245 249);
   }
   .a11y-card {
     border-radius: 0.75rem;
