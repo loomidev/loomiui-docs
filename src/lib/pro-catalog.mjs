@@ -192,6 +192,25 @@ const ITEMS = {
   ],
 };
 
+const TEMPLATE_SLUGS = {
+  "Admin Pro": "admin",
+  "SaaS Starter": "saas",
+  CRM: "crm",
+  "Analytics Dashboard": "analytics",
+};
+
+/** Desktop dashboard screenshot for shipped template variants. */
+export function templatePreviewImage(title) {
+  const match = title.match(/^(.+?) (vite-lit|next-react)$/);
+  if (!match) return null;
+
+  const [, label, variant] = match;
+  const slug = TEMPLATE_SLUGS[label];
+  if (!slug) return null;
+
+  return `/pro/templates/${slug}/${variant}/dashboard-desktop.png`;
+}
+
 const PREVIEW_ICONS = {
   "template-variants": "squares-plus",
   "admin-pro": "shield-check",
@@ -396,6 +415,7 @@ export function proCatalogItems(options = {}) {
         area: category.area,
         description: inferDescription(title),
         icon: PREVIEW_ICONS[category.key] ?? "sparkles",
+        previewImage: category.key === "template-variants" ? templatePreviewImage(title) : null,
         search: `${title} ${category.label} ${category.area}`.toLowerCase(),
         href: pageHref ? `${pageHref}#${slug}` : null,
       });
