@@ -557,6 +557,505 @@
   }
 }
 
+.demo-shell {
+  position: relative;
+  display: flex;
+  min-height: 38rem;
+  max-height: 42rem;
+  flex-direction: column;
+  overflow: hidden;
+  background: rgb(255 255 255);
+}
+
+.dark .demo-shell {
+  background: rgb(3 7 18);
+}
+
+.demo-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.85rem;
+  border-bottom: 1px solid rgb(226 232 240);
+  padding: 0.85rem 1.1rem;
+}
+
+.dark .demo-toolbar {
+  border-bottom-color: rgb(30 41 59);
+}
+
+.demo-toolbar-start {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.demo-toolbar-start loomi-select {
+  width: min(100%, 14rem);
+}
+
+.demo-toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.demo-hint {
+  margin: 0;
+  color: rgb(100 116 139);
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+.dark .demo-hint {
+  color: rgb(148 163 184);
+}
+
+.demo-tabs {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
+.demo-tab-body {
+  overflow: auto;
+  padding: 1.1rem;
+}
+
+.demo-dash-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.demo-dash-kicker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.demo-dash-title {
+  margin: 0.45rem 0 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.demo-dash-meta {
+  margin: 0.2rem 0 0;
+  color: rgb(100 116 139);
+  font-size: 0.85rem;
+}
+
+.dark .demo-dash-meta {
+  color: rgb(148 163 184);
+}
+
+.demo-health {
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.demo-health--ok {
+  color: rgb(5 150 105);
+}
+
+.demo-health--risk {
+  color: rgb(225 29 72);
+}
+
+.demo-health--planning {
+  color: rgb(37 99 235);
+}
+
+.dark .demo-health--ok {
+  color: rgb(52 211 153);
+}
+
+.dark .demo-health--risk {
+  color: rgb(251 113 133);
+}
+
+.dark .demo-health--planning {
+  color: rgb(96 165 250);
+}
+
+.demo-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 640px) {
+  .demo-stat-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.demo-progress-block {
+  margin-bottom: 1rem;
+}
+
+.demo-section-label {
+  margin-bottom: 0.45rem;
+  color: rgb(100 116 139);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.dark .demo-section-label {
+  color: rgb(148 163 184);
+}
+
+.demo-dash-grid {
+  display: grid;
+  gap: 0.85rem;
+}
+
+@media (min-width: 768px) {
+  .demo-dash-grid {
+    grid-template-columns: 1.15fr 0.85fr;
+  }
+}
+
+.demo-chart-stack {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.demo-activity-card {
+  border-radius: 10px;
+  border: 1px solid rgb(226 232 240);
+  background: rgb(248 250 252);
+  padding: 0.85rem;
+}
+
+.dark .demo-activity-card {
+  border-color: rgb(30 41 59);
+  background: rgb(15 23 42 / 0.55);
+}
+
+.demo-board-toolbar {
+  margin-bottom: 0.85rem;
+}
+
+.demo-board-toolbar loomi-input {
+  max-width: 18rem;
+}
+
+.demo-board {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .demo-board {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.demo-board-col {
+  display: flex;
+  min-height: 16rem;
+  flex-direction: column;
+  border-radius: 10px;
+  border: 1px solid rgb(226 232 240);
+  background: rgb(248 250 252 / 0.85);
+  padding: 0.65rem;
+}
+
+.dark .demo-board-col {
+  border-color: rgb(30 41 59);
+  background: rgb(15 23 42 / 0.45);
+}
+
+.demo-board-col-head {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.55rem;
+  color: rgb(71 85 105);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.dark .demo-board-col-head {
+  color: rgb(203 213 225);
+}
+
+.demo-board-dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+}
+
+.demo-board-dot--todo {
+  background: rgb(148 163 184);
+}
+
+.demo-board-dot--progress {
+  background: rgb(249 115 22);
+}
+
+.demo-board-dot--done {
+  background: rgb(34 197 94);
+}
+
+.demo-board-count {
+  margin-left: auto;
+  border-radius: 999px;
+  background: rgb(255 255 255);
+  padding: 0.1rem 0.45rem;
+  color: rgb(100 116 139);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.dark .demo-board-count {
+  background: rgb(30 41 59);
+  color: rgb(148 163 184);
+}
+
+.demo-board-col loomi-sortable {
+  flex: 1;
+}
+
+.demo-list-row,
+.demo-activity-row {
+  width: 100%;
+}
+
+.demo-activity-row {
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.15s ease;
+}
+
+.demo-activity-row:hover {
+  background: rgb(37 99 235 / 0.06);
+}
+
+.dark .demo-activity-row:hover {
+  background: rgb(96 165 250 / 0.08);
+}
+
+.demo-list-title {
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.demo-list-meta {
+  margin-top: 0.1rem;
+  color: rgb(100 116 139);
+  font-size: 0.72rem;
+}
+
+.dark .demo-list-meta {
+  color: rgb(148 163 184);
+}
+
+.demo-task-panel {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+}
+
+.demo-task-panel-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgb(15 23 42 / 0.28);
+  cursor: pointer;
+}
+
+.dark .demo-task-panel-backdrop {
+  background: rgb(0 0 0 / 0.45);
+}
+
+.demo-task-panel-sheet {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  height: 100%;
+  width: min(100%, 22rem);
+  flex-direction: column;
+  border-left: 1px solid rgb(226 232 240);
+  background: rgb(255 255 255);
+  box-shadow: -12px 0 40px rgb(15 23 42 / 0.12);
+  animation: demo-panel-in 0.22s ease-out;
+}
+
+.dark .demo-task-panel-sheet {
+  border-left-color: rgb(30 41 59);
+  background: rgb(15 23 42);
+  box-shadow: -12px 0 40px rgb(0 0 0 / 0.35);
+}
+
+@keyframes demo-panel-in {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.demo-task-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  border-bottom: 1px solid rgb(226 232 240);
+  padding: 0.85rem 1rem;
+}
+
+.dark .demo-task-panel-head {
+  border-bottom-color: rgb(30 41 59);
+}
+
+.demo-task-panel-body {
+  overflow: auto;
+  padding: 1rem;
+}
+
+.demo-task-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.demo-task-desc {
+  margin: 0.45rem 0 0;
+  color: rgb(71 85 105);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.dark .demo-task-desc {
+  color: rgb(203 213 225);
+}
+
+.demo-task-due {
+  margin: 0.65rem 0 0;
+  color: rgb(100 116 139);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.demo-task-fields {
+  display: grid;
+  gap: 0.65rem;
+  margin: 1rem 0;
+}
+
+@media (min-width: 480px) {
+  .demo-task-fields {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.demo-comment {
+  display: flex;
+  gap: 0.55rem;
+  width: 100%;
+}
+
+.demo-comment-body {
+  margin-top: 0.15rem;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.demo-comment-form {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 0.65rem;
+}
+
+.demo-empty-copy {
+  margin: 0;
+  padding: 0 0.15rem;
+  color: rgb(100 116 139);
+  font-size: 0.78rem;
+}
+
+.demo-toast {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 30;
+  max-width: min(20rem, calc(100% - 2rem));
+  animation: demo-toast-in 0.2s ease-out;
+}
+
+.demo-toast.hidden {
+  display: none;
+}
+
+@keyframes demo-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.demo-modal-form {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.demo-form-grid {
+  display: grid;
+  gap: 0.85rem;
+}
+
+@media (min-width: 480px) {
+  .demo-form-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.demo-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+}
+
+@media (max-width: 640px) {
+  .demo-hint {
+    width: 100%;
+  }
+
+  .demo-toolbar-actions {
+    width: 100%;
+  }
+
+  .demo-toolbar-actions loomi-button {
+    flex: 1;
+  }
+}
+
 /* Shared "gallery page" sidebar chrome — used by both /components/ and /icons/, which
    are both raw Astro pages (outside Starlight's Layout) with the same
    search+nav-list+promo-card+help-card sidebar shape. Lives here rather than scoped to
