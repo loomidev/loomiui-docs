@@ -1,8 +1,8 @@
 /** Pro catalog derived from strategy/templates.md and strategy/themes.md */
 
 export const PRO_AREAS = [
-  { key: "templates", label: "Templates", icon: "rectangle-stack" },
-  { key: "themes", label: "Themes", icon: "swatch" },
+  { key: "templates", label: "Templates", icon: "rectangle-stack", href: "/pro/templates/" },
+  { key: "themes", label: "Themes", icon: "swatch", href: "/pro/themes/" },
 ];
 
 export const PRO_CATEGORIES = [
@@ -18,7 +18,7 @@ export const PRO_CATEGORIES = [
     icon: "variable",
     href: "/pro/themes/token-system/",
   },
-  { key: "theme-presets", label: "Theme Presets", area: "themes", icon: "paint-brush" },
+  { key: "theme-presets", label: "Theme Presets", area: "themes", icon: "paint-brush", href: "/pro/themes/theme-presets/" },
   {
     key: "theme-builder",
     label: "Theme Builder",
@@ -26,8 +26,8 @@ export const PRO_CATEGORIES = [
     icon: "adjustments-horizontal",
     href: "/pro/themes/theme-builder/",
   },
-  { key: "figma-kit", label: "Figma Kit", area: "themes", icon: "beaker" },
-  { key: "assets-brand", label: "Assets & Brand", area: "themes", icon: "photo" },
+  { key: "figma-kit", label: "Figma Kit", area: "themes", icon: "beaker", href: "/pro/themes/figma-kit/" },
+  { key: "assets-brand", label: "Assets & Brand", area: "themes", icon: "photo", href: "/pro/themes/assets-brand/" },
   {
     key: "accessibility-quality",
     label: "Accessibility & Quality",
@@ -140,6 +140,8 @@ const ITEMS = {
     "E-commerce admin theme",
     "Enterprise neutral theme",
     "High contrast accessibility theme",
+    "Marketing growth theme",
+    "Legal compliance theme",
   ],
   "theme-builder": [
     "Web-based theme editor",
@@ -219,6 +221,18 @@ const FEATURE_PAGES = {
       "Density and component-level tokens for shells, panels, and tables",
     ],
   },
+  "theme-presets": {
+    title: "Theme Presets",
+    kicker: "Themes",
+    description:
+      "Browse all twelve LoomiUI Pro theme presets with live light and dark previews, token scales, component samples, and starter kit pairings.",
+    highlights: [
+      "Interactive preset switcher with real generated CSS variables",
+      "Primary, semantic, surface, typography, radius, and shadow previews",
+      "Mini app shell showing sidebar, header, and panel surfaces",
+      "Copy-ready CSS import lines and starter kit mapping",
+    ],
+  },
   "theme-builder": {
     title: "Theme Builder",
     kicker: "Themes",
@@ -241,6 +255,30 @@ const FEATURE_PAGES = {
       "Visible focus rings and keyboard-friendly component defaults",
       "Reduced-motion behavior aligned with user preferences",
       "Migration notes and changelogs when tokens evolve",
+    ],
+  },
+  "figma-kit": {
+    title: "Figma Kit",
+    kicker: "Themes",
+    description:
+      "A tokenized Figma library aligned with LoomiUI Pro components — color and text styles, auto-layout patterns, and production-ready frames for admin, SaaS, and data-heavy products.",
+    highlights: [
+      "Core and Pro component libraries with matching variants",
+      "Tokenized color and text styles synced to Pro themes",
+      "Auto-layout patterns and page layout examples",
+      "Admin, SaaS, table, form, modal, and empty-state frames",
+    ],
+  },
+  "assets-brand": {
+    title: "Assets & Brand",
+    kicker: "Themes",
+    description:
+      "Marketing and product visuals that match Pro templates and themes — shell examples, dashboard previews, template screenshots, and launch-ready social assets.",
+    highlights: [
+      "App shell and dashboard preview artwork",
+      "Template and component gallery screenshots",
+      "Marketing page and launch announcement visuals",
+      "Social preview and Open Graph image templates",
     ],
   },
 };
@@ -378,12 +416,17 @@ export function categoryHref(categoryKey) {
   return getProCategory(categoryKey)?.href ?? null;
 }
 
+export function getProArea(key) {
+  return PRO_AREAS.find((area) => area.key === key);
+}
+
 export function proCatalogItems(options = {}) {
-  const { category: onlyCategory } = options;
+  const { category: onlyCategory, area: onlyArea } = options;
   const items = [];
 
   for (const category of PRO_CATEGORIES) {
     if (onlyCategory && category.key !== onlyCategory) continue;
+    if (onlyArea && category.area !== onlyArea) continue;
 
     const pageHref = category.href ?? null;
     for (const title of ITEMS[category.key] ?? []) {

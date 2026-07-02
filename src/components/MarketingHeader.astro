@@ -11,6 +11,8 @@ import icon from "../assets/icon.png";
 import logoLight from "../assets/logo-light.png";
 import logoDark from "../assets/logo-dark.png";
 
+import { PRO_LICENSING_URL } from "../lib/pro-licensing.mjs";
+
 const GITHUB_URL = "https://github.com/loomidev/loomiui-docs";
 ---
 
@@ -25,7 +27,6 @@ const GITHUB_URL = "https://github.com/loomidev/loomiui-docs";
     <nav class="ml-10 hidden items-center gap-7 text-sm font-medium text-gray-600 dark:text-gray-300 lg:flex">
       <a href="/installation/" class="hover:text-primary-600 dark:hover:text-primary-400">Docs</a>
       <a href="/components/" class="hover:text-primary-600 dark:hover:text-primary-400">Components</a>
-      <a href="/customization/" class="hover:text-primary-600 dark:hover:text-primary-400">Themes</a>
       <loomi-dropmenu position="auto" hide-after-click>
         <button slot="trigger" type="button" class="flex cursor-pointer items-center gap-1 border-0 bg-transparent p-0 font-sans text-sm font-medium text-gray-600 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400">
           Resources
@@ -36,6 +37,14 @@ const GITHUB_URL = "https://github.com/loomidev/loomiui-docs";
         <loomi-dropmenu-item icon="code-bracket"><a href="/contributing/">Contributing</a></loomi-dropmenu-item>
         <loomi-dropmenu-item icon="language"><a href="/rtl-support/">RTL Support</a></loomi-dropmenu-item>
         <loomi-dropmenu-item divider icon="star"><a href={GITHUB_URL}>Star on GitHub</a></loomi-dropmenu-item>
+      </loomi-dropmenu>
+      <loomi-dropmenu position="auto" hide-after-click>
+        <button slot="trigger" type="button" class="flex cursor-pointer items-center gap-1 border-0 bg-transparent p-0 font-sans text-sm font-medium text-gray-600 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400">
+          Pro
+          <loomi-icon name="chevron-down" style="width:0.85rem;height:0.85rem"></loomi-icon>
+        </button>
+        <loomi-dropmenu-item icon="swatch"><a href="/pro/themes/">Themes</a></loomi-dropmenu-item>
+        <loomi-dropmenu-item icon="rectangle-stack"><a href="/pro/templates/">Templates</a></loomi-dropmenu-item>
       </loomi-dropmenu>
     </nav>
 
@@ -63,7 +72,7 @@ const GITHUB_URL = "https://github.com/loomidev/loomiui-docs";
         </svg>
       </a>
       <loomi-button class="hidden sm:inline-flex" type="secondary" size="small" tag="a" href="/installation/">Get Started</loomi-button>
-      <loomi-button class="hidden sm:inline-flex" color="primary" size="small" tag="a" href="/pro/">Get Pro</loomi-button>
+      <loomi-button class="hidden sm:inline-flex" color="primary" size="small" tag="a" href={PRO_LICENSING_URL}>Get Pro</loomi-button>
     </div>
   </div>
 </header>

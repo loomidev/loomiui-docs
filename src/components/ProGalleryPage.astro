@@ -1,22 +1,33 @@
 ---
-// Gallery shell for the /pro/ index page — same layout family as ComponentsGalleryPage.
+// Gallery for /pro/templates/ or /pro/themes/ — category pills match sidebar nav for that area.
 import MarketingHeader from "./MarketingHeader.astro";
 import ProSidebar from "./ProSidebar.astro";
 import { buildImportMap } from "../lib/import-map.mjs";
 import {
-  PRO_AREAS,
   PRO_CATEGORIES,
+  getProArea,
   proCatalogItems,
 } from "../lib/pro-catalog.mjs";
+import { PRO_LICENSING_URL } from "../lib/pro-licensing.mjs";
 import "../styles/home.css";
 
-const importMap = buildImportMap();
-const title = "LoomiUI Pro";
-const description =
-  "Application starter kits, premium themes, Figma assets, and production tooling — browse everything included in LoomiUI Pro.";
-const GITHUB_URL = "https://github.com/loomidev/loomiui-pro";
+interface Props {
+  area: "templates" | "themes";
+}
 
-const items = proCatalogItems();
+const { area } = Astro.props;
+const areaMeta = getProArea(area)!;
+const categories = PRO_CATEGORIES.filter((cat) => cat.area === area);
+const items = proCatalogItems({ area });
+const categoryParam = Astro.url.searchParams.get("category");
+const importMap = buildImportMap();
+const title = `${areaMeta.label} - LoomiUI Pro`;
+const description =
+  area === "templates"
+    ? "Browse Pro application templates, starter kits, page templates, and framework variants."
+    : "Browse Pro theme presets, token system, Figma kit, and brand assets.";
+const galleryPath = areaMeta.href!;
+const badgeLabel = area === "templates" ? "Template" : "Theme";
 ---
 
 <html lang="en">
@@ -32,25 +43,26 @@ const items = proCatalogItems();
     <MarketingHeader />
 
     <div class="mx-auto max-w-7xl px-6 py-10 lg:grid lg:grid-cols-[15rem_1fr] lg:items-start lg:gap-10">
-      <ProSidebar currentPath="/pro/" />
+      <ProSidebar currentPath={galleryPath} activeArea={area} activeCategory={categoryParam ?? undefined} />
 
       <div class="mt-10 min-w-0 lg:mt-0">
-        <div class="feature-kicker">Premium</div>
-        <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">LoomiUI Pro</h1>
+        <div class="feature-kicker">Pro</div>
+        <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">{areaMeta.label}</h1>
         <p class="mt-3 max-w-2xl text-lg leading-7 text-gray-600 dark:text-gray-400">
-          Application starter kits, premium themes, Figma assets, and production tooling.
-          Browse {items.length} customer-facing items included with Pro.
+          {description} Browse {items.length} items.
         </p>
 
-        <div class="mt-8 grid gap-4 sm:grid-cols-3">
-          {PRO_CATEGORIES.filter((cat) => cat.href).map((cat) => (
-            <a href={cat.href} class="pro-hub-card">
-              <loomi-icon name={cat.icon} style="width:1.25rem;height:1.25rem;color:rgb(37 99 235)"></loomi-icon>
-              <div class="pro-hub-card-title">{cat.label}</div>
-              <p class="pro-hub-card-desc">Explore features, previews, and what's included.</p>
-            </a>
-          ))}
-        </div>
+        {area === "themes" && (
+          <div class="mt-8 grid gap-4 sm:grid-cols-3">
+            {categories.filter((cat) => cat.href).map((cat) => (
+              <a href={cat.href} class="pro-hub-card">
+                <loomi-icon name={cat.icon} style="width:1.25rem;height:1.25rem;color:rgb(37 99 235)"></loomi-icon>
+                <div class="pro-hub-card-title">{cat.label}</div>
+                <p class="pro-hub-card-desc">Explore features, previews, and what's included.</p>
+              </a>
+            ))}
+          </div>
+        )}
 
         <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
           <div class="relative grow">
@@ -58,9 +70,9 @@ const items = proCatalogItems();
             <input
               type="text"
               data-role="search-input"
-              placeholder="Search templates and themes..."
+              placeholder={`Search ${areaMeta.label.toLowerCase()}...`}
               class="main-search"
-              aria-label="Search Pro catalog"
+              aria-label={`Search ${areaMeta.label}`}
             />
           </div>
           <div class="relative shrink-0">
@@ -72,10 +84,18 @@ const items = proCatalogItems();
           </div>
         </div>
 
-        <div class="mt-5 flex flex-wrap gap-2" id="area-pills">
-          <button type="button" class="filter-pill" aria-pressed="true" data-filter="all" data-filter-type="area">All</button>
-          {PRO_AREAS.map((area) => (
-            <button type="button" class="filter-pill" aria-pressed="false" data-filter={area.key} data-filter-type="area">{area.label}</button>
+        <div class="mt-5 flex flex-wrap gap-2" id="category-pills">
+          <button type="button" class="filter-pill is-active" aria-pressed="true" data-filter="all" data-filter-type="category">All</button>
+          {categories.map((cat) => (
+            <button
+              type="button"
+              class="filter-pill"
+              aria-pressed="false"
+              data-filter={cat.key}
+              data-filter-type="category"
+            >
+              {cat.label}
+            </button>
           ))}
         </div>
 
@@ -88,7 +108,6 @@ const items = proCatalogItems();
               <Tag
                 href={item.href ?? undefined}
                 class="pro-card"
-                data-area={item.area}
                 data-category={item.category}
                 data-title={item.title.toLowerCase()}
                 data-search={item.search}
@@ -96,7 +115,7 @@ const items = proCatalogItems();
                 <div class="pro-card-preview">
                   <loomi-icon name={item.icon} style="width:2rem;height:2rem;color:rgb(37 99 235)"></loomi-icon>
                 </div>
-                <div class="pro-card-badge">{item.area === "templates" ? "Template" : "Theme"}</div>
+                <div class="pro-card-badge">{badgeLabel}</div>
                 <div class="pro-card-title">{item.title}</div>
                 <p class="pro-card-desc">{item.description}</p>
                 <div class="pro-card-meta">{PRO_CATEGORIES.find((cat) => cat.key === item.category)?.label}</div>
@@ -108,15 +127,9 @@ const items = proCatalogItems();
           })}
         </div>
 
-        <div id="buy-pro" class="mt-12 rounded-2xl border border-primary-200 bg-primary-50 p-8 text-center dark:border-primary-900/40 dark:bg-primary-950/30">
-          <h2 class="text-2xl font-bold tracking-tight">Ready to build with Pro?</h2>
-          <p class="mx-auto mt-3 max-w-xl text-gray-600 dark:text-gray-400">
-            Get application templates, premium themes, Figma kit, private docs, and updates.
-          </p>
-          <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
-            <loomi-button color="primary" size="small" tag="a" href={GITHUB_URL}>Buy Pro</loomi-button>
-            <loomi-button type="secondary" size="small" tag="a" href="/components/">Browse free components</loomi-button>
-          </div>
+        <div class="mt-12 flex flex-wrap gap-3">
+          <loomi-button color="primary" size="small" tag="a" href={PRO_LICENSING_URL}>Buy Pro</loomi-button>
+          <loomi-button type="secondary" size="small" tag="a" href="/pro/">All Pro</loomi-button>
         </div>
       </div>
     </div>
@@ -138,43 +151,42 @@ const items = proCatalogItems();
       import "@loomidev/icon";
     </script>
 
-    <script>
-      const grid = document.getElementById("pro-grid") as HTMLElement;
-      const cards = Array.from(grid.querySelectorAll<HTMLElement>(".pro-card"));
-      const searchInputs = document.querySelectorAll<HTMLInputElement>("[data-role='search-input']");
-      const filterButtons = document.querySelectorAll<HTMLElement>("[data-filter]");
-      const sortSelect = document.getElementById("sort-select") as HTMLSelectElement | null;
-      const noResults = document.getElementById("no-results") as HTMLElement;
+    <script define:vars={{ galleryPath }}>
+      const grid = document.getElementById("pro-grid");
+      const cards = Array.from(grid.querySelectorAll(".pro-card"));
+      const searchInputs = document.querySelectorAll("[data-role='search-input']");
+      const filterButtons = document.querySelectorAll("[data-filter]");
+      const sortSelect = document.getElementById("sort-select");
+      const noResults = document.getElementById("no-results");
 
       const categoryLabels = new Map(
-        Array.from(cards).map((card) => [card.dataset.category!, card.querySelector(".pro-card-meta")?.textContent ?? ""]),
+        Array.from(cards).map((card) => [card.dataset.category, card.querySelector(".pro-card-meta")?.textContent ?? ""]),
       );
 
       const params = new URLSearchParams(window.location.search);
       const state = {
         query: "",
-        filter: params.get("category") ?? params.get("area") ?? "all",
-        filterType: (params.get("category") ? "category" : "area") as "area" | "category",
+        filter: params.get("category") ?? "all",
         sort: "title",
       };
 
-      if (state.filter !== "all") {
-        filterButtons.forEach((b) => {
-          const active = b.dataset.filter === state.filter && b.dataset.filterType === state.filterType;
-          b.classList.toggle("is-active", active);
-          if (b.hasAttribute("aria-pressed")) b.setAttribute("aria-pressed", String(active));
-        });
-        document.querySelectorAll<HTMLElement>("#area-pills [data-filter]").forEach((b) => {
-          if (b.dataset.filterType === "area") {
-            const active = state.filterType === "area" && b.dataset.filter === state.filter;
-            b.setAttribute("aria-pressed", String(active || (state.filter === "all" && b.dataset.filter === "all")));
-          }
+      function syncUrl() {
+        const url = new URL(window.location.href);
+        if (state.filter === "all") url.searchParams.delete("category");
+        else url.searchParams.set("category", state.filter);
+        window.history.replaceState({}, "", url);
+      }
+
+      function setActivePill() {
+        filterButtons.forEach((btn) => {
+          const active = btn.dataset.filter === state.filter && btn.dataset.filterType === "category";
+          btn.classList.toggle("is-active", active);
+          if (btn.hasAttribute("aria-pressed")) btn.setAttribute("aria-pressed", String(active));
         });
       }
 
-      function matchesFilter(card: HTMLElement) {
+      function matchesFilter(card) {
         if (state.filter === "all") return true;
-        if (state.filterType === "area") return card.dataset.area === state.filter;
         return card.dataset.category === state.filter;
       }
 
@@ -182,9 +194,7 @@ const items = proCatalogItems();
         const q = state.query.trim().toLowerCase();
         let visible = 0;
         for (const card of cards) {
-          const matchesCategory = matchesFilter(card);
-          const matchesQuery = !q || card.dataset.search!.includes(q);
-          const show = matchesCategory && matchesQuery;
+          const show = matchesFilter(card) && (!q || card.dataset.search.includes(q));
           card.classList.toggle("hidden", !show);
           if (show) visible++;
         }
@@ -194,17 +204,17 @@ const items = proCatalogItems();
       function applySort() {
         const sorted = cards.slice().sort((a, b) => {
           if (state.sort === "category") {
-            const c = (categoryLabels.get(a.dataset.category!) ?? "").localeCompare(categoryLabels.get(b.dataset.category!) ?? "");
+            const c = (categoryLabels.get(a.dataset.category) ?? "").localeCompare(categoryLabels.get(b.dataset.category) ?? "");
             if (c !== 0) return c;
           }
-          return a.dataset.title!.localeCompare(b.dataset.title!);
+          return a.dataset.title.localeCompare(b.dataset.title);
         });
         for (const card of sorted) grid.appendChild(card);
       }
 
       searchInputs.forEach((input) => {
         input.addEventListener("input", (e) => {
-          state.query = (e.target as HTMLInputElement).value;
+          state.query = e.target.value;
           searchInputs.forEach((other) => {
             if (other !== e.target) other.value = state.query;
           });
@@ -214,14 +224,9 @@ const items = proCatalogItems();
 
       filterButtons.forEach((btn) => {
         btn.addEventListener("click", () => {
-          state.filter = btn.dataset.filter!;
-          state.filterType = (btn.dataset.filterType as "area" | "category") ?? "area";
-
-          filterButtons.forEach((b) => {
-            const active = b.dataset.filter === state.filter && b.dataset.filterType === state.filterType;
-            b.classList.toggle("is-active", active);
-            if (b.hasAttribute("aria-pressed")) b.setAttribute("aria-pressed", String(active));
-          });
+          state.filter = btn.dataset.filter;
+          setActivePill();
+          syncUrl();
           applyFilters();
         });
       });
@@ -234,10 +239,11 @@ const items = proCatalogItems();
       document.addEventListener("keydown", (e) => {
         if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
           e.preventDefault();
-          (searchInputs[0] as HTMLInputElement | undefined)?.focus();
+          searchInputs[0]?.focus();
         }
       });
 
+      setActivePill();
       applySort();
       applyFilters();
     </script>
