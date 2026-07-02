@@ -25,13 +25,13 @@ const MEMBERS = {
     "date-range-picker", "filter-builder",
   ],
   feedback: ["alert", "notification", "bell", "spinner", "progress", "processing"],
-  navigation: ["tab", "pagination", "dropmenu", "theme-switcher", "context-menu", "command-palette"],
+  navigation: ["tab", "pagination", "dropmenu", "theme-switcher", "context-menu", "command-palette", "sidebar"],
   overlay: ["modal", "popover", "tooltip", "drawer"],
   "data-display": [
     "table", "tag", "statistic", "rating", "timeline", "listview", "contact-card", "chart",
-    "horizontal-line-graph", "copy-to-clipboard", "timer", "data-grid", "calendar",
+    "horizontal-line-graph", "copy-to-clipboard", "timer", "data-grid", "calendar", "chat",
   ],
-  layout: ["button", "button-group", "card", "accordion", "centered-content", "sortable", "divider"],
+  layout: ["button", "button-group", "card", "accordion", "centered-content", "sortable", "divider", "resizable"],
   media: ["icon", "avatar", "empty-state", "qrcode"],
 };
 

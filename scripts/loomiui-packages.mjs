@@ -18,9 +18,9 @@ export const CATEGORY = {
     "card", "avatar", "accordion", "tag", "tooltip", "popover", "empty-state", "statistic",
     "rating", "timeline", "progress", "listview", "contact-card", "centered-content",
     "sortable", "processing", "horizontal-line-graph", "chart", "drawer", "copy-to-clipboard",
-    "divider", "qrcode", "timer", "data-grid", "calendar",
+    "divider", "qrcode", "timer", "data-grid", "calendar", "chat", "resizable",
   ],
-  navigation: ["tab", "pagination", "dropmenu", "theme-switcher", "context-menu", "command-palette"],
+  navigation: ["tab", "pagination", "dropmenu", "theme-switcher", "context-menu", "command-palette", "sidebar"],
 };
 
 export const COMPONENT_NAMES = Object.values(CATEGORY).flat();

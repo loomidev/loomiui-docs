@@ -189,6 +189,19 @@ const setupDocsPreview = () => {
     builder.rules = [{ id: "status-active", field: "status", operator: "equals", value: "Active" }];
   });
 };`,
+  chat: `
+const setupDocsPreview = () => {
+  document.querySelectorAll("loomi-chat-window").forEach((chat) => {
+    if (chat.dataset.docsReady) return;
+    chat.dataset.docsReady = "true";
+    chat.addEventListener("send", () => {
+      chat.appendMessage({
+        role: "assistant",
+        text: "Auto-scroll keeps the latest reply in view while you stay at the bottom. Scroll up and the jump button appears.",
+      });
+    });
+  });
+};`,
   calendar: `
 const setupDocsPreview = () => {
   document.querySelectorAll("loomi-calendar").forEach((calendar) => {
