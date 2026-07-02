@@ -1,0 +1,316 @@
+---
+import MarketingHeader from "./MarketingHeader.astro";
+import ProSidebar from "./ProSidebar.astro";
+import { buildImportMap } from "../lib/import-map.mjs";
+import {
+  PRO_CATEGORIES,
+  getProFeaturePage,
+  proCatalogItems,
+} from "../lib/pro-catalog.mjs";
+import "../styles/home.css";
+
+interface Props {
+  category: string;
+}
+
+const { category } = Astro.props;
+const feature = getProFeaturePage(category);
+if (!feature) {
+  throw new Error(`Unknown Pro feature page: ${category}`);
+}
+
+const categoryMeta = PRO_CATEGORIES.find((cat) => cat.key === category)!;
+const currentPath = categoryMeta.href!;
+const items = proCatalogItems({ category });
+const importMap = buildImportMap();
+const title = `${feature.title} - LoomiUI Pro`;
+const GITHUB_URL = "https://github.com/loomidev/loomiui-pro";
+
+const THEME_PRESETS = [
+  { name: "Loomi Default", color: "#2563eb" },
+  { name: "SaaS Admin", color: "#4f46e5" },
+  { name: "Fintech", color: "#0d9488" },
+  { name: "Healthcare", color: "#0284c7" },
+  { name: "Education", color: "#7c3aed" },
+  { name: "High Contrast", color: "#1d4ed8" },
+];
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={feature.description} />
+    <link rel="icon" href="/favicon.png" />
+    <script type="importmap" is:inline set:html={JSON.stringify(importMap)} />
+  </head>
+  <body class="bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
+    <MarketingHeader />
+
+    <div class="mx-auto max-w-7xl px-6 py-10 lg:grid lg:grid-cols-[15rem_1fr] lg:items-start lg:gap-10">
+      <ProSidebar currentPath={currentPath} activeCategory={category} />
+
+      <div class="mt-10 min-w-0 lg:mt-0">
+        <div class="feature-kicker">{feature.kicker}</div>
+        <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">{feature.title}</h1>
+        <p class="mt-3 max-w-2xl text-lg leading-7 text-gray-600 dark:text-gray-400">
+          {feature.description}
+        </p>
+
+        <ul class="mt-6 grid gap-3 sm:grid-cols-2">
+          {feature.highlights.map((line: string) => (
+            <li class="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-300">
+              <loomi-icon name="check-circle" style="width:1rem;height:1rem;color:rgb(37 99 235);flex-shrink:0;margin-top:0.1rem"></loomi-icon>
+              <span>{line}</span>
+            </li>
+          ))}
+        </ul>
+
+        {category === "token-system" && (
+          <div class="mt-10 rounded-2xl border border-gray-200 p-5 dark:border-gray-800">
+            <div class="text-sm font-semibold text-gray-900 dark:text-white">Preset palette preview</div>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Ten shipped Pro themes, each with complete light and dark token sets.</p>
+            <div class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+              {THEME_PRESETS.map((preset) => (
+                <div class="token-swatch">
+                  <div class="token-swatch-color" style={`background:${preset.color}`}></div>
+                  <div class="token-swatch-label">{preset.name}</div>
+                </div>
+              ))}
+            </div>
+            <pre class="token-code"><code>{`import { themePresets, applyTheme } from "@loomdev-pro/themes";
+
+applyTheme(themePresets.fintech, "dark");`}</code></pre>
+          </div>
+        )}
+
+        {category === "theme-builder" && (
+          <div class="mt-10 rounded-2xl border border-gray-200 p-5 dark:border-gray-800">
+            <div class="text-sm font-semibold text-gray-900 dark:text-white">Compose a brand theme</div>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Start from a preset, override tokens, then export to CSS, JSON, or TypeScript.</p>
+            <pre class="token-code"><code>{`import { createTheme, palettes, themeToCss } from "@loomdev-pro/themes";
+
+const brand = createTheme({
+  name: "brand",
+  label: "Brand",
+  description: "Our product theme.",
+  primary: palettes.violet,
+  overrides: { shared: { radius: { md: "10px" } } }
+});
+
+const css = themeToCss(brand);`}</code></pre>
+            <div class="mt-5 grid gap-3 sm:grid-cols-3">
+              <div class="builder-preview">
+                <loomi-button color="primary" size="small">Primary</loomi-button>
+                <loomi-button type="secondary" size="small">Secondary</loomi-button>
+              </div>
+              <div class="builder-preview">
+                <loomi-input placeholder="Email" size="small"></loomi-input>
+              </div>
+              <div class="builder-preview">
+                <loomi-tag label="Active" color="success"></loomi-tag>
+                <loomi-tag label="Draft" color="warning"></loomi-tag>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {category === "accessibility-quality" && (
+          <div class="mt-10 rounded-2xl border border-gray-200 p-5 dark:border-gray-800">
+            <div class="text-sm font-semibold text-gray-900 dark:text-white">Built for real users</div>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">The high-contrast preset targets WCAG AAA, with strong borders and reduced motion defaults.</p>
+            <div class="mt-5 grid gap-4 sm:grid-cols-2">
+              <div class="a11y-card">
+                <div class="a11y-card-title">Focus visible</div>
+                <loomi-button color="primary" size="small">Tab to focus</loomi-button>
+              </div>
+              <div class="a11y-card dark">
+                <div class="a11y-card-title">High contrast dark</div>
+                <loomi-alert type="success" class="text-xs">Success text meets contrast targets.</loomi-alert>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div class="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div class="relative grow">
+            <loomi-icon name="magnifying-glass" class="search-icon" style="width:1rem;height:1rem"></loomi-icon>
+            <input
+              type="text"
+              id="feature-search"
+              placeholder={`Search ${feature.title.toLowerCase()}...`}
+              class="main-search"
+              aria-label={`Search ${feature.title}`}
+            />
+          </div>
+        </div>
+
+        <p id="no-results" class="no-results hidden">No items match your search.</p>
+
+        <div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3" id="feature-grid">
+          {items.map((item) => (
+            <article
+              id={item.anchor}
+              class="pro-card"
+              data-search={item.search}
+            >
+              <div class="pro-card-preview">
+                <loomi-icon name={item.icon} style="width:2rem;height:2rem;color:rgb(37 99 235)"></loomi-icon>
+              </div>
+              <div class="pro-card-title">{item.title}</div>
+              <p class="pro-card-desc">{item.description}</p>
+            </article>
+          ))}
+        </div>
+
+        <div class="mt-12 flex flex-wrap gap-3">
+          <loomi-button color="primary" size="small" tag="a" href={GITHUB_URL}>Buy Pro</loomi-button>
+          <loomi-button type="secondary" size="small" tag="a" href="/pro/">Back to all Pro</loomi-button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module" is:inline>
+      import "@loomidev/button";
+      import "@loomidev/icon";
+      import "@loomidev/input";
+      import "@loomidev/tag";
+      import "@loomidev/alert";
+    </script>
+
+    <script>
+      const grid = document.getElementById("feature-grid") as HTMLElement;
+      const cards = Array.from(grid.querySelectorAll<HTMLElement>(".pro-card"));
+      const searchInput = document.getElementById("feature-search") as HTMLInputElement;
+      const noResults = document.getElementById("no-results") as HTMLElement;
+
+      searchInput?.addEventListener("input", () => {
+        const q = searchInput.value.trim().toLowerCase();
+        let visible = 0;
+        for (const card of cards) {
+          const show = !q || card.dataset.search!.includes(q);
+          card.classList.toggle("hidden", !show);
+          if (show) visible++;
+        }
+        noResults.classList.toggle("hidden", visible !== 0);
+      });
+
+      if (location.hash) {
+        const target = document.querySelector(location.hash);
+        target?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  .token-swatch {
+    border-radius: 0.75rem;
+    border: 1px solid rgb(226 232 240);
+    overflow: hidden;
+    background: white;
+  }
+  .dark .token-swatch {
+    border-color: rgb(51 65 85);
+    background: rgb(15 23 42 / 0.6);
+  }
+  .token-swatch-color {
+    height: 3rem;
+  }
+  .token-swatch-label {
+    padding: 0.55rem 0.65rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: rgb(51 65 85);
+  }
+  .dark .token-swatch-label {
+    color: rgb(203 213 225);
+  }
+  .token-code {
+    margin-top: 1.25rem;
+    overflow-x: auto;
+    border-radius: 0.75rem;
+    background: rgb(15 23 42);
+    padding: 1rem;
+    font-size: 0.78rem;
+    line-height: 1.6;
+    color: rgb(226 232 240);
+  }
+  .builder-preview {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 5rem;
+    border-radius: 0.75rem;
+    border: 1px solid rgb(226 232 240);
+    background: rgb(248 250 252);
+    padding: 1rem;
+  }
+  .dark .builder-preview {
+    border-color: rgb(51 65 85);
+    background: rgb(30 41 59 / 0.5);
+  }
+  .a11y-card {
+    border-radius: 0.75rem;
+    border: 2px solid rgb(15 23 42);
+    background: white;
+    padding: 1rem;
+  }
+  .a11y-card.dark {
+    background: rgb(15 23 42);
+    color: white;
+  }
+  .a11y-card-title {
+    margin-bottom: 0.75rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+  .pro-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-radius: 0.9rem;
+    border: 1px solid rgb(226 232 240);
+    background: white;
+    padding: 1rem;
+    scroll-margin-top: 6rem;
+  }
+  .dark .pro-card {
+    border-color: rgb(51 65 85);
+    background: rgb(15 23 42 / 0.6);
+  }
+  .pro-card.hidden {
+    display: none;
+  }
+  .pro-card-preview {
+    display: flex;
+    height: 5rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.6rem;
+    background: linear-gradient(135deg, rgb(239 246 255), rgb(248 250 252));
+  }
+  .dark .pro-card-preview {
+    background: linear-gradient(135deg, rgb(30 41 59 / 0.8), rgb(15 23 42 / 0.6));
+  }
+  .pro-card-title {
+    margin-top: 0.85rem;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: rgb(2 6 23);
+  }
+  .dark .pro-card-title {
+    color: white;
+  }
+  .pro-card-desc {
+    margin-top: 0.25rem;
+    color: rgb(100 116 139);
+    font-size: 0.78rem;
+    line-height: 1.4;
+  }
+  .dark .pro-card-desc {
+    color: rgb(148 163 184);
+  }
+</style>

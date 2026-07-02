@@ -1,0 +1,408 @@
+---
+// Gallery shell for the /pro/ index page — same layout family as ComponentsGalleryPage.
+import MarketingHeader from "./MarketingHeader.astro";
+import ProSidebar from "./ProSidebar.astro";
+import { buildImportMap } from "../lib/import-map.mjs";
+import {
+  PRO_AREAS,
+  PRO_CATEGORIES,
+  proCatalogItems,
+} from "../lib/pro-catalog.mjs";
+import "../styles/home.css";
+
+const importMap = buildImportMap();
+const title = "LoomiUI Pro";
+const description =
+  "Application starter kits, premium themes, Figma assets, and production tooling — browse everything included in LoomiUI Pro.";
+const GITHUB_URL = "https://github.com/loomidev/loomiui-pro";
+
+const items = proCatalogItems();
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.png" />
+    <script type="importmap" is:inline set:html={JSON.stringify(importMap)} />
+  </head>
+  <body class="bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
+    <MarketingHeader />
+
+    <div class="mx-auto max-w-7xl px-6 py-10 lg:grid lg:grid-cols-[15rem_1fr] lg:items-start lg:gap-10">
+      <ProSidebar currentPath="/pro/" />
+
+      <div class="mt-10 min-w-0 lg:mt-0">
+        <div class="feature-kicker">Premium</div>
+        <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">LoomiUI Pro</h1>
+        <p class="mt-3 max-w-2xl text-lg leading-7 text-gray-600 dark:text-gray-400">
+          Application starter kits, premium themes, Figma assets, and production tooling.
+          Browse {items.length} customer-facing items included with Pro.
+        </p>
+
+        <div class="mt-8 grid gap-4 sm:grid-cols-3">
+          {PRO_CATEGORIES.filter((cat) => cat.href).map((cat) => (
+            <a href={cat.href} class="pro-hub-card">
+              <loomi-icon name={cat.icon} style="width:1.25rem;height:1.25rem;color:rgb(37 99 235)"></loomi-icon>
+              <div class="pro-hub-card-title">{cat.label}</div>
+              <p class="pro-hub-card-desc">Explore features, previews, and what's included.</p>
+            </a>
+          ))}
+        </div>
+
+        <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div class="relative grow">
+            <loomi-icon name="magnifying-glass" class="search-icon" style="width:1rem;height:1rem"></loomi-icon>
+            <input
+              type="text"
+              data-role="search-input"
+              placeholder="Search templates and themes..."
+              class="main-search"
+              aria-label="Search Pro catalog"
+            />
+          </div>
+          <div class="relative shrink-0">
+            <select id="sort-select" class="sort-select" aria-label="Sort Pro catalog">
+              <option value="title">Sort by: Name</option>
+              <option value="category">Sort by: Category</option>
+            </select>
+            <loomi-icon name="chevron-down" class="sort-select-chevron" style="width:0.85rem;height:0.85rem"></loomi-icon>
+          </div>
+        </div>
+
+        <div class="mt-5 flex flex-wrap gap-2" id="area-pills">
+          <button type="button" class="filter-pill" aria-pressed="true" data-filter="all" data-filter-type="area">All</button>
+          {PRO_AREAS.map((area) => (
+            <button type="button" class="filter-pill" aria-pressed="false" data-filter={area.key} data-filter-type="area">{area.label}</button>
+          ))}
+        </div>
+
+        <p id="no-results" class="no-results hidden">No items match your search.</p>
+
+        <div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" id="pro-grid">
+          {items.map((item) => {
+            const Tag = item.href ? "a" : "article";
+            return (
+              <Tag
+                href={item.href ?? undefined}
+                class="pro-card"
+                data-area={item.area}
+                data-category={item.category}
+                data-title={item.title.toLowerCase()}
+                data-search={item.search}
+              >
+                <div class="pro-card-preview">
+                  <loomi-icon name={item.icon} style="width:2rem;height:2rem;color:rgb(37 99 235)"></loomi-icon>
+                </div>
+                <div class="pro-card-badge">{item.area === "templates" ? "Template" : "Theme"}</div>
+                <div class="pro-card-title">{item.title}</div>
+                <p class="pro-card-desc">{item.description}</p>
+                <div class="pro-card-meta">{PRO_CATEGORIES.find((cat) => cat.key === item.category)?.label}</div>
+                {item.href && (
+                  <loomi-icon name="chevron-right" class="pro-card-arrow" style="width:0.95rem;height:0.95rem"></loomi-icon>
+                )}
+              </Tag>
+            );
+          })}
+        </div>
+
+        <div id="buy-pro" class="mt-12 rounded-2xl border border-primary-200 bg-primary-50 p-8 text-center dark:border-primary-900/40 dark:bg-primary-950/30">
+          <h2 class="text-2xl font-bold tracking-tight">Ready to build with Pro?</h2>
+          <p class="mx-auto mt-3 max-w-xl text-gray-600 dark:text-gray-400">
+            Get application templates, premium themes, Figma kit, private docs, and updates.
+          </p>
+          <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <loomi-button color="primary" size="small" tag="a" href={GITHUB_URL}>Buy Pro</loomi-button>
+            <loomi-button type="secondary" size="small" tag="a" href="/components/">Browse free components</loomi-button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="border-t border-gray-200 dark:border-gray-800">
+      <div class="mx-auto max-w-6xl px-6 py-10 text-sm text-gray-500 dark:text-gray-400">
+        <div class="flex flex-wrap justify-center gap-6">
+          <a href="/installation/" class="hover:text-primary-600 dark:hover:text-primary-400">Installation</a>
+          <a href="/components/" class="hover:text-primary-600 dark:hover:text-primary-400">Components</a>
+          <a href="/pro/" class="hover:text-primary-600 dark:hover:text-primary-400">Pro</a>
+          <a href="/contributing/" class="hover:text-primary-600 dark:hover:text-primary-400">Contributing</a>
+        </div>
+        <p class="mt-6 text-center">© {new Date().getFullYear()} LoomiUI.</p>
+      </div>
+    </footer>
+
+    <script type="module" is:inline>
+      import "@loomidev/button";
+      import "@loomidev/icon";
+    </script>
+
+    <script>
+      const grid = document.getElementById("pro-grid") as HTMLElement;
+      const cards = Array.from(grid.querySelectorAll<HTMLElement>(".pro-card"));
+      const searchInputs = document.querySelectorAll<HTMLInputElement>("[data-role='search-input']");
+      const filterButtons = document.querySelectorAll<HTMLElement>("[data-filter]");
+      const sortSelect = document.getElementById("sort-select") as HTMLSelectElement | null;
+      const noResults = document.getElementById("no-results") as HTMLElement;
+
+      const categoryLabels = new Map(
+        Array.from(cards).map((card) => [card.dataset.category!, card.querySelector(".pro-card-meta")?.textContent ?? ""]),
+      );
+
+      const params = new URLSearchParams(window.location.search);
+      const state = {
+        query: "",
+        filter: params.get("category") ?? params.get("area") ?? "all",
+        filterType: (params.get("category") ? "category" : "area") as "area" | "category",
+        sort: "title",
+      };
+
+      if (state.filter !== "all") {
+        filterButtons.forEach((b) => {
+          const active = b.dataset.filter === state.filter && b.dataset.filterType === state.filterType;
+          b.classList.toggle("is-active", active);
+          if (b.hasAttribute("aria-pressed")) b.setAttribute("aria-pressed", String(active));
+        });
+        document.querySelectorAll<HTMLElement>("#area-pills [data-filter]").forEach((b) => {
+          if (b.dataset.filterType === "area") {
+            const active = state.filterType === "area" && b.dataset.filter === state.filter;
+            b.setAttribute("aria-pressed", String(active || (state.filter === "all" && b.dataset.filter === "all")));
+          }
+        });
+      }
+
+      function matchesFilter(card: HTMLElement) {
+        if (state.filter === "all") return true;
+        if (state.filterType === "area") return card.dataset.area === state.filter;
+        return card.dataset.category === state.filter;
+      }
+
+      function applyFilters() {
+        const q = state.query.trim().toLowerCase();
+        let visible = 0;
+        for (const card of cards) {
+          const matchesCategory = matchesFilter(card);
+          const matchesQuery = !q || card.dataset.search!.includes(q);
+          const show = matchesCategory && matchesQuery;
+          card.classList.toggle("hidden", !show);
+          if (show) visible++;
+        }
+        noResults.classList.toggle("hidden", visible !== 0);
+      }
+
+      function applySort() {
+        const sorted = cards.slice().sort((a, b) => {
+          if (state.sort === "category") {
+            const c = (categoryLabels.get(a.dataset.category!) ?? "").localeCompare(categoryLabels.get(b.dataset.category!) ?? "");
+            if (c !== 0) return c;
+          }
+          return a.dataset.title!.localeCompare(b.dataset.title!);
+        });
+        for (const card of sorted) grid.appendChild(card);
+      }
+
+      searchInputs.forEach((input) => {
+        input.addEventListener("input", (e) => {
+          state.query = (e.target as HTMLInputElement).value;
+          searchInputs.forEach((other) => {
+            if (other !== e.target) other.value = state.query;
+          });
+          applyFilters();
+        });
+      });
+
+      filterButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          state.filter = btn.dataset.filter!;
+          state.filterType = (btn.dataset.filterType as "area" | "category") ?? "area";
+
+          filterButtons.forEach((b) => {
+            const active = b.dataset.filter === state.filter && b.dataset.filterType === state.filterType;
+            b.classList.toggle("is-active", active);
+            if (b.hasAttribute("aria-pressed")) b.setAttribute("aria-pressed", String(active));
+          });
+          applyFilters();
+        });
+      });
+
+      sortSelect?.addEventListener("change", () => {
+        state.sort = sortSelect.value;
+        applySort();
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+          e.preventDefault();
+          (searchInputs[0] as HTMLInputElement | undefined)?.focus();
+        }
+      });
+
+      applySort();
+      applyFilters();
+    </script>
+  </body>
+</html>
+
+<style>
+  .sort-select {
+    appearance: none;
+    border-radius: 0.6rem;
+    border: 1px solid rgb(226 232 240);
+    background: white;
+    padding: 0.55rem 2rem 0.55rem 0.9rem;
+    color: rgb(15 23 42);
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  .dark .sort-select {
+    border-color: rgb(51 65 85);
+    background: rgb(15 23 42 / 0.6);
+    color: white;
+  }
+  .sort-select-chevron {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgb(148 163 184);
+    pointer-events: none;
+  }
+
+  .pro-hub-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    border-radius: 0.9rem;
+    border: 1px solid rgb(226 232 240);
+    background: white;
+    padding: 1rem;
+    text-decoration: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .pro-hub-card:hover {
+    border-color: rgb(37 99 235 / 0.35);
+    box-shadow: 0 8px 20px -10px rgb(15 23 42 / 0.18);
+  }
+  .dark .pro-hub-card {
+    border-color: rgb(51 65 85);
+    background: rgb(15 23 42 / 0.6);
+  }
+  .pro-hub-card-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: rgb(2 6 23);
+  }
+  .dark .pro-hub-card-title {
+    color: white;
+  }
+  .pro-hub-card-desc {
+    font-size: 0.78rem;
+    color: rgb(100 116 139);
+  }
+  .dark .pro-hub-card-desc {
+    color: rgb(148 163 184);
+  }
+
+  .pro-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-radius: 0.9rem;
+    border: 1px solid rgb(226 232 240);
+    background: white;
+    padding: 1rem;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+  }
+  .pro-card:hover {
+    border-color: rgb(37 99 235 / 0.35);
+    box-shadow: 0 8px 20px -10px rgb(15 23 42 / 0.18);
+    transform: translateY(-1px);
+  }
+  .dark .pro-card {
+    border-color: rgb(51 65 85);
+    background: rgb(15 23 42 / 0.6);
+  }
+  .dark .pro-card:hover {
+    border-color: rgb(96 165 250 / 0.4);
+  }
+  .pro-card.hidden {
+    display: none;
+  }
+  .pro-card-preview {
+    display: flex;
+    height: 6rem;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 0.6rem;
+    background: linear-gradient(135deg, rgb(239 246 255), rgb(248 250 252));
+  }
+  .dark .pro-card-preview {
+    background: linear-gradient(135deg, rgb(30 41 59 / 0.8), rgb(15 23 42 / 0.6));
+  }
+  .pro-card-badge {
+    margin-top: 0.85rem;
+    width: fit-content;
+    border-radius: 999px;
+    background: rgb(37 99 235 / 0.08);
+    padding: 0.15rem 0.55rem;
+    color: rgb(37 99 235);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .dark .pro-card-badge {
+    background: rgb(96 165 250 / 0.12);
+    color: rgb(147 197 253);
+  }
+  .pro-card-title {
+    margin-top: 0.55rem;
+    color: rgb(2 6 23);
+    font-size: 0.92rem;
+    font-weight: 600;
+    line-height: 1.35;
+  }
+  .dark .pro-card-title {
+    color: white;
+  }
+  .pro-card-desc {
+    margin-top: 0.25rem;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    color: rgb(100 116 139);
+    font-size: 0.78rem;
+    line-height: 1.4;
+  }
+  .dark .pro-card-desc {
+    color: rgb(148 163 184);
+  }
+  .pro-card-meta {
+    margin-top: 0.65rem;
+    color: rgb(148 163 184);
+    font-size: 0.72rem;
+    font-weight: 500;
+  }
+  .pro-card-arrow {
+    position: absolute;
+    right: 1rem;
+    bottom: 1rem;
+    color: rgb(203 213 225);
+    opacity: 0;
+    transform: translateX(-3px);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+  .pro-card:hover .pro-card-arrow {
+    opacity: 1;
+    transform: translateX(0);
+    color: rgb(37 99 235);
+  }
+  .dark .pro-card:hover .pro-card-arrow {
+    color: rgb(96 165 250);
+  }
+</style>

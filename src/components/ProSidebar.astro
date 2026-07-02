@@ -1,0 +1,149 @@
+---
+import {
+  PRO_AREAS,
+  PRO_CATEGORIES,
+  proCatalogItems,
+  proCategoryCounts,
+  proAreaCounts,
+} from "../lib/pro-catalog.mjs";
+
+interface Props {
+  activeArea?: string;
+  activeCategory?: string;
+  currentPath?: string;
+}
+
+const { activeArea = "all", activeCategory, currentPath = "/pro/" } = Astro.props;
+const items = proCatalogItems();
+const categoryCounts = proCategoryCounts();
+const areaCounts = proAreaCounts() as Record<string, number>;
+const GITHUB_URL = "https://github.com/loomidev/loomiui-pro";
+---
+
+<aside class="lg:sticky lg:top-20 lg:self-start">
+  <div class="relative">
+    <loomi-icon name="magnifying-glass" class="search-icon" style="width:1rem;height:1rem"></loomi-icon>
+    <input
+      type="text"
+      data-role="search-input"
+      placeholder="Search Pro..."
+      class="sidebar-search"
+      aria-label="Search Pro catalog"
+    />
+    <kbd class="search-kbd">⌘K</kbd>
+  </div>
+
+  <nav class="mt-4 space-y-0.5">
+    <a href="/components/" class="category-link">
+      <span class="category-link-icon"><loomi-icon name="arrow-left" style="width:1.05rem;height:1.05rem"></loomi-icon></span>
+      <span class="grow text-left">Free Components</span>
+    </a>
+  </nav>
+
+  <nav class="mt-4 space-y-0.5">
+    <a
+      href="/pro/"
+      class:list={["category-link", currentPath === "/pro/" && activeArea === "all" && !activeCategory && "is-active"]}
+    >
+      <span class="category-link-icon"><loomi-icon name="sparkles" style="width:1.05rem;height:1.05rem"></loomi-icon></span>
+      <span class="grow text-left">All Pro</span>
+      <span class="category-count">{items.length}</span>
+    </a>
+    {PRO_AREAS.map((area) => (
+      currentPath === "/pro/" ? (
+        <button
+          type="button"
+          class:list={["category-link", activeArea === area.key && !activeCategory && "is-active"]}
+          data-filter={area.key}
+          data-filter-type="area"
+        >
+          <span class="category-link-icon"><loomi-icon name={area.icon} style="width:1.05rem;height:1.05rem"></loomi-icon></span>
+          <span class="grow text-left">{area.label}</span>
+          <span class="category-count">{areaCounts[area.key]}</span>
+        </button>
+      ) : (
+        <a href={`/pro/?area=${area.key}`} class="category-link">
+          <span class="category-link-icon"><loomi-icon name={area.icon} style="width:1.05rem;height:1.05rem"></loomi-icon></span>
+          <span class="grow text-left">{area.label}</span>
+          <span class="category-count">{areaCounts[area.key]}</span>
+        </a>
+      )
+    ))}
+  </nav>
+
+  <div class="sidebar-section-label">Templates</div>
+  <nav class="space-y-0.5">
+    {PRO_CATEGORIES.filter((cat) => cat.area === "templates").map((cat) => (
+      currentPath === "/pro/" ? (
+        <button
+          type="button"
+          class:list={["category-link", activeCategory === cat.key && "is-active"]}
+          data-filter={cat.key}
+          data-filter-type="category"
+        >
+          <span class="category-link-icon"><loomi-icon name={cat.icon} style="width:1.05rem;height:1.05rem"></loomi-icon></span>
+          <span class="grow text-left">{cat.label}</span>
+          <span class="category-count">{categoryCounts[cat.key]}</span>
+        </button>
+      ) : (
+        <a
+          href={cat.href ?? `/pro/?category=${cat.key}`}
+          class:list={["category-link", currentPath === cat.href && "is-active"]}
+        >
+          <span class="category-link-icon"><loomi-icon name={cat.icon} style="width:1.05rem;height:1.05rem"></loomi-icon></span>
+          <span class="grow text-left">{cat.label}</span>
+          <span class="category-count">{categoryCounts[cat.key]}</span>
+        </a>
+      )
+    ))}
+  </nav>
+
+  <div class="sidebar-section-label">Themes</div>
+  <nav class="space-y-0.5">
+    {PRO_CATEGORIES.filter((cat) => cat.area === "themes").map((cat) => (
+      cat.href ? (
+        <a href={cat.href} class:list={["category-link", currentPath === cat.href && "is-active"]}>
+          <span class="category-link-icon"><loomi-icon name={cat.icon} style="width:1.05rem;height:1.05rem"></loomi-icon></span>
+          <span class="grow text-left">{cat.label}</span>
+          <span class="category-count">{categoryCounts[cat.key]}</span>
+        </a>
+      ) : currentPath === "/pro/" ? (
+        <button
+          type="button"
+          class:list={["category-link", activeCategory === cat.key && "is-active"]}
+          data-filter={cat.key}
+          data-filter-type="category"
+        >
+          <span class="category-link-icon"><loomi-icon name={cat.icon} style="width:1.05rem;height:1.05rem"></loomi-icon></span>
+          <span class="grow text-left">{cat.label}</span>
+          <span class="category-count">{categoryCounts[cat.key]}</span>
+        </button>
+      ) : (
+        <a href={`/pro/?category=${cat.key}`} class="category-link">
+          <span class="category-link-icon"><loomi-icon name={cat.icon} style="width:1.05rem;height:1.05rem"></loomi-icon></span>
+          <span class="grow text-left">{cat.label}</span>
+          <span class="category-count">{categoryCounts[cat.key]}</span>
+        </a>
+      )
+    ))}
+  </nav>
+
+  <div class="promo-card">
+    <div class="promo-card-icon"><loomi-icon name="star" style="width:1.15rem;height:1.15rem"></loomi-icon></div>
+    <div class="promo-card-title">Ship production apps faster</div>
+    <p class="promo-card-text">Templates, themes, and private packages built on LoomiUI.</p>
+    <a href="/pro/#buy-pro" class="promo-card-link">
+      Buy Pro
+      <loomi-icon name="arrow-right" style="width:0.85rem;height:0.85rem"></loomi-icon>
+    </a>
+  </div>
+
+  <div class="help-card">
+    <div class="help-card-title">Questions?</div>
+    <p class="help-card-text">Learn more about Pro licensing and what's included.</p>
+    <a href={GITHUB_URL} class="help-card-link">
+      <loomi-icon name="book-open" style="width:0.95rem;height:0.95rem"></loomi-icon>
+      Pro repository
+    </a>
+  </div>
+</aside>
