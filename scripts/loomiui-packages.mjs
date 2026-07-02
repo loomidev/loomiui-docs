@@ -10,7 +10,7 @@ export const CATEGORY = {
   standalone: ["button", "button-group", "icon", "spinner", "alert", "bell", "modal", "notification", "table"],
   forms: [
     "input", "textarea", "select", "countries", "checkbox", "radio", "toggle", "number", "slider",
-    "code", "checkcards", "datepicker", "timepicker", "timezonepicker", "colorpicker", "filepicker",
+    "checkcards", "datepicker", "timepicker", "timezonepicker", "colorpicker", "filepicker",
     "creditcard", "text-editor", "tag-input", "emoji-picker", "password", "pin",
     "date-range-picker", "filter-builder",
   ],
@@ -18,7 +18,7 @@ export const CATEGORY = {
     "card", "avatar", "accordion", "tag", "tooltip", "popover", "empty-state", "statistic",
     "rating", "timeline", "progress", "listview", "contact-card", "centered-content",
     "sortable", "processing", "horizontal-line-graph", "chart", "drawer", "copy-to-clipboard",
-    "divider", "qrcode", "timer", "data-table", "calendar",
+    "divider", "qrcode", "timer", "data-grid", "calendar",
   ],
   navigation: ["tab", "pagination", "dropmenu", "theme-switcher", "context-menu", "command-palette"],
 };

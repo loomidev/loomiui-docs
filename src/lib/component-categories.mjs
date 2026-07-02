@@ -21,7 +21,7 @@ const MEMBERS = {
   "data-entry": [
     "input", "textarea", "select", "checkbox", "radio", "toggle", "number", "slider",
     "datepicker", "timepicker", "timezonepicker", "colorpicker", "filepicker", "checkcards",
-    "code", "countries", "creditcard", "text-editor", "tag-input", "emoji-picker", "password", "pin",
+    "countries", "creditcard", "text-editor", "tag-input", "emoji-picker", "password", "pin",
     "date-range-picker", "filter-builder",
   ],
   feedback: ["alert", "notification", "bell", "spinner", "progress", "processing"],
@@ -29,7 +29,7 @@ const MEMBERS = {
   overlay: ["modal", "popover", "tooltip", "drawer"],
   "data-display": [
     "table", "tag", "statistic", "rating", "timeline", "listview", "contact-card", "chart",
-    "horizontal-line-graph", "copy-to-clipboard", "timer", "data-table", "calendar",
+    "horizontal-line-graph", "copy-to-clipboard", "timer", "data-grid", "calendar",
   ],
   layout: ["button", "button-group", "card", "accordion", "centered-content", "sortable", "divider"],
   media: ["icon", "avatar", "empty-state", "qrcode"],

@@ -22,7 +22,7 @@ function titleCase(name: string): string {
     checkcards: "Checkcards",
     qrcode: "QR Code",
     "copy-to-clipboard": "Copy to Clipboard",
-    "data-table": "Advanced Data Table",
+    "data-grid": "Data Grid",
     calendar: "Calendar",
   };
   if (special[name]) return special[name];
@@ -49,7 +49,6 @@ const PREVIEWS: Record<string, string> = {
   colorpicker: `<loomi-colorpicker></loomi-colorpicker>`,
   filepicker: `<div style="height:5.5rem;width:100%;overflow:hidden;display:flex;align-items:center;justify-content:center"><loomi-filepicker name="prev-files" placeholder-line1="Drag & drop files" placeholder-line2="or click to browse" style="display:block;transform:scale(.82)"></loomi-filepicker></div>`,
   checkcards: `<loomi-checkcards name="prev-host" style="display:block;width:11rem"><loomi-checkcard value="aws" title="AWS">Cloud hosting</loomi-checkcard></loomi-checkcards>`,
-  code: `<div style="height:5.5rem;width:100%;overflow:hidden"><loomi-code style="display:block;transform:scale(.82);transform-origin:top left;width:122%"></loomi-code></div>`,
   countries: `<loomi-countries name="prev-country" label="Country"></loomi-countries>`,
   creditcard: `<loomi-creditcard cardholder-name="Ama Osei" number="4242424242424242" style="max-width:9rem" no-clearing></loomi-creditcard>`,
   "text-editor": `<div style="height:5.5rem;width:100%;overflow:hidden"><loomi-text-editor label="Comment" rows="2" style="display:block;transform:scale(.78);transform-origin:top left;width:128%"></loomi-text-editor></div>`,
@@ -107,7 +106,7 @@ const PREVIEWS: Record<string, string> = {
   "empty-state": `<div style="transform:scale(.55)"><loomi-empty-state message="No documents yet."></loomi-empty-state></div>`,
   qrcode: `<loomi-qrcode url="https://loomiui.com" size="82" corner-borders gradient></loomi-qrcode>`,
 
-  "data-table": `<div style="height:5.5rem;width:100%;overflow:hidden"><loomi-data-table density="compact" selectable style="display:block;width:166%;transform:scale(.6);transform-origin:top left"></loomi-data-table></div>`,
+  "data-grid": `<div style="height:5.5rem;width:100%;overflow:hidden"><loomi-data-grid density="compact" selectable style="display:block;width:166%;transform:scale(.6);transform-origin:top left"></loomi-data-grid></div>`,
   "command-palette": `<loomi-command-palette placeholder="Search workspace"></loomi-command-palette>`,
   "date-range-picker": `<div style="transform:scale(.78);transform-origin:center"><loomi-date-range-picker label="Range" start-date="2026-06-02" end-date="2026-07-01"></loomi-date-range-picker></div>`,
   "filter-builder": `<div style="height:5.5rem;width:100%;overflow:hidden"><loomi-filter-builder style="display:block;width:150%;transform:scale(.66);transform-origin:top left"></loomi-filter-builder></div>`,
@@ -299,19 +298,17 @@ const packagesToImport = COMPONENT_NAMES;
       const names = ${JSON.stringify(packagesToImport)};
       for (const name of names) { import("@loomidev/" + name); }
 
-      document.querySelectorAll("loomi-data-table").forEach((table) => {
-        table.columns = [
-          { key: "name", label: "Name", sortable: true },
+      document.querySelectorAll("loomi-data-grid").forEach((grid) => {
+        grid.columns = [
+          { key: "name", label: "Name", sortable: true, pinned: "start" },
           { key: "role", label: "Role" },
-          { key: "status", label: "Status" },
+          { key: "status", label: "Status", pinned: "end" },
         ];
-        table.data = [
+        grid.data = [
           { id: "usr_001", name: "Ama Mensah", role: "Owner", status: "Active" },
           { id: "usr_002", name: "Kojo Boateng", role: "Admin", status: "Invited" },
         ];
-        table.pagination = false;
-        table.showExport = false;
-        table.showColumnManager = false;
+        grid.pagination = false;
       });
 
       document.querySelectorAll("loomi-command-palette").forEach((palette) => {

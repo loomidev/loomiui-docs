@@ -35,7 +35,7 @@ function titleCase(name) {
     checkcards: "Checkcards",
     qrcode: "QR Code",
     "copy-to-clipboard": "Copy to Clipboard",
-    "data-table": "Advanced Data Table",
+    "data-grid": "Data Grid",
     calendar: "Calendar",
   };
   if (special[name]) return special[name];
@@ -108,24 +108,32 @@ function fallbackReadme(name) {
 }
 
 const PREVIEW_SETUP = {
-  "data-table": `
+  "data-grid": `
 const setupDocsPreview = () => {
-  document.querySelectorAll("loomi-data-table").forEach((table) => {
-    if (table.dataset.docsReady) return;
-    table.dataset.docsReady = "true";
-    table.columns = [
-      { key: "name", label: "Name", sortable: true },
+  document.querySelectorAll("loomi-data-grid").forEach(async (grid) => {
+    if (grid.dataset.docsReady) return;
+    grid.dataset.docsReady = "true";
+    const { filteringModule } = await import("@loomidev/data-grid/modules/filtering.js");
+    const { savedViewsModule } = await import("@loomidev/data-grid/modules/saved-views.js");
+    grid.columns = [
+      { key: "name", label: "Name", sortable: true, pinned: "start" },
       { key: "email", label: "Email" },
       { key: "role", label: "Role", filterable: true },
-      { key: "status", label: "Status", filterable: true },
+      { key: "status", label: "Status", filterable: true, pinned: "end" },
     ];
-    table.data = [
+    grid.data = [
       { id: "usr_001", name: "Ama Mensah", email: "ama@example.com", role: "Owner", status: "Active" },
       { id: "usr_002", name: "Kojo Boateng", email: "kojo@example.com", role: "Admin", status: "Invited" },
       { id: "usr_003", name: "Esi Owusu", email: "esi@example.com", role: "Member", status: "Active" },
     ];
-    table.savedViews = [
-      { id: "active", label: "Active users", filters: [{ key: "status", value: "Active" }], pageSize: 10 },
+    grid.modules = [
+      filteringModule(),
+      savedViewsModule({
+        views: [
+          { id: "active", label: "Active users", filters: [{ key: "status", value: "Active" }], pageSize: 10 },
+        ],
+        activeViewId: "active",
+      }),
     ];
   });
 };`,
