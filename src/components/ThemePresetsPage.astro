@@ -5,7 +5,7 @@ import { readFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { buildImportMap } from "../lib/import-map.mjs";
 import { getProFeaturePage } from "../lib/pro-catalog.mjs";
-const GITHUB_URL = "https://github.com/loomidev/loomiui-pro";
+import { PRO_LICENSING_URL } from "../lib/pro-licensing.mjs";
 import "../styles/home.css";
 
 const feature = getProFeaturePage("theme-presets")!;
@@ -237,7 +237,7 @@ const initialStylesheet = themeBundle.assetsBase ? `${themeBundle.assetsBase}/${
         </section>
 
         <div class="mt-12 flex flex-wrap gap-3">
-          <loomi-button color="primary" size="small" tag="a" href={GITHUB_URL}>Buy Pro</loomi-button>
+          <loomi-button color="primary" size="small" tag="a" href={PRO_LICENSING_URL}>Buy Pro</loomi-button>
           <loomi-button type="secondary" size="small" tag="a" href="/pro/themes/token-system/">Token system</loomi-button>
           <loomi-button type="secondary" size="small" tag="a" href="/pro/">Back to all Pro</loomi-button>
         </div>

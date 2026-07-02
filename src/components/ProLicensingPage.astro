@@ -1,0 +1,263 @@
+---
+import MarketingHeader from "./MarketingHeader.astro";
+import { buildImportMap } from "../lib/import-map.mjs";
+import {
+  PRO_AFTER_CHECKOUT,
+  PRO_INCLUDED,
+  PRO_LICENSE_PLANS,
+  PRO_LICENSING_NOTES,
+} from "../lib/pro-licensing.mjs";
+import "../styles/home.css";
+
+const importMap = buildImportMap();
+const title = "LoomiUI Pro licensing";
+const description =
+  "Choose Solo, Team, or Enterprise licensing for LoomiUI Pro — templates, themes, private packages, and updates.";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.png" />
+    <script type="importmap" is:inline set:html={JSON.stringify(importMap)} />
+  </head>
+  <body class="bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
+    <MarketingHeader />
+
+    <main class="mx-auto max-w-6xl px-6 py-12 lg:py-16">
+      <div class="max-w-3xl">
+        <div class="feature-kicker">Licensing</div>
+        <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">Choose your Pro license</h1>
+        <p class="mt-3 text-lg leading-7 text-gray-600 dark:text-gray-400">
+          Pick Solo, Team, or Enterprise. Every plan includes Pro components, application templates,
+          theme and Figma assets, private docs, and updates.
+        </p>
+      </div>
+
+      <div class="mt-10 grid gap-5 lg:grid-cols-3">
+        {PRO_LICENSE_PLANS.map((plan) => (
+          <article
+            id={plan.key}
+            class:list={["license-card", plan.featured && "is-featured"]}
+          >
+            {plan.featured && <div class="license-badge">Most popular</div>}
+            <div class="license-card-top">
+              <span class="license-icon">
+                <loomi-icon name={plan.icon} style="width:1.25rem;height:1.25rem"></loomi-icon>
+              </span>
+              <div>
+                <h2 class="license-name">{plan.name}</h2>
+                <p class="license-tagline">{plan.tagline}</p>
+              </div>
+            </div>
+            <ul class="license-features">
+              {plan.features.map((feature) => (
+                <li>
+                  <loomi-icon name="check-circle" style="width:1rem;height:1rem;color:rgb(37 99 235);flex-shrink:0"></loomi-icon>
+                  <span>{feature}</span>
+                </li>
+              ))}
+            </ul>
+            {plan.href ? (
+              <loomi-button type="secondary" size="small" tag="a" href={plan.href} class="license-cta">
+                {plan.cta}
+              </loomi-button>
+            ) : plan.featured ? (
+              <loomi-button color="primary" size="small" class="license-cta" data-plan={plan.key}>
+                {plan.cta}
+              </loomi-button>
+            ) : (
+              <loomi-button type="secondary" size="small" class="license-cta" data-plan={plan.key}>
+                {plan.cta}
+              </loomi-button>
+            )}
+          </article>
+        ))}
+      </div>
+
+      <loomi-alert type="info" class="mt-8 text-sm">
+        Secure checkout via Stripe is coming soon. Solo and Team buttons will open checkout when billing is live.
+      </loomi-alert>
+
+      <section class="mt-12 grid gap-6 lg:grid-cols-2">
+        <div class="license-panel">
+          <h3 class="license-panel-title">What's included</h3>
+          <ul class="license-panel-list">
+            {PRO_INCLUDED.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        </div>
+        <div class="license-panel">
+          <h3 class="license-panel-title">After checkout</h3>
+          <ul class="license-panel-list">
+            {PRO_AFTER_CHECKOUT.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <section class="mt-10 rounded-2xl border border-gray-200 p-6 dark:border-gray-800">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">How licensing works</h3>
+        <ul class="mt-4 space-y-3 text-sm leading-6 text-gray-600 dark:text-gray-300">
+          {PRO_LICENSING_NOTES.map((note) => (
+            <li class="flex gap-2">
+              <loomi-icon name="shield-check" style="width:1rem;height:1rem;color:rgb(37 99 235);flex-shrink:0;margin-top:0.15rem"></loomi-icon>
+              <span>{note}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <div class="mt-10 flex flex-wrap gap-3">
+        <loomi-button type="secondary" size="small" tag="a" href="/pro/">Browse Pro catalog</loomi-button>
+        <loomi-button type="secondary" size="small" tag="a" href="/components/">Browse free components</loomi-button>
+      </div>
+    </main>
+
+    <footer class="border-t border-gray-200 dark:border-gray-800">
+      <div class="mx-auto max-w-6xl px-6 py-10 text-sm text-gray-500 dark:text-gray-400">
+        <div class="flex flex-wrap justify-center gap-6">
+          <a href="/installation/" class="hover:text-primary-600 dark:hover:text-primary-400">Installation</a>
+          <a href="/components/" class="hover:text-primary-600 dark:hover:text-primary-400">Components</a>
+          <a href="/pro/" class="hover:text-primary-600 dark:hover:text-primary-400">Pro</a>
+          <a href="/contributing/" class="hover:text-primary-600 dark:hover:text-primary-400">Contributing</a>
+        </div>
+        <p class="mt-6 text-center">© {new Date().getFullYear()} LoomiUI.</p>
+      </div>
+    </footer>
+
+    <script type="module" is:inline>
+      import "@loomidev/button";
+      import "@loomidev/icon";
+      import "@loomidev/alert";
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  .license-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-radius: 1rem;
+    border: 1px solid rgb(226 232 240);
+    background: white;
+    padding: 1.25rem;
+    scroll-margin-top: 6rem;
+  }
+  .dark .license-card {
+    border-color: rgb(51 65 85);
+    background: rgb(15 23 42 / 0.55);
+  }
+  .license-card.is-featured {
+    border-color: rgb(37 99 235);
+    box-shadow: 0 18px 40px -24px rgb(37 99 235 / 0.45);
+  }
+  .license-badge {
+    position: absolute;
+    top: -0.65rem;
+    left: 1rem;
+    border-radius: 999px;
+    background: rgb(37 99 235);
+    color: white;
+    padding: 0.18rem 0.65rem;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .license-card-top {
+    display: flex;
+    gap: 0.85rem;
+    align-items: flex-start;
+  }
+  .license-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.75rem;
+    background: rgb(239 246 255);
+    color: rgb(37 99 235);
+    flex-shrink: 0;
+  }
+  .dark .license-icon {
+    background: rgb(30 58 138 / 0.35);
+    color: rgb(147 197 253);
+  }
+  .license-name {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: rgb(15 23 42);
+  }
+  .dark .license-name {
+    color: white;
+  }
+  .license-tagline {
+    margin: 0.2rem 0 0;
+    font-size: 0.88rem;
+    color: rgb(100 116 139);
+  }
+  .dark .license-tagline {
+    color: rgb(148 163 184);
+  }
+  .license-features {
+    margin: 1.1rem 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.65rem;
+    flex: 1;
+  }
+  .license-features li {
+    display: flex;
+    gap: 0.55rem;
+    align-items: flex-start;
+    font-size: 0.84rem;
+    line-height: 1.45;
+    color: rgb(51 65 85);
+  }
+  .dark .license-features li {
+    color: rgb(203 213 225);
+  }
+  .license-cta {
+    margin-top: 1.25rem;
+    width: 100%;
+  }
+  .license-panel {
+    border-radius: 1rem;
+    border: 1px solid rgb(226 232 240);
+    background: rgb(248 250 252);
+    padding: 1.25rem;
+  }
+  .dark .license-panel {
+    border-color: rgb(51 65 85);
+    background: rgb(30 41 59 / 0.35);
+  }
+  .license-panel-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: rgb(15 23 42);
+  }
+  .dark .license-panel-title {
+    color: white;
+  }
+  .license-panel-list {
+    margin: 0.85rem 0 0;
+    padding-left: 1.1rem;
+    color: rgb(71 85 105);
+    font-size: 0.88rem;
+    line-height: 1.55;
+  }
+  .dark .license-panel-list {
+    color: rgb(203 213 225);
+  }
+</style>

@@ -7,6 +7,7 @@ import {
   proCategoryCounts,
   proAreaCounts,
 } from "../lib/pro-catalog.mjs";
+import { PRO_LICENSING_URL } from "../lib/pro-licensing.mjs";
 
 interface Props {
   activeArea?: string;
@@ -14,11 +15,17 @@ interface Props {
   currentPath?: string;
 }
 
-const { activeArea = "all", activeCategory, currentPath = "/pro/" } = Astro.props;
+const { activeArea, activeCategory, currentPath = "/pro/" } = Astro.props;
 const items = proCatalogItems();
 const categoryCounts = proCategoryCounts();
 const areaCounts = proAreaCounts() as Record<string, number>;
 const GITHUB_URL = "https://github.com/loomidev/loomiui-pro";
+
+function isAreaActive(areaKey: string) {
+  if (activeArea === areaKey) return true;
+  const area = PRO_AREAS.find((entry) => entry.key === areaKey);
+  return area?.href === currentPath;
+}
 ---
 
 <aside class="lg:sticky lg:top-20 lg:self-start">
@@ -44,7 +51,7 @@ const GITHUB_URL = "https://github.com/loomidev/loomiui-pro";
   <nav class="mt-4 space-y-0.5">
     <a
       href="/pro/"
-      class:list={["category-link", currentPath === "/pro/" && activeArea === "all" && !activeCategory && "is-active"]}
+      class:list={["category-link", currentPath === "/pro/" && !activeCategory && "is-active"]}
     >
       <span class="category-link-icon"><loomi-icon name="sparkles" style="width:1.05rem;height:1.05rem"></loomi-icon></span>
       <span class="grow text-left">All Pro</span>
@@ -145,7 +152,7 @@ const GITHUB_URL = "https://github.com/loomidev/loomiui-pro";
     <div class="promo-card-icon"><loomi-icon name="star" style="width:1.15rem;height:1.15rem"></loomi-icon></div>
     <div class="promo-card-title">Ship production apps faster</div>
     <p class="promo-card-text">Templates, themes, and private packages built on LoomiUI.</p>
-    <a href="/pro/#buy-pro" class="promo-card-link">
+    <a href={PRO_LICENSING_URL} class="promo-card-link">
       Buy Pro
       <loomi-icon name="arrow-right" style="width:0.85rem;height:0.85rem"></loomi-icon>
     </a>

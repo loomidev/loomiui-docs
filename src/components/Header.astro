@@ -1,6 +1,6 @@
 ---
 // Overrides Starlight's default <Header> to add a marketing-style nav row (Docs,
-// Components, Themes, a Resources dropdown) above/alongside the built-in search and
+// Components, Resources and Pro dropdowns) above/alongside the built-in search and
 // theme controls — Starlight's stock header has no concept of top-level nav links,
 // only a title + search + theme/language/social icons. This renders on every
 // Starlight-Layout page (everything except src/pages/index.astro, which uses its own
@@ -24,6 +24,7 @@
 import SiteTitle from "@astrojs/starlight/components/SiteTitle.astro";
 import Search from "@astrojs/starlight/components/Search.astro";
 import ThemeSelect from "./ThemeSelect.astro";
+import { PRO_LICENSING_URL } from "../lib/pro-licensing.mjs";
 
 const GITHUB_URL = "https://github.com/loomidev/loomiui-docs";
 ---
@@ -36,7 +37,6 @@ const GITHUB_URL = "https://github.com/loomidev/loomiui-docs";
   <nav class="loomi-header-nav sl-hidden lg:sl-flex">
     <a href="/installation/" class="loomi-header-link" aria-current="page">Docs</a>
     <a href="/components/" class="loomi-header-link">Components</a>
-    <a href="/customization/" class="loomi-header-link">Themes</a>
     <loomi-dropmenu position="auto" hide-after-click>
       <button slot="trigger" type="button" class="loomi-header-link loomi-header-resources">
         Resources
@@ -48,6 +48,14 @@ const GITHUB_URL = "https://github.com/loomidev/loomiui-docs";
       <loomi-dropmenu-item icon="code-bracket"><a href="/contributing/">Contributing</a></loomi-dropmenu-item>
       <loomi-dropmenu-item icon="language"><a href="/rtl-support/">RTL Support</a></loomi-dropmenu-item>
       <loomi-dropmenu-item divider icon="star"><a href={GITHUB_URL}>Star on GitHub</a></loomi-dropmenu-item>
+    </loomi-dropmenu>
+    <loomi-dropmenu position="auto" hide-after-click>
+      <button slot="trigger" type="button" class="loomi-header-link loomi-header-resources">
+        Pro
+        <loomi-icon name="chevron-down" style="width:0.85rem;height:0.85rem"></loomi-icon>
+      </button>
+      <loomi-dropmenu-item icon="swatch"><a href="/pro/themes/">Themes</a></loomi-dropmenu-item>
+      <loomi-dropmenu-item icon="rectangle-stack"><a href="/pro/templates/">Templates</a></loomi-dropmenu-item>
     </loomi-dropmenu>
   </nav>
 
@@ -66,7 +74,7 @@ const GITHUB_URL = "https://github.com/loomidev/loomiui-docs";
       </svg>
     </a>
     <loomi-button class="hidden sm:inline-flex" type="secondary" size="small" tag="a" href="/installation/">Get Started</loomi-button>
-    <loomi-button class="hidden sm:inline-flex" color="primary" size="small" tag="a" href="/pro/">Get Pro</loomi-button>
+    <loomi-button class="hidden sm:inline-flex" color="primary" size="small" tag="a" href={PRO_LICENSING_URL}>Get Pro</loomi-button>
   </div>
 </div>
 

@@ -32,8 +32,8 @@ export const PRO_CATEGORIES = [
     icon: "adjustments-horizontal",
     href: "/pro/themes/theme-builder/",
   },
-  { key: "figma-kit", label: "Figma Kit", area: "themes", icon: "beaker" },
-  { key: "assets-brand", label: "Assets & Brand", area: "themes", icon: "photo" },
+  { key: "figma-kit", label: "Figma Kit", area: "themes", icon: "beaker", href: "/pro/themes/figma-kit/" },
+  { key: "assets-brand", label: "Assets & Brand", area: "themes", icon: "photo", href: "/pro/themes/assets-brand/" },
   {
     key: "accessibility-quality",
     label: "Accessibility & Quality",
@@ -280,6 +280,30 @@ const FEATURE_PAGES = {
       "Visible focus rings and keyboard-friendly component defaults",
       "Reduced-motion behavior aligned with user preferences",
       "Migration notes and changelogs when tokens evolve",
+    ],
+  },
+  "figma-kit": {
+    title: "Figma Kit",
+    kicker: "Themes",
+    description:
+      "A tokenized Figma library aligned with LoomiUI Pro components — color and text styles, auto-layout patterns, and production-ready frames for admin, SaaS, and data-heavy products.",
+    highlights: [
+      "Core and Pro component libraries with matching variants",
+      "Tokenized color and text styles synced to Pro themes",
+      "Auto-layout patterns and page layout examples",
+      "Admin, SaaS, table, form, modal, and empty-state frames",
+    ],
+  },
+  "assets-brand": {
+    title: "Assets & Brand",
+    kicker: "Themes",
+    description:
+      "Marketing and product visuals that match Pro templates and themes — shell examples, dashboard previews, template screenshots, and launch-ready social assets.",
+    highlights: [
+      "App shell and dashboard preview artwork",
+      "Template and component gallery screenshots",
+      "Marketing page and launch announcement visuals",
+      "Social preview and Open Graph image templates",
     ],
   },
 };
