@@ -12,6 +12,11 @@
      white/near-black surface as MarketingHeader's `bg-white/80` on the marketing pages. */
   --sl-color-bg-nav: var(--sl-color-bg);
   --sl-sidebar-width: 16.875rem;
+  /* Starlight default is 45rem (720px) — too narrow for wide component previews
+     like loomi-calendar (280px sidebar + week grid). */
+  --sl-content-width: 72rem;
+  --loomi-toc-width: 12rem;
+  --loomi-shell-max-width: 96rem;
 }
 :root[data-theme="dark"] {
   --sl-color-accent-low: #1e3a8a;
@@ -123,8 +128,8 @@ starlight-toc nav ul li a{
 /* Centers the whole Starlight frame (sidebar + content + toc) the same way the
    /components/ and /icons/ pages center their `mx-auto max-w-7xl` wrapper. Starlight's
    own layout is edge-to-edge by design — PageFrame.astro pins the sidebar to the literal
-   viewport edge with no overall max-width — so past 80rem (max-w-7xl) this adds a side
-   gutter that's 0rem below 80rem (zero change on any laptop-class viewport) and grows
+   viewport edge with no overall max-width — so past --loomi-shell-max-width this adds a side
+   gutter that's 0rem below that width (zero change on any laptop-class viewport) and grows
    identically on both sides beyond it, the same math `mx-auto` gives the marketing pages
    for free. --sl-content-inline-start is the one variable PageFrame's `.main-frame`,
    MobileTableOfContents, and this project's docs Header override all read for their
@@ -135,7 +140,7 @@ starlight-toc nav ul li a{
    plain one here even though the rest of PageFrame's rules are in @layer starlight.core
    (and so lose to unlayered author CSS like this file without needing !important at all). */
 :root {
-  --loomi-shell-extra-gutter: max(0rem, calc((100vw - 80rem) / 2));
+  --loomi-shell-extra-gutter: max(0rem, calc((100vw - var(--loomi-shell-max-width)) / 2));
 }
 @media (min-width: 50em) {
   [data-has-sidebar] {
@@ -143,7 +148,6 @@ starlight-toc nav ul li a{
   }
   .sidebar-pane {
     inset-inline-start: var(--loomi-shell-extra-gutter) !important;
-    border-inline-end: none !important;
   }
   .main-frame {
     padding-inline-end: var(--loomi-shell-extra-gutter) !important;
@@ -158,6 +162,21 @@ starlight-toc nav ul li a{
   }
 }
 
+/* Starlight's TwoColumnContent splits main vs right TOC using --sl-content-width and
+   subtracts the left sidebar again — on laptop widths that often shrinks the main pane
+   below --sl-content-width. Give the content column nearly all remaining space instead. */
+@media (min-width: 72rem) {
+  html[data-has-sidebar][data-has-toc] .main-pane {
+    width: calc(100% - var(--loomi-toc-width)) !important;
+    max-width: none;
+  }
+
+  html[data-has-sidebar][data-has-toc] .right-sidebar-container {
+    width: var(--loomi-toc-width) !important;
+    flex: none;
+  }
+}
+
 /* Matches the rounded "pill" nav-link style on the /components/ gallery page's
    sidebar (.category-link there) — full-width rounded-lg row, no rail/border-accent,
    hover = flat gray fill, active = flat accent-tinted fill + accent text. Replaces the
@@ -165,6 +184,10 @@ starlight-toc nav ul li a{
    across the marketing and docs chrome. */
 .sidebar-content li {
   @apply p-0 m-0;
+}
+
+.sidebar-content ul ul li {
+  border-inline-start: none;
 }
 
 .sidebar-content li a {
@@ -264,8 +287,34 @@ h2#starlight__on-this-page {
 }
 
 .main-pane .sl-container {
-  max-width: min(100%, calc(var(--sl-content-width) + 6rem));
-  @apply px-3 lg:px-14;
+  max-width: 100%;
+  @apply px-3 lg:px-6;
+}
+
+.loomi-preview loomi-calendar {
+  width: 100%;
+}
+
+.loomi-preview loomi-chart {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  --loomi-chart-max-height: 14rem;
+}
+
+.loomi-preview .loomi-chart-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  width: 100%;
+}
+
+.loomi-preview .loomi-chart-grid loomi-chart {
+  --loomi-chart-max-height: 12rem;
+}
+
+.loomi-preview loomi-chart + loomi-chart {
+  margin-top: 0.75rem;
 }
 loomi-alert > p {
   @apply leading-none;
