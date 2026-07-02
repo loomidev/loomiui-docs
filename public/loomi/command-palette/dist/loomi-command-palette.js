@@ -100,7 +100,7 @@ let LoomiCommandPalette = class LoomiCommandPalette extends LoomiElement {
       --loomi-command-backdrop: rgb(15 23 42 / 0.42);
       --loomi-command-border: var(--loomi-surface-border, #d9dee3);
       --loomi-command-muted: var(--loomi-text-muted, #62717d);
-      --loomi-command-surface: var(--loomi-surface, #ffffff);
+      --loomi-command-surface: var(--loomi-surface);
       --loomi-command-surface-active: var(--loomi-primary-50, var(--_loomi-primary-50-default, #eff6ff));
       --loomi-command-text: var(--loomi-text, #172026);
       --loomi-command-accent: var(--loomi-primary-600, var(--_loomi-primary-600-default, #2563eb));
@@ -246,6 +246,24 @@ let LoomiCommandPalette = class LoomiCommandPalette extends LoomiElement {
       margin-bottom: 4px;
       color: var(--loomi-command-text);
       font-size: 16px;
+    }
+
+    @media (max-width: 640px) {
+      .backdrop {
+        padding: 0;
+        place-items: stretch;
+      }
+
+      .dialog {
+        width: 100%;
+        min-height: 100dvh;
+        border-radius: 0;
+      }
+
+      .list {
+        max-height: none;
+        flex: 1 1 auto;
+      }
     }
   `); }
     connectedCallback() {

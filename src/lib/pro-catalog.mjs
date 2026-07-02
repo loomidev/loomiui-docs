@@ -47,14 +47,14 @@ const ITEMS = {
   "template-variants": [
     "Admin Pro vite-lit",
     "Admin Pro next-react",
+    "Admin Pro nuxt",
+    "Admin Pro laravel-inertia",
     "SaaS Starter vite-lit",
     "SaaS Starter next-react",
     "CRM vite-lit",
     "CRM next-react",
     "Analytics Dashboard vite-lit",
     "Analytics Dashboard next-react",
-    "Laravel/Inertia admin variant",
-    "Nuxt admin variant",
   ],
   "admin-pro": [
     "Dashboard page",
@@ -209,7 +209,7 @@ const TEMPLATE_SLUGS = {
 
 /** Desktop dashboard screenshot for shipped template variants. */
 export function templatePreviewImage(title) {
-  const match = title.match(/^(.+?) (vite-lit|next-react)$/);
+  const match = title.match(/^(.+?) (vite-lit|next-react|nuxt|laravel-inertia)$/);
   if (!match) return null;
 
   const [, label, variant] = match;

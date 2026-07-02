@@ -19,7 +19,7 @@ let LoomiListviewItem = class LoomiListviewItem extends LoomiElement {
     }
     static { this.styles = loomiStyles(componentStyles); }
     render() {
-        return html `<div class="loomi-li"><slot></slot></div>`;
+        return html `<div class="loomi-li" role="listitem"><slot></slot></div>`;
     }
 };
 __decorate([
@@ -47,7 +47,7 @@ let LoomiListview = class LoomiListview extends LoomiElement {
         this.sync();
     }
     render() {
-        return html `<div class="loomi-listview"><slot @slotchange=${this.sync}></slot></div>`;
+        return html `<div class="loomi-listview" role="list"><slot @slotchange=${this.sync}></slot></div>`;
     }
 };
 __decorate([

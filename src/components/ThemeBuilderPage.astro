@@ -110,6 +110,50 @@ const initialStylesheet = themeBundle.assetsBase ? `${themeBundle.assetsBase}/${
               </div>
             </div>
 
+            <h3 class="builder-subtitle">Typography</h3>
+
+            <label class="builder-field">
+              <span>Body font stack</span>
+              <input id="font-family" type="text" value="Inter, ui-sans-serif, system-ui, sans-serif" />
+            </label>
+
+            <label class="builder-field">
+              <span>Monospace font stack</span>
+              <input id="font-family-mono" type="text" value="'JetBrains Mono', ui-monospace, SFMono-Regular, monospace" />
+            </label>
+
+            <label class="builder-field">
+              <span>Base font size</span>
+              <select id="font-size-base">
+                <option value="13px">Compact (13px)</option>
+                <option value="14px" selected>Default (14px)</option>
+                <option value="16px">Comfortable (16px)</option>
+              </select>
+            </label>
+
+            <label class="builder-field">
+              <span>Line height</span>
+              <select id="line-height-base">
+                <option value="1.4">Tight (1.4)</option>
+                <option value="1.5" selected>Default (1.5)</option>
+                <option value="1.7">Relaxed (1.7)</option>
+              </select>
+            </label>
+
+            <h3 class="builder-subtitle">Import & validation</h3>
+
+            <label class="builder-field">
+              <span>Paste theme JSON</span>
+              <textarea id="import-json" rows="8" placeholder='{"name":"brand","label":"Brand","description":"Imported preset","modes":{...}}'></textarea>
+            </label>
+
+            <div class="builder-actions">
+              <button type="button" class="builder-action" id="validate-theme">Validate JSON</button>
+              <button type="button" class="builder-action builder-action-primary" id="apply-import">Apply import</button>
+            </div>
+
+            <ul id="validation-results" class="validation-results" aria-live="polite"></ul>
+
             <h3 class="builder-subtitle">Export</h3>
             <pre class="export-snippet"><code id="export-code"></code></pre>
             <pre class="export-snippet export-snippet-secondary"><code id="css-import-code"></code></pre>
@@ -191,6 +235,14 @@ const initialStylesheet = themeBundle.assetsBase ? `${themeBundle.assetsBase}/${
       const primaryInput = document.getElementById("primary-color") as HTMLInputElement;
       const radiusSelect = document.getElementById("radius-profile") as HTMLSelectElement;
       const densitySelect = document.getElementById("density-profile") as HTMLSelectElement;
+      const fontFamilyInput = document.getElementById("font-family") as HTMLInputElement;
+      const fontFamilyMonoInput = document.getElementById("font-family-mono") as HTMLInputElement;
+      const fontSizeSelect = document.getElementById("font-size-base") as HTMLSelectElement;
+      const lineHeightSelect = document.getElementById("line-height-base") as HTMLSelectElement;
+      const importJson = document.getElementById("import-json") as HTMLTextAreaElement;
+      const validationResults = document.getElementById("validation-results") as HTMLUListElement;
+      const validateButton = document.getElementById("validate-theme") as HTMLButtonElement;
+      const applyImportButton = document.getElementById("apply-import") as HTMLButtonElement;
       const exportCode = document.getElementById("export-code") as HTMLElement;
       const cssImportCode = document.getElementById("css-import-code") as HTMLElement;
       const shellBrand = document.getElementById("shell-brand") as HTMLElement;
@@ -214,7 +266,67 @@ const initialStylesheet = themeBundle.assetsBase ? `${themeBundle.assetsBase}/${
         radius: radiusSelect.value as keyof typeof radiusProfiles,
         density: densitySelect.value as keyof typeof densityProfiles,
         mode: "light" as "light" | "dark",
+        fontFamily: fontFamilyInput.value,
+        fontFamilyMono: fontFamilyMonoInput.value,
+        fontSizeBase: fontSizeSelect.value,
+        lineHeightBase: lineHeightSelect.value,
       };
+
+      type ValidationIssue = { path: string; message: string; severity: "error" | "warning" };
+
+      function validateThemePreset(input: unknown): ValidationIssue[] {
+        const issues: ValidationIssue[] = [];
+        if (!input || typeof input !== "object" || Array.isArray(input)) {
+          return [{ path: "", message: "Theme must be a JSON object.", severity: "error" }];
+        }
+
+        const theme = input as Record<string, unknown>;
+        if (typeof theme.name !== "string" || !/^[a-z0-9-]+$/.test(theme.name)) {
+          issues.push({ path: "name", message: "Use a lowercase slug with hyphens.", severity: "error" });
+        }
+        if (typeof theme.label !== "string" || !theme.label.trim()) {
+          issues.push({ path: "label", message: "Label is required.", severity: "error" });
+        }
+        if (typeof theme.description !== "string" || !theme.description.trim()) {
+          issues.push({ path: "description", message: "Description is required.", severity: "error" });
+        }
+        if (!theme.modes || typeof theme.modes !== "object") {
+          issues.push({ path: "modes", message: "Expected light and dark mode token sets.", severity: "error" });
+          return issues;
+        }
+
+        for (const mode of ["light", "dark"] as const) {
+          const modeTokens = (theme.modes as Record<string, unknown>)[mode];
+          if (!modeTokens || typeof modeTokens !== "object") {
+            issues.push({ path: `modes.${mode}`, message: `Missing "${mode}" mode tokens.`, severity: "error" });
+            continue;
+          }
+          const typography = (modeTokens as Record<string, unknown>).typography;
+          if (!typography || typeof typography !== "object") {
+            issues.push({ path: `modes.${mode}.typography`, message: "Typography tokens are required.", severity: "error" });
+          }
+        }
+
+        return issues;
+      }
+
+      function renderValidation(issues: ValidationIssue[]) {
+        validationResults.innerHTML = "";
+        if (issues.length === 0) {
+          const item = document.createElement("li");
+          item.className = "validation-ok";
+          item.textContent = "Theme JSON passed validation.";
+          validationResults.append(item);
+          return;
+        }
+
+        for (const issue of issues) {
+          const item = document.createElement("li");
+          item.className = issue.severity === "error" ? "validation-error" : "validation-warning";
+          item.textContent = issue.path ? `${issue.path}: ${issue.message}` : issue.message;
+          validationResults.append(item);
+        }
+      }
 
       function selectedPreset() {
         return presets.find((entry: any) => entry.name === state.preset) ?? presets[0];
@@ -239,6 +351,11 @@ const initialStylesheet = themeBundle.assetsBase ? `${themeBundle.assetsBase}/${
         root.style.setProperty("--loomi-density-control-height", density.controlHeight);
         root.style.setProperty("--loomi-density-table-row-height", density.tableRowHeight);
         root.style.setProperty("--loomi-density-gap-inline", density.gapInline);
+        root.style.setProperty("--loomi-font-font-family", state.fontFamily);
+        root.style.setProperty("--loomi-font-font-family-mono", state.fontFamilyMono);
+        root.style.setProperty("--loomi-font-font-size-md", state.fontSizeBase);
+        root.style.setProperty("--loomi-font-line-height-normal", state.lineHeightBase);
+        document.body.style.fontFamily = state.fontFamily;
 
         if (stylesheet) {
           const option = presetSelect.selectedOptions[0];
@@ -263,10 +380,23 @@ const brand = createTheme({
         tableRowHeight: "${density.tableRowHeight}",
         gapInline: "${density.gapInline}",
       },
+      typography: {
+        fontFamily: "${state.fontFamily}",
+        fontFamilyMono: "${state.fontFamilyMono}",
+        fontSizeMd: "${state.fontSizeBase}",
+        lineHeightNormal: "${state.lineHeightBase}",
+      },
     },
   },
 });`;
-        cssImportCode.textContent = `import "@loomdev-pro/themes/css/${state.preset}.css";\n/* Override accent at runtime */\ndocument.documentElement.style.setProperty("--loomi-primary-500", "${state.primary}");`;
+        cssImportCode.textContent = `import { validateThemePreset, importThemeFromJson } from "@loomdev-pro/themes";
+
+const result = importThemeFromJson(themeJson);
+if (!result.preset) {
+  console.error(result.issues);
+}
+
+import "@loomdev-pro/themes/css/${state.preset}.css";`;
       }
 
       presetSelect.addEventListener("change", () => {
@@ -300,6 +430,86 @@ const brand = createTheme({
           modeButtons.forEach((entry) => entry.classList.toggle("is-active", entry === button));
           applyTheme();
         });
+      });
+
+      fontFamilyInput.addEventListener("input", () => {
+        state.fontFamily = fontFamilyInput.value;
+        applyTheme();
+      });
+
+      fontFamilyMonoInput.addEventListener("input", () => {
+        state.fontFamilyMono = fontFamilyMonoInput.value;
+        applyTheme();
+      });
+
+      fontSizeSelect.addEventListener("change", () => {
+        state.fontSizeBase = fontSizeSelect.value;
+        applyTheme();
+      });
+
+      lineHeightSelect.addEventListener("change", () => {
+        state.lineHeightBase = lineHeightSelect.value;
+        applyTheme();
+      });
+
+      validateButton.addEventListener("click", () => {
+        try {
+          const parsed = JSON.parse(importJson.value || "{}");
+          renderValidation(validateThemePreset(parsed));
+        } catch (error) {
+          renderValidation([
+            {
+              path: "",
+              message: error instanceof Error ? `Invalid JSON: ${error.message}` : "Invalid JSON.",
+              severity: "error",
+            },
+          ]);
+        }
+      });
+
+      applyImportButton.addEventListener("click", () => {
+        try {
+          const parsed = JSON.parse(importJson.value || "{}");
+          const issues = validateThemePreset(parsed);
+          renderValidation(issues);
+          if (issues.some((issue) => issue.severity === "error")) return;
+
+          if (typeof parsed.name === "string") {
+            const matchingPreset = presets.find((entry: any) => entry.name === parsed.name);
+            if (matchingPreset) {
+              state.preset = parsed.name;
+              presetSelect.value = parsed.name;
+            }
+          }
+
+          const typography = parsed?.modes?.light?.typography ?? parsed?.modes?.dark?.typography;
+          if (typography?.fontFamily) {
+            state.fontFamily = typography.fontFamily;
+            fontFamilyInput.value = typography.fontFamily;
+          }
+          if (typography?.fontFamilyMono) {
+            state.fontFamilyMono = typography.fontFamilyMono;
+            fontFamilyMonoInput.value = typography.fontFamilyMono;
+          }
+          if (typography?.fontSizeMd) {
+            state.fontSizeBase = typography.fontSizeMd;
+            fontSizeSelect.value = typography.fontSizeMd;
+          }
+          if (typography?.lineHeightNormal) {
+            state.lineHeightBase = typography.lineHeightNormal;
+            lineHeightSelect.value = typography.lineHeightNormal;
+          }
+
+          applyTheme();
+        } catch (error) {
+          renderValidation([
+            {
+              path: "",
+              message: error instanceof Error ? `Invalid JSON: ${error.message}` : "Invalid JSON.",
+              severity: "error",
+            },
+          ]);
+        }
       });
 
       applyTheme();
@@ -353,7 +563,9 @@ const brand = createTheme({
     color: rgb(203 213 225);
   }
   .builder-field select,
-  .builder-field input[type="color"] {
+  .builder-field input[type="color"],
+  .builder-field input[type="text"],
+  .builder-field textarea {
     width: 100%;
     min-height: 2.35rem;
     border-radius: 0.6rem;
@@ -361,6 +573,54 @@ const brand = createTheme({
     background: white;
     padding: 0.35rem 0.55rem;
     font: inherit;
+  }
+  .builder-field textarea {
+    min-height: 8rem;
+    resize: vertical;
+  }
+  .dark .builder-field select,
+  .dark .builder-field input[type="text"],
+  .dark .builder-field textarea {
+    border-color: rgb(51 65 85);
+    background: rgb(15 23 42);
+    color: white;
+  }
+  .builder-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .builder-action {
+    border: 1px solid rgb(226 232 240);
+    background: white;
+    color: rgb(51 65 85);
+    border-radius: 999px;
+    padding: 0.4rem 0.85rem;
+    font-size: 0.82rem;
+    cursor: pointer;
+  }
+  .builder-action-primary {
+    border-color: rgb(191 219 254);
+    background: rgb(239 246 255);
+    color: rgb(29 78 216);
+  }
+  .validation-results {
+    list-style: none;
+    margin: 0 0 0.75rem;
+    padding: 0;
+    display: grid;
+    gap: 0.35rem;
+    font-size: 0.78rem;
+  }
+  .validation-ok {
+    color: rgb(21 128 61);
+  }
+  .validation-error {
+    color: rgb(185 28 28);
+  }
+  .validation-warning {
+    color: rgb(180 83 9);
   }
   .dark .builder-field select {
     border-color: rgb(51 65 85);

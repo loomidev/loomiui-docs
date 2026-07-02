@@ -54,33 +54,113 @@ export function usesPalette(type) {
 export function hasSecondarySeries(data) {
     return data.some((d) => d.value2 != null);
 }
+export function hasTertiarySeries(data) {
+    return data.some((d) => d.value3 != null);
+}
+export function hasGroupedValues(data) {
+    return data.some((d) => d.values != null && d.values.length > 0);
+}
+/** Stable series order — first-seen label wins (e.g. Mike, Sam, Fred, Sara). */
+export function groupedSeriesLabels(data) {
+    const labels = [];
+    for (const d of data) {
+        for (const v of d.values ?? []) {
+            if (!labels.includes(v.label))
+                labels.push(v.label);
+        }
+    }
+    return labels;
+}
+export function groupedSeriesCount(data) {
+    if (hasTertiarySeries(data))
+        return 3;
+    if (hasSecondarySeries(data))
+        return 2;
+    return 1;
+}
+/** Bar groups per x-axis category — `values` arrays or legacy `value`/`value2`/`value3`. */
+export function barSeriesCount(data) {
+    if (hasGroupedValues(data))
+        return groupedSeriesLabels(data).length;
+    return groupedSeriesCount(data);
+}
+export function barValueAt(point, seriesIndex, seriesLabels) {
+    if (point.values?.length) {
+        const label = seriesLabels[seriesIndex];
+        return point.values.find((v) => v.label === label)?.value;
+    }
+    if (seriesIndex === 0)
+        return point.value;
+    if (seriesIndex === 1)
+        return point.value2 ?? undefined;
+    if (seriesIndex === 2)
+        return point.value3 ?? undefined;
+    return undefined;
+}
+export function maxBarValue(point) {
+    if (point.values?.length) {
+        return Math.max(...point.values.map((v) => v.value));
+    }
+    return Math.max(point.value, point.value2 ?? 0, point.value3 ?? 0);
+}
 export function maxValue(data) {
-    return Math.max(1, ...data.flatMap((d) => [d.value, d.value2].filter((v) => v != null)));
+    return Math.max(1, ...data.flatMap((d) => {
+        if (d.values?.length)
+            return d.values.map((v) => v.value);
+        return [d.value, d.value2, d.value3].filter((v) => v != null);
+    }));
 }
 export function segmentFillShade(shade) {
     return shade === "light" ? 50 : 500;
 }
-export function resolveFill(ctx, p, i, usePalette, secondary = false) {
-    const c = secondary
-        ? p.color2 || ctx.color2 || ctx.color
-        : p.color || (usePalette ? PALETTE[i % PALETTE.length] : ctx.color);
-    return /^[a-z]+$/.test(c) ? cssColor(c, segmentFillShade(ctx.shade)) : c;
+export function resolveGroupedSeriesFill(ctx, data, seriesLabel, seriesIndex) {
+    for (const d of data) {
+        const sub = d.values?.find((v) => v.label === seriesLabel);
+        if (sub?.color) {
+            return /^[a-z]+$/.test(sub.color) ? cssColor(sub.color, segmentFillShade(ctx.shade)) : sub.color;
+        }
+    }
+    return cssColor(PALETTE[seriesIndex % PALETTE.length], segmentFillShade(ctx.shade));
 }
-export function resolveBorder(ctx, p, i, usePalette, secondary = false) {
+export function resolveGroupedSeriesBorder(ctx, data, seriesLabel, seriesIndex) {
     if (ctx.shade !== "light" || !ctx.showBorder)
         return null;
-    const c = secondary
-        ? p.color2 || ctx.color2 || ctx.color
-        : p.color || (usePalette ? PALETTE[i % PALETTE.length] : ctx.color);
+    for (const d of data) {
+        const sub = d.values?.find((v) => v.label === seriesLabel);
+        if (sub?.color) {
+            return /^[a-z]+$/.test(sub.color) ? cssColor(sub.color, 200) : null;
+        }
+    }
+    return cssColor(PALETTE[seriesIndex % PALETTE.length], 200);
+}
+export function resolveFill(ctx, p, i, usePalette, series = 0) {
+    const c = series === 2
+        ? p.color3 || ctx.color3 || ctx.color
+        : series === 1
+            ? p.color2 || ctx.color2 || ctx.color
+            : p.color || (usePalette ? PALETTE[i % PALETTE.length] : ctx.color);
+    return /^[a-z]+$/.test(c) ? cssColor(c, segmentFillShade(ctx.shade)) : c;
+}
+export function resolveBorder(ctx, p, i, usePalette, series = 0) {
+    if (ctx.shade !== "light" || !ctx.showBorder)
+        return null;
+    const c = series === 2
+        ? p.color3 || ctx.color3 || ctx.color
+        : series === 1
+            ? p.color2 || ctx.color2 || ctx.color
+            : p.color || (usePalette ? PALETTE[i % PALETTE.length] : ctx.color);
     return /^[a-z]+$/.test(c) ? cssColor(c, 200) : null;
 }
-export function accentStyle(color, shade, showBorder, withBorder = false, color2) {
+export function accentStyle(color, shade, showBorder, withBorder = false, color2, color3) {
     const light = shade === "light";
     const strokeShade = light ? (withBorder && showBorder ? 600 : 400) : 600;
     const fillShade = light ? 100 : 50;
     let style = `${accentVars(color)}--_loomi-accent:${cssColor(color, strokeShade)};--_loomi-accent-softer:${cssColor(color, fillShade)};`;
     if (color2) {
         style += `--_loomi-accent-2:${cssColor(color2, strokeShade)};--_loomi-accent-2-softer:${cssColor(color2, fillShade)};`;
+    }
+    if (color3) {
+        style += `--_loomi-accent-3:${cssColor(color3, strokeShade)};--_loomi-accent-3-softer:${cssColor(color3, fillShade)};`;
     }
     return style;
 }
@@ -93,7 +173,7 @@ export function tooltipAnchor(type, data, index, opts) {
         return [0, 0];
     if (type === "bar") {
         const x = padLeft + index * bandWidth + bandWidth / 2;
-        const topVal = Math.max(d.value, d.value2 ?? 0);
+        const topVal = maxBarValue(d);
         const y = H - padBottom - (topVal / max) * (H - padTop - padBottom);
         return [x, y];
     }

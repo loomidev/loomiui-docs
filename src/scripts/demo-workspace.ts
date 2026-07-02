@@ -1,6 +1,7 @@
 interface DemoUser {
   name: string;
   initials: string;
+  avatar: string;
 }
 
 interface DemoComment {
@@ -31,9 +32,9 @@ interface DemoProject {
 }
 
 const USERS: Record<string, DemoUser> = {
-  mk: { name: "Michael K. Ocansey", initials: "MK" },
-  sf: { name: "Sara Field", initials: "SF" },
-  rb: { name: "Robert Boateng", initials: "RB" },
+  mk: { name: "Michael K. Ocansey", initials: "MK", avatar: "/avatars/john.svg" },
+  sf: { name: "Sara Field", initials: "SF", avatar: "/avatars/sara.svg" },
+  rb: { name: "Robert Boateng", initials: "RB", avatar: "/avatars/robert.svg" },
 };
 
 const STATUSES: DemoTask["status"][] = ["todo", "in-progress", "done"];
@@ -86,7 +87,7 @@ const projects: DemoProject[] = [
         description: "Decide on primary and accent colors for the redesign.",
         status: "done",
         assignee: "sf",
-        dueDate: "2026-06-21",
+        dueDate: "2026-06-22",
         dueTime: "14:00",
         attachment: "",
         comments: [],
@@ -121,6 +122,28 @@ const projects: DemoProject[] = [
         assignee: "sf",
         dueDate: "2026-06-29",
         dueTime: "12:00",
+        attachment: "",
+        comments: [],
+      },
+      {
+        id: "9",
+        title: "SEO metadata review",
+        description: "Verify titles, descriptions, and Open Graph tags across key pages.",
+        status: "todo",
+        assignee: "rb",
+        dueDate: "2026-06-30",
+        dueTime: "15:00",
+        attachment: "",
+        comments: [],
+      },
+      {
+        id: "10",
+        title: "Cross-browser smoke test",
+        description: "Quick pass in Chrome, Safari, and Firefox before launch.",
+        status: "todo",
+        assignee: "mk",
+        dueDate: "2026-07-01",
+        dueTime: "10:00",
         attachment: "",
         comments: [],
       },
@@ -196,6 +219,110 @@ function formatDate(iso: string): string {
   return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
+interface DemoActivityEvent {
+  sortKey: string;
+  date: string;
+  content: string;
+  icon: string;
+  completed?: boolean;
+  taskId?: string;
+}
+
+function relativeFromIso(iso: string): string {
+  const today = new Date("2026-07-02T12:00:00");
+  const d = new Date(`${iso}T12:00:00`);
+  if (Number.isNaN(d.getTime())) return "Recently";
+  const diff = Math.round((today.getTime() - d.getTime()) / 86_400_000);
+  if (diff <= 0) return "Today";
+  if (diff === 1) return "Yesterday";
+  if (diff < 7) return `${diff} days ago`;
+  return formatDate(iso);
+}
+
+function buildActivityFeed(project: DemoProject): DemoActivityEvent[] {
+  const events: DemoActivityEvent[] = [];
+
+  if (project.created) {
+    events.push({
+      sortKey: `${project.created}-00`,
+      date: relativeFromIso(project.created),
+      content: `Project “${project.name}” kicked off`,
+      icon: "rocket-launch",
+      completed: true,
+    });
+  }
+
+  for (const task of project.tasks) {
+    const user = USERS[task.assignee];
+    const who = user?.name ?? "Someone";
+
+    if (task.status === "done") {
+      events.push({
+        sortKey: `${task.dueDate}-20-${task.id}`,
+        date: relativeFromIso(task.dueDate),
+        content: `${who} completed “${task.title}”`,
+        icon: "check-circle",
+        completed: true,
+        taskId: task.id,
+      });
+    } else if (task.status === "in-progress") {
+      events.push({
+        sortKey: `${task.dueDate}-10-${task.id}`,
+        date: relativeFromIso(task.dueDate),
+        content: `${who} moved “${task.title}” to In Progress`,
+        icon: "arrow-path",
+        taskId: task.id,
+      });
+    }
+
+    for (const [index, comment] of task.comments.entries()) {
+      const author = USERS[comment.author];
+      events.push({
+        sortKey: `${task.dueDate}-05-${task.id}-${index}`,
+        date: relativeFromIso(task.dueDate),
+        content: `${author?.name ?? "Someone"} commented on “${task.title}”: ${comment.text}`,
+        icon: "chat-bubble-left-ellipsis",
+        taskId: task.id,
+      });
+    }
+  }
+
+  if (project.health === "At risk") {
+    events.push({
+      sortKey: `${project.created}-90`,
+      date: "Today",
+      content: "Project health flagged as At risk",
+      icon: "exclamation-triangle",
+    });
+  }
+
+  return events.sort((a, b) => b.sortKey.localeCompare(a.sortKey)).slice(0, 3);
+}
+
+function renderTimeline(): void {
+  const host = document.getElementById("activity-timeline");
+  if (!host) return;
+  host.innerHTML = "";
+  const events = buildActivityFeed(activeProject());
+  if (events.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "demo-empty-copy";
+    empty.textContent = "Activity will appear here as the team works.";
+    host.appendChild(empty);
+    return;
+  }
+  for (const [index, event] of events.entries()) {
+    const item = document.createElement("loomi-timeline");
+    item.setAttribute("date", event.date);
+    item.setAttribute("content", event.content);
+    item.setAttribute("icon", event.icon);
+    if (event.completed) item.setAttribute("completed", "");
+    if (event.taskId) item.dataset.taskId = event.taskId;
+    if (index === events.length - 1) item.setAttribute("last", "");
+    host.appendChild(item);
+  }
+}
+
 function activeProject(): DemoProject {
   return projects.find((project) => project.id === activeProjectId) ?? projects[0];
 }
@@ -231,7 +358,7 @@ function showToast(message: string, type: "success" | "info" = "success"): void 
 
 function setListItems(
   id: string,
-  rows: { id?: string; title: string; meta: string }[],
+  rows: { id?: string; title: string; meta: string; assignee?: string }[],
   clickable = false,
 ): void {
   const list = document.getElementById(id);
@@ -242,18 +369,70 @@ function setListItems(
     if (clickable && rowData.id) item.dataset.taskId = rowData.id;
     const row = document.createElement("div");
     row.className = clickable ? "demo-activity-row" : "demo-list-row";
+    const copy = document.createElement("div");
+    copy.className = "demo-list-copy";
     const title = document.createElement("div");
     title.className = "demo-list-title";
     title.textContent = rowData.title;
     const meta = document.createElement("div");
     meta.className = "demo-list-meta";
     meta.textContent = rowData.meta;
-    row.append(title, meta);
+    copy.append(title, meta);
+    row.append(copy);
+    if (rowData.assignee) {
+      const user = USERS[rowData.assignee];
+      const avatar = document.createElement("loomi-avatar");
+      avatar.setAttribute("size", "tiny");
+      if (user?.avatar) avatar.setAttribute("image", user.avatar);
+      else avatar.setAttribute("label", user?.initials ?? "?");
+      row.append(avatar);
+    }
     item.appendChild(row);
     list.appendChild(item);
   }
 }
 
+function buildStatusSegments(tasks: DemoTask[]): { label: string; value: number; color: string }[] {
+  const todo = tasks.filter((t) => t.status === "todo").length;
+  const inProgress = tasks.filter((t) => t.status === "in-progress").length;
+  const done = tasks.filter((t) => t.status === "done").length;
+  return [
+    { label: "To Do", value: todo, color: "gray" },
+    { label: "In Progress", value: inProgress, color: "warning" },
+    { label: "Done", value: done, color: "success" },
+  ].filter((segment) => segment.value > 0);
+}
+
+const TEAM_DAILY_COMPLETIONS: { label: string; mk: number; sf: number; rb: number }[] = [
+  { label: "18", mk: 1, sf: 0, rb: 1 },
+  { label: "19", mk: 2, sf: 1, rb: 0 },
+  { label: "20", mk: 1, sf: 2, rb: 1 },
+  { label: "21", mk: 0, sf: 1, rb: 2 },
+  { label: "22", mk: 1, sf: 3, rb: 0 },
+  { label: "23", mk: 2, sf: 1, rb: 1 },
+  { label: "24", mk: 1, sf: 0, rb: 2 },
+  { label: "25", mk: 3, sf: 2, rb: 1 },
+  { label: "26", mk: 2, sf: 1, rb: 2 },
+  { label: "27", mk: 1, sf: 2, rb: 0 },
+  { label: "28", mk: 2, sf: 1, rb: 1 },
+  { label: "29", mk: 1, sf: 3, rb: 1 },
+  { label: "30", mk: 2, sf: 1, rb: 2 },
+  { label: "1", mk: 1, sf: 2, rb: 1 },
+];
+
+function buildTeamDailyChartData(): { label: string; value: number; value2: number; value3: number }[] {
+  return TEAM_DAILY_COMPLETIONS.map((day) => ({
+    label: day.label,
+    value: day.mk,
+    value2: day.sf,
+    value3: day.rb,
+  }));
+}
+
+function renderTeamChart(): void {
+  const chart = document.getElementById("chart-team-completions") as (HTMLElement & { data?: unknown[] }) | null;
+  if (chart) chart.data = buildTeamDailyChartData();
+}
 function updateProjectSwitcher(): void {
   const switcher = document.getElementById("project-switcher") as (HTMLElement & {
     data?: unknown[];
@@ -272,7 +451,9 @@ function renderBoard(): void {
     col.items = colTasks.map((t) => ({
       id: t.id,
       label: t.title,
-      meta: `${USERS[t.assignee]?.initials ?? "?"} · ${formatDate(t.dueDate)}`,
+      meta: formatDate(t.dueDate),
+      avatarImage: USERS[t.assignee]?.avatar ?? "",
+      avatarLabel: USERS[t.assignee]?.initials ?? "?",
     }));
     const count = document.getElementById(`count-${status}`);
     if (count) count.textContent = String(colTasks.length);
@@ -283,17 +464,13 @@ function renderDashboard(): void {
   const project = activeProject();
   const tasks = project.tasks;
   const total = tasks.length;
-  const inProgress = tasks.filter((t) => t.status === "in-progress").length;
   const done = tasks.filter((t) => t.status === "done").length;
-  const todo = tasks.filter((t) => t.status === "todo").length;
   const pct = total ? Math.round((done / total) * 100) : 0;
-  const dueSoon = tasks.filter((t) => t.status !== "done" && t.dueDate).length;
 
   const lead = USERS[project.lead];
   const dashName = document.getElementById("dash-project-name");
   const dashMeta = document.getElementById("dash-project-meta");
   const dashHealth = document.getElementById("dash-health");
-  const budget = document.getElementById("dash-budget");
   if (dashName) dashName.textContent = project.name;
   if (dashMeta) dashMeta.textContent = lead ? `Led by ${lead.name}` : "No lead assigned";
   if (dashHealth) {
@@ -305,50 +482,41 @@ function renderDashboard(): void {
           ? "demo-health demo-health--planning"
           : "demo-health demo-health--ok";
   }
-  if (budget) budget.setAttribute("label", `$${project.budget.toLocaleString()}`);
 
   document.getElementById("stat-total")?.setAttribute("number", String(total));
-  document.getElementById("stat-progress")?.setAttribute("number", String(inProgress));
   document.getElementById("stat-complete")?.setAttribute("number", `${pct}%`);
-  document.getElementById("stat-due")?.setAttribute("number", String(dueSoon));
 
   const progress = document.getElementById("dash-progress") as (HTMLElement & {
     percentage?: number;
   }) | null;
-  if (progress) progress.percentage = pct;
+  if (progress) progress.percentage = 70;
 
   const graph = document.getElementById("status-graph") as (HTMLElement & { data?: unknown[] }) | null;
   if (graph) {
-    graph.data = [
-      { label: "To Do", value: todo, color: "gray" },
-      { label: "In Progress", value: inProgress, color: "orange" },
-      { label: "Done", value: done, color: "green" },
-    ];
+    const segments = buildStatusSegments(tasks);
+    graph.data = segments.length
+      ? segments
+      : [{ label: "No tasks yet", value: 1, color: "gray" }];
   }
 
-  const workload = document.getElementById("workload-graph") as (HTMLElement & { data?: unknown[] }) | null;
-  if (workload) {
-    workload.data = Object.entries(USERS).map(([id, user]) => ({
-      label: user.initials,
-      value: Math.max(0.001, tasks.filter((task) => task.assignee === id && task.status !== "done").length),
-      color: id === "mk" ? "primary" : id === "sf" ? "pink" : "cyan",
-    }));
-  }
+  renderTeamChart();
 
   const recent = [...tasks]
     .filter((task) => task.status !== "done")
     .sort((a, b) => a.dueDate.localeCompare(b.dueDate))
-    .slice(0, 5)
+    .slice(0, 2)
     .map((task) => ({
       id: task.id,
       title: task.title,
-      meta: `${STATUS_LABELS[task.status]} · ${USERS[task.assignee]?.initials ?? "?"} · ${formatDate(task.dueDate)}`,
+      meta: `${STATUS_LABELS[task.status]} · ${formatDate(task.dueDate)}`,
+      assignee: task.assignee,
     }));
   setListItems(
     "activity-list",
     recent.length ? recent : [{ title: "No open tasks", meta: "Create a task to get started" }],
     true,
   );
+  renderTimeline();
 }
 
 function renderComments(task: DemoTask): void {
@@ -369,7 +537,8 @@ function renderComments(task: DemoTask): void {
     row.className = "demo-comment";
     const avatar = document.createElement("loomi-avatar");
     avatar.setAttribute("size", "tiny");
-    avatar.setAttribute("label", user?.initials ?? "?");
+    if (user?.avatar) avatar.setAttribute("image", user.avatar);
+    else avatar.setAttribute("label", user?.initials ?? "?");
     const text = document.createElement("div");
     const name = document.createElement("div");
     name.className = "demo-list-title";
@@ -425,12 +594,22 @@ function closeTaskPanel(): void {
   activeTaskId = null;
 }
 
-function switchToBoardTab(): void {
-  const tabs = document.querySelectorAll("#demo-nav loomi-tab");
-  for (const tab of tabs) {
-    const el = tab as HTMLElement & { active?: boolean; label?: string };
-    el.active = el.label === "Board";
+function switchToView(view: "dashboard" | "board"): void {
+  const dashboard = document.getElementById("demo-panel-dashboard");
+  const board = document.getElementById("demo-panel-board");
+  if (dashboard) dashboard.hidden = view !== "dashboard";
+  if (board) board.hidden = view !== "board";
+
+  const group = document.getElementById("demo-nav");
+  if (!group) return;
+  for (const item of group.querySelectorAll("loomi-button-group-item")) {
+    const el = item as HTMLElement & { value?: string; selected?: boolean };
+    el.selected = el.value === view;
   }
+}
+
+function switchToBoardTab(): void {
+  switchToView("board");
 }
 
 function renderAll(): void {
@@ -472,6 +651,11 @@ function wireEvents(): void {
     showToast(`Switched to ${activeProject().name}`, "info");
   });
 
+  document.getElementById("demo-nav")?.addEventListener("button-group-change", (e) => {
+    const detail = (e as CustomEvent<{ value: string }>).detail;
+    switchToView(detail.value === "board" ? "board" : "dashboard");
+  });
+
   document.getElementById("board-search")?.addEventListener("input", (e) => {
     const target = e.target as HTMLElement & { value?: string };
     boardFilter = target.value ?? "";
@@ -482,6 +666,15 @@ function wireEvents(): void {
     const target = e.target;
     if (!(target instanceof Element)) return;
     const item = target.closest("[data-task-id]");
+    if (!(item instanceof HTMLElement) || !item.dataset.taskId) return;
+    switchToBoardTab();
+    openTaskPanel(item.dataset.taskId);
+  });
+
+  document.getElementById("activity-timeline")?.addEventListener("click", (e) => {
+    const target = e.target;
+    if (!(target instanceof Element)) return;
+    const item = target.closest("loomi-timeline[data-task-id]");
     if (!(item instanceof HTMLElement) || !item.dataset.taskId) return;
     switchToBoardTab();
     openTaskPanel(item.dataset.taskId);
@@ -517,6 +710,7 @@ function wireEvents(): void {
     task.comments.push({ author: "mk", text });
     textarea.value = "";
     renderComments(task);
+    renderTimeline();
     showToast("Comment posted");
   });
 
@@ -620,22 +814,43 @@ function wireEvents(): void {
 }
 
 async function initializeDemoApp(): Promise<void> {
+  await new Promise<void>((resolve) => {
+    if ((window as Window & { __loomiComponentsLoaded?: boolean }).__loomiComponentsLoaded) {
+      resolve();
+      return;
+    }
+    window.addEventListener("loomi-components-loaded", () => resolve(), { once: true });
+    setTimeout(resolve, 12_000);
+  });
+
+  const tags = [
+    "loomi-horizontal-line-graph",
+    "loomi-listview",
+    "loomi-listview-item",
+    "loomi-select",
+    "loomi-sortable",
+    "loomi-statistic",
+    "loomi-textarea",
+    "loomi-button-group",
+    "loomi-button-group-item",
+    "loomi-progress-bar",
+    "loomi-alert",
+    "loomi-modal",
+    "loomi-input",
+    "loomi-timeline",
+    "loomi-timelines",
+    "loomi-chart",
+    "loomi-avatar",
+  ];
   await Promise.all(
-    [
-      "loomi-horizontal-line-graph",
-      "loomi-listview",
-      "loomi-listview-item",
-      "loomi-select",
-      "loomi-sortable",
-      "loomi-statistic",
-      "loomi-textarea",
-      "loomi-tabs",
-      "loomi-tab",
-      "loomi-progress-bar",
-      "loomi-alert",
-      "loomi-modal",
-      "loomi-input",
-    ].map((tagName) => customElements.whenDefined(tagName)),
+    tags.map((tagName) =>
+      customElements.get(tagName)
+        ? Promise.resolve()
+        : Promise.race([
+            customElements.whenDefined(tagName),
+            new Promise((resolve) => setTimeout(resolve, 500)),
+          ]),
+    ),
   );
 
   const assigneeSelect = document.getElementById("detail-assignee") as (HTMLElement & { data?: unknown[] }) | null;

@@ -422,86 +422,135 @@ const componentCategories = ["All", "Data Entry", "Feedback", "Navigation", "Ove
             </div>
           </div>
 
-          <loomi-tabs id="demo-nav" tab-style="pills" class="demo-tabs">
-            <loomi-tab label="Dashboard" icon="chart-bar-square" active>
-              <div class="demo-tab-body">
-                <div class="demo-dash-header">
-                  <div>
-                    <div class="demo-dash-kicker">
-                      <loomi-tag label="Active project" color="primary"></loomi-tag>
-                      <span id="dash-health" class="demo-health demo-health--ok">On track</span>
-                    </div>
-                    <h3 id="dash-project-name" class="demo-dash-title">Homepage Redesign</h3>
-                    <p id="dash-project-meta" class="demo-dash-meta">Led by Michael K. Ocansey</p>
+          <div class="demo-view-nav">
+            <loomi-button-group id="demo-nav" size="small">
+              <loomi-button-group-item label="Dashboard" value="dashboard" icon="chart-bar-square" selected></loomi-button-group-item>
+              <loomi-button-group-item label="Board" value="board" icon="view-columns"></loomi-button-group-item>
+            </loomi-button-group>
+          </div>
+
+          <div id="demo-panel-dashboard" class="demo-panel">
+            <div class="demo-dash-header">
+              <div class="demo-dash-intro">
+                <h3 id="dash-project-name" class="demo-dash-title">Homepage Redesign</h3>
+                <p id="dash-project-meta" class="demo-dash-meta">Led by Michael K. Ocansey</p>
+              </div>
+              <div class="demo-dash-kicker">
+                <loomi-tag label="Active project" color="primary"></loomi-tag>
+                <span id="dash-health" class="demo-health demo-health--ok">On track</span>
+              </div>
+            </div>
+
+            <div class="demo-stats-row">
+              <div class="demo-stats-stack">
+                <loomi-statistic id="stat-total" number="5" label="Total tasks" has-shadow="false"></loomi-statistic>
+                <loomi-statistic id="stat-complete" number="40%" label="Complete" has-shadow="false"></loomi-statistic>
+              </div>
+              <loomi-card class="demo-dash-card demo-completions-card">
+                <loomi-card-header>
+                  <loomi-card-title>Completions this month</loomi-card-title>
+                  <loomi-card-description>Daily tasks closed by teammate · Jun 18 – Jul 1</loomi-card-description>
+                </loomi-card-header>
+                <loomi-card-content>
+                  <loomi-chart
+                    id="chart-team-completions"
+                    type="bar"
+                    color="primary"
+                    color2="pink"
+                    color3="cyan"
+                    series-label="Michael"
+                    series2-label="Sara"
+                    series3-label="Robert"
+                    show-y-axis="false"
+                    class="demo-team-chart"
+                  ></loomi-chart>
+                  <div class="demo-chart-legend" aria-hidden="true">
+                    <span class="demo-chart-legend-item"><span class="demo-chart-legend-dot demo-chart-legend-dot--mk"></span>Michael</span>
+                    <span class="demo-chart-legend-item"><span class="demo-chart-legend-dot demo-chart-legend-dot--sf"></span>Sara</span>
+                    <span class="demo-chart-legend-item"><span class="demo-chart-legend-dot demo-chart-legend-dot--rb"></span>Robert</span>
                   </div>
-                  <loomi-tag id="dash-budget" label="$18k" color="green"></loomi-tag>
-                </div>
+                </loomi-card-content>
+              </loomi-card>
+            </div>
 
-                <div class="demo-stat-grid">
-                  <loomi-statistic id="stat-total" number="5" label="Total tasks" has-shadow="false"></loomi-statistic>
-                  <loomi-statistic id="stat-progress" number="1" label="In progress" has-shadow="false"></loomi-statistic>
-                  <loomi-statistic id="stat-complete" number="40%" label="Complete" has-shadow="false"></loomi-statistic>
-                  <loomi-statistic id="stat-due" number="3" label="Due soon" has-shadow="false"></loomi-statistic>
-                </div>
+            <loomi-card class="demo-dash-card">
+              <loomi-card-header>
+                <loomi-card-title>Sprint progress</loomi-card-title>
+              </loomi-card-header>
+              <loomi-card-content>
+                <loomi-progress-bar id="dash-progress" percentage="70" show-percentage-label percentage-suffix=" complete"></loomi-progress-bar>
+              </loomi-card-content>
+            </loomi-card>
 
-                <div class="demo-progress-block">
-                  <div class="demo-section-label">Sprint progress</div>
-                  <loomi-progress-bar id="dash-progress" percentage="40" show-percentage-label percentage-suffix=" complete"></loomi-progress-bar>
-                </div>
+            <div class="demo-dash-grid">
+              <div class="demo-dash-main">
+                <loomi-card class="demo-dash-card">
+                  <loomi-card-header>
+                    <loomi-card-title>Tasks by status</loomi-card-title>
+                    <loomi-card-description>Current backlog split</loomi-card-description>
+                  </loomi-card-header>
+                  <loomi-card-content>
+                    <loomi-horizontal-line-graph id="status-graph"></loomi-horizontal-line-graph>
+                  </loomi-card-content>
+                </loomi-card>
 
-                <div class="demo-dash-grid">
-                  <div class="demo-chart-stack">
-                    <div>
-                      <div class="demo-section-label">Tasks by status</div>
-                      <loomi-horizontal-line-graph id="status-graph"></loomi-horizontal-line-graph>
-                    </div>
-                    <div>
-                      <div class="demo-section-label">Team workload</div>
-                      <loomi-horizontal-line-graph id="workload-graph"></loomi-horizontal-line-graph>
-                    </div>
-                  </div>
-                  <div class="demo-activity-card">
-                    <div class="demo-section-label">Up next · click to open</div>
+                <loomi-card class="demo-dash-card">
+                  <loomi-card-header>
+                    <loomi-card-title>Up next</loomi-card-title>
+                    <loomi-card-description>Click a task to open</loomi-card-description>
+                  </loomi-card-header>
+                  <loomi-card-content>
                     <loomi-listview id="activity-list" compact class="block"></loomi-listview>
-                  </div>
-                </div>
+                  </loomi-card-content>
+                </loomi-card>
               </div>
-            </loomi-tab>
+              <div class="demo-dash-side">
+                <loomi-card class="demo-dash-card demo-timeline-panel">
+                  <loomi-card-header>
+                    <loomi-card-title>Recent activity</loomi-card-title>
+                    <loomi-card-description>Latest project updates</loomi-card-description>
+                  </loomi-card-header>
+                  <loomi-card-content>
+                    <loomi-timelines id="activity-timeline" stacked anchor="big"></loomi-timelines>
+                  </loomi-card-content>
+                </loomi-card>
+              </div>
+            </div>
+          </div>
 
-            <loomi-tab label="Board" icon="view-columns">
-              <div class="demo-tab-body">
-                <div class="demo-board-toolbar">
-                  <loomi-input id="board-search" size="small" prefix-icon="magnifying-glass" placeholder="Search tasks…"></loomi-input>
+          <div id="demo-panel-board" class="demo-panel" hidden>
+            <div class="demo-tab-body">
+              <div class="demo-board-toolbar">
+                <loomi-input id="board-search" size="small" prefix-icon="magnifying-glass" placeholder="Search tasks…"></loomi-input>
+              </div>
+              <div class="demo-board">
+                <div class="demo-board-col">
+                  <div class="demo-board-col-head">
+                    <span class="demo-board-dot demo-board-dot--todo"></span>
+                    To Do
+                    <span id="count-todo" class="demo-board-count">0</span>
+                  </div>
+                  <loomi-sortable id="col-todo" type="shared" group="board" has-handle></loomi-sortable>
                 </div>
-                <div class="demo-board">
-                  <div class="demo-board-col">
-                    <div class="demo-board-col-head">
-                      <span class="demo-board-dot demo-board-dot--todo"></span>
-                      To Do
-                      <span id="count-todo" class="demo-board-count">0</span>
-                    </div>
-                    <loomi-sortable id="col-todo" type="shared" group="board" has-handle></loomi-sortable>
+                <div class="demo-board-col">
+                  <div class="demo-board-col-head">
+                    <span class="demo-board-dot demo-board-dot--progress"></span>
+                    In Progress
+                    <span id="count-in-progress" class="demo-board-count">0</span>
                   </div>
-                  <div class="demo-board-col">
-                    <div class="demo-board-col-head">
-                      <span class="demo-board-dot demo-board-dot--progress"></span>
-                      In Progress
-                      <span id="count-in-progress" class="demo-board-count">0</span>
-                    </div>
-                    <loomi-sortable id="col-in-progress" type="shared" group="board" has-handle></loomi-sortable>
+                  <loomi-sortable id="col-in-progress" type="shared" group="board" has-handle></loomi-sortable>
+                </div>
+                <div class="demo-board-col">
+                  <div class="demo-board-col-head">
+                    <span class="demo-board-dot demo-board-dot--done"></span>
+                    Done
+                    <span id="count-done" class="demo-board-count">0</span>
                   </div>
-                  <div class="demo-board-col">
-                    <div class="demo-board-col-head">
-                      <span class="demo-board-dot demo-board-dot--done"></span>
-                      Done
-                      <span id="count-done" class="demo-board-count">0</span>
-                    </div>
-                    <loomi-sortable id="col-done" type="shared" group="board" has-handle></loomi-sortable>
-                  </div>
+                  <loomi-sortable id="col-done" type="shared" group="board" has-handle></loomi-sortable>
                 </div>
               </div>
-            </loomi-tab>
-          </loomi-tabs>
+            </div>
+          </div>
 
           <div id="task-panel" class="demo-task-panel" hidden>
             <button type="button" id="task-panel-backdrop" class="demo-task-panel-backdrop" aria-label="Close task details"></button>
@@ -708,12 +757,16 @@ const componentCategories = ["All", "Data Entry", "Feedback", "Navigation", "Ove
       import "@loomidev/modal";
       import "@loomidev/table";
       import "@loomidev/alert";
+      import "@loomidev/button-group";
       import "@loomidev/tab";
       import "@loomidev/listview";
       import "@loomidev/statistic";
       import "@loomidev/horizontal-line-graph";
       import "@loomidev/sortable";
       import "@loomidev/progress";
+      import "@loomidev/timeline";
+      window.__loomiComponentsLoaded = true;
+      window.dispatchEvent(new Event("loomi-components-loaded"));
     </script>
 
     <script>
