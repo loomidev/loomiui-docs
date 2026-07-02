@@ -194,10 +194,25 @@ const setupDocsPreview = () => {
   document.querySelectorAll("loomi-chat-window").forEach((chat) => {
     if (chat.dataset.docsReady) return;
     chat.dataset.docsReady = "true";
+    chat.participants = [
+      { id: "you", name: "You", label: "YO", color: "primary" },
+      { id: "sara", name: "Sara", label: "SA", color: "purple" },
+      { id: "alex", name: "Alex", label: "AL", color: "cyan" },
+    ];
+    chat.currentUserId = "you";
+    chat.showAvatars = true;
+    chat.appendMessage({
+      senderId: "sara",
+      text: "Can we ship the dashboard this week?",
+    });
+    chat.appendMessage({
+      senderId: "you",
+      text: "Yes — I'll open the release branch after standup.",
+    });
     chat.addEventListener("send", () => {
       chat.appendMessage({
-        role: "assistant",
-        text: "Auto-scroll keeps the latest reply in view while you stay at the bottom. Scroll up and the jump button appears.",
+        senderId: "alex",
+        text: "I'll update the QA checklist once the branch is up.",
       });
     });
   });
