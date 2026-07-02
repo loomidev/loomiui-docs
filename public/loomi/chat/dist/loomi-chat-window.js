@@ -48,7 +48,7 @@ let LoomiChatWindow = class LoomiChatWindow extends LoomiElement {
         this.currentUserId = "you";
         this.participants = [];
         this.messages = [];
-        this.inputRows = 2;
+        this.inputRows = 1;
         this.inputMaxRows = 5;
         this.busy = false;
         this.autoScroll = true;
@@ -178,15 +178,16 @@ let LoomiChatWindow = class LoomiChatWindow extends LoomiElement {
         const input = this.inputEl;
         if (!input)
             return;
-        input.style.height = "auto";
+        input.style.height = "0px";
         const styles = getComputedStyle(input);
         const lineHeight = Number.parseFloat(styles.lineHeight) || 20;
         const padding = Number.parseFloat(styles.paddingTop) + Number.parseFloat(styles.paddingBottom);
         const minHeight = lineHeight * this.inputRows + padding;
         const maxHeight = lineHeight * this.inputMaxRows + padding;
-        const nextHeight = Math.min(Math.max(input.scrollHeight, minHeight), maxHeight);
+        const contentHeight = input.scrollHeight;
+        const nextHeight = Math.min(Math.max(contentHeight, minHeight), maxHeight);
         input.style.height = `${nextHeight}px`;
-        input.style.overflowY = input.scrollHeight > maxHeight ? "auto" : "hidden";
+        input.style.overflowY = contentHeight > maxHeight ? "auto" : "hidden";
     }
     renderHeaderAvatars() {
         const roster = this.roster.slice(0, 5);

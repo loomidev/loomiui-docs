@@ -6,8 +6,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
-import { LoomiElement, loomiDefaultText, loomiStyles, loomiT, onClickOutside } from "@loomidev/core";
+import { LoomiElement, loomiDefaultText, loomiStyles, loomiT } from "@loomidev/core";
+import "@loomidev/popover";
 import { componentStyles } from "./generated/styles.css.js";
+const PANEL_WIDTH_PX = {
+    small: 320,
+    regular: 352,
+    medium: 352,
+    big: 400,
+};
 const DEFAULT_PLACEHOLDER = "Pick an emoji";
 const DEFAULT_EMPTY_TEXT = "No emoji found";
 const DEFAULT_SEARCH_PLACEHOLDER = "Search emoji";
@@ -203,7 +210,7 @@ let LoomiEmojiPicker = class LoomiEmojiPicker extends LoomiElement {
         this.inline = false;
         this.searchable = true;
         this.showCategories = true;
-        this.showText = true;
+        this.showText = false;
         this.disabled = false;
         this.readonly = false;
         this.required = false;
@@ -215,10 +222,6 @@ let LoomiEmojiPicker = class LoomiEmojiPicker extends LoomiElement {
     }
     static { this.styles = loomiStyles(componentStyles); }
     static { this.formAssociated = true; }
-    disconnectedCallback() {
-        super.disconnectedCallback();
-        this.cleanup?.();
-    }
     willUpdate() {
         this.internals.setFormValue(this.value);
         this.syncValidity();
@@ -292,29 +295,21 @@ let LoomiEmojiPicker = class LoomiEmojiPicker extends LoomiElement {
         this.internals.setValidity(valueMissing ? { valueMissing: true } : {}, valueMissing ? loomiT("validation.requiredField", {}, this.locale) : "");
         return !valueMissing;
     }
-    openPanel() {
-        if (this.disabled || this.readonly || this.inline)
-            return;
-        this.open = true;
-        this.clampActive();
-        this.cleanup?.();
-        this.cleanup = onClickOutside(this, () => this.close(true));
-        if (this.searchable)
-            this.updateComplete.then(() => this.searchEl?.focus());
-    }
-    close(showValidation = false) {
-        this.open = false;
-        this.search = "";
-        this.cleanup?.();
-        this.cleanup = undefined;
-        if (showValidation)
+    onPopoverToggle(event) {
+        this.open = event.detail.open;
+        if (this.open) {
+            this.clampActive();
+            if (this.searchable)
+                this.updateComplete.then(() => this.searchEl?.focus());
+        }
+        else {
+            this.search = "";
             this.validate();
+        }
     }
-    togglePanel() {
-        if (this.open)
-            this.close(true);
-        else
-            this.openPanel();
+    onFocusOut() {
+        if (!this.open)
+            this.validate();
     }
     clampActive() {
         const total = this.visibleItems.length;
@@ -341,7 +336,7 @@ let LoomiEmojiPicker = class LoomiEmojiPicker extends LoomiElement {
         this.dispatchEvent(new CustomEvent("emoji-select", { bubbles: true, composed: true, detail }));
         this.emitChange(item);
         if (!this.inline)
-            this.close();
+            this.popoverEl?.hide();
     }
     emitChange(item) {
         this.internals.setFormValue(this.value);
@@ -354,9 +349,9 @@ let LoomiEmojiPicker = class LoomiEmojiPicker extends LoomiElement {
     }
     onKeydown(event) {
         const isOpen = this.open || this.inline;
-        if (!isOpen && ["Enter", " ", "ArrowDown"].includes(event.key)) {
+        if (!this.inline && !isOpen && event.key === "ArrowDown") {
             event.preventDefault();
-            this.openPanel();
+            this.popoverEl?.show();
             return;
         }
         if (!isOpen)
@@ -382,26 +377,26 @@ let LoomiEmojiPicker = class LoomiEmojiPicker extends LoomiElement {
             if (item)
                 this.choose(item);
         }
-        else if (event.key === "Escape") {
+        else if (event.key === "Escape" && !this.inline) {
             event.preventDefault();
-            this.close(true);
+            this.popoverEl?.hide();
         }
     }
     categoryLabel(category) {
         return CATEGORY_LABELS[category] ?? category.replace(/[-_]/g, " ");
     }
-    renderPanel(mode) {
+    renderPanelBody() {
         const items = this.visibleItems;
         const activeId = this.activeIndex >= 0 ? `loomi-emoji-${this.activeIndex}` : "";
         const searchPlaceholder = loomiDefaultText(DEFAULT_SEARCH_PLACEHOLDER, DEFAULT_SEARCH_PLACEHOLDER, "emojiPicker.searchPlaceholder", this.locale);
-        return html `<div class="loomi-panel ${mode}" part="panel">
-      ${this.searchable
+        return html `${this.searchable
             ? html `<input
             class="loomi-search"
             type="search"
             autocomplete="off"
             spellcheck="false"
             aria-label=${searchPlaceholder}
+            aria-activedescendant=${activeId || nothing}
             placeholder=${searchPlaceholder}
             .value=${this.search}
             @input=${(event) => this.setSearch(event.target.value)}
@@ -423,7 +418,7 @@ let LoomiEmojiPicker = class LoomiEmojiPicker extends LoomiElement {
             ? html `<div
             class="loomi-grid"
             role="listbox"
-            aria-activedescendant=${activeId || nothing}
+            aria-activedescendant=${!this.searchable ? activeId || nothing : nothing}
             aria-label=${loomiT("emojiPicker.dialog", {}, this.locale)}
           >
             ${items.map((item, index) => {
@@ -441,40 +436,39 @@ let LoomiEmojiPicker = class LoomiEmojiPicker extends LoomiElement {
               >${item.emoji}</button>`;
             })}
           </div>`
-            : html `<div class="loomi-empty">${loomiDefaultText(this.emptyText, DEFAULT_EMPTY_TEXT, "emojiPicker.emptyText", this.locale)}</div>`}
-    </div>`;
+            : html `<div class="loomi-empty">${loomiDefaultText(this.emptyText, DEFAULT_EMPTY_TEXT, "emojiPicker.emptyText", this.locale)}</div>`}`;
     }
     render() {
         const selected = this.selectedItem;
         const placeholder = loomiDefaultText(this.placeholder, DEFAULT_PLACEHOLDER, "emojiPicker.placeholder", this.locale);
-        const open = this.open || this.inline;
-        const activeId = this.activeIndex >= 0 ? `loomi-emoji-${this.activeIndex}` : nothing;
-        return html `<div class="loomi-emoji-picker size-${this.size} ${this.inline ? "inline" : ""}" @keydown=${this.onKeydown}>
+        const triggerLabel = selected?.name ?? placeholder;
+        return html `<div
+      class="loomi-emoji-picker size-${this.size} ${this.inline ? "inline" : ""}"
+      @keydown=${this.onKeydown}
+      @focusout=${this.onFocusOut}
+    >
       ${this.label ? html `<span class="loomi-label">${this.label}${this.required ? html `<span class="loomi-req"> *</span>` : nothing}</span>` : nothing}
       ${this.inline
-            ? this.renderPanel("inline")
-            : html `<button
-            class="loomi-trigger ${this.showText ? "" : "no-text"}"
-            part="trigger"
-            type="button"
-            ?disabled=${this.disabled}
-            aria-haspopup="listbox"
-            aria-expanded=${open ? "true" : "false"}
-            aria-activedescendant=${activeId}
-            aria-label=${this.showText ? nothing : (selected?.name ?? placeholder)}
-            @click=${this.togglePanel}
-            @blur=${() => {
-                if (!this.open)
-                    this.validate();
-            }}
+            ? html `<div class="loomi-emoji-panel" part="panel">${this.renderPanelBody()}</div>`
+            : html `<loomi-popover
+            class="loomi-emoji-popover"
+            position="bottom"
+            .width=${PANEL_WIDTH_PX[this.size]}
+            .disabled=${this.disabled || this.readonly}
+            @loomi-toggle=${this.onPopoverToggle}
           >
-            <span class="loomi-selected-emoji" aria-hidden="true">${selected?.emoji ?? "☺"}</span>
-            ${this.showText
-                ? html `<span class="loomi-value ${selected ? "" : "placeholder"}">${selected?.name ?? placeholder}</span>`
+            <span
+              slot="trigger"
+              class="loomi-emoji-trigger ${this.showText ? "with-text" : ""}"
+              aria-label=${triggerLabel}
+            >
+              <span aria-hidden="true">${selected?.emoji ?? "☺"}</span>
+              ${this.showText
+                ? html `<span class="loomi-value ${selected ? "" : "placeholder"}" aria-hidden="true">${triggerLabel}</span>`
                 : nothing}
-            <span class="loomi-chevron" aria-hidden="true">▾</span>
-          </button>
-          ${open ? this.renderPanel("floating") : nothing}`}
+            </span>
+            ${this.open ? this.renderPanelBody() : nothing}
+          </loomi-popover>`}
       ${this.invalid ? html `<div class="loomi-error">${loomiT("validation.requiredField", {}, this.locale)}</div>` : nothing}
     </div>`;
     }
@@ -545,6 +539,9 @@ __decorate([
 __decorate([
     query(".loomi-search")
 ], LoomiEmojiPicker.prototype, "searchEl", void 0);
+__decorate([
+    query("loomi-popover")
+], LoomiEmojiPicker.prototype, "popoverEl", void 0);
 LoomiEmojiPicker = __decorate([
     customElement("loomi-emoji-picker")
 ], LoomiEmojiPicker);

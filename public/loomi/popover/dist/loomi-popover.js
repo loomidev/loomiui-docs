@@ -14,6 +14,7 @@ import { componentStyles } from "./generated/styles.css.js";
  *
  * @slot - Panel content (rich markup allowed).
  * @slot trigger - Custom trigger markup (overrides the `trigger` icon).
+ * @fires loomi-toggle - `detail: { open }` whenever the panel opens or closes.
  */
 let LoomiPopover = class LoomiPopover extends LoomiElement {
     constructor() {
@@ -23,6 +24,7 @@ let LoomiPopover = class LoomiPopover extends LoomiElement {
         this.position = "bottom";
         this.title = "";
         this.width = 280;
+        this.disabled = false;
         this.open = false;
     }
     static { this.styles = loomiStyles(componentStyles); }
@@ -30,15 +32,25 @@ let LoomiPopover = class LoomiPopover extends LoomiElement {
         super.disconnectedCallback();
         this.cleanup?.();
     }
-    show() {
-        if (this.open)
+    /** Whether the panel is currently open. */
+    get isOpen() {
+        return this.open;
+    }
+    setOpen(open) {
+        if (this.open === open)
             return;
-        this.open = true;
+        this.open = open;
+        this.dispatchEvent(new CustomEvent("loomi-toggle", { bubbles: true, composed: true, detail: { open } }));
+    }
+    show() {
+        if (this.open || this.disabled)
+            return;
+        this.setOpen(true);
         if (this.triggerOn === "click")
-            this.cleanup = onClickOutside(this, () => (this.open = false));
+            this.cleanup = onClickOutside(this, () => this.setOpen(false));
     }
     hide() {
-        this.open = false;
+        this.setOpen(false);
         this.cleanup?.();
     }
     toggle() {
@@ -50,8 +62,9 @@ let LoomiPopover = class LoomiPopover extends LoomiElement {
       class="loomi-trigger"
       aria-haspopup="dialog"
       aria-expanded=${this.open ? "true" : "false"}
-      @click=${this.triggerOn === "click" ? () => this.toggle() : nothing}
-      @mouseenter=${this.triggerOn === "mouseover" ? () => this.show() : nothing}
+      ?disabled=${this.disabled}
+      @click=${this.triggerOn === "click" && !this.disabled ? () => this.toggle() : nothing}
+      @mouseenter=${this.triggerOn === "mouseover" && !this.disabled ? () => this.show() : nothing}
       @mouseleave=${this.triggerOn === "mouseover" ? () => this.hide() : nothing}
     >
       <slot name="trigger">
@@ -81,6 +94,9 @@ __decorate([
 __decorate([
     property({ type: Number })
 ], LoomiPopover.prototype, "width", void 0);
+__decorate([
+    property({ type: Boolean, reflect: true })
+], LoomiPopover.prototype, "disabled", void 0);
 __decorate([
     state()
 ], LoomiPopover.prototype, "open", void 0);
