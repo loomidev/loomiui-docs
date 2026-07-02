@@ -20,12 +20,6 @@ const items = proCatalogItems();
 const categoryCounts = proCategoryCounts();
 const areaCounts = proAreaCounts() as Record<string, number>;
 const GITHUB_URL = "https://github.com/loomidev/loomiui-pro";
-
-function isAreaActive(areaKey: string) {
-  if (activeArea === areaKey) return true;
-  const area = PRO_AREAS.find((entry) => entry.key === areaKey);
-  return area?.href === currentPath;
-}
 ---
 
 <aside class="lg:sticky lg:top-20 lg:self-start">
