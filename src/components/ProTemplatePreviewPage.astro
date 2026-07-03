@@ -1,0 +1,204 @@
+---
+import { existsSync, readFileSync } from "node:fs";
+import { resolve } from "node:path";
+import MarketingHeader from "./MarketingHeader.astro";
+import ProSidebar from "./ProSidebar.astro";
+import { buildImportMap } from "../lib/import-map.mjs";
+import { PRO_LICENSING_URL } from "../lib/pro-licensing.mjs";
+import "../styles/home.css";
+
+interface Props {
+  template: string;
+  variant: string;
+}
+
+const { template, variant } = Astro.props;
+const importMap = buildImportMap();
+const docsRoot = process.cwd();
+const proRoot = resolve(docsRoot, "../pro");
+const routesPath = resolve(proRoot, "templates", template, "shared/content/routes.json");
+const screenshotPath = `/pro/templates/${template}/${variant}/dashboard-desktop.png`;
+const templateLabels: Record<string, string> = {
+  admin: "Admin Pro",
+  saas: "SaaS Starter",
+  crm: "CRM",
+  analytics: "Analytics Dashboard",
+};
+const variantLabels: Record<string, string> = {
+  "vite-lit": "Vite + Lit",
+  "next-react": "Next.js + React",
+  nuxt: "Nuxt + Vue",
+  "laravel-inertia": "Laravel + Inertia",
+};
+const templateLabel = templateLabels[template] ?? template;
+const variantLabel = variantLabels[variant] ?? variant;
+const routes = existsSync(routesPath) ? JSON.parse(readFileSync(routesPath, "utf8")) : [];
+const initialRoute = routes[0] ?? { path: "/", label: "Dashboard", section: "dashboard" };
+const routePayload = JSON.stringify(routes);
+const title = `${templateLabel} ${variantLabel} Preview - LoomiUI Pro`;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={`Live preview for ${templateLabel} in ${variantLabel}.`} />
+    <link rel="icon" href="/favicon.png" />
+    <script type="importmap" is:inline set:html={JSON.stringify(importMap)} />
+  </head>
+  <body class="bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
+    <MarketingHeader />
+    <div class="mx-auto max-w-7xl px-6 py-10 lg:grid lg:grid-cols-[15rem_1fr] lg:items-start lg:gap-10">
+      <ProSidebar currentPath="/pro/templates/" activeArea="templates" activeCategory="template-variants" />
+      <main class="mt-10 min-w-0 lg:mt-0">
+        <div class="feature-kicker">Template preview</div>
+        <div class="preview-heading">
+          <div>
+            <h1>{templateLabel}</h1>
+            <p>{variantLabel} starter kit with live route switching and customer-facing preview chrome.</p>
+          </div>
+          <div class="preview-actions">
+            <loomi-button type="secondary" size="small" tag="a" href="/pro/templates/">All templates</loomi-button>
+            <loomi-button color="primary" size="small" tag="a" href={PRO_LICENSING_URL}>Buy Pro</loomi-button>
+          </div>
+        </div>
+
+        <section class="live-preview" aria-label={`${templateLabel} ${variantLabel} live preview`}>
+          <aside class="live-preview-nav" aria-label="Preview routes">
+            <div class="live-preview-brand">
+              <strong>{templateLabel}</strong>
+              <span>{variantLabel}</span>
+            </div>
+            <nav>
+              {routes.map((route: any, index: number) => (
+                <button
+                  type="button"
+                  class:list={["preview-nav-item", index === 0 && "is-active"]}
+                  data-route={route.path}
+                  data-label={route.label}
+                  data-section={route.section}
+                >
+                  {route.label}
+                </button>
+              ))}
+            </nav>
+          </aside>
+
+          <div class="live-preview-surface">
+            <header class="live-preview-topbar">
+              <div>
+                <span id="preview-section">{initialRoute.section}</span>
+                <h2 id="preview-title">{initialRoute.label}</h2>
+              </div>
+              <div class="preview-tools">
+                <button type="button">Export</button>
+                <button type="button">Invite</button>
+              </div>
+            </header>
+            <div class="live-preview-content">
+              <div class="metric-grid" id="metric-grid">
+                <article><span>Active users</span><strong>12.8k</strong><em>+14%</em></article>
+                <article><span>Pipeline</span><strong>$84k</strong><em>+8%</em></article>
+                <article><span>Tasks</span><strong>37</strong><em>9 due</em></article>
+              </div>
+              <div class="preview-main-grid">
+                <article class="preview-panel preview-panel-large">
+                  <div class="panel-head">
+                    <h3 id="panel-title">{initialRoute.label} workspace</h3>
+                    <span>Live preview</span>
+                  </div>
+                  <div class="preview-table" id="preview-table"></div>
+                </article>
+                <article class="preview-panel">
+                  <div class="panel-head">
+                    <h3>Snapshot</h3>
+                    <span>{variantLabel}</span>
+                  </div>
+                  <img src={screenshotPath} alt={`${templateLabel} ${variantLabel} dashboard screenshot`} loading="lazy" decoding="async" />
+                </article>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" is:inline>
+      import "@loomidev/button";
+      import "@loomidev/icon";
+    </script>
+    <script define:vars={{ routePayload }}>
+      const routes = JSON.parse(routePayload);
+      const buttons = Array.from(document.querySelectorAll(".preview-nav-item"));
+      const title = document.getElementById("preview-title");
+      const section = document.getElementById("preview-section");
+      const panelTitle = document.getElementById("panel-title");
+      const table = document.getElementById("preview-table");
+      const rows = ["Ama Mensah", "Kojo Boateng", "Esi Appiah", "Yaw Owusu"];
+
+      function render(route) {
+        title.textContent = route.label;
+        section.textContent = route.section;
+        panelTitle.textContent = `${route.label} workflow`;
+        table.innerHTML = rows.map((name, index) => `
+          <div class="preview-row">
+            <strong>${name}</strong>
+            <span>${route.label}</span>
+            <em>${index % 2 === 0 ? "Ready" : "Review"}</em>
+          </div>
+        `).join("");
+      }
+
+      buttons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const route = routes.find((item) => item.path === button.dataset.route) ?? routes[0];
+          buttons.forEach((item) => item.classList.toggle("is-active", item === button));
+          render(route);
+        });
+      });
+
+      render(routes[0] ?? { label: "Dashboard", section: "dashboard" });
+    </script>
+  </body>
+</html>
+
+<style>
+  .preview-heading { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin-top: .75rem; }
+  .preview-heading h1 { margin: 0; font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1; }
+  .preview-heading p { margin: .75rem 0 0; max-width: 42rem; color: rgb(71 85 105); }
+  .dark .preview-heading p { color: rgb(148 163 184); }
+  .preview-actions { display: flex; flex-wrap: wrap; gap: .65rem; }
+  .live-preview { margin-top: 2rem; min-height: 680px; display: grid; grid-template-columns: 230px minmax(0, 1fr); border: 1px solid rgb(226 232 240); border-radius: 1rem; overflow: hidden; background: rgb(248 250 252); }
+  .dark .live-preview { border-color: rgb(51 65 85); background: rgb(2 6 23); }
+  .live-preview-nav { border-right: 1px solid rgb(226 232 240); background: white; padding: 1rem; }
+  .dark .live-preview-nav { border-color: rgb(51 65 85); background: rgb(15 23 42); }
+  .live-preview-brand { display: grid; gap: .2rem; margin-bottom: 1.25rem; }
+  .live-preview-brand span, #preview-section, .panel-head span { color: rgb(100 116 139); font-size: .78rem; text-transform: uppercase; font-weight: 700; }
+  .live-preview-nav nav { display: grid; gap: .35rem; }
+  .preview-nav-item { min-height: 2.25rem; border: 0; border-radius: .5rem; background: transparent; color: inherit; text-align: left; padding: 0 .7rem; font-weight: 650; cursor: pointer; }
+  .preview-nav-item:hover, .preview-nav-item.is-active { background: rgb(239 246 255); color: rgb(29 78 216); }
+  .dark .preview-nav-item:hover, .dark .preview-nav-item.is-active { background: rgb(30 41 59); color: rgb(147 197 253); }
+  .live-preview-surface { min-width: 0; display: grid; grid-template-rows: auto 1fr; }
+  .live-preview-topbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-bottom: 1px solid rgb(226 232 240); background: white; padding: 1rem 1.25rem; }
+  .dark .live-preview-topbar { border-color: rgb(51 65 85); background: rgb(15 23 42); }
+  .live-preview-topbar h2 { margin: .2rem 0 0; font-size: 1.35rem; }
+  .preview-tools { display: flex; gap: .5rem; }
+  .preview-tools button { border: 1px solid rgb(203 213 225); border-radius: .45rem; background: white; padding: .5rem .75rem; font-weight: 700; }
+  .live-preview-content { display: grid; gap: 1rem; align-content: start; padding: 1.25rem; }
+  .metric-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+  .metric-grid article, .preview-panel { border: 1px solid rgb(226 232 240); border-radius: .75rem; background: white; padding: 1rem; }
+  .dark .metric-grid article, .dark .preview-panel { border-color: rgb(51 65 85); background: rgb(15 23 42); }
+  .metric-grid span { display: block; color: rgb(100 116 139); font-size: .85rem; }
+  .metric-grid strong { display: block; margin-top: .5rem; font-size: 1.75rem; }
+  .metric-grid em { color: rgb(22 163 74); font-style: normal; font-weight: 700; }
+  .preview-main-grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(280px, .55fr); gap: 1rem; }
+  .panel-head { display: flex; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+  .panel-head h3 { margin: 0; }
+  .preview-table { display: grid; gap: .55rem; }
+  .preview-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: .75rem; align-items: center; border: 1px solid rgb(226 232 240); border-radius: .55rem; padding: .75rem; }
+  .preview-row span { color: rgb(100 116 139); }
+  .preview-row em { color: rgb(29 78 216); font-style: normal; font-weight: 700; }
+  .preview-panel img { width: 100%; border-radius: .65rem; border: 1px solid rgb(226 232 240); background: rgb(248 250 252); }
+  @media (max-width: 900px) { .preview-heading, .live-preview-topbar { align-items: start; flex-direction: column; } .live-preview { grid-template-columns: 1fr; } .live-preview-nav { border-right: 0; border-bottom: 1px solid rgb(226 232 240); } .live-preview-nav nav { grid-template-columns: repeat(2, minmax(0, 1fr)); } .metric-grid, .preview-main-grid { grid-template-columns: 1fr; } }
+</style>

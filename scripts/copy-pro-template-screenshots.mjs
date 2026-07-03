@@ -10,7 +10,16 @@ const proTemplates = resolve(__dirname, "../../pro/templates");
 const publicTemplates = resolve(__dirname, "../public/pro/templates");
 
 const templates = ["admin", "saas", "crm", "analytics"];
-const variants = ["vite-lit", "next-react"];
+const variantsByTemplate = {
+  admin: ["vite-lit", "next-react", "nuxt", "laravel-inertia"],
+  saas: ["vite-lit", "next-react"],
+  crm: ["vite-lit", "next-react"],
+  analytics: ["vite-lit", "next-react"],
+};
+const previewFallbacks = {
+  "admin/nuxt": "admin/next-react",
+  "admin/laravel-inertia": "admin/next-react",
+};
 const shots = ["dashboard-desktop.png", "dashboard-mobile.png"];
 
 if (!existsSync(proTemplates)) {
@@ -26,8 +35,10 @@ mkdirSync(publicTemplates, { recursive: true });
 let copied = 0;
 
 for (const template of templates) {
-  for (const variant of variants) {
-    const sourceDir = resolve(proTemplates, template, "shared", "screenshots", variant);
+  for (const variant of variantsByTemplate[template] ?? []) {
+    const fallback = previewFallbacks[`${template}/${variant}`];
+    const [sourceTemplate, sourceVariant] = fallback ? fallback.split("/") : [template, variant];
+    const sourceDir = resolve(proTemplates, sourceTemplate, "shared", "screenshots", sourceVariant);
     if (!existsSync(sourceDir)) {
       console.warn(`[copy-pro-template-screenshots] skip ${template}/${variant} — no screenshots`);
       continue;

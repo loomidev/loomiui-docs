@@ -32,6 +32,13 @@ let LoomiSlider = class LoomiSlider extends LoomiElement {
         this.selected = 0;
         this.selectedEnd = 100;
         this.range = false;
+        this.vertical = false;
+        this.marks = "";
+        this.handleWidth = "";
+        this.trackRadius = "999px";
+        this.handleVariant = "default";
+        this.valueTarget = "";
+        this.showTooltip = true;
         this.showValues = true;
     }
     static { this.styles = loomiStyles(componentStyles); }
@@ -70,7 +77,8 @@ let LoomiSlider = class LoomiSlider extends LoomiElement {
         const end = this.range ? this.endValue : this.startValue;
         const startPercent = this.valuePercent(start);
         const endPercent = this.valuePercent(end);
-        return `${accentVars(this.color)} --loomi-range-start: ${startPercent}%; --loomi-range-end: ${endPercent}%;`;
+        const handleWidth = this.handleWidth ? ` --loomi-slider-thumb-width: ${this.handleWidth};` : "";
+        return `${accentVars(this.color)} --loomi-range-start: ${startPercent}%; --loomi-range-end: ${endPercent}%; --loomi-slider-radius: ${this.trackRadius};${handleWidth}`;
     }
     valuePercent(value) {
         const span = this.upperBound - this.lowerBound;
@@ -98,15 +106,52 @@ let LoomiSlider = class LoomiSlider extends LoomiElement {
             if (next < this.selected)
                 this.selected = next;
         }
+        this.syncValueTarget();
         this.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
     }
     onChange() {
+        this.syncValueTarget();
         this.dispatchEvent(new Event("change", { bubbles: true, composed: true }));
     }
+    syncValueTarget() {
+        if (!this.valueTarget)
+            return;
+        const target = document.querySelector(this.valueTarget);
+        if (!target)
+            return;
+        target.value = this.value;
+        target.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+    parsedMarks() {
+        const raw = Array.isArray(this.marks)
+            ? this.marks
+            : String(this.marks)
+                .split(",")
+                .map((mark) => mark.trim())
+                .filter(Boolean);
+        return raw
+            .map((mark) => Number(mark))
+            .filter((mark) => Number.isFinite(mark))
+            .map((mark) => this.clamp(mark));
+    }
+    renderMarks() {
+        const marks = this.parsedMarks();
+        if (marks.length === 0)
+            return nothing;
+        return html `<div class="loomi-marks" aria-hidden="true">
+      ${marks.map((mark) => html `<span class="loomi-mark" style=${this.markStyle(mark)}></span>`)}
+    </div>`;
+    }
+    markStyle(value) {
+        return this.vertical
+            ? `bottom: ${this.valuePercent(value)}%`
+            : `left: ${this.valuePercent(value)}%`;
+    }
     render() {
-        return html `<div class="loomi-slider" style=${this.progressStyle}>
-      <div class="loomi-control ${this.range ? "loomi-control-range" : ""}">
+        return html `<div class="loomi-slider ${this.vertical ? "vertical" : "horizontal"}" style=${this.progressStyle}>
+      <div class="loomi-control ${this.range ? "loomi-control-range" : ""} handle-${this.handleVariant}">
         <span class="loomi-track" aria-hidden="true"></span>
+        ${this.renderMarks()}
         <input
           class="loomi-range ${this.range ? "loomi-range-start" : ""}"
           type="range"
@@ -132,7 +177,7 @@ let LoomiSlider = class LoomiSlider extends LoomiElement {
               @change=${this.onChange}
             />`
             : nothing}
-        ${this.showValues
+        ${this.showValues && this.showTooltip
             ? html `<span
                 class="loomi-value-tooltip loomi-value-tooltip-start"
                 style=${this.tooltipStyle(this.startValue)}
@@ -176,6 +221,27 @@ __decorate([
 __decorate([
     property({ type: Boolean, reflect: true })
 ], LoomiSlider.prototype, "range", void 0);
+__decorate([
+    property({ type: Boolean, reflect: true })
+], LoomiSlider.prototype, "vertical", void 0);
+__decorate([
+    property()
+], LoomiSlider.prototype, "marks", void 0);
+__decorate([
+    property({ attribute: "handle-width" })
+], LoomiSlider.prototype, "handleWidth", void 0);
+__decorate([
+    property({ attribute: "track-radius" })
+], LoomiSlider.prototype, "trackRadius", void 0);
+__decorate([
+    property({ attribute: "handle-variant" })
+], LoomiSlider.prototype, "handleVariant", void 0);
+__decorate([
+    property({ attribute: "value-target" })
+], LoomiSlider.prototype, "valueTarget", void 0);
+__decorate([
+    property({ type: Boolean, attribute: "show-tooltip", converter: booleanAttribute })
+], LoomiSlider.prototype, "showTooltip", void 0);
 __decorate([
     property({ type: Boolean, attribute: "show-values", converter: booleanAttribute })
 ], LoomiSlider.prototype, "showValues", void 0);

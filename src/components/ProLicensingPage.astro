@@ -3,6 +3,7 @@ import MarketingHeader from "./MarketingHeader.astro";
 import { buildImportMap } from "../lib/import-map.mjs";
 import {
   PRO_AFTER_CHECKOUT,
+  PRO_BILLING_OPTIONS,
   PRO_INCLUDED,
   PRO_LICENSE_PLANS,
   PRO_LICENSING_NOTES,
@@ -13,6 +14,10 @@ const importMap = buildImportMap();
 const title = "LoomiUI Pro licensing";
 const description =
   "Choose Solo, Team, or Enterprise licensing for LoomiUI Pro — templates, themes, private packages, and updates.";
+const billingOptions = Object.entries(PRO_BILLING_OPTIONS);
+const slackWebhookUrl =
+  import.meta.env.PUBLIC_LOOMI_PRO_SLACK_WEBHOOK ??
+  "https://hooks.slack.com/services/REPLACE/ME/WITH_REAL_WEBHOOK";
 ---
 
 <html lang="en">
@@ -37,11 +42,36 @@ const description =
         </p>
       </div>
 
+      <div class="license-toolbar" aria-label="Billing period">
+        <span>Billing</span>
+        <div class="license-toggle" role="group" aria-label="Choose billing period">
+          {billingOptions.map(([key, option]) => (
+            <button
+              type="button"
+              class:list={["license-toggle-option", key === "monthly" && "is-active"]}
+              aria-pressed={key === "monthly" ? "true" : "false"}
+              data-billing-option={key}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+        <strong>Annual saves two months</strong>
+      </div>
+
       <div class="mt-10 grid gap-5 lg:grid-cols-3">
-        {PRO_LICENSE_PLANS.map((plan) => (
+        {PRO_LICENSE_PLANS.map((plan) => {
+          const checkout = plan.checkout;
+          return (
           <article
             id={plan.key}
             class:list={["license-card", plan.featured && "is-featured"]}
+            data-monthly-amount={plan.pricing.monthly.amount}
+            data-monthly-detail={plan.pricing.monthly.detail}
+            data-monthly-suffix={plan.pricing.monthly.amount === "Custom" ? "" : PRO_BILLING_OPTIONS.monthly.suffix}
+            data-annual-amount={plan.pricing.annual.amount}
+            data-annual-detail={plan.pricing.annual.detail}
+            data-annual-suffix={plan.pricing.annual.amount === "Custom" ? "" : PRO_BILLING_OPTIONS.annual.suffix}
           >
             {plan.featured && <div class="license-badge">Most popular</div>}
             <div class="license-card-top">
@@ -53,6 +83,13 @@ const description =
                 <p class="license-tagline">{plan.tagline}</p>
               </div>
             </div>
+            <div class="license-price">
+              <div>
+                <span class="license-price-amount" data-price-amount>{plan.pricing.monthly.amount}</span>
+                <span class="license-price-suffix" data-price-suffix>{plan.pricing.monthly.amount === "Custom" ? "" : PRO_BILLING_OPTIONS.monthly.suffix}</span>
+              </div>
+              <p data-price-detail>{plan.pricing.monthly.detail}</p>
+            </div>
             <ul class="license-features">
               {plan.features.map((feature) => (
                 <li>
@@ -61,44 +98,117 @@ const description =
                 </li>
               ))}
             </ul>
-            {plan.href ? (
-              <loomi-button type="secondary" size="small" tag="a" href={plan.href} class="license-cta">
-                {plan.cta}
-              </loomi-button>
-            ) : plan.featured ? (
-              <loomi-button color="primary" size="small" class="license-cta" data-plan={plan.key}>
-                {plan.cta}
-              </loomi-button>
-            ) : (
-              <loomi-button type="secondary" size="small" class="license-cta" data-plan={plan.key}>
-                {plan.cta}
-              </loomi-button>
-            )}
+            <div class="license-cta-wrap">
+              {plan.contact || !checkout ? (
+                <loomi-button type="secondary" size="small" class="license-cta" data-contact-sales>
+                  {plan.cta}
+                </loomi-button>
+              ) : (
+                <loomi-button
+                  type={plan.featured ? undefined : "secondary"}
+                  color={plan.featured ? "primary" : undefined}
+                  size="small"
+                  tag="a"
+                  href={checkout.monthly}
+                  class="license-cta"
+                  data-checkout
+                  data-monthly-href={checkout.monthly}
+                  data-annual-href={checkout.annual}
+                >
+                  {plan.cta}
+                </loomi-button>
+              )}
+            </div>
           </article>
-        ))}
+          );
+        })}
       </div>
 
       <loomi-alert type="info" class="mt-8 text-sm">
-        Secure checkout via Stripe is coming soon. Solo and Team buttons will open checkout when billing is live.
+        Solo and Team redirect to hosted checkout. Enterprise requests go straight to sales.
       </loomi-alert>
 
-      <section class="mt-12 grid gap-6 lg:grid-cols-2">
+      <section class="license-panels">
         <div class="license-panel">
-          <h3 class="license-panel-title">What's included</h3>
+          <div class="license-panel-heading">
+            <span class="license-panel-mark">
+              <loomi-icon name="sparkles" style="width:1.1rem;height:1.1rem"></loomi-icon>
+            </span>
+            <div>
+              <h3 class="license-panel-title">What's included</h3>
+              <p>Everything needed to ship polished Pro surfaces.</p>
+            </div>
+          </div>
           <ul class="license-panel-list">
             {PRO_INCLUDED.map((item) => (
-              <li>{item}</li>
+              <li>
+                <span class:list={["license-panel-item-icon", `tone-${item.tone}`]}>
+                  <loomi-icon name={item.icon} style="width:1rem;height:1rem"></loomi-icon>
+                </span>
+                <span>
+                  <strong>{item.label}</strong>
+                  <span>{item.detail}</span>
+                </span>
+              </li>
             ))}
           </ul>
         </div>
         <div class="license-panel">
-          <h3 class="license-panel-title">After checkout</h3>
+          <div class="license-panel-heading">
+            <span class="license-panel-mark">
+              <loomi-icon name="shield-check" style="width:1.1rem;height:1.1rem"></loomi-icon>
+            </span>
+            <div>
+              <h3 class="license-panel-title">After checkout</h3>
+              <p>The buyer lands in a portal built for access and handoff.</p>
+            </div>
+          </div>
           <ul class="license-panel-list">
             {PRO_AFTER_CHECKOUT.map((item) => (
-              <li>{item}</li>
+              <li>
+                <span class:list={["license-panel-item-icon", `tone-${item.tone}`]}>
+                  <loomi-icon name={item.icon} style="width:1rem;height:1rem"></loomi-icon>
+                </span>
+                <span>
+                  <strong>{item.label}</strong>
+                  <span>{item.detail}</span>
+                </span>
+              </li>
             ))}
           </ul>
         </div>
+      </section>
+
+      <section id="contact-sales" class="contact-sales">
+        <div>
+          <div class="feature-kicker">Enterprise sales</div>
+          <h3>Talk through seats, procurement, or private registry access</h3>
+          <p>
+            Send your details and the request is forwarded to the LoomiUI Pro sales channel.
+          </p>
+        </div>
+        <form id="sales-contact-form" class="sales-form" data-slack-webhook={slackWebhookUrl}>
+          <label>
+            <span>Name</span>
+            <input name="name" autocomplete="name" required />
+          </label>
+          <label>
+            <span>Work email</span>
+            <input name="email" type="email" autocomplete="email" required />
+          </label>
+          <label>
+            <span>Company</span>
+            <input name="company" autocomplete="organization" required />
+          </label>
+          <label>
+            <span>What do you need?</span>
+            <textarea name="message" rows="4" required>Enterprise licensing for LoomiUI Pro</textarea>
+          </label>
+          <div class="sales-form-actions">
+            <button type="submit" class="sales-submit">Contact sales</button>
+            <p id="sales-contact-status" class="sales-status" role="status" aria-live="polite"></p>
+          </div>
+        </form>
       </section>
 
       <section class="mt-10 rounded-2xl border border-gray-200 p-6 dark:border-gray-800">
@@ -136,10 +246,174 @@ const description =
       import "@loomidev/icon";
       import "@loomidev/alert";
     </script>
+    <script is:inline>
+      const billingButtons = Array.from(document.querySelectorAll("[data-billing-option]"));
+      const licenseCards = Array.from(document.querySelectorAll(".license-card"));
+      const contactForm = document.querySelector("#sales-contact-form");
+      const SLACK_WEBHOOK_URL =
+        contactForm?.dataset.slackWebhook ?? "https://hooks.slack.com/services/REPLACE/ME/WITH_REAL_WEBHOOK";
+
+      function setBillingPeriod(period) {
+        billingButtons.forEach((button) => {
+          const isActive = button.dataset.billingOption === period;
+          button.classList.toggle("is-active", isActive);
+          button.setAttribute("aria-pressed", String(isActive));
+        });
+
+        licenseCards.forEach((card) => {
+          const amount = card.dataset[`${period}Amount`] ?? "";
+          const suffix = card.dataset[`${period}Suffix`] ?? "";
+          const detail = card.dataset[`${period}Detail`] ?? "";
+          const amountNode = card.querySelector("[data-price-amount]");
+          const suffixNode = card.querySelector("[data-price-suffix]");
+          const detailNode = card.querySelector("[data-price-detail]");
+          const checkout = card.querySelector("[data-checkout]");
+
+          if (amountNode) amountNode.textContent = amount;
+          if (suffixNode) suffixNode.textContent = suffix;
+          if (detailNode) detailNode.textContent = detail;
+          if (checkout) {
+            const href = checkout.dataset[`${period}Href`];
+            if (href) checkout.setAttribute("href", href);
+          }
+        });
+      }
+
+      billingButtons.forEach((button) => {
+        button.addEventListener("click", () => setBillingPeriod(button.dataset.billingOption));
+      });
+
+      document.querySelectorAll("[data-checkout]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const href = button.getAttribute("href");
+          if (href) window.location.assign(href);
+        });
+      });
+
+      const contactStatus = document.querySelector("#sales-contact-status");
+      const firstContactField = contactForm?.querySelector("input, textarea");
+
+      document.querySelectorAll("[data-contact-sales]").forEach((button) => {
+        button.addEventListener("click", () => {
+          contactForm?.scrollIntoView({ behavior: "smooth", block: "center" });
+          window.setTimeout(() => firstContactField?.focus(), 350);
+        });
+      });
+
+      contactForm?.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const submitButton = contactForm.querySelector("button[type='submit']");
+        const formData = new FormData(contactForm);
+        const lead = Object.fromEntries(formData.entries());
+        const payload = {
+          text: `New LoomiUI Pro sales lead: ${lead.company}`,
+          blocks: [
+            {
+              type: "header",
+              text: { type: "plain_text", text: "New LoomiUI Pro sales lead" },
+            },
+            {
+              type: "section",
+              fields: [
+                { type: "mrkdwn", text: `*Name*\n${lead.name}` },
+                { type: "mrkdwn", text: `*Email*\n${lead.email}` },
+                { type: "mrkdwn", text: `*Company*\n${lead.company}` },
+                { type: "mrkdwn", text: "*Source*\n/pro/licensing/" },
+              ],
+            },
+            {
+              type: "section",
+              text: { type: "mrkdwn", text: `*Message*\n${lead.message}` },
+            },
+          ],
+        };
+
+        if (submitButton) submitButton.disabled = true;
+        if (contactStatus) contactStatus.textContent = "Sending...";
+
+        try {
+          await fetch(SLACK_WEBHOOK_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "text/plain;charset=UTF-8" },
+            body: JSON.stringify(payload),
+            keepalive: true,
+          });
+          contactForm.reset();
+          if (contactStatus) contactStatus.textContent = "Sent. Sales will follow up shortly.";
+        } catch (error) {
+          if (contactStatus) contactStatus.textContent = "Could not send. Check the Slack webhook URL.";
+        } finally {
+          if (submitButton) submitButton.disabled = false;
+        }
+      });
+    </script>
   </body>
 </html>
 
 <style is:global>
+  .license-toolbar {
+    margin-top: 2rem;
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    border: 1px solid rgb(226 232 240);
+    border-radius: 0.75rem;
+    background: rgb(248 250 252);
+    padding: 0.55rem;
+    color: rgb(71 85 105);
+    font-size: 0.85rem;
+  }
+  .dark .license-toolbar {
+    border-color: rgb(51 65 85);
+    background: rgb(15 23 42 / 0.65);
+    color: rgb(203 213 225);
+  }
+  .license-toolbar > span,
+  .license-toolbar > strong {
+    padding-inline: 0.45rem;
+  }
+  .license-toolbar > strong {
+    color: rgb(21 128 61);
+    font-weight: 700;
+  }
+  .dark .license-toolbar > strong {
+    color: rgb(134 239 172);
+  }
+  .license-toggle {
+    display: inline-grid;
+    grid-template-columns: repeat(2, minmax(5.5rem, 1fr));
+    gap: 0.25rem;
+    border-radius: 0.55rem;
+    background: rgb(226 232 240);
+    padding: 0.25rem;
+  }
+  .dark .license-toggle {
+    background: rgb(30 41 59);
+  }
+  .license-toggle-option {
+    border: 0;
+    border-radius: 0.4rem;
+    background: transparent;
+    color: rgb(71 85 105);
+    cursor: pointer;
+    font: inherit;
+    font-weight: 700;
+    padding: 0.45rem 0.7rem;
+  }
+  .license-toggle-option.is-active {
+    background: white;
+    color: rgb(15 23 42);
+    box-shadow: 0 8px 20px -16px rgb(15 23 42 / 0.45);
+  }
+  .dark .license-toggle-option {
+    color: rgb(203 213 225);
+  }
+  .dark .license-toggle-option.is-active {
+    background: rgb(51 65 85);
+    color: white;
+  }
   .license-card {
     position: relative;
     display: flex;
@@ -149,10 +423,25 @@ const description =
     background: white;
     padding: 1.25rem;
     scroll-margin-top: 6rem;
+    transition:
+      border-color 160ms ease,
+      box-shadow 160ms ease,
+      transform 160ms ease;
+  }
+  .license-card:hover,
+  .license-card:focus-within {
+    border-color: rgb(37 99 235);
+    box-shadow: 0 24px 55px -34px rgb(15 23 42 / 0.45);
+    transform: translateY(-4px);
   }
   .dark .license-card {
     border-color: rgb(51 65 85);
     background: rgb(15 23 42 / 0.55);
+  }
+  .dark .license-card:hover,
+  .dark .license-card:focus-within {
+    border-color: rgb(96 165 250);
+    box-shadow: 0 24px 55px -34px rgb(37 99 235 / 0.55);
   }
   .license-card.is-featured {
     border-color: rgb(37 99 235);
@@ -208,6 +497,45 @@ const description =
   .dark .license-tagline {
     color: rgb(148 163 184);
   }
+  .license-price {
+    margin-top: 1.25rem;
+    border-radius: 0.75rem;
+    background: rgb(248 250 252);
+    padding: 1rem;
+  }
+  .dark .license-price {
+    background: rgb(30 41 59 / 0.55);
+  }
+  .license-price > div {
+    display: flex;
+    align-items: baseline;
+    gap: 0.35rem;
+  }
+  .license-price-amount {
+    color: rgb(15 23 42);
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+  .dark .license-price-amount {
+    color: white;
+  }
+  .license-price-suffix {
+    color: rgb(100 116 139);
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+  .dark .license-price-suffix {
+    color: rgb(148 163 184);
+  }
+  .license-price p {
+    margin: 0.45rem 0 0;
+    color: rgb(71 85 105);
+    font-size: 0.82rem;
+  }
+  .dark .license-price p {
+    color: rgb(203 213 225);
+  }
   .license-features {
     margin: 1.1rem 0 0;
     padding: 0;
@@ -227,37 +555,289 @@ const description =
   .dark .license-features li {
     color: rgb(203 213 225);
   }
-  .license-cta {
+  .license-cta-wrap {
+    display: flex;
+    justify-content: center;
     margin-top: 1.25rem;
-    width: 100%;
+  }
+  .license-cta {
+    min-width: 10rem;
+  }
+  .license-panels {
+    margin-top: 3rem;
+    display: grid;
+    gap: 1.25rem;
   }
   .license-panel {
+    position: relative;
+    overflow: hidden;
     border-radius: 1rem;
     border: 1px solid rgb(226 232 240);
-    background: rgb(248 250 252);
-    padding: 1.25rem;
+    background:
+      radial-gradient(circle at top right, rgb(219 234 254 / 0.8), transparent 36%),
+      linear-gradient(180deg, white, rgb(248 250 252));
+    padding: 1.35rem;
+    box-shadow: 0 20px 50px -42px rgb(15 23 42 / 0.5);
   }
   .dark .license-panel {
     border-color: rgb(51 65 85);
-    background: rgb(30 41 59 / 0.35);
+    background:
+      radial-gradient(circle at top right, rgb(37 99 235 / 0.2), transparent 38%),
+      linear-gradient(180deg, rgb(15 23 42 / 0.88), rgb(30 41 59 / 0.42));
+    box-shadow: 0 24px 60px -46px rgb(37 99 235 / 0.55);
+  }
+  .license-panel-heading {
+    display: flex;
+    gap: 0.85rem;
+    align-items: flex-start;
+  }
+  .license-panel-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 0.8rem;
+    background: rgb(37 99 235);
+    color: white;
+    flex-shrink: 0;
   }
   .license-panel-title {
     margin: 0;
-    font-size: 1rem;
-    font-weight: 700;
+    font-size: 1.15rem;
+    font-weight: 800;
     color: rgb(15 23 42);
   }
   .dark .license-panel-title {
     color: white;
   }
-  .license-panel-list {
-    margin: 0.85rem 0 0;
-    padding-left: 1.1rem;
+  .license-panel-heading p {
+    margin: 0.25rem 0 0;
     color: rgb(71 85 105);
-    font-size: 0.88rem;
+    font-size: 0.9rem;
     line-height: 1.55;
   }
-  .dark .license-panel-list {
+  .dark .license-panel-heading p {
     color: rgb(203 213 225);
+  }
+  .license-panel-list {
+    margin: 1.15rem 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.65rem;
+  }
+  .license-panel-list li {
+    display: grid;
+    grid-template-columns: 2rem minmax(0, 1fr);
+    gap: 0.75rem;
+    align-items: start;
+    border: 1px solid rgb(226 232 240 / 0.85);
+    border-radius: 0.85rem;
+    background: rgb(255 255 255 / 0.78);
+    padding: 0.8rem;
+    transition:
+      border-color 160ms ease,
+      background 160ms ease,
+      transform 160ms ease;
+  }
+  .license-panel-list li:hover {
+    border-color: rgb(147 197 253);
+    background: white;
+    transform: translateY(-2px);
+  }
+  .dark .license-panel-list li {
+    border-color: rgb(51 65 85);
+    background: rgb(15 23 42 / 0.54);
+  }
+  .dark .license-panel-list li:hover {
+    border-color: rgb(96 165 250);
+    background: rgb(15 23 42 / 0.8);
+  }
+  .license-panel-list strong,
+  .license-panel-list span span {
+    display: block;
+  }
+  .license-panel-list strong {
+    color: rgb(15 23 42);
+    font-size: 0.9rem;
+    font-weight: 800;
+    line-height: 1.3;
+  }
+  .dark .license-panel-list strong {
+    color: white;
+  }
+  .license-panel-list span span {
+    margin-top: 0.18rem;
+    color: rgb(71 85 105);
+    font-size: 0.82rem;
+    line-height: 1.5;
+  }
+  .dark .license-panel-list span span {
+    color: rgb(203 213 225);
+  }
+  .license-panel-item-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.7rem;
+    flex-shrink: 0;
+  }
+  .license-panel-item-icon.tone-blue {
+    background: rgb(219 234 254);
+    color: rgb(37 99 235);
+  }
+  .license-panel-item-icon.tone-green {
+    background: rgb(220 252 231);
+    color: rgb(22 101 52);
+  }
+  .license-panel-item-icon.tone-violet {
+    background: rgb(237 233 254);
+    color: rgb(109 40 217);
+  }
+  .license-panel-item-icon.tone-amber {
+    background: rgb(254 243 199);
+    color: rgb(180 83 9);
+  }
+  .dark .license-panel-item-icon.tone-blue {
+    background: rgb(30 58 138 / 0.45);
+    color: rgb(147 197 253);
+  }
+  .dark .license-panel-item-icon.tone-green {
+    background: rgb(20 83 45 / 0.45);
+    color: rgb(134 239 172);
+  }
+  .dark .license-panel-item-icon.tone-violet {
+    background: rgb(91 33 182 / 0.35);
+    color: rgb(196 181 253);
+  }
+  .dark .license-panel-item-icon.tone-amber {
+    background: rgb(146 64 14 / 0.35);
+    color: rgb(252 211 77);
+  }
+  .contact-sales {
+    margin-top: 3rem;
+    display: grid;
+    gap: 1.5rem;
+    border: 1px solid rgb(226 232 240);
+    border-radius: 1rem;
+    background: linear-gradient(135deg, rgb(248 250 252), white);
+    padding: 1.5rem;
+  }
+  .dark .contact-sales {
+    border-color: rgb(51 65 85);
+    background: linear-gradient(135deg, rgb(15 23 42 / 0.8), rgb(30 41 59 / 0.35));
+  }
+  .contact-sales h3 {
+    margin: 0.35rem 0 0;
+    color: rgb(15 23 42);
+    font-size: 1.45rem;
+    font-weight: 800;
+  }
+  .dark .contact-sales h3 {
+    color: white;
+  }
+  .contact-sales p {
+    margin: 0.6rem 0 0;
+    color: rgb(71 85 105);
+    line-height: 1.6;
+  }
+  .dark .contact-sales p {
+    color: rgb(203 213 225);
+  }
+  .sales-form {
+    display: grid;
+    gap: 0.9rem;
+  }
+  .sales-form label {
+    display: grid;
+    gap: 0.35rem;
+    color: rgb(51 65 85);
+    font-size: 0.84rem;
+    font-weight: 700;
+  }
+  .dark .sales-form label {
+    color: rgb(226 232 240);
+  }
+  .sales-form input,
+  .sales-form textarea {
+    width: 100%;
+    border: 1px solid rgb(203 213 225);
+    border-radius: 0.55rem;
+    background: white;
+    color: rgb(15 23 42);
+    font: inherit;
+    font-weight: 500;
+    padding: 0.7rem 0.8rem;
+  }
+  .dark .sales-form input,
+  .dark .sales-form textarea {
+    border-color: rgb(71 85 105);
+    background: rgb(15 23 42);
+    color: white;
+  }
+  .sales-form input:focus,
+  .sales-form textarea:focus {
+    border-color: rgb(37 99 235);
+    box-shadow: 0 0 0 3px rgb(37 99 235 / 0.16);
+    outline: none;
+  }
+  .sales-form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    text-align: center;
+  }
+  .sales-submit {
+    border: 0;
+    border-radius: 0.55rem;
+    background: rgb(37 99 235);
+    color: white;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.88rem;
+    font-weight: 800;
+    min-width: 10rem;
+    padding: 0.7rem 1rem;
+  }
+  .sales-submit:hover {
+    background: rgb(29 78 216);
+  }
+  .sales-submit:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+  }
+  .sales-status {
+    margin: 0;
+    min-height: 1.4rem;
+    width: 100%;
+    color: rgb(71 85 105);
+    font-size: 0.84rem;
+  }
+  .dark .sales-status {
+    color: rgb(203 213 225);
+  }
+  @media (min-width: 900px) {
+    .license-panels {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .contact-sales {
+      grid-template-columns: minmax(0, 0.82fr) minmax(24rem, 1fr);
+      align-items: start;
+      padding: 2rem;
+    }
+  }
+  @media (max-width: 640px) {
+    .license-toolbar {
+      display: grid;
+      width: 100%;
+    }
+    .license-toggle {
+      width: 100%;
+    }
   }
 </style>

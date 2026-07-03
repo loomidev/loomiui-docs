@@ -139,6 +139,7 @@ let LoomiChatWindow = class LoomiChatWindow extends LoomiElement {
             id: message.id ?? createMessageId(),
             text: message.text,
             senderId,
+            time: message.time ?? new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
             role: message.role,
         };
         this.messages = [...this.messages, next];
@@ -216,6 +217,7 @@ let LoomiChatWindow = class LoomiChatWindow extends LoomiElement {
         image=${participant.image ?? ""}
         avatar-label=${participant.label ?? initialsFor(participant.name)}
         bubble-color=${color}
+        time=${message.time ?? ""}
         ?outgoing=${outgoing}
         ?show-avatar=${showAvatars}
         ?show-sender=${showSender && !outgoing}

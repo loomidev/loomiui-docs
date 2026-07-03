@@ -176,15 +176,42 @@ const workflowStats = [
             </div>
           </div>
 
-          <div class="pro-filter-row" id="category-pills">
-            <button type="button" class="filter-pill is-active" aria-pressed="true" data-filter="all" data-filter-type="all">All</button>
+          <div class="pro-filter-row" id="area-pills" aria-label="Pro catalog areas">
             {PRO_AREAS.map((area) => (
-              <button type="button" class="filter-pill" aria-pressed="false" data-filter={area.key} data-filter-type="area">
+              <button
+                type="button"
+                class:list={["filter-pill", area.key === "templates" && "is-active"]}
+                aria-pressed={area.key === "templates" ? "true" : "false"}
+                data-filter={area.key}
+                data-filter-type="area"
+              >
                 {area.label}
               </button>
             ))}
+          </div>
+
+          <div class="pro-section-tabs" id="section-tabs" aria-label="Pro catalog sections">
+            {PRO_AREAS.map((area) => (
+              <button
+                type="button"
+                class:list={["section-tab", area.key === "templates" && "is-active", area.key !== "templates" && "hidden"]}
+                aria-pressed={area.key === "templates" ? "true" : "false"}
+                data-filter="all"
+                data-filter-type="category"
+                data-tab-area={area.key}
+              >
+                All {area.label.toLowerCase()}
+              </button>
+            ))}
             {PRO_CATEGORIES.map((cat) => (
-              <button type="button" class="filter-pill" aria-pressed="false" data-filter={cat.key} data-filter-type="category">
+              <button
+                type="button"
+                class:list={["section-tab", cat.area !== "templates" && "hidden"]}
+                aria-pressed="false"
+                data-filter={cat.key}
+                data-filter-type="category"
+                data-tab-area={cat.area}
+              >
                 {cat.label}
               </button>
             ))}
@@ -200,7 +227,7 @@ const workflowStats = [
               return (
                 <Tag
                   href={item.href ?? undefined}
-                  class="pro-item-card"
+                  class:list={["pro-item-card", item.area !== "templates" && "hidden"]}
                   data-area={item.area}
                   data-category={item.category}
                   data-title={item.title.toLowerCase()}
@@ -263,28 +290,39 @@ const workflowStats = [
       const filterButtons = document.querySelectorAll("[data-filter]");
       const sortSelect = document.getElementById("sort-select");
       const noResults = document.getElementById("no-results");
+      const sectionTabs = document.querySelectorAll("[data-tab-area]");
       const categoryLabels = new Map(
         cards.map((card) => [card.dataset.category, card.querySelector(".pro-item-eyebrow")?.textContent ?? ""]),
       );
+      const categoryAreas = new Map(cards.map((card) => [card.dataset.category, card.dataset.area]));
       const state = {
         query: "",
-        filter: "all",
-        filterType: "all",
+        area: "templates",
+        category: "all",
         sort: "title",
       };
 
       function setActivePill() {
         filterButtons.forEach((btn) => {
-          const active = btn.dataset.filter === state.filter && btn.dataset.filterType === state.filterType;
+          const isAreaButton = btn.dataset.filterType === "area";
+          const isSectionTab = btn.dataset.filterType === "category";
+          const tabArea = btn.dataset.tabArea;
+          const active = isAreaButton
+            ? btn.dataset.filter === state.area
+            : isSectionTab && btn.dataset.filter === state.category && (!tabArea || tabArea === state.area);
           btn.classList.toggle("is-active", active);
           if (btn.hasAttribute("aria-pressed")) btn.setAttribute("aria-pressed", String(active));
+        });
+
+        sectionTabs.forEach((tab) => {
+          tab.classList.toggle("hidden", tab.dataset.tabArea !== state.area);
         });
       }
 
       function matchesFilter(card) {
-        if (state.filter === "all") return true;
-        if (state.filterType === "area") return card.dataset.area === state.filter;
-        return card.dataset.category === state.filter;
+        if (card.dataset.area !== state.area) return false;
+        if (state.category === "all") return true;
+        return card.dataset.category === state.category;
       }
 
       function applyFilters() {
@@ -323,8 +361,13 @@ const workflowStats = [
 
       filterButtons.forEach((button) => {
         button.addEventListener("click", () => {
-          state.filter = button.dataset.filter;
-          state.filterType = button.dataset.filterType;
+          if (button.dataset.filterType === "area") {
+            state.area = button.dataset.filter;
+            state.category = "all";
+          } else {
+            state.category = button.dataset.filter;
+            state.area = button.dataset.tabArea ?? categoryAreas.get(state.category) ?? state.area;
+          }
           setActivePill();
           applyFilters();
         });
@@ -353,7 +396,7 @@ const workflowStats = [
       white;
     padding: clamp(1.25rem, 3vw, 2rem);
     display: grid;
-    gap: 2rem;
+    gap: 1.5rem;
   }
   .dark .pro-hero {
     border-color: rgb(51 65 85);
@@ -369,10 +412,10 @@ const workflowStats = [
   }
   .pro-hero-copy h1 {
     margin: 0.5rem 0 0;
-    max-width: 13ch;
+    max-width: 12ch;
     color: rgb(15 23 42);
-    font-size: clamp(3rem, 6vw, 5.5rem);
-    line-height: 0.92;
+    font-size: clamp(2.5rem, 4.8vw, 4.25rem);
+    line-height: 0.96;
     font-weight: 800;
   }
   .dark .pro-hero-copy h1 {
@@ -380,10 +423,10 @@ const workflowStats = [
   }
   .pro-hero-copy p {
     margin-top: 1rem;
-    max-width: 38rem;
+    max-width: 34rem;
     color: rgb(71 85 105);
-    font-size: 1.05rem;
-    line-height: 1.75;
+    font-size: 1rem;
+    line-height: 1.65;
   }
   .dark .pro-hero-copy p {
     color: rgb(203 213 225);
@@ -437,7 +480,7 @@ const workflowStats = [
     background: rgb(15 23 42);
     box-shadow: 0 30px 70px -38px rgb(15 23 42 / 0.7);
     color: white;
-    min-height: 24rem;
+    min-height: 20rem;
     overflow: hidden;
   }
   .pro-preview-toolbar {
@@ -486,8 +529,8 @@ const workflowStats = [
     padding: 1rem;
   }
   .pro-preview-pane h2 {
-    margin: 2rem 0 0.5rem;
-    font-size: 1.8rem;
+    margin: 1.25rem 0 0.45rem;
+    font-size: 1.6rem;
     font-weight: 800;
   }
   .pro-preview-pane p {
@@ -503,7 +546,7 @@ const workflowStats = [
     text-transform: uppercase;
   }
   .pro-preview-bars {
-    margin-top: 2.5rem;
+    margin-top: 1.75rem;
     display: grid;
     gap: 0.65rem;
   }
@@ -792,6 +835,52 @@ const workflowStats = [
     background: rgb(37 99 235);
     color: white;
   }
+  .pro-section-tabs {
+    margin-top: 0.75rem;
+    display: flex;
+    gap: 0.25rem;
+    overflow-x: auto;
+    border-bottom: 1px solid rgb(226 232 240);
+    scrollbar-width: none;
+  }
+  .pro-section-tabs::-webkit-scrollbar {
+    display: none;
+  }
+  .dark .pro-section-tabs {
+    border-bottom-color: rgb(51 65 85);
+  }
+  .section-tab {
+    cursor: pointer;
+    flex: 0 0 auto;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent;
+    padding: 0.65rem 0.85rem;
+    color: rgb(100 116 139);
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+  .section-tab:hover {
+    color: rgb(37 99 235);
+  }
+  .section-tab.is-active {
+    border-bottom-color: rgb(37 99 235);
+    color: rgb(37 99 235);
+  }
+  .section-tab.hidden {
+    display: none;
+  }
+  .dark .section-tab {
+    color: rgb(148 163 184);
+  }
+  .dark .section-tab:hover,
+  .dark .section-tab.is-active {
+    color: rgb(147 197 253);
+  }
+  .dark .section-tab.is-active {
+    border-bottom-color: rgb(147 197 253);
+  }
   .no-results {
     margin-top: 1rem;
     border-radius: 0.75rem;
@@ -961,7 +1050,7 @@ const workflowStats = [
       line-height: 1.25;
     }
     .pro-hero-copy h1 {
-      font-size: 2.75rem;
+      font-size: 2.35rem;
     }
     .pro-hero-copy p {
       font-size: 0.98rem;

@@ -26,6 +26,7 @@ let LoomiChatMessage = class LoomiChatMessage extends LoomiElement {
         super(...arguments);
         this.text = "";
         this.sender = "";
+        this.time = "";
         this.senderId = "";
         this.image = "";
         this.avatarLabel = "";
@@ -57,6 +58,7 @@ let LoomiChatMessage = class LoomiChatMessage extends LoomiElement {
         <div class="loomi-chat-bubble ${tail}" style=${bubbleVars(color)}>
           <slot>${this.text}</slot>
         </div>
+        ${this.time ? html `<div class="loomi-chat-time">${this.time}</div>` : nothing}
       </div>
       ${this.showAvatar && this.outgoing
             ? html `<loomi-avatar
@@ -77,6 +79,9 @@ __decorate([
 __decorate([
     property()
 ], LoomiChatMessage.prototype, "sender", void 0);
+__decorate([
+    property()
+], LoomiChatMessage.prototype, "time", void 0);
 __decorate([
     property({ attribute: "sender-id" })
 ], LoomiChatMessage.prototype, "senderId", void 0);

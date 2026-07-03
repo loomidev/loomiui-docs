@@ -44,6 +44,7 @@ let LoomiPassword = class LoomiPassword extends LoomiElement {
         this.viewable = true;
         this.clearable = false;
         this.strength = "";
+        this.strengthColor = "";
         this.errorMessage = "";
         this.showErrorInline = false;
         this.showPlaceholderAlways = false;
@@ -242,7 +243,8 @@ let LoomiPassword = class LoomiPassword extends LoomiElement {
         const requirements = this.strengthRequirements();
         if (requirements.length === 0)
             return nothing;
-        return html `<ul class="loomi-strength" aria-label="Password requirements">
+        const style = this.strengthColor ? `--loomi-password-strength-color:${this.strengthColor}` : "";
+        return html `<ul class="loomi-strength" aria-label="Password requirements" style=${style}>
       ${requirements.map((requirement) => html `<li class="loomi-strength-item ${requirement.met ? "met" : ""}">
           <span class="loomi-strength-check">${this.renderIcon("check-circle")}</span>
           <span>${requirement.label}</span>
@@ -334,6 +336,9 @@ __decorate([
 __decorate([
     property()
 ], LoomiPassword.prototype, "strength", void 0);
+__decorate([
+    property({ attribute: "strength-color" })
+], LoomiPassword.prototype, "strengthColor", void 0);
 __decorate([
     property({ attribute: "error-message" })
 ], LoomiPassword.prototype, "errorMessage", void 0);

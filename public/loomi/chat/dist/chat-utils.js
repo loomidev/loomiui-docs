@@ -1,11 +1,8 @@
 export const PARTICIPANT_COLORS = [
-    "primary",
-    "blue",
-    "purple",
-    "pink",
     "success",
     "warning",
-    "cyan",
+    "error",
+    "gray",
     "secondary",
 ];
 export function initialsFor(name) {

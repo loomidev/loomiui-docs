@@ -45,6 +45,8 @@ let LoomiSelect = class LoomiSelect extends LoomiElement {
         this.required = false;
         this.size = "medium";
         this.emptyPlaceholder = DEFAULT_EMPTY_PLACEHOLDER;
+        this.emptyActionLabel = "";
+        this.emptyActionUrl = "";
         this.invalid = false;
         this.open = false;
         this.search = "";
@@ -197,6 +199,15 @@ let LoomiSelect = class LoomiSelect extends LoomiElement {
         }));
         this.emitChange();
     }
+    onEmptyAction() {
+        this.dispatchEvent(new CustomEvent("empty-action", {
+            bubbles: true,
+            composed: true,
+            detail: { url: this.emptyActionUrl },
+        }));
+        if (this.emptyActionUrl)
+            location.href = this.emptyActionUrl;
+    }
     validate() {
         this.validationVisible = true;
         return this.syncValidity(true);
@@ -294,7 +305,12 @@ let LoomiSelect = class LoomiSelect extends LoomiElement {
                         : nothing}
                       </div>`;
                 })
-                : html `<div class="loomi-empty">${loomiDefaultText(this.emptyPlaceholder, DEFAULT_EMPTY_PLACEHOLDER, "select.emptyPlaceholder", this.locale)}</div>`}
+                : html `<div class="loomi-empty">
+                      <span>${loomiDefaultText(this.emptyPlaceholder, DEFAULT_EMPTY_PLACEHOLDER, "select.emptyPlaceholder", this.locale)}</span>
+                      ${this.emptyActionLabel
+                    ? html `<button type="button" class="loomi-empty-action" @click=${this.onEmptyAction}>${this.emptyActionLabel}</button>`
+                    : nothing}
+                    </div>`}
               </div>
             </div>`
             : nothing}
@@ -354,6 +370,12 @@ __decorate([
 __decorate([
     property({ attribute: "empty-placeholder" })
 ], LoomiSelect.prototype, "emptyPlaceholder", void 0);
+__decorate([
+    property({ attribute: "empty-action-label" })
+], LoomiSelect.prototype, "emptyActionLabel", void 0);
+__decorate([
+    property({ attribute: "empty-action-url" })
+], LoomiSelect.prototype, "emptyActionUrl", void 0);
 __decorate([
     property({ type: Boolean, reflect: true })
 ], LoomiSelect.prototype, "invalid", void 0);

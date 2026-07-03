@@ -19,6 +19,7 @@ let LoomiProgressBar = class LoomiProgressBar extends LoomiElement {
         this.color = "primary";
         this.shade = "faint";
         this.showLabel = false;
+        this.showTooltip = false;
         this.inline = true;
         this.labelPosition = "top-left";
         this.prefix = "";
@@ -45,6 +46,7 @@ let LoomiProgressBar = class LoomiProgressBar extends LoomiElement {
         <div class="loomi-fill ${this.shade === "dark" ? "dark" : ""} ${this.striped ? "striped" : ""} ${this.animated ? "animated" : ""}" style="width:${this.pct}%">
           ${this.showLabel && this.inline ? html `<span>${this.pct}%</span>` : nothing}
         </div>
+        ${this.showTooltip ? html `<span class="loomi-bar-tooltip" style="left:${this.pct}%">${this.text}</span>` : nothing}
       </div>
       ${vpos === "bottom" ? labelEl : nothing}
     </div>`;
@@ -62,6 +64,9 @@ __decorate([
 __decorate([
     property({ type: Boolean, attribute: "show-percentage-label" })
 ], LoomiProgressBar.prototype, "showLabel", void 0);
+__decorate([
+    property({ type: Boolean, attribute: "show-percentage-tooltip" })
+], LoomiProgressBar.prototype, "showTooltip", void 0);
 __decorate([
     property({ type: Boolean, attribute: "show-percentage-label-inline" })
 ], LoomiProgressBar.prototype, "inline", void 0);

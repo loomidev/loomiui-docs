@@ -207,6 +207,22 @@ const TEMPLATE_SLUGS = {
   "Analytics Dashboard": "analytics",
 };
 
+const TEMPLATE_PREVIEW_FALLBACKS = {
+  "admin/nuxt": "admin/next-react",
+  "admin/laravel-inertia": "admin/next-react",
+};
+
+export function templatePreviewHref(title) {
+  const match = title.match(/^(.+?) (vite-lit|next-react|nuxt|laravel-inertia)$/);
+  if (!match) return null;
+
+  const [, label, variant] = match;
+  const slug = TEMPLATE_SLUGS[label];
+  if (!slug) return null;
+
+  return `/pro/templates/${slug}/${variant}/`;
+}
+
 /** Desktop dashboard screenshot for shipped template variants. */
 export function templatePreviewImage(title) {
   const match = title.match(/^(.+?) (vite-lit|next-react|nuxt|laravel-inertia)$/);
@@ -216,7 +232,8 @@ export function templatePreviewImage(title) {
   const slug = TEMPLATE_SLUGS[label];
   if (!slug) return null;
 
-  return `/pro/templates/${slug}/${variant}/dashboard-desktop.png`;
+  const previewKey = TEMPLATE_PREVIEW_FALLBACKS[`${slug}/${variant}`] ?? `${slug}/${variant}`;
+  return `/pro/templates/${previewKey}/dashboard-desktop.png`;
 }
 
 const PREVIEW_ICONS = {
@@ -345,7 +362,13 @@ function inferDescription(title) {
     return `${name} preset with tuned palettes, density, and light/dark modes.`;
   }
 
-  if (lower.includes("vite-lit") || lower.includes("next-react") || lower.includes("variant")) {
+  if (
+    lower.includes("vite-lit") ||
+    lower.includes("next-react") ||
+    lower.includes("nuxt") ||
+    lower.includes("laravel-inertia") ||
+    lower.includes("variant")
+  ) {
     const [name, stack] = title.split(/\s+(?=[a-z-/]+$)/i);
     return `${name.trim()} starter kit for ${stack?.trim() ?? "your stack"}.`;
   }
@@ -470,7 +493,7 @@ export function proCatalogItems(options = {}) {
         icon: PREVIEW_ICONS[category.key] ?? "sparkles",
         previewImage: category.key === "template-variants" ? templatePreviewImage(title) : null,
         search: `${title} ${category.label} ${category.area}`.toLowerCase(),
-        href: pageHref ? `${pageHref}#${slug}` : null,
+        href: category.key === "template-variants" ? templatePreviewHref(title) : pageHref ? `${pageHref}#${slug}` : null,
       });
     }
   }

@@ -242,7 +242,8 @@ let LoomiCreditcard = class LoomiCreditcard extends LoomiElement {
         const numberComplete = digitsOnly(this.number).length === LOOMI_CARD_BRAND_LENGTH[this.activeBrand]
             || (this.activeBrand === "unknown" && digitsOnly(this.number).length >= 12);
         const cvcComplete = this.cvc.length === LOOMI_CARD_BRAND_CVC_LENGTH[this.activeBrand];
-        const valid = numberComplete && this.cardholderName.trim() !== "" && this.isExpiryValid() && cvcComplete;
+        const nameComplete = this.variant === "inline" || this.cardholderName.trim() !== "";
+        const valid = numberComplete && nameComplete && this.isExpiryValid() && cvcComplete;
         this.invalid = !valid && showInvalid;
         return valid;
     }
@@ -270,6 +271,74 @@ let LoomiCreditcard = class LoomiCreditcard extends LoomiElement {
         if (brand === "unknown")
             return nothing;
         return html `<span class="loomi-cc-brand ${extraClass}" aria-hidden="true">${unsafeSVG(LOOMI_CARD_BRAND_ICONS[brand])}</span>`;
+    }
+    renderBrandTray() {
+        const brands = this.activeBrand === "unknown"
+            ? ["visa", "mastercard", "amex", "discover", "jcb"]
+            : [this.activeBrand];
+        return html `<span class="loomi-cc-inline-brands" aria-hidden="true">
+      ${brands.map((brand) => html `<span>${unsafeSVG(LOOMI_CARD_BRAND_ICONS[brand])}</span>`)}
+    </span>`;
+    }
+    renderInline() {
+        return html `
+      <div class="loomi-cc-inline" part="front">
+        <label class="loomi-cc-inline-number">
+          <span class="loomi-sr-only">${loomiT("creditcard.numberLabel", {}, this.locale)}</span>
+          <input
+            class="loomi-cc-number"
+            part="number"
+            type="text"
+            inputmode="numeric"
+            autocomplete="cc-number"
+            placeholder="1234 1234 1234 1234"
+            .value=${this.number}
+            ?disabled=${this.disabled}
+            ?readonly=${this.readonly}
+            @input=${this.onNumberInput}
+            @blur=${this.onFieldBlur}
+          />
+          ${this.renderBrandTray()}
+        </label>
+        <div class="loomi-cc-inline-row">
+          <label class="loomi-cc-inline-field">
+            <span class="loomi-sr-only">${loomiT("creditcard.expiresLabel", {}, this.locale)}</span>
+            <input
+              class="loomi-cc-expiry ${this.expired ? "expired" : ""}"
+              part="expiry"
+              type="text"
+              inputmode="numeric"
+              autocomplete="cc-exp"
+              placeholder="MM / YY"
+              maxlength="5"
+              .value=${formatExpiryDisplay(this.expiryMonth, this.expiryYear)}
+              ?disabled=${this.disabled}
+              ?readonly=${this.readonly}
+              @input=${this.onExpiryInput}
+              @blur=${this.onFieldBlur}
+            />
+          </label>
+          <label class="loomi-cc-inline-field">
+            <span class="loomi-sr-only">${loomiT("creditcard.cvcLabel", {}, this.locale)}</span>
+            <input
+              class="loomi-cc-cvc"
+              part="cvc"
+              type="password"
+              inputmode="numeric"
+              autocomplete="cc-csc"
+              placeholder="CVC"
+              maxlength=${LOOMI_CARD_BRAND_CVC_LENGTH[this.activeBrand]}
+              .value=${this.cvc}
+              ?disabled=${this.disabled}
+              ?readonly=${this.readonly}
+              @input=${this.onCvcInput}
+              @blur=${this.onFieldBlur}
+            />
+            <span class="loomi-cc-cvc-glyph" aria-hidden="true">123</span>
+          </label>
+        </div>
+      </div>
+    `;
     }
     renderFront() {
         return html `
@@ -361,6 +430,14 @@ let LoomiCreditcard = class LoomiCreditcard extends LoomiElement {
     render() {
         const showError = this.invalid && this.showErrorInline && this.errorMessage;
         const flipLabel = loomiT(this.flipped ? "creditcard.flipToFront" : "creditcard.flipToBack", {}, this.locale);
+        if (this.variant === "inline") {
+            return html `
+        <div class="loomi-creditcard inline" style=${accentVars(this.accentColor)}>
+          ${this.renderInline()}
+          ${showError ? html `<p class="loomi-error">${this.errorMessage}</p>` : nothing}
+        </div>
+      `;
+        }
         return html `
       <div class="loomi-creditcard" style=${accentVars(this.accentColor)} @keydown=${this.onKeydown}>
         <div class="loomi-cc-scene">

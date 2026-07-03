@@ -187,9 +187,14 @@ let LoomiAvatars = class LoomiAvatars extends LoomiElement {
         this.dotPosition = "bottom";
         this.plus = 0;
         this.size = "regular";
+        this.stackSpace = "";
         this.syncChildren = () => {
             if (this.plus > 0)
                 this.stacked = true;
+            if (this.stackSpace)
+                this.style.setProperty("--loomi-av-stack-offset", this.stackSpace);
+            else
+                this.style.removeProperty("--loomi-av-stack-offset");
             const hasGroupDotColor = this.hasAttribute("dot-color") || this.dotColor !== "success";
             const hasGroupDotPosition = this.hasAttribute("dot-position") || this.dotPosition !== "bottom";
             this.querySelectorAll("loomi-avatar").forEach((avatar) => {
@@ -240,6 +245,9 @@ __decorate([
 __decorate([
     property({ reflect: true })
 ], LoomiAvatars.prototype, "size", void 0);
+__decorate([
+    property({ attribute: "stack-space" })
+], LoomiAvatars.prototype, "stackSpace", void 0);
 LoomiAvatars = __decorate([
     customElement("loomi-avatars")
 ], LoomiAvatars);

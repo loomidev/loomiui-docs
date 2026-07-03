@@ -4,7 +4,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { html, nothing, svg } from "lit";
+import { html, nothing, render as litRender, svg } from "lit";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
 import { customElement, property, state } from "lit/decorators.js";
 import { LoomiElement, loomiDefaultText, loomiStyles, cssColor } from "@loomidev/core";
@@ -80,6 +80,7 @@ let LoomiTable = class LoomiTable extends LoomiElement {
         this.transparent = false;
         this.uppercasing = true;
         this.searchable = false;
+        this.searchContainer = "";
         this.searchPlaceholder = DEFAULT_SEARCH_PLACEHOLDER;
         this.searchPlaceholderAlias = "";
         this.locale = "";
@@ -322,6 +323,58 @@ let LoomiTable = class LoomiTable extends LoomiElement {
             this.toggleRow(id, !this.checked.has(id));
         this.dispatchEvent(new CustomEvent("row-click", { bubbles: true, composed: true, detail: { row, id } }));
     }
+    updated(changed) {
+        if (changed.has("searchContainer"))
+            this.removeExternalSearch();
+        this.renderExternalSearch();
+    }
+    disconnectedCallback() {
+        this.removeExternalSearch();
+        super.disconnectedCallback();
+    }
+    get searchField() {
+        const searchPlaceholder = loomiDefaultText(this.searchPlaceholderAlias || this.searchPlaceholder, DEFAULT_SEARCH_PLACEHOLDER, "table.searchPlaceholder", this.locale);
+        return html `<loomi-input
+      class="loomi-search-input"
+      type="search"
+      size="small"
+      no-clearing
+      clearable
+      prefix-icon="magnifying-glass"
+      .placeholder=${searchPlaceholder}
+      .value=${this.query}
+      .locale=${this.locale}
+      @input=${(e) => {
+            this.query = e.target.value;
+            this.page = 1;
+        }}
+    ></loomi-input>`;
+    }
+    removeExternalSearch() {
+        if (!this.externalSearchMount)
+            return;
+        litRender(nothing, this.externalSearchMount);
+        this.externalSearchMount.remove();
+        this.externalSearchMount = undefined;
+    }
+    renderExternalSearch() {
+        if (!this.searchable || !this.searchContainer) {
+            this.removeExternalSearch();
+            return;
+        }
+        const container = document.querySelector(this.searchContainer);
+        if (!container) {
+            this.removeExternalSearch();
+            return;
+        }
+        if (!this.externalSearchMount || this.externalSearchMount.parentElement !== container) {
+            this.removeExternalSearch();
+            this.externalSearchMount = document.createElement("div");
+            this.externalSearchMount.className = "loomi-table-search-container";
+            container.append(this.externalSearchMount);
+        }
+        litRender(this.searchField, this.externalSearchMount);
+    }
     renderEmpty(colSpan, noDataMessage) {
         const messageAsEmptyState = this.messageAsEmptyStateAlias ?? this.messageAsEmptyState;
         if (!messageAsEmptyState)
@@ -367,7 +420,7 @@ let LoomiTable = class LoomiTable extends LoomiElement {
       ${(this.showRowNumbersAlias ?? this.showRowNumbers) ? html `<td class="loomi-num-col">${offset + index + 1}</td>` : nothing}
       ${cols.map((c) => html `<td data-row-id=${id} data-column=${c}>${row[c]}</td>`)}
       ${this.effectiveActions.length
-            ? html `<td><span class="loomi-actions" @click=${(e) => e.stopPropagation()}>${this.effectiveActions.map((a) => this.renderActionIcon(a, row))}</span></td>`
+            ? html `<td class="loomi-actions-col"><span class="loomi-actions" @click=${(e) => e.stopPropagation()}>${this.effectiveActions.map((a) => this.renderActionIcon(a, row))}</span></td>`
             : nothing}
     </tr>`;
     }
@@ -417,7 +470,6 @@ let LoomiTable = class LoomiTable extends LoomiElement {
     }
     render() {
         const cols = this.effectiveColumns;
-        const searchPlaceholder = loomiDefaultText(this.searchPlaceholderAlias || this.searchPlaceholder, DEFAULT_SEARCH_PLACEHOLDER, "table.searchPlaceholder", this.locale);
         const actionsTitle = loomiDefaultText(this.actionsTitleAlias || this.actionsTitle, DEFAULT_ACTIONS_TITLE, "table.actionsTitle", this.locale);
         const noDataMessage = loomiDefaultText(this.noDataMessageAlias || this.noDataMessage, DEFAULT_NO_DATA_MESSAGE, "table.noDataMessage", this.locale);
         const colSpan = Math.max(1, cols.length + (this.checkable ? 1 : 0) + ((this.showRowNumbersAlias ?? this.showRowNumbers) ? 1 : 0) + (this.effectiveActions.length ? 1 : 0));
@@ -440,23 +492,9 @@ let LoomiTable = class LoomiTable extends LoomiElement {
         return html `<div class="loomi-wrap">
       <div class="loomi-shell ${shellCls}">
         ${this.searchable
-            ? html `<div class="loomi-toolbar">
-              <loomi-input
-                class="loomi-search-input"
-                type="search"
-                size="small"
-                no-clearing
-                clearable
-                prefix-icon="magnifying-glass"
-                .placeholder=${searchPlaceholder}
-                .value=${this.query}
-                .locale=${this.locale}
-                @input=${(e) => {
-                this.query = e.target.value;
-                this.page = 1;
-            }}
-              ></loomi-input>
-            </div>`
+            ? this.searchContainer
+                ? nothing
+                : html `<div class="loomi-toolbar">${this.searchField}</div>`
             : nothing}
 
         <div class="loomi-scroll">
@@ -472,7 +510,7 @@ let LoomiTable = class LoomiTable extends LoomiElement {
             : cols.length
                 ? cols.map((c) => this.renderHeadingCell(c))
                 : html `<slot name="header"></slot>`}
-                ${this.effectiveActions.length && hasData ? html `<th class="${this.uppercasing ? "uppercasing" : ""}">${actionsTitle}</th>` : nothing}
+                ${this.effectiveActions.length && hasData ? html `<th class="loomi-actions-col ${this.uppercasing ? "uppercasing" : ""}">${actionsTitle}</th>` : nothing}
               </tr>
             </thead>
             <tbody>
@@ -579,6 +617,9 @@ __decorate([
 __decorate([
     property({ converter: booleanConverter })
 ], LoomiTable.prototype, "searchable", void 0);
+__decorate([
+    property({ attribute: "search-container" })
+], LoomiTable.prototype, "searchContainer", void 0);
 __decorate([
     property({ attribute: "search-placeholder" })
 ], LoomiTable.prototype, "searchPlaceholder", void 0);

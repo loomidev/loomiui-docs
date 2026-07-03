@@ -4,9 +4,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-import { html, nothing } from "lit";
+import { html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { LoomiElement, loomiStyles, loomiT } from "@loomidev/core";
+import "@loomidev/card/loomi-card.js";
 import { componentStyles } from "./generated/styles.css.js";
 /**
  * `<loomi-statistic>` — a dashboard stat showing a `number` and `label`, with optional
@@ -29,16 +30,8 @@ let LoomiStatistic = class LoomiStatistic extends LoomiElement {
         this.showSpinner = false;
         this.radius = "small";
         this.url = "";
-        this.onClick = () => {
-            if (!this.url)
-                return;
-            if (/^https?:\/\//.test(this.url))
-                window.open(this.url, "_blank");
-            else if (/\)$/.test(this.url))
-                new Function(this.url)();
-            else
-                location.href = this.url;
-        };
+        this.iconColor = "";
+        this.iconSize = "";
     }
     static { this.styles = loomiStyles(componentStyles); }
     get hasIcon() {
@@ -53,18 +46,29 @@ let LoomiStatistic = class LoomiStatistic extends LoomiElement {
             this.iconPosition === "right" ? "icon-right" : "",
             this.url ? "clickable" : "",
         ].join(" ");
-        return html `<div class=${cls} @click=${this.url ? this.onClick : nothing}>
-      ${this.hasIcon ? html `<div class="loomi-ico"><slot name="icon"></slot></div>` : nothing}
-      <div class="loomi-body ${this.labelPosition}">
-        <div class="loomi-label">${this.label}</div>
-        ${this.showSpinner
+        const iconStyle = [
+            this.iconColor ? `--loomi-stat-icon-color:${this.iconColor}` : "",
+            this.iconSize ? `--loomi-stat-icon-size:${this.iconSize}` : "",
+        ].filter(Boolean).join(";");
+        return html `<loomi-card
+      class="loomi-stat-card"
+      size="sm"
+      .url=${this.url}
+      ?has-hover=${!!this.url}
+    >
+      <div class=${cls}>
+        ${this.hasIcon ? html `<div class="loomi-ico" part="icon" style=${iconStyle}><slot name="icon"></slot></div>` : null}
+        <div class="loomi-body ${this.labelPosition}">
+          <div class="loomi-label">${this.label}</div>
+          ${this.showSpinner
             ? html `<svg class="loomi-spinner" viewBox="0 0 24 24" fill="none" aria-label=${loomiT("common.loading", {}, this.locale)}><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3" opacity="0.25"></circle><path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path></svg>`
             : html `<div class="loomi-number ${this.currency && this.currencyPosition === "right" ? "currency-right" : ""}">
-              ${this.currency ? html `<span class="loomi-currency">${this.currency}</span>` : nothing}
-              <span>${this.number}</span>
-            </div>`}
+                ${this.currency ? html `<span class="loomi-currency">${this.currency}</span>` : null}
+                <span>${this.number}</span>
+              </div>`}
+        </div>
       </div>
-    </div>`;
+    </loomi-card>`;
     }
 };
 __decorate([
@@ -103,6 +107,12 @@ __decorate([
 __decorate([
     property()
 ], LoomiStatistic.prototype, "url", void 0);
+__decorate([
+    property({ attribute: "icon-color" })
+], LoomiStatistic.prototype, "iconColor", void 0);
+__decorate([
+    property({ attribute: "icon-size" })
+], LoomiStatistic.prototype, "iconSize", void 0);
 LoomiStatistic = __decorate([
     customElement("loomi-statistic")
 ], LoomiStatistic);

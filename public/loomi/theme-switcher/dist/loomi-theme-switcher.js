@@ -52,6 +52,7 @@ let LoomiThemeSwitcher = class LoomiThemeSwitcher extends LoomiElement {
         this.darkIcon = "moon";
         this.systemIcon = "computer-desktop";
         this.iconRight = false;
+        this.showLabels = false;
         this.variant = "horizontal";
         this.mode = getLoomiTheme();
         this.onSystemChange = () => {
@@ -95,7 +96,7 @@ let LoomiThemeSwitcher = class LoomiThemeSwitcher extends LoomiElement {
       @click=${() => this.select(mode)}
     >
       ${this.icon(iconName)}
-      <span>${text}</span>
+      <span class=${this.showLabels ? "" : "loomi-sr-only"}>${text}</span>
     </button>`;
     }
     renderHorizontal() {
@@ -162,6 +163,9 @@ __decorate([
 __decorate([
     property({ type: Boolean, attribute: "icon-right" })
 ], LoomiThemeSwitcher.prototype, "iconRight", void 0);
+__decorate([
+    property({ type: Boolean, attribute: "show-labels" })
+], LoomiThemeSwitcher.prototype, "showLabels", void 0);
 __decorate([
     property()
 ], LoomiThemeSwitcher.prototype, "variant", void 0);

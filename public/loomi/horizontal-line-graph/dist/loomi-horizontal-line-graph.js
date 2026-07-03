@@ -8,7 +8,7 @@ import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { LoomiElement, loomiStyles, cssColor } from "@loomidev/core";
 import { componentStyles } from "./generated/styles.css.js";
-const FALLBACK = ["primary", "green", "orange", "red", "purple", "cyan", "pink", "indigo"];
+const FALLBACK = ["#16a34a", "#eab308", "#f97316", "#ef4444", "#64748b", "#84cc16", "#a16207"];
 /**
  * `<loomi-horizontal-line-graph>` — a single proportion bar split into colored segments,
  * with an optional legend. Provide `data` (`{ label, value, color? }`).

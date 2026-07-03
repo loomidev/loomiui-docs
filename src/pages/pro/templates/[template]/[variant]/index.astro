@@ -1,0 +1,22 @@
+---
+import ProTemplatePreviewPage from "../../../../../components/ProTemplatePreviewPage.astro";
+
+export function getStaticPaths() {
+  return [
+    { params: { template: "admin", variant: "vite-lit" } },
+    { params: { template: "admin", variant: "next-react" } },
+    { params: { template: "admin", variant: "nuxt" } },
+    { params: { template: "admin", variant: "laravel-inertia" } },
+    { params: { template: "saas", variant: "vite-lit" } },
+    { params: { template: "saas", variant: "next-react" } },
+    { params: { template: "crm", variant: "vite-lit" } },
+    { params: { template: "crm", variant: "next-react" } },
+    { params: { template: "analytics", variant: "vite-lit" } },
+    { params: { template: "analytics", variant: "next-react" } },
+  ];
+}
+
+const { template, variant } = Astro.params;
+---
+
+<ProTemplatePreviewPage template={template!} variant={variant!} />
