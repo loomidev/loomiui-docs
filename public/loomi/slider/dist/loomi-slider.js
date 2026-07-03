@@ -145,7 +145,7 @@ let LoomiSlider = class LoomiSlider extends LoomiElement {
     markStyle(value) {
         return this.vertical
             ? `bottom: ${this.valuePercent(value)}%`
-            : `left: ${this.valuePercent(value)}%`;
+            : `inset-inline-start: ${this.valuePercent(value)}%`;
     }
     render() {
         return html `<div class="loomi-slider ${this.vertical ? "vertical" : "horizontal"}" style=${this.progressStyle}>

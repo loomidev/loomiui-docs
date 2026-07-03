@@ -37,8 +37,11 @@ let LoomiChart = class LoomiChart extends LoomiElement {
         this.showGrid = true;
         /** Show a tooltip while hovering chart points. Cartesian charts track the nearest point as you move across the plot. */
         this.showTooltip = true;
+        this.withGap = false;
         this.vertical = false;
         this.hoverIndex = -1;
+        this.pointerLeft = 0;
+        this.pointerTop = 0;
     }
     static { this.styles = loomiStyles(componentStyles); }
     get colorCtx() {
@@ -87,6 +90,8 @@ let LoomiChart = class LoomiChart extends LoomiElement {
         const ratio = this.isVerticalLine()
             ? (event.clientY - rect.top) / rect.height
             : (event.clientX - rect.left) / rect.width;
+        this.pointerLeft = Math.max(0, Math.min(100, ((event.clientX - rect.left) / rect.width) * 100));
+        this.pointerTop = Math.max(0, Math.min(100, ((event.clientY - rect.top) / rect.height) * 100));
         const next = nearestIndex(this.type, this.data, this.layoutOpts(), ratio);
         if (next !== this.hoverIndex)
             this.hoverIndex = next;
@@ -353,8 +358,8 @@ let LoomiChart = class LoomiChart extends LoomiElement {
             const [sx, sy] = polar(cx, cy, start, r);
             const [ex, ey] = polar(cx, cy, end, r);
             const fill = resolveFill(this.colorCtx, d, i, true);
-            const border = resolveBorder(this.colorCtx, d, i, true);
-            const sw = border ? 1.5 : 0;
+            const border = this.withGap ? "var(--loomi-surface)" : resolveBorder(this.colorCtx, d, i, true);
+            const sw = this.withGap ? 2.5 : border ? 1.5 : 0;
             const active = this.hoverIndex === i;
             if (innerR <= 0) {
                 return svg `<path
@@ -474,14 +479,8 @@ let LoomiChart = class LoomiChart extends LoomiElement {
         const point = this.data[this.hoverIndex];
         if (!point)
             return nothing;
-        const [x, y] = tooltipAnchor(this.type, this.data, this.hoverIndex, this.layoutOpts());
-        const layout = this.isVerticalLine()
-            ? verticalLineLayout(this.data, this.showYAxis)
-            : cartesianLayout(this.data, this.layoutOpts());
-        const left = (x / layout.width) * 100;
-        const top = (y / layout.height) * 100;
         return html `
-      <div class="loomi-floating-tip is-visible" style="left:${left}%;top:${top}%">
+      <div class="loomi-floating-tip is-visible" style="left:${this.pointerLeft}%;top:${this.pointerTop}%">
         <div class="loomi-chart-tip">
           <span class="loomi-chart-tip-label">${point.label}</span>
           ${this.renderTooltipRows(point)}
@@ -582,11 +581,20 @@ __decorate([
     property({ type: Boolean, attribute: "show-tooltip", converter: booleanAttribute })
 ], LoomiChart.prototype, "showTooltip", void 0);
 __decorate([
+    property({ type: Boolean, attribute: "with-gap", converter: booleanAttribute })
+], LoomiChart.prototype, "withGap", void 0);
+__decorate([
     property({ type: Boolean })
 ], LoomiChart.prototype, "vertical", void 0);
 __decorate([
     state()
 ], LoomiChart.prototype, "hoverIndex", void 0);
+__decorate([
+    state()
+], LoomiChart.prototype, "pointerLeft", void 0);
+__decorate([
+    state()
+], LoomiChart.prototype, "pointerTop", void 0);
 LoomiChart = __decorate([
     customElement("loomi-chart")
 ], LoomiChart);

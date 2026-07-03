@@ -244,7 +244,7 @@ const initialStylesheet = themeBundle.assetsBase ? `${themeBundle.assetsBase}/${
       </div>
     </div>
 
-    <script type="application/json" id="theme-data" set:html={JSON.stringify(themeBundle)}></script>
+    <script type="application/json" id="theme-data" is:inline set:html={JSON.stringify(themeBundle)}></script>
 
     <script type="module" is:inline>
       import "@loomidev/button";

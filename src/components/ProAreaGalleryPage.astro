@@ -143,7 +143,7 @@ const GITHUB_URL = "https://github.com/loomidev/loomiui-pro";
       import "@loomidev/icon";
     </script>
 
-    <script define:vars={{ galleryPath }}>
+    <script is:inline define:vars={{ galleryPath }}>
       const grid = document.getElementById("pro-grid");
       const cards = Array.from(grid.querySelectorAll(".pro-card"));
       const searchInputs = document.querySelectorAll("[data-role='search-input']");

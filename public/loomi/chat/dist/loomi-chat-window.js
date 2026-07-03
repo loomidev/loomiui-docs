@@ -51,6 +51,9 @@ let LoomiChatWindow = class LoomiChatWindow extends LoomiElement {
         this.inputRows = 1;
         this.inputMaxRows = 5;
         this.busy = false;
+        this.typing = false;
+        this.loadingText = "";
+        this.loadingIcon = "";
         this.autoScroll = true;
         this.showReset = true;
         this.showAvatars = false;
@@ -222,10 +225,29 @@ let LoomiChatWindow = class LoomiChatWindow extends LoomiElement {
         ?show-avatar=${showAvatars}
         ?show-sender=${showSender && !outgoing}
       ></loomi-chat-message>`;
-        })}`;
+        })}
+    ${this.renderTypingIndicator()}`;
+    }
+    renderTypingIndicator() {
+        if (!this.typing && !this.busy)
+            return nothing;
+        const custom = this.loadingText || this.loadingIcon;
+        return html `<div class="loomi-chat-row incoming loomi-chat-loading-row" role="status" aria-live="polite">
+      <div class="loomi-chat-row-body">
+        <div class="loomi-chat-loading ${custom ? "custom" : ""}">
+          ${this.loadingIcon ? html `<loomi-icon name=${this.loadingIcon}></loomi-icon>` : nothing}
+          ${this.loadingText ? html `<span>${this.loadingText}</span>` : nothing}
+          ${custom
+            ? nothing
+            : html `<span class="loomi-typing-dots" aria-label="Typing">
+                <span></span><span></span><span></span>
+              </span>`}
+        </div>
+      </div>
+    </div>`;
     }
     render() {
-        const hasMessages = this.messages.length > 0;
+        const hasMessages = this.messages.length > 0 || this.typing || this.busy;
         return html `<div class="loomi-chat-window">
       <div class="loomi-chat-card-wrap">
         <div class="loomi-chat-shell">
@@ -361,6 +383,15 @@ __decorate([
 __decorate([
     property({ type: Boolean, reflect: true })
 ], LoomiChatWindow.prototype, "busy", void 0);
+__decorate([
+    property({ type: Boolean, reflect: true })
+], LoomiChatWindow.prototype, "typing", void 0);
+__decorate([
+    property({ attribute: "loading-text" })
+], LoomiChatWindow.prototype, "loadingText", void 0);
+__decorate([
+    property({ attribute: "loading-icon" })
+], LoomiChatWindow.prototype, "loadingIcon", void 0);
 __decorate([
     property({ type: Boolean, attribute: "auto-scroll", converter: booleanAttribute })
 ], LoomiChatWindow.prototype, "autoScroll", void 0);

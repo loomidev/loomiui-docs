@@ -128,7 +128,7 @@ const title = `${templateLabel} ${variantLabel} Preview - LoomiUI Pro`;
       import "@loomidev/button";
       import "@loomidev/icon";
     </script>
-    <script define:vars={{ routePayload }}>
+    <script is:inline define:vars={{ routePayload }}>
       const routes = JSON.parse(routePayload);
       const buttons = Array.from(document.querySelectorAll(".preview-nav-item"));
       const title = document.getElementById("preview-title");
