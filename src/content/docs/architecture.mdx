@@ -51,9 +51,8 @@ its own. So how does `<loomi-button>` actually render in the browser on a static
    specifier a component might use to those static paths — `@loomidev/button` →
    `/loomi/button/dist/index.js`, plus a **prefix** mapping `@loomidev/checkbox/` →
    `/loomi/checkbox/dist/` for sibling-package subpath imports (`<loomi-table>` imports
-   `<loomi-checkbox>` directly). External runtime imports such as `lit` and `quill`
-   map to CDNs — exactly what a consumer who hasn't installed LoomiUI locally would
-   load.
+   `<loomi-checkbox>` directly). The external runtime import `lit` maps to a CDN —
+   exactly what a consumer who hasn't installed LoomiUI locally would load.
 4. **Generate the doc pages.** `gen-component-docs.mjs` reads each component's
    published `README.md`, and wraps every fenced `html` code block in a
    `<div class="loomi-preview">` containing the *same* markup, plus one
