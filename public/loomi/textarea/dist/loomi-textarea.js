@@ -50,6 +50,7 @@ let LoomiTextarea = class LoomiTextarea extends LoomiElement {
         this.showErrorInline = false;
         this.invalid = false;
         this.showFocusRing = true;
+        this.variant = "default";
         /** Characters that open the mention picker, e.g. `["@", "#", "/"]`. Empty disables it. */
         this.mentionTriggers = [];
         /** Items per trigger character, e.g. `{ "@": [{ label: "Jane" }] }`. */
@@ -259,7 +260,7 @@ let LoomiTextarea = class LoomiTextarea extends LoomiElement {
         const placeholderAttr = hasLabel ? " " : this.placeholder || " ";
         const showError = this.invalid && this.showErrorInline && this.errorMessage;
         return html `
-      <div class="loomi-field ${this.showFocusRing ? "" : "no-focus-ring"}" part="field">
+      <div class="loomi-field variant-${this.variant} ${this.showFocusRing ? "" : "no-focus-ring"}" part="field">
         <textarea
           class="loomi-textarea"
           part="textarea"
@@ -328,6 +329,9 @@ __decorate([
 __decorate([
     property({ type: Boolean, attribute: "show-focus-ring", converter: booleanAttribute })
 ], LoomiTextarea.prototype, "showFocusRing", void 0);
+__decorate([
+    property()
+], LoomiTextarea.prototype, "variant", void 0);
 __decorate([
     property({ type: Array, attribute: "mention-triggers" })
 ], LoomiTextarea.prototype, "mentionTriggers", void 0);

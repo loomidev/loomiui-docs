@@ -42,6 +42,7 @@ let LoomiTagInput = class LoomiTagInput extends LoomiElement {
         this.placeholder = "";
         this.value = "";
         this.size = "medium";
+        this.variant = "default";
         this.color = "primary";
         this.shade = "light";
         this.mode = "inside";
@@ -292,6 +293,7 @@ let LoomiTagInput = class LoomiTagInput extends LoomiElement {
         const fieldClasses = [
             "loomi-field",
             `size-${this.size}`,
+            `variant-${this.variant}`,
             belowMode ? "mode-below" : "mode-inside",
             this.tagValues.length > 0 ? "has-tags" : "",
             this.draft ? "has-draft" : "",
@@ -350,6 +352,9 @@ __decorate([
 __decorate([
     property()
 ], LoomiTagInput.prototype, "size", void 0);
+__decorate([
+    property()
+], LoomiTagInput.prototype, "variant", void 0);
 __decorate([
     property()
 ], LoomiTagInput.prototype, "color", void 0);

@@ -52,6 +52,7 @@ let LoomiSelect = class LoomiSelect extends LoomiElement {
         this.readonly = false;
         this.required = false;
         this.size = "medium";
+        this.variant = "default";
         this.emptyPlaceholder = DEFAULT_EMPTY_PLACEHOLDER;
         this.emptyActionLabel = "";
         this.emptyActionUrl = "";
@@ -259,7 +260,7 @@ let LoomiSelect = class LoomiSelect extends LoomiElement {
         const activeId = this.open && this.activeIndex >= 0 && opts[this.activeIndex] ? `loomi-opt-${this.activeIndex}` : nothing;
         return html `
       <div
-        class="loomi-select size-${this.size} ${this.open ? "open" : ""} ${float ? "float" : ""} ${this.showFocusRing ? "" : "no-focus-ring"}"
+        class="loomi-select size-${this.size} variant-${this.variant} ${this.open ? "open" : ""} ${float ? "float" : ""} ${this.showFocusRing ? "" : "no-focus-ring"}"
         @keydown=${this.onKeydown}
       >
         <button
@@ -376,6 +377,9 @@ __decorate([
 __decorate([
     property()
 ], LoomiSelect.prototype, "size", void 0);
+__decorate([
+    property()
+], LoomiSelect.prototype, "variant", void 0);
 __decorate([
     property({ attribute: "empty-placeholder" })
 ], LoomiSelect.prototype, "emptyPlaceholder", void 0);

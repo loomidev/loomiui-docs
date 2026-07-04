@@ -145,6 +145,7 @@ let LoomiTimezonepicker = class LoomiTimezonepicker extends LoomiElement {
         this.readonly = false;
         this.required = false;
         this.size = "medium";
+        this.variant = "default";
         this.emptyPlaceholder = DEFAULT_EMPTY_PLACEHOLDER;
         this.invalid = false;
         this.open = false;
@@ -400,7 +401,7 @@ let LoomiTimezonepicker = class LoomiTimezonepicker extends LoomiElement {
       <div class=${classes} @keydown=${this.onKeydown}>
         <button
           type="button"
-          class="loomi-trigger"
+          class="loomi-trigger variant-${this.variant}"
           part="trigger"
           aria-haspopup="listbox"
           aria-expanded=${this.open ? "true" : "false"}
@@ -447,6 +448,9 @@ __decorate([
 __decorate([
     property()
 ], LoomiTimezonepicker.prototype, "size", void 0);
+__decorate([
+    property()
+], LoomiTimezonepicker.prototype, "variant", void 0);
 __decorate([
     property({ attribute: "empty-placeholder" })
 ], LoomiTimezonepicker.prototype, "emptyPlaceholder", void 0);

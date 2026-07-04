@@ -36,6 +36,7 @@ let LoomiPassword = class LoomiPassword extends LoomiElement {
         this.disabled = false;
         this.readonly = false;
         this.size = "medium";
+        this.variant = "default";
         this.prefix = "";
         this.prefixOptions = "";
         this.prefixValue = "";
@@ -257,7 +258,7 @@ let LoomiPassword = class LoomiPassword extends LoomiElement {
         const placeholderAttr = hasLabel && !this.showPlaceholderAlways ? " " : this.placeholder || " ";
         const showError = this.invalid && this.showErrorInline && this.errorMessage;
         return html `
-      <div class="loomi-field size-${this.size} ${forceFloat ? "force-float" : ""}" part="field">
+      <div class="loomi-field size-${this.size} variant-${this.variant} ${forceFloat ? "force-float" : ""}" part="field">
         ${this.renderPrefix()}
         <span class="loomi-inputwrap">
           <input
@@ -312,6 +313,9 @@ __decorate([
 __decorate([
     property()
 ], LoomiPassword.prototype, "size", void 0);
+__decorate([
+    property()
+], LoomiPassword.prototype, "variant", void 0);
 __decorate([
     property()
 ], LoomiPassword.prototype, "prefix", void 0);

@@ -290,6 +290,7 @@ let LoomiTextEditor = class LoomiTextEditor extends LoomiElement {
         this.errorMessage = "";
         this.showErrorInline = false;
         this.invalid = false;
+        this.variant = "default";
         this.activeTools = [];
         this.currentBlock = "p";
         this.embedTool = "";
@@ -884,7 +885,7 @@ let LoomiTextEditor = class LoomiTextEditor extends LoomiElement {
             >${this.label}${this.required ? html `<span class="loomi-req">*</span>` : nothing}</label
           >`
             : nothing}
-      <div class="loomi-field" part="field">
+      <div class="loomi-field variant-${this.variant}" part="field">
         ${tools.length
             ? html `<div class="loomi-toolbar" part="toolbar" role="toolbar">
               ${tools.map((tool) => this.renderTool(tool))}
@@ -952,6 +953,9 @@ __decorate([
 __decorate([
     property({ type: Boolean, reflect: true })
 ], LoomiTextEditor.prototype, "invalid", void 0);
+__decorate([
+    property()
+], LoomiTextEditor.prototype, "variant", void 0);
 __decorate([
     state()
 ], LoomiTextEditor.prototype, "activeTools", void 0);

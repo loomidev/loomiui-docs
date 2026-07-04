@@ -22,9 +22,9 @@ const MEMBERS = {
     "input", "textarea", "select", "checkbox", "radio", "toggle", "number", "slider",
     "datepicker", "timepicker", "timezonepicker", "colorpicker", "filepicker", "checkcards",
     "countries", "creditcard", "text-editor", "tag-input", "emoji-picker", "password", "pin",
-    "date-range-picker", "filter-builder",
+    "date-range-picker", "filter-builder", "autocomplete",
   ],
-  feedback: ["alert", "notification", "bell", "spinner", "progress", "processing"],
+  feedback: ["alert", "notification", "bell", "spinner", "progress", "processing", "progress-steps"],
   navigation: ["tab", "pagination", "dropmenu", "theme-switcher", "context-menu", "command-palette"],
   overlay: ["modal", "popover", "tooltip", "drawer"],
   "data-display": [
@@ -32,7 +32,7 @@ const MEMBERS = {
     "horizontal-line-graph", "copy-to-clipboard", "timer", "data-grid", "calendar", "chat",
   ],
   layout: ["button", "button-group", "card", "accordion", "centered-content", "sortable", "divider", "resizable"],
-  media: ["icon", "avatar", "empty-state", "qrcode"],
+  media: ["icon", "avatar", "empty-state", "qrcode", "video"],
 };
 
 // Every COMPONENT_NAMES entry must land in exactly one bucket above — fail fast at

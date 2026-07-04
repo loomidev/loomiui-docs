@@ -11,12 +11,16 @@ import { getLoomiIcon } from "@loomidev/icons";
 import { componentStyles } from "./generated/styles.css.js";
 const CHECK = svg `<path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />`;
 /**
- * `<loomi-timeline>` — a single timeline entry. Group inside `<loomi-timelines>`.
+ * `<loomi-timeline-item>` — a single timeline entry. Group inside `<loomi-timeline>`.
+ *
+ * There's nothing to set per-item: the connecting line hides itself on the last item,
+ * and `alternate` placement resolves from the item's position among its siblings -
+ * both purely in CSS, from the real DOM order.
  *
  * @slot - Custom content (overrides the `content` attribute).
  * @slot content - Alias for the default slot.
  */
-let LoomiTimeline = class LoomiTimeline extends LoomiElement {
+let LoomiTimelineItem = class LoomiTimelineItem extends LoomiElement {
     constructor() {
         super(...arguments);
         this.date = "";
@@ -26,7 +30,7 @@ let LoomiTimeline = class LoomiTimeline extends LoomiElement {
         this.anchor = "small";
         this.icon = "";
         this.avatar = "";
-        this.last = false;
+        this.position = "left";
         this.color = "primary";
     }
     static { this.styles = loomiStyles(componentStyles); }
@@ -45,67 +49,67 @@ let LoomiTimeline = class LoomiTimeline extends LoomiElement {
         return html `<span class="loomi-dot ${this.anchor} ${this.completed || iconColored ? "completed" : ""}">${inner}</span>`;
     }
     render() {
+        const dateCol = !this.stacked ? html `<div class="loomi-date-col">${this.date}</div>` : nothing;
         const body = html `<div class="loomi-body">
       <div class="loomi-content"><slot name="content"><slot>${this.content}</slot></slot></div>
       ${this.stacked && this.date ? html `<div class="loomi-date-top">${this.date}</div>` : nothing}
     </div>`;
         return html `<div class="loomi-item" style=${accentVars(this.color)}>
-      ${!this.stacked ? html `<div class="loomi-date-col">${this.date}</div>` : nothing}
+      <div class="loomi-side">${dateCol}${body}</div>
       <div class="loomi-anchor">
         ${this.renderDot()}
         <div class="loomi-line"></div>
       </div>
-      ${body}
     </div>`;
     }
 };
 __decorate([
     property()
-], LoomiTimeline.prototype, "date", void 0);
+], LoomiTimelineItem.prototype, "date", void 0);
 __decorate([
     property()
-], LoomiTimeline.prototype, "content", void 0);
+], LoomiTimelineItem.prototype, "content", void 0);
 __decorate([
     property({ type: Boolean })
-], LoomiTimeline.prototype, "completed", void 0);
+], LoomiTimelineItem.prototype, "completed", void 0);
 __decorate([
     property({ type: Boolean })
-], LoomiTimeline.prototype, "stacked", void 0);
+], LoomiTimelineItem.prototype, "stacked", void 0);
 __decorate([
     property()
-], LoomiTimeline.prototype, "anchor", void 0);
+], LoomiTimelineItem.prototype, "anchor", void 0);
 __decorate([
     property()
-], LoomiTimeline.prototype, "icon", void 0);
+], LoomiTimelineItem.prototype, "icon", void 0);
 __decorate([
     property()
-], LoomiTimeline.prototype, "avatar", void 0);
+], LoomiTimelineItem.prototype, "avatar", void 0);
 __decorate([
-    property({ type: Boolean, reflect: true })
-], LoomiTimeline.prototype, "last", void 0);
+    property({ reflect: true })
+], LoomiTimelineItem.prototype, "position", void 0);
 __decorate([
     property()
-], LoomiTimeline.prototype, "color", void 0);
-LoomiTimeline = __decorate([
-    customElement("loomi-timeline")
-], LoomiTimeline);
-export { LoomiTimeline };
+], LoomiTimelineItem.prototype, "color", void 0);
+LoomiTimelineItem = __decorate([
+    customElement("loomi-timeline-item")
+], LoomiTimelineItem);
+export { LoomiTimelineItem };
 /**
- * `<loomi-timelines>` — wraps `<loomi-timeline>` items and shares attributes with them.
- * @slot - `<loomi-timeline>` children.
+ * `<loomi-timeline>` — wraps `<loomi-timeline-item>` items and shares attributes with them.
+ * @slot - `<loomi-timeline-item>` children.
  */
-let LoomiTimelines = class LoomiTimelines extends LoomiElement {
+let LoomiTimeline = class LoomiTimeline extends LoomiElement {
     constructor() {
         super(...arguments);
         this.stacked = false;
         this.completed = false;
         this.anchor = "small";
         this.icon = "";
-        this.position = "center";
+        this.position = "left";
         this.color = "primary";
         this.sync = () => {
-            const items = Array.from(this.querySelectorAll("loomi-timeline"));
-            items.forEach((item, i) => {
+            const items = Array.from(this.querySelectorAll("loomi-timeline-item"));
+            items.forEach((item) => {
                 if (this.stacked)
                     item.stacked = true;
                 if (this.completed)
@@ -114,10 +118,10 @@ let LoomiTimelines = class LoomiTimelines extends LoomiElement {
                     item.anchor = "big";
                 if (this.icon && !item.icon)
                     item.icon = this.icon;
+                if (this.position !== "left")
+                    item.position = this.position;
                 if (this.color && item.color === "primary")
                     item.color = this.color;
-                if (i === items.length - 1)
-                    item.last = true;
             });
         };
     }
@@ -126,29 +130,29 @@ let LoomiTimelines = class LoomiTimelines extends LoomiElement {
         this.sync();
     }
     render() {
-        return html `<div class="loomi-timelines ${this.position}"><slot @slotchange=${this.sync}></slot></div>`;
+        return html `<div class="loomi-timeline position-${this.position}"><slot @slotchange=${this.sync}></slot></div>`;
     }
 };
 __decorate([
     property({ type: Boolean })
-], LoomiTimelines.prototype, "stacked", void 0);
+], LoomiTimeline.prototype, "stacked", void 0);
 __decorate([
     property({ type: Boolean })
-], LoomiTimelines.prototype, "completed", void 0);
+], LoomiTimeline.prototype, "completed", void 0);
 __decorate([
     property()
-], LoomiTimelines.prototype, "anchor", void 0);
+], LoomiTimeline.prototype, "anchor", void 0);
 __decorate([
     property()
-], LoomiTimelines.prototype, "icon", void 0);
+], LoomiTimeline.prototype, "icon", void 0);
 __decorate([
     property()
-], LoomiTimelines.prototype, "position", void 0);
+], LoomiTimeline.prototype, "position", void 0);
 __decorate([
     property()
-], LoomiTimelines.prototype, "color", void 0);
-LoomiTimelines = __decorate([
-    customElement("loomi-timelines")
-], LoomiTimelines);
-export { LoomiTimelines };
+], LoomiTimeline.prototype, "color", void 0);
+LoomiTimeline = __decorate([
+    customElement("loomi-timeline")
+], LoomiTimeline);
+export { LoomiTimeline };
 //# sourceMappingURL=loomi-timeline.js.map

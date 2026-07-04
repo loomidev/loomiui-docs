@@ -27,6 +27,7 @@ let LoomiPin = class LoomiPin extends LoomiElement {
         this.label = "";
         this.totalDigits = 4;
         this.size = "small";
+        this.variant = "default";
         this.separator = false;
         this.hideDigits = false;
         this.mask = false;
@@ -114,7 +115,7 @@ let LoomiPin = class LoomiPin extends LoomiElement {
         const value = this.digits[i] ?? "";
         return html `<span class="loomi-box-wrap">
       <input
-        class="loomi-box ${this.masked && value ? "is-masked" : ""}"
+        class="loomi-box variant-${this.variant} ${this.masked && value ? "is-masked" : ""}"
         type="text"
         inputmode="numeric"
         maxlength="1"
@@ -196,6 +197,9 @@ __decorate([
 __decorate([
     property()
 ], LoomiPin.prototype, "size", void 0);
+__decorate([
+    property()
+], LoomiPin.prototype, "variant", void 0);
 __decorate([
     property({ type: Boolean, reflect: true })
 ], LoomiPin.prototype, "separator", void 0);

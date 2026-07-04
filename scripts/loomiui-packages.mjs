@@ -12,13 +12,14 @@ export const CATEGORY = {
     "input", "textarea", "select", "countries", "checkbox", "radio", "toggle", "number", "slider",
     "checkcards", "datepicker", "timepicker", "timezonepicker", "colorpicker", "filepicker",
     "creditcard", "text-editor", "tag-input", "emoji-picker", "password", "pin",
-    "date-range-picker", "filter-builder",
+    "date-range-picker", "filter-builder", "autocomplete",
   ],
   content: [
     "card", "avatar", "accordion", "tag", "tooltip", "popover", "empty-state", "statistic",
     "rating", "timeline", "progress", "listview", "contact-card", "centered-content",
     "sortable", "processing", "horizontal-line-graph", "chart", "drawer", "copy-to-clipboard",
     "divider", "qrcode", "timer", "data-grid", "calendar", "chat", "resizable",
+    "progress-steps", "video",
   ],
   navigation: ["tab", "pagination", "dropmenu", "theme-switcher", "context-menu", "command-palette"],
 };

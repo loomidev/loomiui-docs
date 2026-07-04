@@ -62,6 +62,7 @@ let LoomiInput = class LoomiInput extends LoomiElement {
         this.min = "";
         this.max = "";
         this.size = "medium";
+        this.variant = "default";
         this.prefix = "";
         this.suffix = "";
         this.prefixOptions = "";
@@ -346,7 +347,7 @@ let LoomiInput = class LoomiInput extends LoomiElement {
         const placeholderAttr = hasLabel && !this.showPlaceholderAlways ? " " : this.placeholder || " ";
         const showError = this.invalid && this.showErrorInline && this.errorMessage;
         return html `
-      <div class="loomi-field size-${this.size} ${forceFloat ? "force-float" : ""} ${this.showFocusRing ? "" : "no-focus-ring"}" part="field">
+      <div class="loomi-field size-${this.size} variant-${this.variant} ${forceFloat ? "force-float" : ""} ${this.showFocusRing ? "" : "no-focus-ring"}" part="field">
         ${hasLabel && hasPrefix
             ? html `<label class="loomi-label">${this.label}${this.required ? html `<span class="loomi-req">*</span>` : nothing}</label>`
             : nothing}
@@ -427,6 +428,9 @@ __decorate([
 __decorate([
     property()
 ], LoomiInput.prototype, "size", void 0);
+__decorate([
+    property()
+], LoomiInput.prototype, "variant", void 0);
 __decorate([
     property()
 ], LoomiInput.prototype, "prefix", void 0);

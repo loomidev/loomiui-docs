@@ -1,2 +1,2 @@
-export { LoomiTimeline, LoomiTimelines } from "./loomi-timeline.js";
+export { LoomiTimeline, LoomiTimelineItem } from "./loomi-timeline.js";
 //# sourceMappingURL=index.js.map

@@ -31,9 +31,9 @@ const booleanAttribute = {
 let LoomiNotification = class LoomiNotification extends LoomiElement {
     constructor() {
         super(...arguments);
-        this.position = "top-right";
+        this.placement = "top-right";
         this.locale = "";
-        /** Spans the full viewport width, anchored to the top or bottom edge from `position`. */
+        /** Spans the full viewport width, anchored to the top or bottom edge from `placement`. */
         this.fullWidth = false;
         this.toasts = [];
         this.timers = new Map();
@@ -83,7 +83,7 @@ let LoomiNotification = class LoomiNotification extends LoomiElement {
         this.dismiss(id);
     }
     render() {
-        return html `<div class="loomi-stack pos-${this.position} ${this.fullWidth ? "full-width" : ""}">
+        return html `<div class="loomi-stack placement-${this.placement} ${this.fullWidth ? "full-width" : ""}">
       ${this.toasts.map((t) => {
             const meta = TYPE[t.type];
             return html `<div class="loomi-toast" role="status" style=${accentVars(meta.color)}>
@@ -102,7 +102,7 @@ let LoomiNotification = class LoomiNotification extends LoomiElement {
 };
 __decorate([
     property()
-], LoomiNotification.prototype, "position", void 0);
+], LoomiNotification.prototype, "placement", void 0);
 __decorate([
     property()
 ], LoomiNotification.prototype, "locale", void 0);

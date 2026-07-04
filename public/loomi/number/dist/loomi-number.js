@@ -32,6 +32,7 @@ let LoomiNumber = class LoomiNumber extends LoomiElement {
         this.max = 100;
         this.step = 1;
         this.size = "medium";
+        this.variant = "default";
         this.transparentIcons = true;
         this.withDots = true;
         this.required = false;
@@ -129,7 +130,7 @@ let LoomiNumber = class LoomiNumber extends LoomiElement {
         const hasLabel = !!this.label;
         const placeholderAttr = hasLabel ? " " : nothing;
         return html `
-      <div class="loomi-field size-${this.size}" part="field">
+      <div class="loomi-field size-${this.size} variant-${this.variant}" part="field">
         ${this.renderStep(-1)}
         <span class="loomi-inputwrap">
           <input
@@ -184,6 +185,9 @@ __decorate([
 __decorate([
     property()
 ], LoomiNumber.prototype, "size", void 0);
+__decorate([
+    property()
+], LoomiNumber.prototype, "variant", void 0);
 __decorate([
     property({ type: Boolean, attribute: "transparent-icons" })
 ], LoomiNumber.prototype, "transparentIcons", void 0);

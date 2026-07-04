@@ -56,6 +56,7 @@ const PREVIEWS: Record<string, string> = {
   "emoji-picker": `<loomi-emoji-picker label="Reaction" selected-value="😎" size="small"></loomi-emoji-picker>`,
   password: `<loomi-password label="Password" value="Loomi2026!" size="small" strength="Aa1#"></loomi-password>`,
   pin: `<loomi-pin total-digits="4" size="small" style="transform:scale(.9)"></loomi-pin>`,
+  autocomplete: `<loomi-autocomplete placeholder="Search teammates" size="small"></loomi-autocomplete>`,
 
   // Feedback
   alert: `<loomi-alert type="success" class="w-full text-xs">Success! Your changes were saved.</loomi-alert>`,
@@ -64,6 +65,7 @@ const PREVIEWS: Record<string, string> = {
   spinner: `<loomi-spinner></loomi-spinner>`,
   progress: `<loomi-progress-bar percentage="60" class="w-full"></loomi-progress-bar>`,
   processing: `<div style="transform:scale(.82)"><loomi-processing state="processing" title="Uploading…"></loomi-processing></div>`,
+  "progress-steps": `<div style="transform:scale(.62);transform-origin:center;width:167%"><loomi-progress-steps current="2" style="display:block"><loomi-progress-step label="Account"></loomi-progress-step><loomi-progress-step label="Billing"></loomi-progress-step><loomi-progress-step label="Confirm"></loomi-progress-step></loomi-progress-steps></div>`,
 
   // Navigation
   tab: `<loomi-tabs class="w-full"><loomi-tab label="Tab 1" active></loomi-tab><loomi-tab label="Tab 2"></loomi-tab></loomi-tabs>`,
@@ -90,6 +92,7 @@ const PREVIEWS: Record<string, string> = {
   "horizontal-line-graph": `<loomi-horizontal-line-graph data='[{"label":"Direct","value":45,"color":"primary"},{"label":"Search","value":30,"color":"success"}]' style="width:100%;display:block"></loomi-horizontal-line-graph>`,
   "copy-to-clipboard": `<loomi-copy-to-clipboard>INV-2048</loomi-copy-to-clipboard>`,
   timer: `<loomi-timer duration="90" label="Sprint" style="font-size:14px"></loomi-timer>`,
+  chat: `<div style="height:5.5rem;width:100%;overflow:hidden;display:flex;flex-direction:column;justify-content:center;gap:.3rem;padding:0 .5rem;transform:scale(.9)"><loomi-chat-message text="Can we ship this today?" sender="Sara" sender-id="sara" bubble-color="success" show-avatar></loomi-chat-message><loomi-chat-message text="Yes — pushing now." sender="You" sender-id="you" bubble-color="primary" outgoing show-avatar></loomi-chat-message></div>`,
 
   // Layout
   button: `<loomi-button color="primary">Button</loomi-button>`,
@@ -99,12 +102,14 @@ const PREVIEWS: Record<string, string> = {
   "centered-content": `<loomi-centered-content min-height="84px" style="display:block"><div style="font-size:.72rem;font-weight:600;text-align:center">Welcome back</div></loomi-centered-content>`,
   sortable: `<loomi-sortable items='[{"id":"a","label":"Tomatoes"},{"id":"b","label":"Lettuce"}]'></loomi-sortable>`,
   divider: `<loomi-divider label="Today" style="display:block;width:100%"></loomi-divider>`,
+  resizable: `<loomi-resizable-panel-group style="height:5rem;width:100%;border:1px solid var(--loomi-surface-border,#e5e7eb);border-radius:0.5rem"><loomi-resizable-panel default-size="50%"><div style="display:flex;height:100%;align-items:center;justify-content:center;font-size:.72rem">One</div></loomi-resizable-panel><loomi-resizable-handle with-handle></loomi-resizable-handle><loomi-resizable-panel default-size="50%"><div style="display:flex;height:100%;align-items:center;justify-content:center;font-size:.72rem">Two</div></loomi-resizable-panel></loomi-resizable-panel-group>`,
 
   // Media
   icon: `<div style="display:flex;gap:.6rem"><loomi-icon name="bell-alert" style="width:1.4rem;height:1.4rem"></loomi-icon><loomi-icon name="check-circle" style="width:1.4rem;height:1.4rem"></loomi-icon><loomi-icon name="trash" style="width:1.4rem;height:1.4rem"></loomi-icon></div>`,
   avatar: `<loomi-avatar label="OR" bg-color="primary" size="regular"></loomi-avatar>`,
   "empty-state": `<div style="transform:scale(.55)"><loomi-empty-state message="No documents yet."></loomi-empty-state></div>`,
   qrcode: `<loomi-qrcode url="https://loomiui.com" size="82" corner-borders gradient></loomi-qrcode>`,
+  video: `<div style="height:5.5rem;width:100%;overflow:hidden;border-radius:.5rem"><loomi-video controls style="display:block;width:100%;height:100%"></loomi-video></div>`,
 
   "data-grid": `<div style="height:5.5rem;width:100%;overflow:hidden"><loomi-data-grid density="compact" selectable style="display:block;width:166%;transform:scale(.6);transform-origin:top left"></loomi-data-grid></div>`,
   "command-palette": `<loomi-command-palette placeholder="Search workspace"></loomi-command-palette>`,

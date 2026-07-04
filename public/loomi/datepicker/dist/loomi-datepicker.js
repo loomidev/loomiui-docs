@@ -45,6 +45,7 @@ let LoomiDatepicker = class LoomiDatepicker extends LoomiElement {
         this.required = false;
         this.weekStarts = "sunday";
         this.size = "regular";
+        this.variant = "default";
         this.start = null;
         this.end = null;
         this.view = new Date();
@@ -230,7 +231,7 @@ let LoomiDatepicker = class LoomiDatepicker extends LoomiElement {
         }
         return html `<div class="loomi-dp ${this.open ? "open" : ""}">
       ${this.label ? html `<span class="loomi-label">${this.label}${this.required ? html `<span class="loomi-req"> *</span>` : nothing}</span>` : nothing}
-      <div class="loomi-field size-${this.size}" @click=${() => this.toggle()}>
+      <div class="loomi-field size-${this.size} variant-${this.variant}" @click=${() => this.toggle()}>
         <span class="loomi-text ${this.value ? "" : "placeholder"}">${this.value || placeholder}${!this.value && this.required ? html `<span class="loomi-req"> *</span>` : nothing}</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">${CAL}</svg>
       </div>
@@ -279,6 +280,9 @@ __decorate([
 __decorate([
     property()
 ], LoomiDatepicker.prototype, "size", void 0);
+__decorate([
+    property()
+], LoomiDatepicker.prototype, "variant", void 0);
 __decorate([
     state()
 ], LoomiDatepicker.prototype, "start", void 0);
