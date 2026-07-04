@@ -46,32 +46,24 @@ This approach lets you manage your application’s theme from a single styleshee
   and lighter shades for soft backgrounds.
 </loomi-alert>
 
-## The 14 palette colors
+## The 6 palette colors
 
-These are the built-in semantic + utility palettes available out of the box.
+These are the built-in semantic palettes available out of the box.
 You can use any of these names with the `color` attribute across components.
 For example:
 
 ```html
-<loomi-button color="indigo">Open</loomi-button>
-<loomi-tag color="orange">Draft</loomi-tag>
-<loomi-alert color="red">Action required</loomi-alert>
+<loomi-button color="secondary">Open</loomi-button>
+<loomi-tag color="warning">Draft</loomi-tag>
+<loomi-alert color="error">Action required</loomi-alert>
 ```
 
 <div class="loomi-palette-grid">
   <loomi-button color="primary" size="small">primary</loomi-button>
   <loomi-button color="secondary" size="small">secondary</loomi-button>
-  <loomi-button color="red" size="small">red</loomi-button>
-  <loomi-button color="blue" size="small">blue</loomi-button>
-  <loomi-button color="green" size="small">green</loomi-button>
-  <loomi-button color="purple" size="small">purple</loomi-button>
-  <loomi-button color="pink" size="small">pink</loomi-button>
-  <loomi-button color="orange" size="small">orange</loomi-button>
-  <loomi-button color="black" size="small">black</loomi-button>
-  <loomi-button color="cyan" size="small">cyan</loomi-button>
-  <loomi-button color="violet" size="small">violet</loomi-button>
-  <loomi-button color="indigo" size="small">indigo</loomi-button>
-  <loomi-button color="fuchsia" size="small">fuchsia</loomi-button>
+  <loomi-button color="success" size="small">success</loomi-button>
+  <loomi-button color="warning" size="small">warning</loomi-button>
+  <loomi-button color="error" size="small">error</loomi-button>
   <loomi-button color="gray" size="small">gray</loomi-button>
 </div>
 
@@ -80,10 +72,16 @@ Each palette in LoomiUI uses the same 11-step shade scale:
 
 Because the scale is consistent, token names are always predictable. Any
 combination of a supported color + one of these shade values is valid, for example:
-`--loomi-red-500`, `--loomi-cyan-700`, or `--loomi-gray-100`.
+`--loomi-success-500`, `--loomi-error-700`, or `--loomi-gray-100`.
 
-If you override tokens for one of these colors (such as `--loomi-indigo-600`),
+If you override tokens for one of these colors (such as `--loomi-secondary-600`),
 every component using that color updates automatically.
+
+This is a deliberately small, semantic set rather than a full Tailwind-style color
+grid — every color maps to a meaning (`success`, `warning`, `error`) or a brand role
+(`primary`, `secondary`), so component authors and consumers never have to guess
+which raw hue to reach for. Add more palettes by [forking the build](#forking-for-deeper-changes)
+if your product needs additional semantic colors (e.g. `info`).
 
 ### How components use shades
 
@@ -108,15 +106,15 @@ This is useful when a single UI element needs semantic meaning (for example, dan
 without changing the global theme.
 
 ```html
-<loomi-checkbox color="red" checked>Critical</loomi-checkbox>
-<loomi-checkbox color="green" checked>Resolved</loomi-checkbox>
+<loomi-checkbox color="error" checked>Critical</loomi-checkbox>
+<loomi-checkbox color="success" checked>Resolved</loomi-checkbox>
 ```
 
-The `color` value must match one of the supported LoomiUI palette names (such as `red`, `green`,
-`indigo`, or `primary`).
+The `color` value must match one of the [6 supported LoomiUI palette names](#the-6-palette-colors)
+(such as `error`, `success`, `secondary`, or `primary`).
 
 Because LoomiUI components resolve these values from CSS tokens, instance colors remain fully themeable.
-If you later override a token like `--loomi-red-600`, every component that uses `color="red"` updates
+If you later override a token like `--loomi-error-600`, every component that uses `color="error"` updates
 automatically across the app. This lets you keep component markup simple while still getting centralized control over visual styles.
 
 ## Dark mode
@@ -247,7 +245,7 @@ expressed with app-level CSS variables.
 Common examples:
 
 - Changing the default color values shipped to all consumers of your design system
-- Adding a new built-in palette color beyond the standard 14 palettes
+- Adding a new built-in palette color beyond the standard 6 palettes
 - Modifying how default tokens are generated at build time
 
 These defaults are produced from `palette.json` during the LoomiUI build process.
