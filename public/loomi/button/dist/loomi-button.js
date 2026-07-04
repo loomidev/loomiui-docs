@@ -74,7 +74,7 @@ let LoomiButton = class LoomiButton extends LoomiElement {
         this.disabled = false;
         /** Render as `button` or as an `a` (link). */
         this.tag = "button";
-        /** href used when `tag="a"`. */
+        /** href used for link rendering. If present, the component renders an anchor automatically. */
         this.href = "";
         /** Render the `<button>` as `type="submit"` so it submits a form. */
         this.canSubmit = false;
@@ -202,7 +202,7 @@ let LoomiButton = class LoomiButton extends LoomiElement {
     render() {
         const cls = this.computeClasses();
         const content = this.renderContent();
-        if (this.tag === "a") {
+        if (this.tag === "a" || this.href) {
             return html `<a
         class=${cls}
         part="button"

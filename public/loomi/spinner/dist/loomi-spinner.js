@@ -12,6 +12,7 @@ const TYPE_ALIASES = {
     simple: "simple",
     spinner: "spinner",
     dot: "dot",
+    typing: "typing",
     "line-simple": "simple",
     "line-spinner": "spinner",
     "dot-circle": "dot",
@@ -95,6 +96,8 @@ let LoomiSpinner = class LoomiSpinner extends LoomiElement {
             ></circle>`;
                 })}
         </svg>`;
+            case "typing":
+                return html `<span class="loomi-spinner-typing" aria-hidden="true"><span></span><span></span><span></span></span>`;
             case "simple":
             default:
                 return html `<svg class="loomi-spinner loomi-spinner-simple" viewBox="0 0 24 24" fill="none" aria-hidden="true">
