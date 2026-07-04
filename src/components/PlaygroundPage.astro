@@ -974,7 +974,7 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
               <h2>Component</h2>
             </div>
             <loomi-alert type="info" shade="faint" show-close-icon="false" class="playground-picker-note">
-              Only components whose props map to plain attributes are listed. Components that need imperative wiring, rich data, or composed children live in their docs pages.
+              Only components whose props map to plain attributes are listed.
             </loomi-alert>
             <loomi-select
               id="component-select"
@@ -1107,9 +1107,18 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
           .map(([key, value]) => {
             const attrValue = attributeValue(key, value);
             return attrValue ? `${key}="${escapeHtml(attrValue)}"` : key;
-          })
-          .join(" ");
-        const open = attrs ? `<${active.tag} ${attrs}>` : `<${active.tag}>`;
+          });
+        // Tag + first attribute share line one; every other attribute gets its own
+        // indented line, closing `>` trailing the last one — HTML allows whitespace
+        // between attributes in a start tag, so this parses identically to one-line
+        // markup once set via innerHTML.
+        const open =
+          attrs.length > 1
+            ? `<${active.tag} ${attrs[0]}\n${attrs
+                .slice(1)
+                .map((attr) => `  ${attr}`)
+                .join("\n")}>`
+            : `<${active.tag}${attrs.length ? ` ${attrs[0]}` : ""}>`;
         const content = "content" in values && !active.slot ? escapeHtml(values.content) : "";
         return `${open}${content}${active.slot ?? ""}</${active.tag}>`;
       }
