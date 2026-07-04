@@ -66,9 +66,16 @@ export default defineConfig({
           content: JSON.stringify(importMap),
         },
       ],
-      // Docs navigation now lives in the top bar. Keep Starlight's sidebar config
-      // intentionally empty so it does not autogenerate the old docs rail.
-      sidebar: [],
+      // Docs navigation lives in the top bar, but /components/* pages keep a left
+      // sidebar listing every component. src/starlightRouteData.ts turns `hasSidebar`
+      // off for every other route, so this config only ever renders there.
+      routeMiddleware: "./src/starlightRouteData.ts",
+      sidebar: [
+        {
+          label: "Components",
+          items: [{ autogenerate: { directory: "components" } }],
+        },
+      ],
     }),
   ],
 });

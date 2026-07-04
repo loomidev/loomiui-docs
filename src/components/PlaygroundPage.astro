@@ -227,8 +227,263 @@ const playgroundComponents = [
       { type: "boolean-attr", key: "show-labels", label: "Show labels" },
     ],
   },
+  {
+    key: "select",
+    title: "Select",
+    tag: "loomi-select",
+    packageName: "select",
+    description: "Custom select with data-driven options, search, sizes, and states.",
+    defaults: {
+      label: "Country",
+      placeholder: "",
+      data: '[{"label":"Ghana","value":"gh"},{"label":"Nigeria","value":"ng"},{"label":"Kenya","value":"ke"}]',
+      "selected-value": "gh",
+      size: "medium",
+      searchable: false,
+      disabled: false,
+      readonly: false,
+    },
+    controls: [
+      { type: "text", key: "label", label: "Label" },
+      { type: "text", key: "placeholder", label: "Placeholder" },
+      { type: "text", key: "data", label: "Data (JSON)" },
+      { type: "select", key: "size", label: "Size", options: ["small", "regular", "medium", "big"] },
+      { type: "boolean-attr", key: "searchable", label: "Searchable" },
+      { type: "boolean-attr", key: "disabled", label: "Disabled" },
+      { type: "boolean-attr", key: "readonly", label: "Readonly" },
+    ],
+  },
+  {
+    key: "datepicker",
+    title: "Datepicker",
+    tag: "loomi-datepicker",
+    packageName: "datepicker",
+    description: "Date picker with popup or inline styles, formats, and range mode.",
+    defaults: {
+      label: "Start date",
+      "dp-style": "popup",
+      format: "yyyy-mm-dd",
+      "week-starts": "sunday",
+      range: false,
+      size: "regular",
+      required: false,
+    },
+    controls: [
+      { type: "text", key: "label", label: "Label" },
+      { type: "select", key: "dp-style", label: "Style", options: ["popup", "inline"] },
+      { type: "select", key: "format", label: "Format", options: ["yyyy-mm-dd", "dd-mm-yyyy", "mm-dd-yyyy", "yyyy/mm/dd", "dd/mm/yyyy", "mm/dd/yyyy", "D d M, Y"] },
+      { type: "select", key: "week-starts", label: "Week starts", options: ["sunday", "monday"] },
+      { type: "select", key: "size", label: "Size", options: ["tiny", "small", "regular", "medium", "big"] },
+      { type: "boolean-attr", key: "range", label: "Range" },
+      { type: "boolean-attr", key: "required", label: "Required" },
+    ],
+  },
+  {
+    key: "password",
+    title: "Password",
+    tag: "loomi-password",
+    packageName: "password",
+    description: "Password field with label, placeholder, sizes, and states.",
+    defaults: {
+      label: "Password",
+      placeholder: "Enter a password",
+      value: "",
+      size: "medium",
+      required: false,
+      disabled: false,
+    },
+    controls: [
+      { type: "text", key: "label", label: "Label" },
+      { type: "text", key: "placeholder", label: "Placeholder" },
+      { type: "text", key: "value", label: "Value" },
+      { type: "select", key: "size", label: "Size", options: ["tiny", "small", "regular", "medium", "big"] },
+      { type: "boolean-attr", key: "required", label: "Required" },
+      { type: "boolean-attr", key: "disabled", label: "Disabled" },
+    ],
+  },
+  {
+    key: "number",
+    title: "Number",
+    tag: "loomi-number",
+    packageName: "number",
+    description: "Numeric stepper input with min, max, step, and size props.",
+    defaults: { label: "Quantity", value: 5, min: 0, max: 100, step: 1, size: "medium", disabled: false },
+    controls: [
+      { type: "text", key: "label", label: "Label" },
+      { type: "number", key: "value", label: "Value", min: 0, max: 100, step: 1 },
+      { type: "number", key: "min", label: "Min", min: 0, max: 100, step: 1 },
+      { type: "number", key: "max", label: "Max", min: 1, max: 1000, step: 1 },
+      { type: "number", key: "step", label: "Step", min: 1, max: 25, step: 1 },
+      { type: "select", key: "size", label: "Size", options: ["small", "regular", "medium", "big"] },
+      { type: "boolean-attr", key: "disabled", label: "Disabled" },
+    ],
+  },
+  {
+    key: "pin",
+    title: "Pin",
+    tag: "loomi-pin",
+    packageName: "pin",
+    description: "Verification code input with digit count, masking, and separator.",
+    defaults: { "total-digits": 4, size: "small", separator: false, "hide-digits": false },
+    controls: [
+      { type: "number", key: "total-digits", label: "Digits", min: 3, max: 8, step: 1 },
+      { type: "select", key: "size", label: "Size", options: ["small", "big"] },
+      { type: "boolean-attr", key: "separator", label: "Separator" },
+      { type: "boolean-attr", key: "hide-digits", label: "Hide digits" },
+    ],
+  },
+  {
+    key: "radio",
+    title: "Radio",
+    tag: "loomi-radio",
+    packageName: "radio",
+    description: "Radio button with label, checked state, and color props.",
+    defaults: { label: "Email me a copy", name: "playground-radio", value: "yes", checked: true, color: "primary", disabled: false },
+    controls: [
+      { type: "text", key: "label", label: "Label" },
+      { type: "select", key: "color", label: "Color", options: ["primary", "success", "warning", "error", "secondary"] },
+      { type: "boolean-attr", key: "checked", label: "Checked" },
+      { type: "boolean-attr", key: "disabled", label: "Disabled" },
+    ],
+  },
+  {
+    key: "tag-input",
+    title: "Tag Input",
+    tag: "loomi-tag-input",
+    packageName: "tag-input",
+    description: "Tag entry field with modes, chip colors, shades, and sizes.",
+    defaults: {
+      label: "Skills",
+      placeholder: "Type and press Enter",
+      value: "design,engineering",
+      mode: "inside",
+      size: "medium",
+      color: "primary",
+      shade: "light",
+      disabled: false,
+    },
+    controls: [
+      { type: "text", key: "label", label: "Label" },
+      { type: "text", key: "placeholder", label: "Placeholder" },
+      { type: "text", key: "value", label: "Tags (comma separated)" },
+      { type: "select", key: "mode", label: "Mode", options: ["inside", "below"] },
+      { type: "select", key: "size", label: "Size", options: ["tiny", "small", "regular", "medium", "big"] },
+      { type: "select", key: "color", label: "Color", options: ["primary", "success", "warning", "error", "secondary"] },
+      { type: "select", key: "shade", label: "Shade", options: ["light", "faint", "dark"] },
+      { type: "boolean-attr", key: "disabled", label: "Disabled" },
+    ],
+  },
+  {
+    key: "spinner",
+    title: "Spinner",
+    tag: "loomi-spinner",
+    packageName: "spinner",
+    description: "Loading indicator with type, size, color, and label props.",
+    defaults: { type: "spinner", size: "medium", color: "primary", label: "Loading..." },
+    controls: [
+      { type: "select", key: "type", label: "Type", options: ["simple", "spinner", "dot"] },
+      { type: "select", key: "size", label: "Size", options: ["small", "medium", "big", "xl", "omg"] },
+      { type: "select", key: "color", label: "Color", options: ["gray", "primary", "success", "warning", "error"] },
+      { type: "text", key: "label", label: "Label" },
+    ],
+  },
+  {
+    key: "divider",
+    title: "Divider",
+    tag: "loomi-divider",
+    packageName: "divider",
+    description: "Content divider with label, alignment, variant, and color props.",
+    defaults: { label: "OR", orientation: "horizontal", align: "center", variant: "solid", color: "gray", thickness: "1px" },
+    controls: [
+      { type: "text", key: "label", label: "Label" },
+      { type: "select", key: "orientation", label: "Orientation", options: ["horizontal", "vertical"] },
+      { type: "select", key: "align", label: "Align", options: ["start", "center", "end"] },
+      { type: "select", key: "variant", label: "Variant", options: ["solid", "dashed", "dotted"] },
+      { type: "select", key: "color", label: "Color", options: ["gray", "primary", "success", "warning", "error"] },
+      { type: "text", key: "thickness", label: "Thickness" },
+    ],
+  },
+  {
+    key: "empty-state",
+    title: "Empty State",
+    tag: "loomi-empty-state",
+    packageName: "empty-state",
+    description: "Empty state with heading, message, action button, and image size.",
+    defaults: {
+      heading: "No projects yet",
+      message: "Create your first project to get started.",
+      "button-label": "New project",
+      "image-size": "medium",
+    },
+    controls: [
+      { type: "text", key: "heading", label: "Heading" },
+      { type: "text", key: "message", label: "Message" },
+      { type: "text", key: "button-label", label: "Button label" },
+      { type: "select", key: "image-size", label: "Image size", options: ["small", "medium", "large", "xl"] },
+    ],
+  },
+  {
+    key: "statistic",
+    title: "Statistic",
+    tag: "loomi-statistic",
+    packageName: "statistic",
+    description: "Stat card with label, value, currency, and layout props.",
+    defaults: {
+      label: "Monthly revenue",
+      number: "48,250",
+      currency: "$",
+      "currency-position": "left",
+      "label-position": "top",
+      radius: "small",
+      "show-spinner": false,
+    },
+    controls: [
+      { type: "text", key: "label", label: "Label" },
+      { type: "text", key: "number", label: "Number" },
+      { type: "text", key: "currency", label: "Currency" },
+      { type: "select", key: "currency-position", label: "Currency position", options: ["left", "right"] },
+      { type: "select", key: "label-position", label: "Label position", options: ["top", "bottom"] },
+      { type: "select", key: "radius", label: "Radius", options: ["none", "small", "medium", "large", "xl"] },
+      { type: "boolean-attr", key: "show-spinner", label: "Show spinner" },
+    ],
+  },
+  {
+    key: "pagination",
+    title: "Pagination",
+    tag: "loomi-pagination",
+    packageName: "pagination",
+    description: "Pagination with total, page size, style, and color props.",
+    defaults: { total: 120, "page-size": 10, page: 1, "pagination-style": "numbers", color: "primary", "show-total": true },
+    controls: [
+      { type: "number", key: "total", label: "Total items", min: 0, max: 1000, step: 10 },
+      { type: "number", key: "page-size", label: "Page size", min: 1, max: 100, step: 1 },
+      { type: "number", key: "page", label: "Page", min: 1, max: 100, step: 1 },
+      { type: "select", key: "pagination-style", label: "Style", options: ["arrows", "numbers", "dropdown"] },
+      { type: "select", key: "color", label: "Color", options: ["primary", "success", "warning", "error", "secondary"] },
+      { type: "boolean-string", key: "show-total", label: "Show total" },
+    ],
+  },
+  {
+    key: "tooltip",
+    title: "Tooltip",
+    tag: "loomi-tooltip",
+    packageName: "tooltip",
+    description: "Tooltip with content, position, and shade props around a trigger.",
+    defaults: { content: "Tooltips add helpful context.", position: "top", shade: "dark" },
+    // Static anchor the tooltip wraps in the preview; `content` stays an attribute
+    // here (the slot occupies the element body), unlike text-content components.
+    slot: '<loomi-button size="small">Hover me</loomi-button>',
+    controls: [
+      { type: "text", key: "content", label: "Content" },
+      { type: "select", key: "position", label: "Position", options: ["top", "bottom", "left", "right"] },
+      { type: "select", key: "shade", label: "Shade", options: ["dark", "light"] },
+    ],
+  },
 ];
 
+playgroundComponents.sort((a, b) => a.title.localeCompare(b.title));
+
+const componentOptions = playgroundComponents.map((component) => ({ label: component.title, value: component.key }));
 const packagesToImport = [...new Set(playgroundComponents.map((component) => component.packageName))];
 ---
 
@@ -255,9 +510,13 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
         </div>
         <label class="playground-select-label">
           <span>Component</span>
-          <select id="component-select" class="playground-select" aria-label="Select component">
-            {playgroundComponents.map((component) => <option value={component.key}>{component.title}</option>)}
-          </select>
+          <loomi-select
+            id="component-select"
+            searchable
+            placeholder="Select a component"
+            selected-value={playgroundComponents[0].key}
+            data={JSON.stringify(componentOptions)}
+          ></loomi-select>
         </label>
       </div>
 
@@ -265,10 +524,10 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
         <div class="playground-preview-panel">
           <div class="playground-panel-top">
             <div>
-              <h2 id="component-title">Button</h2>
-              <p id="component-description">Action button with color, size, outline, radius, and icon props.</p>
+              <h2 id="component-title">{playgroundComponents[0].title}</h2>
+              <p id="component-description">{playgroundComponents[0].description}</p>
             </div>
-            <a id="docs-link" href="/components/button/" class="playground-docs-link">
+            <a id="docs-link" href={`/components/${playgroundComponents[0].key}/`} class="playground-docs-link">
               Docs
               <loomi-icon name="arrow-right" style="width:0.9rem;height:0.9rem"></loomi-icon>
             </a>
@@ -340,12 +599,19 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
         packageName: string;
         description: string;
         defaults: Record<string, string | number | boolean>;
+        slot?: string;
         controls: Control[];
       };
+      type SelectDetail = { value: string; label: string; values: string[] };
+
+      // loomi-select options can't carry an empty-string value (an empty
+      // `selected-value` reads as "nothing selected"), so "Default" options travel
+      // under this sentinel and are translated back to "" before rendering markup.
+      const DEFAULT_OPTION = "__default__";
 
       const components = JSON.parse(document.getElementById("playground-data")!.textContent || "[]") as PlaygroundComponent[];
       const byKey = new Map(components.map((component) => [component.key, component]));
-      const select = document.getElementById("component-select") as HTMLSelectElement;
+      const select = document.getElementById("component-select") as HTMLElement;
       const titleEl = document.getElementById("component-title") as HTMLElement;
       const descriptionEl = document.getElementById("component-description") as HTMLElement;
       const docsLink = document.getElementById("docs-link") as HTMLAnchorElement;
@@ -372,7 +638,9 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
 
       function shouldRenderAttribute(key: string, value: string | number | boolean) {
         const control = controlFor(key);
-        if (key === "content") return false;
+        // `content` is the element's text content — except for slotted components
+        // (e.g. tooltip), where the slot fills the body and `content` is a real attribute.
+        if (key === "content" && !active.slot) return false;
         if (typeof value === "string" && value.length === 0) return false;
         if (control?.type === "boolean-attr") return value === true;
         return true;
@@ -393,8 +661,8 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
           })
           .join(" ");
         const open = attrs ? `<${active.tag} ${attrs}>` : `<${active.tag}>`;
-        const content = "content" in values ? escapeHtml(values.content) : "";
-        return `${open}${content}</${active.tag}>`;
+        const content = "content" in values && !active.slot ? escapeHtml(values.content) : "";
+        return `${open}${content}${active.slot ?? ""}</${active.tag}>`;
       }
 
       function renderPreview() {
@@ -426,16 +694,17 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
         wrapper.append(text);
 
         if (control.type === "select") {
-          const input = document.createElement("select");
-          for (const option of control.options ?? []) {
-            const optionEl = document.createElement("option");
-            optionEl.value = option;
-            optionEl.textContent = option || "Default";
-            input.append(optionEl);
-          }
-          input.value = String(values[control.key] ?? "");
-          input.addEventListener("change", () => {
-            values[control.key] = input.value;
+          const input = document.createElement("loomi-select");
+          const options = (control.options ?? []).map((option) => ({
+            label: option || "Default",
+            value: option || DEFAULT_OPTION,
+          }));
+          input.setAttribute("size", "small");
+          input.setAttribute("data", JSON.stringify(options));
+          input.setAttribute("selected-value", String(values[control.key] ?? "") || DEFAULT_OPTION);
+          input.addEventListener("select", (event) => {
+            const picked = (event as CustomEvent<SelectDetail>).detail.value;
+            values[control.key] = picked === DEFAULT_OPTION ? "" : picked;
             renderPreview();
           });
           wrapper.append(input);
@@ -493,7 +762,7 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
         renderPreview();
       }
 
-      select.addEventListener("change", () => activate(select.value));
+      select.addEventListener("select", (event) => activate((event as CustomEvent<SelectDetail>).detail.value));
       resetButton.addEventListener("click", () => activate(active.key));
       copyButton.addEventListener("click", async () => {
         await navigator.clipboard?.writeText(codeEl.textContent ?? "");
@@ -506,7 +775,10 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
   </body>
 </html>
 
-<style>
+<!-- is:global: the prop controls (and the preview's component markup) are created by
+     the client script at runtime, so they never receive Astro's scope class — scoped
+     selectors would silently miss them. Every selector is .playground-* prefixed. -->
+<style is:global>
   .playground-select-label,
   .playground-field {
     display: grid;
@@ -519,9 +791,7 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
   .dark .playground-field {
     color: rgb(203 213 225);
   }
-  .playground-select,
-  .playground-field input,
-  .playground-field select {
+  .playground-field input {
     width: 100%;
     border-radius: 0.6rem;
     border: 1px solid rgb(226 232 240);
@@ -531,12 +801,17 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
     font: inherit;
     font-weight: 500;
   }
-  .dark .playground-select,
-  .dark .playground-field input,
-  .dark .playground-field select {
+  .dark .playground-field input {
     border-color: rgb(51 65 85);
     background: rgb(15 23 42 / 0.72);
     color: white;
+  }
+  /* loomi-select ships a 1rem bottom margin for form flow; the picker and control
+     grids space themselves, so strip it there. */
+  .playground-select-label loomi-select,
+  .playground-field loomi-select {
+    margin-bottom: 0;
+    width: 100%;
   }
   .playground-shell {
     display: grid;
@@ -649,6 +924,15 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
   .dark .playground-preview {
     border-color: rgb(51 65 85);
     background: rgb(15 23 42);
+  }
+  /* Block-level form components collapse to zero width under the preview's centered
+     flex layout, so stretch them; a vertical divider likewise needs a height to show. */
+  .playground-preview :is(loomi-select, loomi-datepicker, loomi-tag-input, loomi-divider, loomi-pagination, loomi-input, loomi-textarea, loomi-password, loomi-number, loomi-slider, loomi-progress-bar) {
+    width: 100%;
+  }
+  .playground-preview loomi-divider[orientation="vertical"] {
+    width: auto;
+    min-height: 8rem;
   }
   .playground-code-block {
     border-top: 1px solid rgb(226 232 240);

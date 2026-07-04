@@ -143,8 +143,18 @@ starlight-toc nav ul li a{
   --loomi-shell-extra-gutter: max(0rem, calc((100vw - var(--loomi-shell-max-width)) / 2));
 }
 @media (min-width: 50em) {
+  /* Sidebar pages (/components/*, per src/starlightRouteData.ts) inset the content by
+     the sidebar width plus the centering gutter; sidebar-free docs pages only need the
+     gutter itself. The sidebar pane shifts by the same gutter so it hugs the centered
+     shell instead of the viewport edge. */
   [data-has-sidebar] {
+    --sl-content-inline-start: calc(var(--sl-sidebar-width) + var(--loomi-shell-extra-gutter)) !important;
+  }
+  html:not([data-has-sidebar]) {
     --sl-content-inline-start: var(--loomi-shell-extra-gutter) !important;
+  }
+  .sidebar-pane {
+    inset-inline-start: var(--loomi-shell-extra-gutter) !important;
   }
   .main-frame {
     padding-inline-end: var(--loomi-shell-extra-gutter) !important;
