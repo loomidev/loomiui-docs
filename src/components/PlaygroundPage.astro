@@ -7,22 +7,35 @@ const importMap = buildImportMap();
 const title = "Playground - LoomiUI";
 const description = "Select LoomiUI components and adjust common props in a live playground.";
 
+// Every entry is attribute-driven: props map 1:1 to attributes so the generated markup
+// stays copy-pasteable. Components that need imperative wiring (modal, drawer,
+// notification, command palette), rich data structures (table, chart, calendar,
+// timeline), or slot-composed children (accordion, tabs, button-group) are deliberately
+// excluded. Boolean props that default to `true` via plain Lit `type: Boolean` (e.g.
+// avatar `show-ring`, button `show-focus-ring`) are also skipped — absence keeps the
+// default and presence is also true, so an attribute can never turn them off; only
+// booleans with a string converter (playground type "boolean-string") support "false".
 const playgroundComponents = [
   {
     key: "button",
     title: "Button",
     tag: "loomi-button",
     packageName: "button",
-    description: "Action button with color, size, outline, radius, and icon props.",
+    description: "Action button with color, size, outline, radius, icon, and spinner props.",
     defaults: {
       content: "Save changes",
       type: "primary",
       color: "",
       size: "regular",
       radius: "medium",
-      outline: false,
-      uppercase: false,
+      "border-width": "",
       icon: "",
+      outline: false,
+      "icon-right": false,
+      uppercase: false,
+      "has-spinner": false,
+      "show-spinner": false,
+      disabled: false,
     },
     controls: [
       { type: "text", key: "content", label: "Label" },
@@ -30,9 +43,14 @@ const playgroundComponents = [
       { type: "select", key: "color", label: "Color", options: ["", "primary", "secondary", "success", "warning", "error"] },
       { type: "select", key: "size", label: "Size", options: ["tiny", "small", "regular", "medium", "big"] },
       { type: "select", key: "radius", label: "Radius", options: ["none", "small", "medium", "full"] },
+      { type: "select", key: "border-width", label: "Border width", options: ["", "2", "4", "8"] },
       { type: "select", key: "icon", label: "Icon", options: ["", "check", "plus", "trash", "arrow-right", "bell-alert"] },
       { type: "boolean-attr", key: "outline", label: "Outline" },
+      { type: "boolean-attr", key: "icon-right", label: "Icon right" },
       { type: "boolean-attr", key: "uppercase", label: "Uppercase" },
+      { type: "boolean-attr", key: "has-spinner", label: "Has spinner" },
+      { type: "boolean-attr", key: "show-spinner", label: "Show spinner" },
+      { type: "boolean-attr", key: "disabled", label: "Disabled" },
     ],
   },
   {
@@ -49,7 +67,11 @@ const playgroundComponents = [
       size: "regular",
       prefix: "",
       suffix: "",
+      "prefix-icon": "",
+      "suffix-icon": "",
       clearable: true,
+      required: false,
+      readonly: false,
       disabled: false,
     },
     controls: [
@@ -60,7 +82,11 @@ const playgroundComponents = [
       { type: "select", key: "size", label: "Size", options: ["small", "regular", "medium", "big"] },
       { type: "text", key: "prefix", label: "Prefix" },
       { type: "text", key: "suffix", label: "Suffix" },
+      { type: "select", key: "prefix-icon", label: "Prefix icon", options: ["", "magnifying-glass", "envelope", "user", "key"] },
+      { type: "select", key: "suffix-icon", label: "Suffix icon", options: ["", "magnifying-glass", "envelope", "user", "key"] },
       { type: "boolean-attr", key: "clearable", label: "Clearable" },
+      { type: "boolean-attr", key: "required", label: "Required" },
+      { type: "boolean-attr", key: "readonly", label: "Readonly" },
       { type: "boolean-attr", key: "disabled", label: "Disabled" },
     ],
   },
@@ -69,12 +95,14 @@ const playgroundComponents = [
     title: "Textarea",
     tag: "loomi-textarea",
     packageName: "textarea",
-    description: "Multi-line input with label, placeholder, rows, and disabled state.",
+    description: "Multi-line input with label, placeholder, rows, and state props.",
     defaults: {
       label: "Message",
       placeholder: "Write a short update...",
       value: "",
       rows: 4,
+      required: false,
+      readonly: false,
       disabled: false,
     },
     controls: [
@@ -82,6 +110,8 @@ const playgroundComponents = [
       { type: "text", key: "placeholder", label: "Placeholder" },
       { type: "text", key: "value", label: "Value" },
       { type: "number", key: "rows", label: "Rows", min: 2, max: 8, step: 1 },
+      { type: "boolean-attr", key: "required", label: "Required" },
+      { type: "boolean-attr", key: "readonly", label: "Readonly" },
       { type: "boolean-attr", key: "disabled", label: "Disabled" },
     ],
   },
@@ -90,15 +120,17 @@ const playgroundComponents = [
     title: "Alert",
     tag: "loomi-alert",
     packageName: "alert",
-    description: "Inline alert with type, shade, icon visibility, and close controls.",
+    description: "Inline alert with type, shade, icon or avatar, and close controls.",
     defaults: {
       content: "Your workspace was updated successfully.",
       type: "success",
       shade: "faint",
       color: "",
       icon: "",
+      avatar: "",
       "show-icon": true,
       "show-close-icon": true,
+      "show-ring": false,
     },
     controls: [
       { type: "text", key: "content", label: "Message" },
@@ -106,8 +138,10 @@ const playgroundComponents = [
       { type: "select", key: "shade", label: "Shade", options: ["faint", "dark"] },
       { type: "select", key: "color", label: "Color", options: ["", "primary", "success", "warning", "error", "transparent"] },
       { type: "select", key: "icon", label: "Icon", options: ["", "information-circle", "check-circle", "bell-alert", "key"] },
+      { type: "text", key: "avatar", label: "Avatar URL" },
       { type: "boolean-string", key: "show-icon", label: "Show icon" },
       { type: "boolean-string", key: "show-close-icon", label: "Show close" },
+      { type: "boolean-attr", key: "show-ring", label: "Avatar ring" },
     ],
   },
   {
@@ -115,10 +149,11 @@ const playgroundComponents = [
     title: "Checkbox",
     tag: "loomi-checkbox",
     packageName: "checkbox",
-    description: "Checkbox with checked and disabled states.",
-    defaults: { content: "Send weekly summary", checked: true, disabled: false },
+    description: "Checkbox with checked state, color, and disabled props.",
+    defaults: { content: "Send weekly summary", checked: true, color: "primary", disabled: false },
     controls: [
       { type: "text", key: "content", label: "Label" },
+      { type: "select", key: "color", label: "Color", options: ["primary", "success", "warning", "error", "secondary"] },
       { type: "boolean-attr", key: "checked", label: "Checked" },
       { type: "boolean-attr", key: "disabled", label: "Disabled" },
     ],
@@ -128,9 +163,13 @@ const playgroundComponents = [
     title: "Toggle",
     tag: "loomi-toggle",
     packageName: "toggle",
-    description: "Switch control with checked and disabled states.",
-    defaults: { checked: true, disabled: false },
+    description: "Switch control with label, bar thickness, color, and state props.",
+    defaults: { label: "Enable notifications", "label-position": "left", bar: "thick", color: "primary", checked: true, disabled: false },
     controls: [
+      { type: "text", key: "label", label: "Label" },
+      { type: "select", key: "label-position", label: "Label position", options: ["left", "right"] },
+      { type: "select", key: "bar", label: "Bar", options: ["thin", "thick", "thicker"] },
+      { type: "select", key: "color", label: "Color", options: ["primary", "success", "warning", "error", "secondary"] },
       { type: "boolean-attr", key: "checked", label: "Checked" },
       { type: "boolean-attr", key: "disabled", label: "Disabled" },
     ],
@@ -140,14 +179,32 @@ const playgroundComponents = [
     title: "Slider",
     tag: "loomi-slider",
     packageName: "slider",
-    description: "Range slider with min, max, step, and selected value props.",
-    defaults: { selected: 60, min: 0, max: 100, step: 5, label: "Completion" },
+    description: "Range slider with bounds, dual handles, color, and handle variants.",
+    defaults: {
+      label: "Completion",
+      selected: 60,
+      "selected-end": 100,
+      min: 0,
+      max: 100,
+      step: 5,
+      color: "primary",
+      "handle-variant": "default",
+      "show-values": true,
+      range: false,
+      vertical: false,
+    },
     controls: [
       { type: "text", key: "label", label: "Label" },
       { type: "range", key: "selected", label: "Selected", min: 0, max: 100, step: 5 },
+      { type: "range", key: "selected-end", label: "Selected end", min: 0, max: 100, step: 5 },
       { type: "number", key: "min", label: "Min", min: 0, max: 100, step: 1 },
       { type: "number", key: "max", label: "Max", min: 1, max: 200, step: 1 },
       { type: "number", key: "step", label: "Step", min: 1, max: 25, step: 1 },
+      { type: "select", key: "color", label: "Color", options: ["primary", "success", "warning", "error", "secondary"] },
+      { type: "select", key: "handle-variant", label: "Handle", options: ["default", "square", "line"] },
+      { type: "boolean-string", key: "show-values", label: "Show values" },
+      { type: "boolean-attr", key: "range", label: "Range" },
+      { type: "boolean-attr", key: "vertical", label: "Vertical" },
     ],
   },
   {
@@ -155,11 +212,24 @@ const playgroundComponents = [
     title: "Progress",
     tag: "loomi-progress-bar",
     packageName: "progress",
-    description: "Progress bar with percentage and color props.",
-    defaults: { percentage: 68, color: "primary" },
+    description: "Progress bar with percentage, color, shade, stripes, and label props.",
+    defaults: {
+      percentage: 68,
+      color: "primary",
+      shade: "faint",
+      size: "medium",
+      "show-percentage-label": false,
+      striped: false,
+      animated: false,
+    },
     controls: [
       { type: "range", key: "percentage", label: "Percentage", min: 0, max: 100, step: 1 },
       { type: "select", key: "color", label: "Color", options: ["primary", "success", "warning", "error"] },
+      { type: "select", key: "shade", label: "Shade", options: ["faint", "dark"] },
+      { type: "select", key: "size", label: "Size", options: ["tiny", "small", "medium", "big", "large"] },
+      { type: "boolean-attr", key: "show-percentage-label", label: "Show label" },
+      { type: "boolean-attr", key: "striped", label: "Striped" },
+      { type: "boolean-attr", key: "animated", label: "Animated" },
     ],
   },
   {
@@ -167,12 +237,26 @@ const playgroundComponents = [
     title: "Tag",
     tag: "loomi-tag",
     packageName: "tag",
-    description: "Compact label with text, color, and size props.",
-    defaults: { label: "In review", color: "primary", size: "regular" },
+    description: "Compact label with color, shade, outline, rounding, and close props.",
+    defaults: {
+      label: "In review",
+      color: "primary",
+      shade: "faint",
+      outline: false,
+      rounded: false,
+      tiny: false,
+      uppercasing: false,
+      "can-close": false,
+    },
     controls: [
       { type: "text", key: "label", label: "Label" },
       { type: "select", key: "color", label: "Color", options: ["primary", "success", "warning", "error", "secondary"] },
-      { type: "select", key: "size", label: "Size", options: ["small", "regular", "medium"] },
+      { type: "select", key: "shade", label: "Shade", options: ["light", "faint", "dark"] },
+      { type: "boolean-attr", key: "outline", label: "Outline" },
+      { type: "boolean-attr", key: "rounded", label: "Rounded" },
+      { type: "boolean-attr", key: "tiny", label: "Tiny" },
+      { type: "boolean-attr", key: "uppercasing", label: "Uppercase" },
+      { type: "boolean-attr", key: "can-close", label: "Closable" },
     ],
   },
   {
@@ -180,14 +264,28 @@ const playgroundComponents = [
     title: "Avatar",
     tag: "loomi-avatar",
     packageName: "avatar",
-    description: "Avatar with initials, image, color, dotted, and size props.",
-    defaults: { label: "AM", image: "", size: "regular", "bg-color": "primary", dotted: false },
+    description: "Avatar with initials or image, status dot, pulse, and verified badge.",
+    defaults: {
+      label: "AM",
+      image: "",
+      size: "regular",
+      "bg-color": "primary",
+      "dot-color": "success",
+      "dot-position": "bottom",
+      dotted: false,
+      "pulse-dot": false,
+      verified: false,
+    },
     controls: [
-      { type: "text", key: "label", label: "Label" },
+      { type: "text", key: "label", label: "Initials" },
       { type: "text", key: "image", label: "Image URL" },
-      { type: "select", key: "size", label: "Size", options: ["tiny", "small", "regular", "medium", "big"] },
-      { type: "select", key: "bg-color", label: "Color", options: ["primary", "success", "warning", "error", "secondary"] },
+      { type: "select", key: "size", label: "Size", options: ["tiny", "small", "medium", "regular", "big", "huge", "omg"] },
+      { type: "select", key: "bg-color", label: "Color", options: ["gray", "primary", "success", "warning", "error", "secondary"] },
+      { type: "select", key: "dot-color", label: "Dot color", options: ["success", "primary", "warning", "error", "gray", "purple", "cyan", "pink", "blue"] },
+      { type: "select", key: "dot-position", label: "Dot position", options: ["top", "bottom"] },
       { type: "boolean-attr", key: "dotted", label: "Dotted" },
+      { type: "boolean-attr", key: "pulse-dot", label: "Pulse dot" },
+      { type: "boolean-attr", key: "verified", label: "Verified" },
     ],
   },
   {
@@ -195,11 +293,13 @@ const playgroundComponents = [
     title: "Rating",
     tag: "loomi-rating",
     packageName: "rating",
-    description: "Star rating with rating, color, and clickable props.",
-    defaults: { rating: 4, color: "orange", clickable: false, name: "playground-rating" },
+    description: "Star, heart, or thumbs-up rating with color, size, and clickable props.",
+    defaults: { rating: 4, type: "star", color: "warning", size: "small", clickable: false, name: "playground-rating" },
     controls: [
       { type: "range", key: "rating", label: "Rating", min: 0, max: 5, step: 1 },
-      { type: "select", key: "color", label: "Color", options: ["orange", "primary", "success", "warning", "error"] },
+      { type: "select", key: "type", label: "Type", options: ["star", "heart", "thumbsup"] },
+      { type: "select", key: "color", label: "Color", options: ["warning", "primary", "success", "error", "purple", "pink"] },
+      { type: "select", key: "size", label: "Size", options: ["small", "medium", "big"] },
       { type: "boolean-string", key: "clickable", label: "Clickable" },
     ],
   },
@@ -208,11 +308,26 @@ const playgroundComponents = [
     title: "Icon",
     tag: "loomi-icon",
     packageName: "icon",
-    description: "Icon renderer with name and size props.",
-    defaults: { name: "sparkles", size: 48 },
+    description: "Icon renderer with source, variant, stroke, size, and badge props.",
+    defaults: {
+      name: "sparkles",
+      source: "heroicons",
+      variant: "outline",
+      size: 48,
+      "stroke-width": 1.5,
+      branded: false,
+      shade: "light",
+      radius: "medium",
+    },
     controls: [
       { type: "select", key: "name", label: "Name", options: ["sparkles", "bell-alert", "check-circle", "trash", "magnifying-glass", "squares-plus"] },
+      { type: "select", key: "source", label: "Source", options: ["heroicons", "iconsax", "untitledui"] },
+      { type: "select", key: "variant", label: "Variant", options: ["outline", "solid", "twotone"] },
       { type: "range", key: "size", label: "Size", min: 16, max: 96, step: 4 },
+      { type: "number", key: "stroke-width", label: "Stroke width", min: 1, max: 3, step: 0.25 },
+      { type: "boolean-attr", key: "branded", label: "Branded" },
+      { type: "select", key: "shade", label: "Badge shade", options: ["light", "dark"] },
+      { type: "select", key: "radius", label: "Badge radius", options: ["none", "small", "medium", "full"] },
     ],
   },
   {
@@ -220,11 +335,12 @@ const playgroundComponents = [
     title: "Theme Switcher",
     tag: "loomi-theme-switcher",
     packageName: "theme-switcher",
-    description: "Theme control with variant and label visibility props.",
-    defaults: { variant: "dropmenu", "show-labels": false },
+    description: "Theme control with horizontal or dropmenu variants and label props.",
+    defaults: { variant: "horizontal", "show-labels": false, "icon-right": false },
     controls: [
-      { type: "select", key: "variant", label: "Variant", options: ["dropmenu", "switch", "buttons"] },
+      { type: "select", key: "variant", label: "Variant", options: ["horizontal", "dropmenu"] },
       { type: "boolean-attr", key: "show-labels", label: "Show labels" },
+      { type: "boolean-attr", key: "icon-right", label: "Icons right" },
     ],
   },
   {
@@ -232,7 +348,7 @@ const playgroundComponents = [
     title: "Select",
     tag: "loomi-select",
     packageName: "select",
-    description: "Custom select with data-driven options, search, sizes, and states.",
+    description: "Custom select with data-driven options, search, multiple, and states.",
     defaults: {
       label: "Country",
       placeholder: "",
@@ -240,6 +356,8 @@ const playgroundComponents = [
       "selected-value": "gh",
       size: "medium",
       searchable: false,
+      multiple: false,
+      required: false,
       disabled: false,
       readonly: false,
     },
@@ -249,6 +367,8 @@ const playgroundComponents = [
       { type: "text", key: "data", label: "Data (JSON)" },
       { type: "select", key: "size", label: "Size", options: ["small", "regular", "medium", "big"] },
       { type: "boolean-attr", key: "searchable", label: "Searchable" },
+      { type: "boolean-attr", key: "multiple", label: "Multiple" },
+      { type: "boolean-attr", key: "required", label: "Required" },
       { type: "boolean-attr", key: "disabled", label: "Disabled" },
       { type: "boolean-attr", key: "readonly", label: "Readonly" },
     ],
@@ -261,6 +381,7 @@ const playgroundComponents = [
     description: "Date picker with popup or inline styles, formats, and range mode.",
     defaults: {
       label: "Start date",
+      placeholder: "",
       "dp-style": "popup",
       format: "yyyy-mm-dd",
       "week-starts": "sunday",
@@ -270,6 +391,7 @@ const playgroundComponents = [
     },
     controls: [
       { type: "text", key: "label", label: "Label" },
+      { type: "text", key: "placeholder", label: "Placeholder" },
       { type: "select", key: "dp-style", label: "Style", options: ["popup", "inline"] },
       { type: "select", key: "format", label: "Format", options: ["yyyy-mm-dd", "dd-mm-yyyy", "mm-dd-yyyy", "yyyy/mm/dd", "dd/mm/yyyy", "mm/dd/yyyy", "D d M, Y"] },
       { type: "select", key: "week-starts", label: "Week starts", options: ["sunday", "monday"] },
@@ -283,12 +405,15 @@ const playgroundComponents = [
     title: "Password",
     tag: "loomi-password",
     packageName: "password",
-    description: "Password field with label, placeholder, sizes, and states.",
+    description: "Password field with strength rules, reveal, clear, and size props.",
     defaults: {
       label: "Password",
       placeholder: "Enter a password",
       value: "",
+      strength: "",
+      "prefix-icon": "",
       size: "medium",
+      clearable: false,
       required: false,
       disabled: false,
     },
@@ -296,7 +421,10 @@ const playgroundComponents = [
       { type: "text", key: "label", label: "Label" },
       { type: "text", key: "placeholder", label: "Placeholder" },
       { type: "text", key: "value", label: "Value" },
+      { type: "select", key: "strength", label: "Strength rules", options: ["", "Aa1#", "Aa1", "A1"] },
+      { type: "select", key: "prefix-icon", label: "Prefix icon", options: ["", "key", "lock-closed", "shield-check"] },
       { type: "select", key: "size", label: "Size", options: ["tiny", "small", "regular", "medium", "big"] },
+      { type: "boolean-attr", key: "clearable", label: "Clearable" },
       { type: "boolean-attr", key: "required", label: "Required" },
       { type: "boolean-attr", key: "disabled", label: "Disabled" },
     ],
@@ -307,7 +435,7 @@ const playgroundComponents = [
     tag: "loomi-number",
     packageName: "number",
     description: "Numeric stepper input with min, max, step, and size props.",
-    defaults: { label: "Quantity", value: 5, min: 0, max: 100, step: 1, size: "medium", disabled: false },
+    defaults: { label: "Quantity", value: 5, min: 0, max: 100, step: 1, size: "medium", required: false, disabled: false },
     controls: [
       { type: "text", key: "label", label: "Label" },
       { type: "number", key: "value", label: "Value", min: 0, max: 100, step: 1 },
@@ -315,6 +443,7 @@ const playgroundComponents = [
       { type: "number", key: "max", label: "Max", min: 1, max: 1000, step: 1 },
       { type: "number", key: "step", label: "Step", min: 1, max: 25, step: 1 },
       { type: "select", key: "size", label: "Size", options: ["small", "regular", "medium", "big"] },
+      { type: "boolean-attr", key: "required", label: "Required" },
       { type: "boolean-attr", key: "disabled", label: "Disabled" },
     ],
   },
@@ -360,6 +489,7 @@ const playgroundComponents = [
       size: "medium",
       color: "primary",
       shade: "light",
+      required: false,
       disabled: false,
     },
     controls: [
@@ -370,6 +500,7 @@ const playgroundComponents = [
       { type: "select", key: "size", label: "Size", options: ["tiny", "small", "regular", "medium", "big"] },
       { type: "select", key: "color", label: "Color", options: ["primary", "success", "warning", "error", "secondary"] },
       { type: "select", key: "shade", label: "Shade", options: ["light", "faint", "dark"] },
+      { type: "boolean-attr", key: "required", label: "Required" },
       { type: "boolean-attr", key: "disabled", label: "Disabled" },
     ],
   },
@@ -392,8 +523,8 @@ const playgroundComponents = [
     title: "Divider",
     tag: "loomi-divider",
     packageName: "divider",
-    description: "Content divider with label, alignment, variant, and color props.",
-    defaults: { label: "OR", orientation: "horizontal", align: "center", variant: "solid", color: "gray", thickness: "1px" },
+    description: "Content divider with label, alignment, variant, color, and spacing.",
+    defaults: { label: "OR", orientation: "horizontal", align: "center", variant: "solid", color: "gray", thickness: "1px", spacing: "" },
     controls: [
       { type: "text", key: "label", label: "Label" },
       { type: "select", key: "orientation", label: "Orientation", options: ["horizontal", "vertical"] },
@@ -401,6 +532,7 @@ const playgroundComponents = [
       { type: "select", key: "variant", label: "Variant", options: ["solid", "dashed", "dotted"] },
       { type: "select", key: "color", label: "Color", options: ["gray", "primary", "success", "warning", "error"] },
       { type: "text", key: "thickness", label: "Thickness" },
+      { type: "text", key: "spacing", label: "Spacing" },
     ],
   },
   {
@@ -408,17 +540,19 @@ const playgroundComponents = [
     title: "Empty State",
     tag: "loomi-empty-state",
     packageName: "empty-state",
-    description: "Empty state with heading, message, action button, and image size.",
+    description: "Empty state with heading, message, action button, and image props.",
     defaults: {
       heading: "No projects yet",
       message: "Create your first project to get started.",
       "button-label": "New project",
+      image: "",
       "image-size": "medium",
     },
     controls: [
       { type: "text", key: "heading", label: "Heading" },
       { type: "text", key: "message", label: "Message" },
       { type: "text", key: "button-label", label: "Button label" },
+      { type: "text", key: "image", label: "Image URL" },
       { type: "select", key: "image-size", label: "Image size", options: ["small", "medium", "large", "xl"] },
     ],
   },
@@ -453,13 +587,22 @@ const playgroundComponents = [
     tag: "loomi-pagination",
     packageName: "pagination",
     description: "Pagination with total, page size, style, and color props.",
-    defaults: { total: 120, "page-size": 10, page: 1, "pagination-style": "numbers", color: "primary", "show-total": true },
+    defaults: {
+      total: 120,
+      "page-size": 10,
+      page: 1,
+      "pagination-style": "numbers",
+      color: "primary",
+      "total-label": "",
+      "show-total": true,
+    },
     controls: [
       { type: "number", key: "total", label: "Total items", min: 0, max: 1000, step: 10 },
       { type: "number", key: "page-size", label: "Page size", min: 1, max: 100, step: 1 },
       { type: "number", key: "page", label: "Page", min: 1, max: 100, step: 1 },
       { type: "select", key: "pagination-style", label: "Style", options: ["arrows", "numbers", "dropdown"] },
       { type: "select", key: "color", label: "Color", options: ["primary", "success", "warning", "error", "secondary"] },
+      { type: "text", key: "total-label", label: "Total label" },
       { type: "boolean-string", key: "show-total", label: "Show total" },
     ],
   },
@@ -477,6 +620,295 @@ const playgroundComponents = [
       { type: "text", key: "content", label: "Content" },
       { type: "select", key: "position", label: "Position", options: ["top", "bottom", "left", "right"] },
       { type: "select", key: "shade", label: "Shade", options: ["dark", "light"] },
+    ],
+  },
+  {
+    key: "bell",
+    title: "Bell",
+    tag: "loomi-bell",
+    packageName: "bell",
+    description: "Notification bell with status dot color, animation, and size props.",
+    defaults: { color: "primary", size: "small", "animate-dot": false, invert: false },
+    controls: [
+      { type: "select", key: "color", label: "Dot color", options: ["primary", "success", "warning", "error", "secondary"] },
+      { type: "select", key: "size", label: "Size", options: ["small", "big"] },
+      { type: "boolean-attr", key: "animate-dot", label: "Animate dot" },
+      { type: "boolean-attr", key: "invert", label: "Invert" },
+    ],
+  },
+  {
+    key: "card",
+    title: "Card",
+    tag: "loomi-card",
+    packageName: "card",
+    description: "Content card with section spacing and hover shadow props.",
+    defaults: { size: "default", "has-hover": false },
+    slot:
+      "<loomi-card-header><loomi-card-title>Team plan</loomi-card-title><loomi-card-description>Everything you need for a growing team.</loomi-card-description></loomi-card-header><loomi-card-content>Unlimited projects, priority support, and usage analytics.</loomi-card-content>",
+    controls: [
+      { type: "select", key: "size", label: "Size", options: ["default", "sm"] },
+      { type: "boolean-attr", key: "has-hover", label: "Hover shadow" },
+    ],
+  },
+  {
+    key: "colorpicker",
+    title: "Colorpicker",
+    tag: "loomi-colorpicker",
+    packageName: "colorpicker",
+    description: "Color picker with default value, swatch palette, and size props.",
+    defaults: { "selected-value": "#7c3aed", colors: "", "show-value": false, size: "regular" },
+    controls: [
+      { type: "text", key: "selected-value", label: "Color (HEX)" },
+      { type: "text", key: "colors", label: "Swatches (comma separated)" },
+      { type: "select", key: "size", label: "Size", options: ["small", "regular", "medium", "big"] },
+      { type: "boolean-attr", key: "show-value", label: "Show value" },
+    ],
+  },
+  {
+    key: "contact-card",
+    title: "Contact Card",
+    tag: "loomi-contact-card",
+    packageName: "contact-card",
+    description: "Contact card with name, role, avatar, and contact detail props.",
+    defaults: {
+      name: "Ama Mensah",
+      position: "Product Designer",
+      department: "Design",
+      email: "ama@company.com",
+      mobile: "+233 20 000 0000",
+      image: "",
+      centered: false,
+    },
+    controls: [
+      { type: "text", key: "name", label: "Name" },
+      { type: "text", key: "position", label: "Position" },
+      { type: "text", key: "department", label: "Department" },
+      { type: "text", key: "email", label: "Email" },
+      { type: "text", key: "mobile", label: "Mobile" },
+      { type: "text", key: "image", label: "Image URL" },
+      { type: "boolean-attr", key: "centered", label: "Centered" },
+    ],
+  },
+  {
+    key: "copy-to-clipboard",
+    title: "Copy to Clipboard",
+    tag: "loomi-copy-to-clipboard",
+    packageName: "copy-to-clipboard",
+    description: "Copy button with clipboard value and label props.",
+    defaults: { value: "npm install @loomidev/button", "copy-label": "", "copied-label": "", disabled: false },
+    controls: [
+      { type: "text", key: "value", label: "Value" },
+      { type: "text", key: "copy-label", label: "Copy label" },
+      { type: "text", key: "copied-label", label: "Copied label" },
+      { type: "boolean-attr", key: "disabled", label: "Disabled" },
+    ],
+  },
+  {
+    key: "countries",
+    title: "Countries",
+    tag: "loomi-countries",
+    packageName: "countries",
+    description: "Country picker with names or phone modes, selection, and sizes.",
+    defaults: { label: "Country", mode: "names", selection: "gh", size: "medium", disabled: false, readonly: false },
+    controls: [
+      { type: "text", key: "label", label: "Label" },
+      { type: "select", key: "mode", label: "Mode", options: ["names", "phone"] },
+      { type: "text", key: "selection", label: "Selection" },
+      { type: "select", key: "size", label: "Size", options: ["tiny", "small", "regular", "medium", "big"] },
+      { type: "boolean-attr", key: "disabled", label: "Disabled" },
+      { type: "boolean-attr", key: "readonly", label: "Readonly" },
+    ],
+  },
+  {
+    key: "creditcard",
+    title: "Credit Card",
+    tag: "loomi-creditcard",
+    packageName: "creditcard",
+    description: "Interactive payment card with holder, number, brand, and flip props.",
+    defaults: {
+      "cardholder-name": "Ama Mensah",
+      number: "4242 4242 4242 4242",
+      "expiry-month": "12",
+      "expiry-year": "27",
+      cvc: "123",
+      brand: "",
+      color: "primary",
+      variant: "gradient",
+      flipped: false,
+      readonly: false,
+    },
+    controls: [
+      { type: "text", key: "cardholder-name", label: "Cardholder" },
+      { type: "text", key: "number", label: "Number" },
+      { type: "text", key: "expiry-month", label: "Expiry month" },
+      { type: "text", key: "expiry-year", label: "Expiry year" },
+      { type: "text", key: "cvc", label: "CVC" },
+      { type: "select", key: "brand", label: "Brand", options: ["", "visa", "mastercard", "amex", "discover"] },
+      { type: "select", key: "color", label: "Color", options: ["primary", "success", "warning", "error", "secondary"] },
+      { type: "select", key: "variant", label: "Variant", options: ["gradient", "outline", "inline"] },
+      { type: "boolean-attr", key: "flipped", label: "Flipped" },
+      { type: "boolean-attr", key: "readonly", label: "Readonly" },
+    ],
+  },
+  {
+    key: "emoji-picker",
+    title: "Emoji Picker",
+    tag: "loomi-emoji-picker",
+    packageName: "emoji-picker",
+    description: "Emoji picker with inline panel, search, text display, and sizes.",
+    defaults: { label: "Reaction", placeholder: "", inline: false, "show-text": false, size: "medium", disabled: false },
+    controls: [
+      { type: "text", key: "label", label: "Label" },
+      { type: "text", key: "placeholder", label: "Placeholder" },
+      { type: "select", key: "size", label: "Size", options: ["small", "regular", "medium", "big"] },
+      { type: "boolean-attr", key: "inline", label: "Inline" },
+      { type: "boolean-attr", key: "show-text", label: "Show text" },
+      { type: "boolean-attr", key: "disabled", label: "Disabled" },
+    ],
+  },
+  {
+    key: "filepicker",
+    title: "Filepicker",
+    tag: "loomi-filepicker",
+    packageName: "filepicker",
+    description: "File drop zone with accepted types, limits, and crop props.",
+    defaults: {
+      "accepted-file-types": "image/*,application/pdf",
+      "max-files": 1,
+      "max-file-size": "5mb",
+      crop: false,
+      disabled: false,
+      required: false,
+    },
+    controls: [
+      { type: "text", key: "accepted-file-types", label: "Accepted types" },
+      { type: "number", key: "max-files", label: "Max files", min: 1, max: 5, step: 1 },
+      { type: "text", key: "max-file-size", label: "Max file size" },
+      { type: "boolean-attr", key: "crop", label: "Crop images" },
+      { type: "boolean-attr", key: "disabled", label: "Disabled" },
+      { type: "boolean-attr", key: "required", label: "Required" },
+    ],
+  },
+  {
+    key: "processing",
+    title: "Processing",
+    tag: "loomi-processing",
+    packageName: "processing",
+    description: "Processing indicator with state, title, message, and color props.",
+    defaults: { state: "processing", title: "Processing payment", message: "This will only take a moment.", color: "primary" },
+    controls: [
+      { type: "select", key: "state", label: "State", options: ["processing", "success", "failed"] },
+      { type: "text", key: "title", label: "Title" },
+      { type: "text", key: "message", label: "Message" },
+      { type: "select", key: "color", label: "Color", options: ["primary", "success", "warning", "error", "secondary"] },
+    ],
+  },
+  {
+    key: "qrcode",
+    title: "QR Code",
+    tag: "loomi-qrcode",
+    packageName: "qrcode",
+    description: "QR code with size, error correction, gradient, and corner props.",
+    defaults: {
+      url: "https://loomiui.com",
+      size: 180,
+      "error-correction": "M",
+      radius: "medium",
+      "module-radius": 0,
+      gradient: false,
+      "corner-borders": false,
+    },
+    controls: [
+      { type: "text", key: "url", label: "URL" },
+      { type: "range", key: "size", label: "Size", min: 96, max: 320, step: 4 },
+      { type: "select", key: "error-correction", label: "Error correction", options: ["L", "M", "Q", "H"] },
+      { type: "select", key: "radius", label: "Radius", options: ["none", "small", "medium", "large", "full"] },
+      { type: "range", key: "module-radius", label: "Module radius", min: 0, max: 0.5, step: 0.1 },
+      { type: "boolean-attr", key: "gradient", label: "Gradient" },
+      { type: "boolean-attr", key: "corner-borders", label: "Corner borders" },
+    ],
+  },
+  {
+    key: "timer",
+    title: "Timer",
+    tag: "loomi-timer",
+    packageName: "timer",
+    description: "Countdown or count-up timer with label, color, and control props.",
+    defaults: {
+      direction: "down",
+      mins: 5,
+      label: "Launch in",
+      color: "primary",
+      "auto-start": true,
+      "show-controls": true,
+      "show-border": true,
+    },
+    controls: [
+      { type: "select", key: "direction", label: "Direction", options: ["down", "up"] },
+      { type: "number", key: "mins", label: "Minutes", min: 1, max: 120, step: 1 },
+      { type: "text", key: "label", label: "Label" },
+      { type: "select", key: "color", label: "Color", options: ["primary", "success", "warning", "error", "secondary"] },
+      { type: "boolean-attr", key: "auto-start", label: "Auto start" },
+      { type: "boolean-attr", key: "show-controls", label: "Show controls" },
+      { type: "boolean-attr", key: "show-border", label: "Show border" },
+    ],
+  },
+  {
+    key: "text-editor",
+    title: "Text Editor",
+    tag: "loomi-text-editor",
+    packageName: "text-editor",
+    description: "Rich text editor with label, placeholder, toolbar tools, and states.",
+    defaults: {
+      label: "Notes",
+      placeholder: "Write something...",
+      value: "",
+      tools: "",
+      rows: 4,
+      required: false,
+      disabled: false,
+      readonly: false,
+    },
+    controls: [
+      { type: "text", key: "label", label: "Label" },
+      { type: "text", key: "placeholder", label: "Placeholder" },
+      { type: "text", key: "value", label: "Value (HTML)" },
+      { type: "text", key: "tools", label: "Tools (comma separated)" },
+      { type: "number", key: "rows", label: "Rows", min: 2, max: 12, step: 1 },
+      { type: "boolean-attr", key: "required", label: "Required" },
+      { type: "boolean-attr", key: "disabled", label: "Disabled" },
+      { type: "boolean-attr", key: "readonly", label: "Readonly" },
+    ],
+  },
+  {
+    key: "timepicker",
+    title: "Timepicker",
+    tag: "loomi-timepicker",
+    packageName: "timepicker",
+    description: "Time picker with popup or inline styles and 12/24-hour formats.",
+    defaults: { label: "Meeting time", "tp-style": "popup", format: "12", "selected-value": "10:30AM", required: false },
+    controls: [
+      { type: "text", key: "label", label: "Label" },
+      { type: "select", key: "tp-style", label: "Style", options: ["popup", "inline"] },
+      { type: "select", key: "format", label: "Format", options: ["12", "24"] },
+      { type: "text", key: "selected-value", label: "Selected time" },
+      { type: "boolean-attr", key: "required", label: "Required" },
+    ],
+  },
+  {
+    key: "timezonepicker",
+    title: "Timezonepicker",
+    tag: "loomi-timezonepicker",
+    packageName: "timezonepicker",
+    description: "Searchable timezone picker with label, selection, and size props.",
+    defaults: { label: "Timezone", placeholder: "", selection: "Africa/Accra", size: "medium", disabled: false, readonly: false },
+    controls: [
+      { type: "text", key: "label", label: "Label" },
+      { type: "text", key: "placeholder", label: "Placeholder" },
+      { type: "text", key: "selection", label: "Selection" },
+      { type: "select", key: "size", label: "Size", options: ["tiny", "small", "regular", "medium", "big"] },
+      { type: "boolean-attr", key: "disabled", label: "Disabled" },
+      { type: "boolean-attr", key: "readonly", label: "Readonly" },
     ],
   },
 ];
@@ -501,23 +933,11 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
 
     <main class="mx-auto max-w-7xl px-6 py-10">
       <div class="feature-kicker">Playground</div>
-      <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-end">
-        <div>
-          <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">Playground</h1>
-          <p class="mt-3 max-w-2xl text-lg leading-7 text-gray-600 dark:text-gray-400">
-            Select a component, tune its props, and inspect the markup as it changes.
-          </p>
-        </div>
-        <label class="playground-select-label">
-          <span>Component</span>
-          <loomi-select
-            id="component-select"
-            searchable
-            placeholder="Select a component"
-            selected-value={playgroundComponents[0].key}
-            data={JSON.stringify(componentOptions)}
-          ></loomi-select>
-        </label>
+      <div>
+        <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">Playground</h1>
+        <p class="mt-3 max-w-2xl text-lg leading-7 text-gray-600 dark:text-gray-400">
+          Select a component, tune its props, and inspect the markup as it changes.
+        </p>
       </div>
 
       <section class="playground-shell mt-8">
@@ -548,16 +968,32 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
           </div>
         </div>
 
-        <aside class="playground-controls-panel" aria-label="Component props">
-          <div class="playground-controls-heading">
-            <h2>Props</h2>
-            <button type="button" id="reset-props" class="playground-reset">
-              <loomi-icon name="arrow-path" style="width:0.95rem;height:0.95rem"></loomi-icon>
-              Reset
-            </button>
-          </div>
-          <div id="controls" class="playground-controls"></div>
-        </aside>
+        <div class="playground-side">
+          <section class="playground-picker-panel" aria-label="Component picker">
+            <div class="playground-controls-heading">
+              <h2>Component</h2>
+            </div>
+            <loomi-select
+              id="component-select"
+              searchable
+              no-clearing
+              placeholder="Select a component"
+              selected-value={playgroundComponents[0].key}
+              data={JSON.stringify(componentOptions)}
+            ></loomi-select>
+          </section>
+
+          <aside class="playground-controls-panel" aria-label="Component props">
+            <div class="playground-controls-heading">
+              <h2>Props</h2>
+              <button type="button" id="reset-props" class="playground-reset">
+                <loomi-icon name="arrow-path" style="width:0.95rem;height:0.95rem"></loomi-icon>
+                Reset
+              </button>
+            </div>
+            <div id="controls" class="playground-controls"></div>
+          </aside>
+        </div>
       </section>
     </main>
 
@@ -632,6 +1068,16 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
           .replaceAll('"', "&quot;");
       }
 
+      // Wraps tag names, attribute names, and quoted values of the (already escaped)
+      // generated markup in token spans. Values are delimited by `&quot;` — quotes
+      // *inside* a value were escaped twice and read `&amp;quot;`, so the non-greedy
+      // match can't end early.
+      function highlightMarkup(markup: string) {
+        return escapeHtml(markup)
+          .replace(/(&lt;\/?)([\w-]+)/g, '$1<span class="tok-tag">$2</span>')
+          .replace(/([\w-]+)(=)(&quot;.*?&quot;)/g, '<span class="tok-attr">$1</span>$2<span class="tok-str">$3</span>');
+      }
+
       function controlFor(key: string) {
         return active.controls.find((control) => control.key === key);
       }
@@ -668,7 +1114,7 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
       function renderPreview() {
         const markup = markupForCurrent();
         previewHost.innerHTML = markup;
-        codeEl.textContent = markup;
+        codeEl.innerHTML = highlightMarkup(markup);
       }
 
       function renderControl(control: Control) {
@@ -676,16 +1122,16 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
         wrapper.className = control.type.startsWith("boolean") ? "playground-check-control" : "playground-field";
 
         if (control.type.startsWith("boolean")) {
-          const input = document.createElement("input");
-          input.type = "checkbox";
-          input.checked = Boolean(values[control.key]);
+          const input = document.createElement("loomi-toggle") as HTMLElement & { checked: boolean };
+          input.setAttribute("no-clearing", "");
+          if (values[control.key] === true) input.setAttribute("checked", "");
           input.addEventListener("change", () => {
             values[control.key] = input.checked;
             renderPreview();
           });
           const text = document.createElement("span");
           text.textContent = control.label;
-          wrapper.append(input, text);
+          wrapper.append(text, input);
           return wrapper;
         }
 
@@ -700,6 +1146,7 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
             value: option || DEFAULT_OPTION,
           }));
           input.setAttribute("size", "small");
+          input.setAttribute("no-clearing", "");
           input.setAttribute("data", JSON.stringify(options));
           input.setAttribute("selected-value", String(values[control.key] ?? "") || DEFAULT_OPTION);
           input.addEventListener("select", (event) => {
@@ -779,17 +1226,19 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
      the client script at runtime, so they never receive Astro's scope class — scoped
      selectors would silently miss them. Every selector is .playground-* prefixed. -->
 <style is:global>
-  .playground-select-label,
   .playground-field {
     display: grid;
     gap: 0.45rem;
     color: rgb(71 85 105);
     font-size: 0.78rem;
-    font-weight: 700;
   }
-  .dark .playground-select-label,
   .dark .playground-field {
     color: rgb(203 213 225);
+  }
+  /* Bold only on the caption span — the control itself (native input or loomi-select,
+     which uses `font: inherit`) would otherwise inherit the heavy weight. */
+  .playground-field > span {
+    font-weight: 700;
   }
   .playground-field input {
     width: 100%;
@@ -806,12 +1255,13 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
     background: rgb(15 23 42 / 0.72);
     color: white;
   }
-  /* loomi-select ships a 1rem bottom margin for form flow; the picker and control
-     grids space themselves, so strip it there. */
-  .playground-select-label loomi-select,
+  /* loomi-select ships a 1rem bottom margin for form flow (`no-clearing` is also set
+     on each instance); the picker card and control grids space themselves. */
+  .playground-picker-panel loomi-select,
   .playground-field loomi-select {
     margin-bottom: 0;
     width: 100%;
+    font-weight: 500;
   }
   .playground-shell {
     display: grid;
@@ -823,7 +1273,13 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
       align-items: start;
     }
   }
+  .playground-side {
+    display: grid;
+    gap: 1rem;
+    align-content: start;
+  }
   .playground-preview-panel,
+  .playground-picker-panel,
   .playground-controls-panel {
     border: 1px solid rgb(226 232 240);
     border-radius: 0.8rem;
@@ -831,6 +1287,7 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
     box-shadow: 0 12px 30px -24px rgb(15 23 42 / 0.36);
   }
   .dark .playground-preview-panel,
+  .dark .playground-picker-panel,
   .dark .playground-controls-panel {
     border-color: rgb(51 65 85);
     background: rgb(15 23 42 / 0.72);
@@ -927,7 +1384,7 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
   }
   /* Block-level form components collapse to zero width under the preview's centered
      flex layout, so stretch them; a vertical divider likewise needs a height to show. */
-  .playground-preview :is(loomi-select, loomi-datepicker, loomi-tag-input, loomi-divider, loomi-pagination, loomi-input, loomi-textarea, loomi-password, loomi-number, loomi-slider, loomi-progress-bar) {
+  .playground-preview :is(loomi-select, loomi-datepicker, loomi-tag-input, loomi-divider, loomi-pagination, loomi-input, loomi-textarea, loomi-password, loomi-number, loomi-slider, loomi-progress-bar, loomi-countries, loomi-timezonepicker, loomi-filepicker, loomi-card, loomi-text-editor) {
     width: 100%;
   }
   .playground-preview loomi-divider[orientation="vertical"] {
@@ -936,29 +1393,42 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
   }
   .playground-code-block {
     border-top: 1px solid rgb(226 232 240);
-    background: rgb(15 23 42);
+    background: rgb(241 245 249);
   }
   .dark .playground-code-block {
     border-color: rgb(51 65 85);
+    background: rgb(30 41 59 / 0.6);
   }
   .playground-code-header {
-    border-bottom: 1px solid rgb(30 41 59);
+    border-bottom: 1px solid rgb(226 232 240);
     padding: 0.75rem 1rem;
-    color: rgb(148 163 184);
+    color: rgb(100 116 139);
     font-size: 0.72rem;
     font-weight: 800;
     letter-spacing: 0.12em;
     text-transform: uppercase;
   }
+  .dark .playground-code-header {
+    border-color: rgb(51 65 85);
+    color: rgb(148 163 184);
+  }
   .playground-icon-button {
     height: 2rem;
     width: 2rem;
     border-radius: 0.5rem;
-    color: rgb(203 213 225);
+    color: rgb(100 116 139);
   }
   .playground-icon-button:hover,
   .playground-icon-button.is-copied {
-    background: rgb(30 41 59);
+    background: rgb(226 232 240);
+    color: rgb(15 23 42);
+  }
+  .dark .playground-icon-button {
+    color: rgb(148 163 184);
+  }
+  .dark .playground-icon-button:hover,
+  .dark .playground-icon-button.is-copied {
+    background: rgb(51 65 85);
     color: white;
   }
   .playground-code-block pre {
@@ -967,18 +1437,44 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
     padding: 1rem;
   }
   .playground-code-block code {
-    color: rgb(226 232 240);
+    color: rgb(51 65 85);
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
     font-size: 0.82rem;
     line-height: 1.6;
   }
+  .dark .playground-code-block code {
+    color: rgb(203 213 225);
+  }
+  .playground-code-block .tok-tag {
+    color: rgb(37 99 235);
+  }
+  .dark .playground-code-block .tok-tag {
+    color: rgb(96 165 250);
+  }
+  .playground-code-block .tok-attr {
+    color: rgb(124 58 237);
+  }
+  .dark .playground-code-block .tok-attr {
+    color: rgb(167 139 250);
+  }
+  .playground-code-block .tok-str {
+    color: rgb(21 128 61);
+  }
+  .dark .playground-code-block .tok-str {
+    color: rgb(74 222 128);
+  }
+  .playground-picker-panel,
   .playground-controls-panel {
     padding: 1rem;
   }
   @media (min-width: 64rem) {
-    .playground-controls-panel {
+    .playground-side {
       position: sticky;
       top: 5rem;
+      max-height: calc(100vh - 6rem);
+    }
+    .playground-controls-panel {
+      overflow-y: auto;
     }
   }
   .playground-controls-heading {
@@ -1005,11 +1501,9 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
     border-color: rgb(51 65 85);
     color: rgb(226 232 240);
   }
-  .playground-check-control input {
-    order: 2;
-    height: 1rem;
-    width: 1rem;
-    accent-color: rgb(37 99 235);
+  .playground-check-control loomi-toggle {
+    margin-bottom: 0;
+    flex: none;
   }
   .playground-range-row {
     display: grid;

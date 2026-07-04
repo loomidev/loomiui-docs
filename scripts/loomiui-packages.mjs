@@ -20,7 +20,7 @@ export const CATEGORY = {
     "sortable", "processing", "horizontal-line-graph", "chart", "drawer", "copy-to-clipboard",
     "divider", "qrcode", "timer", "data-grid", "calendar", "chat", "resizable",
   ],
-  navigation: ["tab", "pagination", "dropmenu", "theme-switcher", "context-menu", "command-palette", "sidebar"],
+  navigation: ["tab", "pagination", "dropmenu", "theme-switcher", "context-menu", "command-palette"],
 };
 
 export const COMPONENT_NAMES = Object.values(CATEGORY).flat();

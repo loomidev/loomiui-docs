@@ -17,8 +17,6 @@ export function buildImportMap() {
     imports: {
       lit: "https://esm.sh/lit@3.3.3",
       "lit/": "https://esm.sh/lit@3.3.3/",
-      quill: "https://esm.sh/quill@2.0.3",
-      "quill/": "https://esm.sh/quill@2.0.3/",
       ...Object.fromEntries(
         ALL_PACKAGE_NAMES.flatMap((name) => [
           [`@loomidev/${name}`, `/loomi/${name}/dist/index.js`],
