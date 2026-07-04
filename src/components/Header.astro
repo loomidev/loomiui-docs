@@ -37,11 +37,13 @@ const GITHUB_URL = "https://github.com/loomidev/loomiui-docs";
   <nav class="loomi-header-nav sl-hidden lg:sl-flex">
     <a href="/installation/" class="loomi-header-link" aria-current="page">Docs</a>
     <a href="/components/" class="loomi-header-link">Components</a>
+    <a href="/playground/" class="loomi-header-link">Playground</a>
     <loomi-dropmenu position="auto" hide-after-click>
       <button slot="trigger" type="button" class="loomi-header-link loomi-header-resources">
         Resources
         <loomi-icon name="chevron-down" style="width:0.85rem;height:0.85rem"></loomi-icon>
       </button>
+      <loomi-dropmenu-item icon="squares-plus"><a href="/icons/">Icons</a></loomi-dropmenu-item>
       <loomi-dropmenu-item icon="cpu-chip"><a href="/mcp-server/">MCP Server</a></loomi-dropmenu-item>
       <loomi-dropmenu-item icon="command-line"><a href="/cli/">CLI</a></loomi-dropmenu-item>
       <loomi-dropmenu-item icon="building-library"><a href="/architecture/">Architecture</a></loomi-dropmenu-item>

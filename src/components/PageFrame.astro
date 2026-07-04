@@ -1,0 +1,37 @@
+---
+// Starlight's default PageFrame renders a left sidebar whenever a docs route has
+// `hasSidebar`. LoomiUI now keeps docs navigation in the top bar, so this frame keeps
+// the stock fixed header + main content structure and deliberately omits the sidebar
+// slot and mobile menu.
+---
+
+<div class="page sl-flex">
+  <header class="header"><slot name="header" /></header>
+  <div class="main-frame"><slot /></div>
+</div>
+
+<style>
+  @layer starlight.core {
+    .page {
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .header {
+      z-index: var(--sl-z-index-navbar);
+      position: fixed;
+      inset-inline-start: 0;
+      inset-block-start: 0;
+      width: 100%;
+      height: var(--sl-nav-height);
+      border-bottom: 1px solid var(--sl-color-hairline-shade);
+      padding: var(--sl-nav-pad-y) var(--sl-nav-pad-x);
+      background-color: var(--sl-color-bg-nav);
+    }
+
+    .main-frame {
+      padding-top: calc(var(--sl-nav-height) + var(--sl-mobile-toc-height));
+      padding-inline-start: var(--sl-content-inline-start);
+    }
+  }
+</style>

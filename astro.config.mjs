@@ -54,6 +54,7 @@ export default defineConfig({
         // src/components/{Head,Header,Pagination,ThemeSelect}.astro for what/why.
         Head: "./src/components/Head.astro",
         Header: "./src/components/Header.astro",
+        PageFrame: "./src/components/PageFrame.astro",
         Pagination: "./src/components/Pagination.astro",
         ThemeProvider: "./src/components/ThemeProvider.astro",
         ThemeSelect: "./src/components/ThemeSelect.astro",
@@ -65,34 +66,9 @@ export default defineConfig({
           content: JSON.stringify(importMap),
         },
       ],
-      sidebar: [
-        {
-          label: "Start Here",
-          items: [
-            // `data-icon` lands on the rendered <a> via Starlight's attrs-passthrough
-            // (its sidebar schema has no native `icon` field) and is turned into a
-            // <loomi-icon> by the script in src/components/Head.astro — Starlight
-            // hardcodes its own SidebarSublist internally, so it can't be overridden
-            // directly. Names are placeholders (any registered @loomidev/icons name
-            // works) — swap freely.
-            { label: "Installation", slug: "installation", attrs: { "data-icon": "arrow-down-tray" } },
-            { label: "Customization", slug: "customization", attrs: { "data-icon": "swatch" } },
-            { label: "Contributing", slug: "contributing", attrs: { "data-icon": "code-bracket" } },
-            { label: "RTL Support", slug: "rtl-support", attrs: { "data-icon": "language" } },
-            // Raw Astro page (src/pages/icons/index.astro), not a content-collection
-            // doc — `link`, not `slug`, same as how MarketingHeader/Header.astro link
-            // to /components/ rather than a Starlight slug.
-            { label: "Icons", link: "/icons/", attrs: { "data-icon": "squares-plus" } },
-            { label: "MCP", slug: "mcp-server", attrs: { "data-icon": "cpu-chip" } },
-            { label: "CLI", slug: "cli", attrs: { "data-icon": "command-line" } },
-            { label: "Architecture", slug: "architecture", collapsed: true, attrs: { "data-icon": "building-library" } },
-          ],
-        },
-        {
-          label: "Components",
-          items: [{ autogenerate: { directory: "components" } }],
-        },
-      ],
+      // Docs navigation now lives in the top bar. Keep Starlight's sidebar config
+      // intentionally empty so it does not autogenerate the old docs rail.
+      sidebar: [],
     }),
   ],
 });

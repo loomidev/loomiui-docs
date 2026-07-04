@@ -1,0 +1,753 @@
+---
+import MarketingHeader from "./MarketingHeader.astro";
+import { buildImportMap } from "../lib/import-map.mjs";
+import "../styles/home.css";
+
+const importMap = buildImportMap();
+const title = "Playground - LoomiUI";
+const description = "Select LoomiUI components and adjust common props in a live playground.";
+
+const playgroundComponents = [
+  {
+    key: "button",
+    title: "Button",
+    tag: "loomi-button",
+    packageName: "button",
+    description: "Action button with color, size, outline, radius, and icon props.",
+    defaults: {
+      content: "Save changes",
+      type: "primary",
+      color: "",
+      size: "regular",
+      radius: "medium",
+      outline: false,
+      uppercase: false,
+      icon: "",
+    },
+    controls: [
+      { type: "text", key: "content", label: "Label" },
+      { type: "select", key: "type", label: "Type", options: ["primary", "secondary"] },
+      { type: "select", key: "color", label: "Color", options: ["", "primary", "secondary", "success", "warning", "error"] },
+      { type: "select", key: "size", label: "Size", options: ["tiny", "small", "regular", "medium", "big"] },
+      { type: "select", key: "radius", label: "Radius", options: ["none", "small", "medium", "full"] },
+      { type: "select", key: "icon", label: "Icon", options: ["", "check", "plus", "trash", "arrow-right", "bell-alert"] },
+      { type: "boolean-attr", key: "outline", label: "Outline" },
+      { type: "boolean-attr", key: "uppercase", label: "Uppercase" },
+    ],
+  },
+  {
+    key: "input",
+    title: "Input",
+    tag: "loomi-input",
+    packageName: "input",
+    description: "Text input with label, placeholder, affixes, clear button, and state props.",
+    defaults: {
+      label: "Email",
+      placeholder: "name@company.com",
+      value: "",
+      type: "email",
+      size: "regular",
+      prefix: "",
+      suffix: "",
+      clearable: true,
+      disabled: false,
+    },
+    controls: [
+      { type: "text", key: "label", label: "Label" },
+      { type: "text", key: "placeholder", label: "Placeholder" },
+      { type: "text", key: "value", label: "Value" },
+      { type: "select", key: "type", label: "Type", options: ["text", "email", "search", "tel", "url"] },
+      { type: "select", key: "size", label: "Size", options: ["small", "regular", "medium", "big"] },
+      { type: "text", key: "prefix", label: "Prefix" },
+      { type: "text", key: "suffix", label: "Suffix" },
+      { type: "boolean-attr", key: "clearable", label: "Clearable" },
+      { type: "boolean-attr", key: "disabled", label: "Disabled" },
+    ],
+  },
+  {
+    key: "textarea",
+    title: "Textarea",
+    tag: "loomi-textarea",
+    packageName: "textarea",
+    description: "Multi-line input with label, placeholder, rows, and disabled state.",
+    defaults: {
+      label: "Message",
+      placeholder: "Write a short update...",
+      value: "",
+      rows: 4,
+      disabled: false,
+    },
+    controls: [
+      { type: "text", key: "label", label: "Label" },
+      { type: "text", key: "placeholder", label: "Placeholder" },
+      { type: "text", key: "value", label: "Value" },
+      { type: "number", key: "rows", label: "Rows", min: 2, max: 8, step: 1 },
+      { type: "boolean-attr", key: "disabled", label: "Disabled" },
+    ],
+  },
+  {
+    key: "alert",
+    title: "Alert",
+    tag: "loomi-alert",
+    packageName: "alert",
+    description: "Inline alert with type, shade, icon visibility, and close controls.",
+    defaults: {
+      content: "Your workspace was updated successfully.",
+      type: "success",
+      shade: "faint",
+      color: "",
+      icon: "",
+      "show-icon": true,
+      "show-close-icon": true,
+    },
+    controls: [
+      { type: "text", key: "content", label: "Message" },
+      { type: "select", key: "type", label: "Type", options: ["info", "success", "warning", "error"] },
+      { type: "select", key: "shade", label: "Shade", options: ["faint", "dark"] },
+      { type: "select", key: "color", label: "Color", options: ["", "primary", "success", "warning", "error", "transparent"] },
+      { type: "select", key: "icon", label: "Icon", options: ["", "information-circle", "check-circle", "bell-alert", "key"] },
+      { type: "boolean-string", key: "show-icon", label: "Show icon" },
+      { type: "boolean-string", key: "show-close-icon", label: "Show close" },
+    ],
+  },
+  {
+    key: "checkbox",
+    title: "Checkbox",
+    tag: "loomi-checkbox",
+    packageName: "checkbox",
+    description: "Checkbox with checked and disabled states.",
+    defaults: { content: "Send weekly summary", checked: true, disabled: false },
+    controls: [
+      { type: "text", key: "content", label: "Label" },
+      { type: "boolean-attr", key: "checked", label: "Checked" },
+      { type: "boolean-attr", key: "disabled", label: "Disabled" },
+    ],
+  },
+  {
+    key: "toggle",
+    title: "Toggle",
+    tag: "loomi-toggle",
+    packageName: "toggle",
+    description: "Switch control with checked and disabled states.",
+    defaults: { checked: true, disabled: false },
+    controls: [
+      { type: "boolean-attr", key: "checked", label: "Checked" },
+      { type: "boolean-attr", key: "disabled", label: "Disabled" },
+    ],
+  },
+  {
+    key: "slider",
+    title: "Slider",
+    tag: "loomi-slider",
+    packageName: "slider",
+    description: "Range slider with min, max, step, and selected value props.",
+    defaults: { selected: 60, min: 0, max: 100, step: 5, label: "Completion" },
+    controls: [
+      { type: "text", key: "label", label: "Label" },
+      { type: "range", key: "selected", label: "Selected", min: 0, max: 100, step: 5 },
+      { type: "number", key: "min", label: "Min", min: 0, max: 100, step: 1 },
+      { type: "number", key: "max", label: "Max", min: 1, max: 200, step: 1 },
+      { type: "number", key: "step", label: "Step", min: 1, max: 25, step: 1 },
+    ],
+  },
+  {
+    key: "progress",
+    title: "Progress",
+    tag: "loomi-progress-bar",
+    packageName: "progress",
+    description: "Progress bar with percentage and color props.",
+    defaults: { percentage: 68, color: "primary" },
+    controls: [
+      { type: "range", key: "percentage", label: "Percentage", min: 0, max: 100, step: 1 },
+      { type: "select", key: "color", label: "Color", options: ["primary", "success", "warning", "error"] },
+    ],
+  },
+  {
+    key: "tag",
+    title: "Tag",
+    tag: "loomi-tag",
+    packageName: "tag",
+    description: "Compact label with text, color, and size props.",
+    defaults: { label: "In review", color: "primary", size: "regular" },
+    controls: [
+      { type: "text", key: "label", label: "Label" },
+      { type: "select", key: "color", label: "Color", options: ["primary", "success", "warning", "error", "secondary"] },
+      { type: "select", key: "size", label: "Size", options: ["small", "regular", "medium"] },
+    ],
+  },
+  {
+    key: "avatar",
+    title: "Avatar",
+    tag: "loomi-avatar",
+    packageName: "avatar",
+    description: "Avatar with initials, image, color, dotted, and size props.",
+    defaults: { label: "AM", image: "", size: "regular", "bg-color": "primary", dotted: false },
+    controls: [
+      { type: "text", key: "label", label: "Label" },
+      { type: "text", key: "image", label: "Image URL" },
+      { type: "select", key: "size", label: "Size", options: ["tiny", "small", "regular", "medium", "big"] },
+      { type: "select", key: "bg-color", label: "Color", options: ["primary", "success", "warning", "error", "secondary"] },
+      { type: "boolean-attr", key: "dotted", label: "Dotted" },
+    ],
+  },
+  {
+    key: "rating",
+    title: "Rating",
+    tag: "loomi-rating",
+    packageName: "rating",
+    description: "Star rating with rating, color, and clickable props.",
+    defaults: { rating: 4, color: "orange", clickable: false, name: "playground-rating" },
+    controls: [
+      { type: "range", key: "rating", label: "Rating", min: 0, max: 5, step: 1 },
+      { type: "select", key: "color", label: "Color", options: ["orange", "primary", "success", "warning", "error"] },
+      { type: "boolean-string", key: "clickable", label: "Clickable" },
+    ],
+  },
+  {
+    key: "icon",
+    title: "Icon",
+    tag: "loomi-icon",
+    packageName: "icon",
+    description: "Icon renderer with name and size props.",
+    defaults: { name: "sparkles", size: 48 },
+    controls: [
+      { type: "select", key: "name", label: "Name", options: ["sparkles", "bell-alert", "check-circle", "trash", "magnifying-glass", "squares-plus"] },
+      { type: "range", key: "size", label: "Size", min: 16, max: 96, step: 4 },
+    ],
+  },
+  {
+    key: "theme-switcher",
+    title: "Theme Switcher",
+    tag: "loomi-theme-switcher",
+    packageName: "theme-switcher",
+    description: "Theme control with variant and label visibility props.",
+    defaults: { variant: "dropmenu", "show-labels": false },
+    controls: [
+      { type: "select", key: "variant", label: "Variant", options: ["dropmenu", "switch", "buttons"] },
+      { type: "boolean-attr", key: "show-labels", label: "Show labels" },
+    ],
+  },
+];
+
+const packagesToImport = [...new Set(playgroundComponents.map((component) => component.packageName))];
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.png" />
+    <script type="importmap" is:inline set:html={JSON.stringify(importMap)} />
+  </head>
+  <body class="bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
+    <MarketingHeader />
+
+    <main class="mx-auto max-w-7xl px-6 py-10">
+      <div class="feature-kicker">Playground</div>
+      <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-end">
+        <div>
+          <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">Playground</h1>
+          <p class="mt-3 max-w-2xl text-lg leading-7 text-gray-600 dark:text-gray-400">
+            Select a component, tune its props, and inspect the markup as it changes.
+          </p>
+        </div>
+        <label class="playground-select-label">
+          <span>Component</span>
+          <select id="component-select" class="playground-select" aria-label="Select component">
+            {playgroundComponents.map((component) => <option value={component.key}>{component.title}</option>)}
+          </select>
+        </label>
+      </div>
+
+      <section class="playground-shell mt-8">
+        <div class="playground-preview-panel">
+          <div class="playground-panel-top">
+            <div>
+              <h2 id="component-title">Button</h2>
+              <p id="component-description">Action button with color, size, outline, radius, and icon props.</p>
+            </div>
+            <a id="docs-link" href="/components/button/" class="playground-docs-link">
+              Docs
+              <loomi-icon name="arrow-right" style="width:0.9rem;height:0.9rem"></loomi-icon>
+            </a>
+          </div>
+
+          <div class="playground-preview-stage">
+            <div id="preview-host" class="playground-preview"></div>
+          </div>
+
+          <div class="playground-code-block">
+            <div class="playground-code-header">
+              <span>HTML</span>
+              <button type="button" id="copy-code" class="playground-icon-button" aria-label="Copy HTML">
+                <loomi-icon name="clipboard-document" style="width:1rem;height:1rem"></loomi-icon>
+              </button>
+            </div>
+            <pre><code id="markup-code"></code></pre>
+          </div>
+        </div>
+
+        <aside class="playground-controls-panel" aria-label="Component props">
+          <div class="playground-controls-heading">
+            <h2>Props</h2>
+            <button type="button" id="reset-props" class="playground-reset">
+              <loomi-icon name="arrow-path" style="width:0.95rem;height:0.95rem"></loomi-icon>
+              Reset
+            </button>
+          </div>
+          <div id="controls" class="playground-controls"></div>
+        </aside>
+      </section>
+    </main>
+
+    <footer class="border-t border-gray-200 dark:border-gray-800">
+      <div class="mx-auto max-w-6xl px-6 py-10 text-sm text-gray-500 dark:text-gray-400">
+        <div class="flex flex-wrap justify-center gap-6">
+          <a href="/installation/" class="hover:text-primary-600 dark:hover:text-primary-400">Installation</a>
+          <a href="/components/" class="hover:text-primary-600 dark:hover:text-primary-400">Components</a>
+          <a href="/icons/" class="hover:text-primary-600 dark:hover:text-primary-400">Icons</a>
+          <a href="/playground/" class="hover:text-primary-600 dark:hover:text-primary-400">Playground</a>
+        </div>
+        <p class="mt-6 text-center">© {new Date().getFullYear()} LoomiUI.</p>
+      </div>
+    </footer>
+
+    <script type="application/json" id="playground-data" is:inline set:html={JSON.stringify(playgroundComponents)}></script>
+
+    <script type="module" is:inline set:html={`
+      const names = ${JSON.stringify(packagesToImport)};
+      for (const name of names) { import("@loomidev/" + name); }
+      import("@loomidev/button");
+      import("@loomidev/icon");
+    `} />
+
+    <script>
+      type Control = {
+        type: "text" | "select" | "boolean-attr" | "boolean-string" | "number" | "range";
+        key: string;
+        label: string;
+        options?: string[];
+        min?: number;
+        max?: number;
+        step?: number;
+      };
+      type PlaygroundComponent = {
+        key: string;
+        title: string;
+        tag: string;
+        packageName: string;
+        description: string;
+        defaults: Record<string, string | number | boolean>;
+        controls: Control[];
+      };
+
+      const components = JSON.parse(document.getElementById("playground-data")!.textContent || "[]") as PlaygroundComponent[];
+      const byKey = new Map(components.map((component) => [component.key, component]));
+      const select = document.getElementById("component-select") as HTMLSelectElement;
+      const titleEl = document.getElementById("component-title") as HTMLElement;
+      const descriptionEl = document.getElementById("component-description") as HTMLElement;
+      const docsLink = document.getElementById("docs-link") as HTMLAnchorElement;
+      const previewHost = document.getElementById("preview-host") as HTMLElement;
+      const controlsHost = document.getElementById("controls") as HTMLElement;
+      const codeEl = document.getElementById("markup-code") as HTMLElement;
+      const resetButton = document.getElementById("reset-props") as HTMLButtonElement;
+      const copyButton = document.getElementById("copy-code") as HTMLButtonElement;
+
+      let active = components[0];
+      let values: Record<string, string | number | boolean> = { ...active.defaults };
+
+      function escapeHtml(value: unknown) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;");
+      }
+
+      function controlFor(key: string) {
+        return active.controls.find((control) => control.key === key);
+      }
+
+      function shouldRenderAttribute(key: string, value: string | number | boolean) {
+        const control = controlFor(key);
+        if (key === "content") return false;
+        if (typeof value === "string" && value.length === 0) return false;
+        if (control?.type === "boolean-attr") return value === true;
+        return true;
+      }
+
+      function attributeValue(key: string, value: string | number | boolean) {
+        const control = controlFor(key);
+        if (control?.type === "boolean-attr") return "";
+        return String(value);
+      }
+
+      function markupForCurrent() {
+        const attrs = Object.entries(values)
+          .filter(([key, value]) => shouldRenderAttribute(key, value))
+          .map(([key, value]) => {
+            const attrValue = attributeValue(key, value);
+            return attrValue ? `${key}="${escapeHtml(attrValue)}"` : key;
+          })
+          .join(" ");
+        const open = attrs ? `<${active.tag} ${attrs}>` : `<${active.tag}>`;
+        const content = "content" in values ? escapeHtml(values.content) : "";
+        return `${open}${content}</${active.tag}>`;
+      }
+
+      function renderPreview() {
+        const markup = markupForCurrent();
+        previewHost.innerHTML = markup;
+        codeEl.textContent = markup;
+      }
+
+      function renderControl(control: Control) {
+        const wrapper = document.createElement("label");
+        wrapper.className = control.type.startsWith("boolean") ? "playground-check-control" : "playground-field";
+
+        if (control.type.startsWith("boolean")) {
+          const input = document.createElement("input");
+          input.type = "checkbox";
+          input.checked = Boolean(values[control.key]);
+          input.addEventListener("change", () => {
+            values[control.key] = input.checked;
+            renderPreview();
+          });
+          const text = document.createElement("span");
+          text.textContent = control.label;
+          wrapper.append(input, text);
+          return wrapper;
+        }
+
+        const text = document.createElement("span");
+        text.textContent = control.label;
+        wrapper.append(text);
+
+        if (control.type === "select") {
+          const input = document.createElement("select");
+          for (const option of control.options ?? []) {
+            const optionEl = document.createElement("option");
+            optionEl.value = option;
+            optionEl.textContent = option || "Default";
+            input.append(optionEl);
+          }
+          input.value = String(values[control.key] ?? "");
+          input.addEventListener("change", () => {
+            values[control.key] = input.value;
+            renderPreview();
+          });
+          wrapper.append(input);
+          return wrapper;
+        }
+
+        if (control.type === "range") {
+          const row = document.createElement("div");
+          row.className = "playground-range-row";
+          const input = document.createElement("input");
+          input.type = "range";
+          input.min = String(control.min ?? 0);
+          input.max = String(control.max ?? 100);
+          input.step = String(control.step ?? 1);
+          input.value = String(values[control.key] ?? control.min ?? 0);
+          const output = document.createElement("output");
+          output.textContent = input.value;
+          input.addEventListener("input", () => {
+            values[control.key] = Number(input.value);
+            output.textContent = input.value;
+            renderPreview();
+          });
+          row.append(input, output);
+          wrapper.append(row);
+          return wrapper;
+        }
+
+        const input = document.createElement("input");
+        input.type = control.type === "number" ? "number" : "text";
+        if (control.type === "number") {
+          input.min = String(control.min ?? "");
+          input.max = String(control.max ?? "");
+          input.step = String(control.step ?? 1);
+        }
+        input.value = String(values[control.key] ?? "");
+        input.addEventListener("input", () => {
+          values[control.key] = control.type === "number" ? Number(input.value) : input.value;
+          renderPreview();
+        });
+        wrapper.append(input);
+        return wrapper;
+      }
+
+      function renderControls() {
+        controlsHost.replaceChildren(...active.controls.map(renderControl));
+      }
+
+      function activate(key: string) {
+        active = byKey.get(key) ?? components[0];
+        values = { ...active.defaults };
+        titleEl.textContent = active.title;
+        descriptionEl.textContent = active.description;
+        docsLink.href = `/components/${active.key}/`;
+        renderControls();
+        renderPreview();
+      }
+
+      select.addEventListener("change", () => activate(select.value));
+      resetButton.addEventListener("click", () => activate(active.key));
+      copyButton.addEventListener("click", async () => {
+        await navigator.clipboard?.writeText(codeEl.textContent ?? "");
+        copyButton.classList.add("is-copied");
+        window.setTimeout(() => copyButton.classList.remove("is-copied"), 900);
+      });
+
+      activate(active.key);
+    </script>
+  </body>
+</html>
+
+<style>
+  .playground-select-label,
+  .playground-field {
+    display: grid;
+    gap: 0.45rem;
+    color: rgb(71 85 105);
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+  .dark .playground-select-label,
+  .dark .playground-field {
+    color: rgb(203 213 225);
+  }
+  .playground-select,
+  .playground-field input,
+  .playground-field select {
+    width: 100%;
+    border-radius: 0.6rem;
+    border: 1px solid rgb(226 232 240);
+    background: white;
+    padding: 0.65rem 0.8rem;
+    color: rgb(15 23 42);
+    font: inherit;
+    font-weight: 500;
+  }
+  .dark .playground-select,
+  .dark .playground-field input,
+  .dark .playground-field select {
+    border-color: rgb(51 65 85);
+    background: rgb(15 23 42 / 0.72);
+    color: white;
+  }
+  .playground-shell {
+    display: grid;
+    gap: 1rem;
+  }
+  @media (min-width: 64rem) {
+    .playground-shell {
+      grid-template-columns: minmax(0, 1fr) 22rem;
+      align-items: start;
+    }
+  }
+  .playground-preview-panel,
+  .playground-controls-panel {
+    border: 1px solid rgb(226 232 240);
+    border-radius: 0.8rem;
+    background: white;
+    box-shadow: 0 12px 30px -24px rgb(15 23 42 / 0.36);
+  }
+  .dark .playground-preview-panel,
+  .dark .playground-controls-panel {
+    border-color: rgb(51 65 85);
+    background: rgb(15 23 42 / 0.72);
+  }
+  .playground-preview-panel {
+    overflow: hidden;
+  }
+  .playground-panel-top,
+  .playground-controls-heading,
+  .playground-code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .playground-panel-top {
+    border-bottom: 1px solid rgb(226 232 240);
+    padding: 1rem;
+  }
+  .dark .playground-panel-top {
+    border-color: rgb(51 65 85);
+  }
+  .playground-panel-top h2,
+  .playground-controls-heading h2 {
+    margin: 0;
+    color: rgb(15 23 42);
+    font-size: 1rem;
+    font-weight: 750;
+  }
+  .dark .playground-panel-top h2,
+  .dark .playground-controls-heading h2 {
+    color: white;
+  }
+  .playground-panel-top p {
+    margin: 0.25rem 0 0;
+    color: rgb(100 116 139);
+    font-size: 0.86rem;
+    line-height: 1.5;
+  }
+  .dark .playground-panel-top p {
+    color: rgb(148 163 184);
+  }
+  .playground-docs-link,
+  .playground-reset,
+  .playground-icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    border: 0;
+    background: transparent;
+    color: rgb(37 99 235);
+    font-size: 0.82rem;
+    font-weight: 750;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .dark .playground-docs-link,
+  .dark .playground-reset,
+  .dark .playground-icon-button {
+    color: rgb(96 165 250);
+  }
+  .playground-preview-stage {
+    display: grid;
+    min-height: 22rem;
+    place-items: center;
+    padding: 2rem;
+    background:
+      linear-gradient(90deg, rgb(226 232 240 / 0.55) 1px, transparent 1px),
+      linear-gradient(rgb(226 232 240 / 0.55) 1px, transparent 1px),
+      rgb(248 250 252);
+    background-size: 24px 24px;
+  }
+  .dark .playground-preview-stage {
+    background:
+      linear-gradient(90deg, rgb(51 65 85 / 0.55) 1px, transparent 1px),
+      linear-gradient(rgb(51 65 85 / 0.55) 1px, transparent 1px),
+      rgb(2 6 23);
+  }
+  .playground-preview {
+    display: flex;
+    width: min(100%, 44rem);
+    min-height: 12rem;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgb(226 232 240);
+    border-radius: 0.7rem;
+    background: white;
+    padding: 2rem;
+  }
+  .dark .playground-preview {
+    border-color: rgb(51 65 85);
+    background: rgb(15 23 42);
+  }
+  .playground-code-block {
+    border-top: 1px solid rgb(226 232 240);
+    background: rgb(15 23 42);
+  }
+  .dark .playground-code-block {
+    border-color: rgb(51 65 85);
+  }
+  .playground-code-header {
+    border-bottom: 1px solid rgb(30 41 59);
+    padding: 0.75rem 1rem;
+    color: rgb(148 163 184);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .playground-icon-button {
+    height: 2rem;
+    width: 2rem;
+    border-radius: 0.5rem;
+    color: rgb(203 213 225);
+  }
+  .playground-icon-button:hover,
+  .playground-icon-button.is-copied {
+    background: rgb(30 41 59);
+    color: white;
+  }
+  .playground-code-block pre {
+    margin: 0;
+    overflow-x: auto;
+    padding: 1rem;
+  }
+  .playground-code-block code {
+    color: rgb(226 232 240);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: 0.82rem;
+    line-height: 1.6;
+  }
+  .playground-controls-panel {
+    padding: 1rem;
+  }
+  @media (min-width: 64rem) {
+    .playground-controls-panel {
+      position: sticky;
+      top: 5rem;
+    }
+  }
+  .playground-controls-heading {
+    margin-bottom: 1rem;
+  }
+  .playground-controls {
+    display: grid;
+    gap: 0.85rem;
+  }
+  .playground-check-control {
+    display: flex;
+    min-height: 2.55rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    border: 1px solid rgb(226 232 240);
+    border-radius: 0.6rem;
+    padding: 0.6rem 0.7rem;
+    color: rgb(51 65 85);
+    font-size: 0.85rem;
+    font-weight: 650;
+  }
+  .dark .playground-check-control {
+    border-color: rgb(51 65 85);
+    color: rgb(226 232 240);
+  }
+  .playground-check-control input {
+    order: 2;
+    height: 1rem;
+    width: 1rem;
+    accent-color: rgb(37 99 235);
+  }
+  .playground-range-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 3rem;
+    align-items: center;
+    gap: 0.7rem;
+  }
+  .playground-range-row input {
+    padding-inline: 0;
+    accent-color: rgb(37 99 235);
+  }
+  .playground-range-row output {
+    border-radius: 0.45rem;
+    background: rgb(241 245 249);
+    padding: 0.35rem 0.45rem;
+    color: rgb(51 65 85);
+    font-size: 0.78rem;
+    font-weight: 750;
+    text-align: center;
+  }
+  .dark .playground-range-row output {
+    background: rgb(30 41 59);
+    color: rgb(226 232 240);
+  }
+</style>

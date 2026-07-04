@@ -144,21 +144,14 @@ starlight-toc nav ul li a{
 }
 @media (min-width: 50em) {
   [data-has-sidebar] {
-    --sl-content-inline-start: calc(var(--sl-sidebar-width) + var(--loomi-shell-extra-gutter)) !important;
-  }
-  .sidebar-pane {
-    inset-inline-start: var(--loomi-shell-extra-gutter) !important;
+    --sl-content-inline-start: var(--loomi-shell-extra-gutter) !important;
   }
   .main-frame {
     padding-inline-end: var(--loomi-shell-extra-gutter) !important;
   }
   .header {
     padding-inline-start: calc(var(--sl-nav-pad-x) + var(--loomi-shell-extra-gutter)) !important;
-  }
-  [data-has-sidebar] .header {
-    padding-inline-end: calc(
-      var(--sl-nav-gap) + var(--sl-nav-pad-x) + var(--sl-menu-button-size) + var(--loomi-shell-extra-gutter)
-    ) !important;
+    padding-inline-end: calc(var(--sl-nav-pad-x) + var(--loomi-shell-extra-gutter)) !important;
   }
 }
 

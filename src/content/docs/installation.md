@@ -3,11 +3,15 @@ title: Installation
 description: Install LoomiUI in a few simple steps.
 ---
 
-LoomiUI is installed with npm, just like most frontend packages.
+LoomiUI is installed with npm, following the same setup flow as most modern frontend libraries.
 
-To keep setup simple, start with the main package first. This registers all LoomiUI
-components at once, so you can begin building immediately without choosing individual
-packages up front.
+If you are new to LoomiUI, the recommended starting point is the main package.
+Installing this package registers all available LoomiUI components in one step, which
+lets you start building right away without deciding on individual component packages
+up front.
+
+This is the fastest path to a working setup. Once your project is running, you can
+switch to smaller, component-level installs to keep your bundle more focused.
 
 ```bash
 npm install @loomidev/components lit
