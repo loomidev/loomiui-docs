@@ -196,8 +196,8 @@ const setupDocsPreview = () => {
     chat.dataset.docsReady = "true";
     chat.participants = [
       { id: "you", name: "You", label: "YO", color: "primary" },
-      { id: "sara", name: "Sara", label: "SA", color: "purple" },
-      { id: "alex", name: "Alex", label: "AL", color: "cyan" },
+      { id: "sara", name: "Sara", label: "SA", color: "warning" },
+      { id: "alex", name: "Alex", label: "AL", color: "success" },
     ];
     chat.currentUserId = "you";
     chat.showAvatars = true;

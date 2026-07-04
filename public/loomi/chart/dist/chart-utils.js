@@ -4,10 +4,8 @@ export const PALETTE = [
     "success",
     "warning",
     "error",
-    "purple",
-    "cyan",
-    "pink",
-    "blue",
+    "secondary",
+    "gray",
 ];
 export const BAR_WIDTH_RATIO = 0.45;
 export const HOVER_HIT_PCT = 9;

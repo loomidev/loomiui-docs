@@ -60,7 +60,7 @@ let LoomiTag = class LoomiTag extends LoomiElement {
     }
     static { this.styles = loomiStyles(componentStyles); }
     get resolvedColor() {
-        return this.color === "info" ? "blue" : this.color;
+        return this.color === "info" ? "primary" : this.color;
     }
     render() {
         const cls = [

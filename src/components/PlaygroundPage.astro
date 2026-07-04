@@ -281,7 +281,7 @@ const playgroundComponents = [
       { type: "text", key: "image", label: "Image URL" },
       { type: "select", key: "size", label: "Size", options: ["tiny", "small", "medium", "regular", "big", "huge", "omg"] },
       { type: "select", key: "bg-color", label: "Color", options: ["gray", "primary", "success", "warning", "error", "secondary"] },
-      { type: "select", key: "dot-color", label: "Dot color", options: ["success", "primary", "warning", "error", "gray", "purple", "cyan", "pink", "blue"] },
+      { type: "select", key: "dot-color", label: "Dot color", options: ["success", "primary", "warning", "error", "gray", "secondary"] },
       { type: "select", key: "dot-position", label: "Dot position", options: ["top", "bottom"] },
       { type: "boolean-attr", key: "dotted", label: "Dotted" },
       { type: "boolean-attr", key: "pulse-dot", label: "Pulse dot" },
@@ -298,7 +298,7 @@ const playgroundComponents = [
     controls: [
       { type: "range", key: "rating", label: "Rating", min: 0, max: 5, step: 1 },
       { type: "select", key: "type", label: "Type", options: ["star", "heart", "thumbsup"] },
-      { type: "select", key: "color", label: "Color", options: ["warning", "primary", "success", "error", "purple", "pink"] },
+      { type: "select", key: "color", label: "Color", options: ["warning", "primary", "success", "error", "secondary"] },
       { type: "select", key: "size", label: "Size", options: ["small", "medium", "big"] },
       { type: "boolean-string", key: "clickable", label: "Clickable" },
     ],
@@ -973,6 +973,9 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
             <div class="playground-controls-heading">
               <h2>Component</h2>
             </div>
+            <loomi-alert type="info" shade="faint" show-close-icon="false" class="playground-picker-note">
+              Only components whose props map to plain attributes are listed. Components that need imperative wiring, rich data, or composed children live in their docs pages.
+            </loomi-alert>
             <loomi-select
               id="component-select"
               searchable
@@ -1254,6 +1257,12 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
     border-color: rgb(51 65 85);
     background: rgb(15 23 42 / 0.72);
     color: white;
+  }
+  .playground-picker-note {
+    display: block;
+    margin-bottom: 0.85rem;
+    font-size: 0.82rem;
+    line-height: 1.5;
   }
   /* loomi-select ships a 1rem bottom margin for form flow (`no-clearing` is also set
      on each instance); the picker card and control grids space themselves. */
