@@ -2,3 +2,82 @@
 title: RTL Support
 description: LoomiUI supports right-to-left (RTL) languages like Arabic and Hebrew. This page explains how to enable RTL support in your app.
 ---
+
+LoomiUI does not have a LoomiUI-specific "RTL mode." It follows the standard HTML `dir`
+attribute, the same way plain HTML and CSS do. Set `dir="rtl"` once and every LoomiUI
+component on the page mirrors automatically — no extra props, no per-component setup.
+
+This works even though components render inside Shadow DOM: `direction` is an inherited
+CSS property, so it flows from your document into each component's shadow root just
+like any other inherited style (fonts, `color`, etc.).
+
+## Enable RTL
+
+Set `dir="rtl"` on `<html>` (or any ancestor element) for Arabic, Hebrew, or any other
+RTL language:
+
+```html
+<html dir="rtl" lang="ar">
+  <body>
+    <loomi-button color="primary">حفظ</loomi-button>
+  </body>
+</html>
+```
+
+You can also scope it to a single subtree, or even a single component instance, since
+the `dir` attribute applies wherever you set it:
+
+```html
+<loomi-slider dir="rtl"></loomi-slider>
+```
+
+## How it works
+
+Most LoomiUI components are built with CSS logical properties (`margin-inline-start`,
+`padding-inline-end`, `text-align: start`, and similar) instead of physical ones
+(`margin-left`, `text-align: left`). Logical properties resolve relative to text
+direction automatically, so layout, spacing, and alignment flip for free under
+`dir="rtl"` — LoomiUI doesn't need to do anything extra for those.
+
+<loomi-alert type="info" icon="information-circle">
+  This is the same mechanism as <a href="/customization/#dark-mode">dark mode</a>: LoomiUI
+  reacts to a standard ancestor attribute (<code>dir</code> here, a <code>.dark</code>
+  class there) instead of a component-level toggle.
+</loomi-alert>
+
+## Components with explicit RTL styling
+
+A few components have visual details that logical properties alone can't flip — arrow
+directions, asymmetric decorations, or drag-fill directions. These ship explicit
+`dir="rtl"`-aware styles so they still look correct:
+
+| Component | What flips in RTL |
+| --- | --- |
+| [Chat](/components/chat/) | Message bubble tail position |
+| [Slider](/components/slider/) | Track fill direction (and vertical range orientation) |
+| [Tag Input](/components/tag-input/) | Label position relative to the input |
+
+You don't need to configure anything for these either — they respond to the same `dir`
+attribute as everything else.
+
+## Pairing RTL with a translated locale
+
+`dir="rtl"` only mirrors layout — it doesn't translate anything. For a language like
+Arabic, pair it with LoomiUI's built-in locale support so component copy (placeholders,
+aria labels, datepicker month names, and similar defaults) is translated too:
+
+```js
+import { setLoomiLocale } from "@loomidev/core";
+
+setLoomiLocale("ar");
+```
+
+`ar` is one of the built-in locales (alongside `en`, `de`, `es`, `fr`, `it`, `ml`,
+`pt_BR`, `tr`, and `zh_CN`). Your own app copy — labels, button text, page content —
+still needs its own translation, the same as it would with plain HTML.
+
+## Related
+
+- **[Customization →](/customization/)** — the same ancestor-attribute pattern LoomiUI
+  uses for dark mode.
+- **[Components →](/components/)** — browse every LoomiUI component, RTL included.

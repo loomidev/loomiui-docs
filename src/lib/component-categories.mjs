@@ -26,10 +26,10 @@ const MEMBERS = {
   ],
   feedback: ["alert", "notification", "bell", "spinner", "progress", "processing", "progress-steps"],
   navigation: ["tab", "pagination", "dropmenu", "theme-switcher", "context-menu", "command-palette", "bottom-nav"],
-  overlay: ["modal", "popover", "tooltip", "drawer"],
+  overlay: ["modal", "popover", "tooltip", "drawer", "floating-panel"],
   "data-display": [
     "table", "tag", "statistic", "rating", "timeline", "listview", "contact-card", "chart",
-    "horizontal-line-graph", "copy-to-clipboard", "timer", "data-grid", "calendar", "chat",
+    "horizontal-line-graph", "clipboard", "timer", "data-grid", "calendar", "chat", "photo-gallery",
   ],
   layout: ["button", "button-group", "card", "accordion", "centered-content", "sortable", "divider", "resizable", "fab"],
   media: ["icon", "avatar", "empty-state", "qrcode", "video"],

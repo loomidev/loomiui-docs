@@ -34,7 +34,6 @@ function titleCase(name) {
   const special = {
     checkcards: "Checkcards",
     qrcode: "QR Code",
-    "copy-to-clipboard": "Copy to Clipboard",
     "data-grid": "Data Grid",
     calendar: "Calendar",
   };

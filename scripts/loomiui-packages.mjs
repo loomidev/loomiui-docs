@@ -17,9 +17,9 @@ export const CATEGORY = {
   content: [
     "card", "avatar", "accordion", "tag", "tooltip", "popover", "empty-state", "statistic",
     "rating", "timeline", "progress", "listview", "contact-card", "centered-content",
-    "sortable", "processing", "horizontal-line-graph", "chart", "drawer", "copy-to-clipboard",
+    "sortable", "processing", "horizontal-line-graph", "chart", "drawer", "clipboard",
     "divider", "qrcode", "timer", "data-grid", "calendar", "chat", "resizable",
-    "progress-steps", "video",
+    "progress-steps", "video", "floating-panel", "photo-gallery",
   ],
   navigation: ["tab", "pagination", "dropmenu", "theme-switcher", "context-menu", "command-palette", "bottom-nav"],
 };

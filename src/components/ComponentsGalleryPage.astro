@@ -22,7 +22,6 @@ function titleCase(name: string): string {
   const special: Record<string, string> = {
     checkcards: "Checkcards",
     qrcode: "QR Code",
-    "copy-to-clipboard": "Copy to Clipboard",
     "data-grid": "Data Grid",
     calendar: "Calendar",
   };
@@ -81,6 +80,7 @@ const PREVIEWS: Record<string, string> = {
   popover: `<loomi-popover><p>This is the popover content.</p></loomi-popover>`,
   tooltip: `<loomi-tooltip content="Tooltip text" position="top"><loomi-icon name="information-circle" style="width:1.4rem;height:1.4rem;color:var(--loomi-gray-400,#9ca3af)"></loomi-icon></loomi-tooltip>`,
   drawer: `<loomi-button size="small" type="secondary" onclick="showLoomiDrawer('prev-drawer')">Open filters</loomi-button><loomi-drawer name="prev-drawer" title="Filters">Filter controls.</loomi-drawer>`,
+  "floating-panel": `<div style="height:5.5rem;width:100%;overflow:hidden;position:relative"><loomi-floating-panel name="prev-panel" title="Notes" open top="6%" left="6%" width="88%" height="82%" no-drag resizable="false" show-close-icon="false" style="position:absolute"></loomi-floating-panel></div>`,
 
   // Data Display
   table: `<loomi-table compact data='[{"Name":"Olivia Rhye","Status":"Active"},{"Name":"Liam Carter","Status":"Invited"}]' class="w-full"></loomi-table>`,
@@ -92,9 +92,10 @@ const PREVIEWS: Record<string, string> = {
   "contact-card": `<div style="transform:scale(.7)"><loomi-contact-card name="Olivia Rhye" position="Designer"></loomi-contact-card></div>`,
   chart: `<loomi-chart type="line" color="primary" data='[{"label":"1","value":12},{"label":"2","value":18},{"label":"3","value":15},{"label":"4","value":24},{"label":"5","value":21}]' style="height:3rem;width:100%;display:block"></loomi-chart>`,
   "horizontal-line-graph": `<loomi-horizontal-line-graph data='[{"label":"Direct","value":45,"color":"primary"},{"label":"Search","value":30,"color":"success"}]' style="width:100%;display:block"></loomi-horizontal-line-graph>`,
-  "copy-to-clipboard": `<loomi-copy-to-clipboard>INV-2048</loomi-copy-to-clipboard>`,
+  clipboard: `<loomi-clipboard>INV-2048</loomi-clipboard>`,
   timer: `<loomi-timer duration="90" label="Sprint" style="font-size:14px"></loomi-timer>`,
   chat: `<div style="height:5.5rem;width:100%;overflow:hidden;display:flex;flex-direction:column;justify-content:center;gap:.3rem;padding:0 .5rem;transform:scale(.9)"><loomi-chat-message text="Can we ship this today?" sender="Sara" sender-id="sara" bubble-color="success" show-avatar></loomi-chat-message><loomi-chat-message text="Yes — pushing now." sender="You" sender-id="you" bubble-color="primary" outgoing show-avatar></loomi-chat-message></div>`,
+  "photo-gallery": `<div style="height:5.5rem;width:100%;overflow:hidden"><loomi-photo-gallery thumb-size="90" show-slideshow="false" show-album-toggle="false" style="display:block;width:166%;transform:scale(.6);transform-origin:top left"><loomi-photo-gallery-item src="/avatars/male.jpg" thumb="/avatars/male.jpg" alt="Photo one"></loomi-photo-gallery-item><loomi-photo-gallery-item src="/avatars/female.jpg" thumb="/avatars/female.jpg" alt="Photo two"></loomi-photo-gallery-item><loomi-photo-gallery-item src="/avatars/male2.jpg" thumb="/avatars/male2.jpg" alt="Photo three" favourite></loomi-photo-gallery-item></loomi-photo-gallery></div>`,
 
   // Layout
   button: `<loomi-button color="primary">Button</loomi-button>`,

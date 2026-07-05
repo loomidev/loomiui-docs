@@ -12,7 +12,7 @@ export default defineConfig({
   site: "https://loomiui.com",
   server: {
     host: true,
-    port: 4321,
+    port: Number(process.env.PORT) || 4321,
     strictPort: true,
     allowedHosts: ["loomiui.test"],
   },

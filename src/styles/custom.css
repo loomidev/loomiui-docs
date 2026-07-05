@@ -101,9 +101,34 @@
   --loomi-black-900: var(--_dark-black-900);
 }
 
-:root[data-theme="dark"] loomi-button[outline] {
-  --loomi-primary-300: oklch(58% 0.18 276.966);
-  --loomi-secondary-300: var(--_dark-secondary-200);
+/* @loomidev/button is dark-mode aware on its own — --loomi-surface-border/-hover flip
+   under :host-context(.dark) in @loomidev/core, resolving through --loomi-gray-700.
+   The gray/secondary inversion above assumes components have no dark-mode logic of
+   their own, so left alone it would double-flip button's already-correct shade back to
+   a light-mode value. Reset every shade it touches so lookups fall through to the
+   theme package's own (already dark-appropriate) defaults instead. */
+:root[data-theme="dark"] .loomi-preview loomi-button {
+  --loomi-white: initial;
+  --loomi-gray-50: initial;
+  --loomi-gray-100: initial;
+  --loomi-gray-200: initial;
+  --loomi-gray-300: initial;
+  --loomi-gray-400: initial;
+  --loomi-gray-500: initial;
+  --loomi-gray-600: initial;
+  --loomi-gray-700: initial;
+  --loomi-gray-800: initial;
+  --loomi-gray-900: initial;
+  --loomi-secondary-50: initial;
+  --loomi-secondary-100: initial;
+  --loomi-secondary-200: initial;
+  --loomi-secondary-300: initial;
+  --loomi-secondary-400: initial;
+  --loomi-secondary-500: initial;
+  --loomi-secondary-600: initial;
+  --loomi-secondary-700: initial;
+  --loomi-secondary-800: initial;
+  --loomi-secondary-900: initial;
 }
 
 /* Live component preview boxes injected above each ```html code block. */

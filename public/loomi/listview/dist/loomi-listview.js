@@ -5,14 +5,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 import { html } from "lit";
-import { property } from "lit/decorators.js";
+import { customElement, property } from "lit/decorators.js";
 import { LoomiElement, loomiStyles } from "@loomidev/core";
 import { componentStyles } from "./generated/styles.css.js";
 /**
- * `<loomi-listitem>` — a single stackable list row.
+ * `<loomi-listview-item>` — a single list row. Use inside `<loomi-listview>`.
  * @slot - Row content.
  */
-export class LoomiListitem extends LoomiElement {
+let LoomiListviewItem = class LoomiListviewItem extends LoomiElement {
     constructor() {
         super(...arguments);
         this.compact = false;
@@ -22,18 +22,48 @@ export class LoomiListitem extends LoomiElement {
     render() {
         return html `<div class="loomi-li" role="listitem"><slot></slot></div>`;
     }
-}
+};
 __decorate([
     property({ type: Boolean, reflect: true })
-], LoomiListitem.prototype, "compact", void 0);
+], LoomiListviewItem.prototype, "compact", void 0);
 __decorate([
     property({ type: Boolean, attribute: "as-flex", reflect: true })
-], LoomiListitem.prototype, "asFlex", void 0);
-customElements.define("loomi-listitem", LoomiListitem);
-/** Alias of `LoomiListitem` registered under `<loomi-listview-item>`. The Custom Elements
- * registry rejects registering one constructor under two tag names, so this subclass
- * exists purely to give the alias its own constructor identity. */
-export class LoomiListviewItem extends LoomiListitem {
-}
-customElements.define("loomi-listview-item", LoomiListviewItem);
+], LoomiListviewItem.prototype, "asFlex", void 0);
+LoomiListviewItem = __decorate([
+    customElement("loomi-listview-item")
+], LoomiListviewItem);
+export { LoomiListviewItem };
+/**
+ * `<loomi-listview>` — a divided list of `<loomi-listview-item>` rows.
+ * @slot - `<loomi-listview-item>` children.
+ */
+let LoomiListview = class LoomiListview extends LoomiElement {
+    constructor() {
+        super(...arguments);
+        this.transparent = false;
+        this.compact = false;
+        this.sync = () => {
+            this.querySelectorAll("loomi-listview-item").forEach((item) => {
+                item.compact = this.compact;
+            });
+        };
+    }
+    static { this.styles = loomiStyles(componentStyles); }
+    firstUpdated() {
+        this.sync();
+    }
+    render() {
+        return html `<div class="loomi-listview" role="list"><slot @slotchange=${this.sync}></slot></div>`;
+    }
+};
+__decorate([
+    property({ type: Boolean, reflect: true })
+], LoomiListview.prototype, "transparent", void 0);
+__decorate([
+    property({ type: Boolean, reflect: true })
+], LoomiListview.prototype, "compact", void 0);
+LoomiListview = __decorate([
+    customElement("loomi-listview")
+], LoomiListview);
+export { LoomiListview };
 //# sourceMappingURL=loomi-listview.js.map

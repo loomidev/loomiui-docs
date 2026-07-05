@@ -1,6 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import MarketingHeader from "../components/MarketingHeader.astro";
+import ThemeProvider from "../components/ThemeProvider.astro";
 import icon from "../assets/icon.png";
 import { buildImportMap } from "../lib/import-map.mjs";
 import { COMPONENT_NAMES } from "../../scripts/loomiui-packages.mjs";
@@ -28,6 +29,7 @@ const componentCategories = ["All", "Data Entry", "Feedback", "Navigation", "Ove
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="icon" href="/favicon.png" />
+    <ThemeProvider />
     <script type="importmap" is:inline set:html={JSON.stringify(importMap)} />
   </head>
   <body class="bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
