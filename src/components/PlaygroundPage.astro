@@ -1004,6 +1004,35 @@ const playgroundComponents = [
       { type: "boolean-attr", key: "disable-fullscreen", label: "Disable fullscreen" },
     ],
   },
+  {
+    key: "fab",
+    title: "Fab",
+    tag: "loomi-fab",
+    packageName: "fab",
+    // No <loomi-fab-item> children here: the speed-dial menu is slot-composed (like
+    // button-group/accordion), so it's excluded from this attribute-only playground.
+    // `variant` is fixed to "docked" rather than exposed as a control — the default
+    // "floating" anchors via `position: fixed` to a real viewport corner, which would
+    // escape this bounded preview panel instead of showing inside it.
+    description: "Floating action button — a single circular trigger with icon, color, and size props.",
+    defaults: {
+      variant: "docked",
+      icon: "plus",
+      "icon-source": "heroicons",
+      size: "regular",
+      color: "primary",
+      label: "",
+      disabled: false,
+    },
+    controls: [
+      { type: "select", key: "icon", label: "Icon", options: ["plus", "pencil", "chat-bubble-left-right", "share", "camera"] },
+      { type: "select", key: "icon-source", label: "Icon source", options: ["heroicons", "iconsax", "untitledui"] },
+      { type: "select", key: "size", label: "Size", options: ["small", "medium", "regular"] },
+      { type: "select", key: "color", label: "Color", options: ["primary", "secondary", "success", "error", "warning", "gray"] },
+      { type: "text", key: "label", label: "Accessible label" },
+      { type: "boolean-attr", key: "disabled", label: "Disabled" },
+    ],
+  },
 ];
 
 playgroundComponents.sort((a, b) => a.title.localeCompare(b.title));

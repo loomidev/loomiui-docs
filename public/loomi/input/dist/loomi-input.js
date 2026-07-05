@@ -342,15 +342,11 @@ let LoomiInput = class LoomiInput extends LoomiElement {
     }
     render() {
         const hasLabel = !!this.label;
-        const hasPrefix = !!(this.prefix || this.prefixIcon || this.parseOptions(this.prefixOptions).length > 0);
         const forceFloat = hasLabel && this.showPlaceholderAlways;
         const placeholderAttr = hasLabel && !this.showPlaceholderAlways ? " " : this.placeholder || " ";
         const showError = this.invalid && this.showErrorInline && this.errorMessage;
         return html `
       <div class="loomi-field size-${this.size} variant-${this.variant} ${forceFloat ? "force-float" : ""} ${this.showFocusRing ? "" : "no-focus-ring"}" part="field">
-        ${hasLabel && hasPrefix
-            ? html `<label class="loomi-label">${this.label}${this.required ? html `<span class="loomi-req">*</span>` : nothing}</label>`
-            : nothing}
         ${this.renderPrefix()}
         <span class="loomi-inputwrap">
           <input
@@ -370,7 +366,7 @@ let LoomiInput = class LoomiInput extends LoomiElement {
             @change=${this.onChange}
             @blur=${this.showValidation}
           />
-          ${hasLabel && !hasPrefix
+          ${hasLabel
             ? html `<label class="loomi-label">${this.label}${this.required ? html `<span class="loomi-req">*</span>` : nothing}</label>`
             : nothing}
         </span>

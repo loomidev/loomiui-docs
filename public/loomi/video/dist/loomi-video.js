@@ -116,6 +116,7 @@ let LoomiVideo = class LoomiVideo extends LoomiElement {
         this.mediaReady = false;
         this.hideTimer = 0;
         this.closeCaptionsMenuCleanup = null;
+        this.progressFrame = 0;
         this.onTracksChange = () => {
             const list = this.videoEl?.textTracks;
             this.activeTrackIndex = list
@@ -128,23 +129,26 @@ let LoomiVideo = class LoomiVideo extends LoomiElement {
             this.playing = true;
             this.errored = false;
             this.showControlsTemporarily();
+            this.startProgressLoop();
             this.dispatchEvent(new Event("play", { bubbles: true, composed: true }));
         };
         this.onPause = () => {
             this.playing = false;
             this.controlsVisible = true;
             this.clearHideTimer();
+            this.stopProgressLoop();
             this.dispatchEvent(new Event("pause", { bubbles: true, composed: true }));
         };
         this.onEnded = () => {
             this.playing = false;
             this.controlsVisible = true;
             this.clearHideTimer();
+            this.stopProgressLoop();
             this.dispatchEvent(new Event("ended", { bubbles: true, composed: true }));
         };
         this.onTimeUpdate = () => {
             const video = this.videoEl;
-            if (!this.scrubbing)
+            if (!this.scrubbing && !this.progressFrame)
                 this.playbackTime = video.currentTime;
             this.dispatchEvent(new CustomEvent("timeupdate", {
                 bubbles: true,
@@ -323,6 +327,7 @@ let LoomiVideo = class LoomiVideo extends LoomiElement {
         this.mutationObserver?.disconnect();
         this.clearHideTimer();
         this.closeCaptionsMenu();
+        this.stopProgressLoop();
         this.releaseMedia();
     }
     /** Detaches listeners and aborts the underlying network/decode resources. Merely
@@ -506,6 +511,26 @@ let LoomiVideo = class LoomiVideo extends LoomiElement {
         this.activeTrackIndex = index;
         this.closeCaptionsMenu();
     }
+    // The native `timeupdate` event fires only a few times a second (spec leaves the
+    // exact rate up to the browser), which reads as the seek bar visibly hopping between
+    // positions rather than gliding. While playing, `startProgressLoop` instead polls the
+    // always-current `video.currentTime` on every animation frame for smooth motion;
+    // `timeupdate` still drives `playbackTime` the rest of the time (paused seeks, etc).
+    startProgressLoop() {
+        this.stopProgressLoop();
+        const tick = () => {
+            if (!this.scrubbing && this.videoEl)
+                this.playbackTime = this.videoEl.currentTime;
+            this.progressFrame = requestAnimationFrame(tick);
+        };
+        this.progressFrame = requestAnimationFrame(tick);
+    }
+    stopProgressLoop() {
+        if (!this.progressFrame)
+            return;
+        cancelAnimationFrame(this.progressFrame);
+        this.progressFrame = 0;
+    }
     openCaptionsMenu() {
         this.showCaptionsMenu = true;
         if (this.ccGroupEl) {
@@ -592,14 +617,20 @@ let LoomiVideo = class LoomiVideo extends LoomiElement {
     renderCenterPlay() {
         if (this.playing)
             return nothing;
+        // The icon goes in the default slot (as a real <loomi-icon>) rather than via
+        // loomi-button's `icon` attribute for two reasons: it lets this one button use the
+        // solid/filled icon set instead of outline, and it keeps the button's flex row down
+        // to a single slotted item — with `icon` set, the (invisible) sr-only label span
+        // became a second flex sibling, and the gap between it and the icon pushed the icon
+        // visibly off-center inside the circle.
         return html `<div class="loomi-center">
       <loomi-button
         class="loomi-center-play"
         color=${this.color}
         radius="full"
         size="big"
-        icon=${this.ended ? "arrow-path" : "play"}
         @click=${this.togglePlay}
+        ><loomi-icon name=${this.ended ? "arrow-path" : "play"} variant="solid" size="1.6rem"></loomi-icon
         ><span class="loomi-sr-only">${this.ended ? "Replay" : "Play"}</span></loomi-button
       >
     </div>`;

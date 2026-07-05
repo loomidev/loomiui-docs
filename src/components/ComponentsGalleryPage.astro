@@ -74,6 +74,7 @@ const PREVIEWS: Record<string, string> = {
   dropmenu: `<loomi-dropmenu position="auto"><loomi-button slot="trigger" type="secondary" size="small" icon="chevron-down" icon-right>Open menu</loomi-button><loomi-dropmenu-item>Edit</loomi-dropmenu-item><loomi-dropmenu-item>Duplicate</loomi-dropmenu-item></loomi-dropmenu>`,
   "theme-switcher": `<loomi-theme-switcher style="display:block;transform:scale(.75)"></loomi-theme-switcher>`,
   "context-menu": `<loomi-context-menu><button slot="target" style="border:1px solid var(--loomi-surface-border,#e5e7eb);border-radius:.45rem;padding:.45rem .65rem;font-size:.78rem;background:var(--loomi-surface,#fff)">Right-click file</button><loomi-context-menu-item icon="document-duplicate">Duplicate</loomi-context-menu-item><loomi-context-menu-item icon="pencil-square">Rename</loomi-context-menu-item></loomi-context-menu>`,
+  "bottom-nav": `<div style="height:5.5rem;width:100%;overflow:hidden;position:relative"><loomi-bottom-nav active="home" active-style="pill" style="position:absolute;bottom:0.35rem;left:50%;right:auto;transform:translateX(-50%) scale(.72);transform-origin:bottom center;width:92%"><loomi-bottom-nav-item name="home" icon="home">Home</loomi-bottom-nav-item><loomi-bottom-nav-item name="cart" icon="shopping-cart" badge="3">Cart</loomi-bottom-nav-item><loomi-bottom-nav-item name="profile" icon="user">Profile</loomi-bottom-nav-item></loomi-bottom-nav></div>`,
 
   // Overlay
   modal: `<loomi-button size="small" color="primary" onclick="showLoomiModal('prev-modal')">Open Modal</loomi-button><loomi-modal name="prev-modal" title="Preview">Preview content.</loomi-modal>`,
@@ -104,6 +105,7 @@ const PREVIEWS: Record<string, string> = {
   sortable: `<loomi-sortable items='[{"id":"a","label":"Tomatoes"},{"id":"b","label":"Lettuce"}]'></loomi-sortable>`,
   divider: `<loomi-divider label="Today" style="display:block;width:100%"></loomi-divider>`,
   resizable: `<loomi-resizable-panel-group style="height:5rem;width:100%;border:1px solid var(--loomi-surface-border,#e5e7eb);border-radius:0.5rem"><loomi-resizable-panel default-size="50%"><div style="display:flex;height:100%;align-items:center;justify-content:center;font-size:.72rem">One</div></loomi-resizable-panel><loomi-resizable-handle with-handle></loomi-resizable-handle><loomi-resizable-panel default-size="50%"><div style="display:flex;height:100%;align-items:center;justify-content:center;font-size:.72rem">Two</div></loomi-resizable-panel></loomi-resizable-panel-group>`,
+  fab: `<div style="height:5.5rem;width:100%;display:flex;align-items:center;justify-content:center"><loomi-fab variant="docked" icon="plus" color="primary"></loomi-fab></div>`,
 
   // Media
   icon: `<div style="display:flex;gap:.6rem"><loomi-icon name="bell-alert" style="width:1.4rem;height:1.4rem"></loomi-icon><loomi-icon name="check-circle" style="width:1.4rem;height:1.4rem"></loomi-icon><loomi-icon name="trash" style="width:1.4rem;height:1.4rem"></loomi-icon></div>`,
