@@ -9,6 +9,7 @@ import {
   categoryKeyOf,
   categoryCounts,
 } from "../lib/component-categories.mjs";
+import { FALLBACK_PREVIEWS } from "../lib/preview-fallbacks.generated.mjs";
 import "../styles/home.css";
 
 const importMap = buildImportMap();
@@ -137,7 +138,7 @@ const components = COMPONENT_NAMES.slice()
       description: entry?.data.description ?? "",
       href: `/components/${name}/`,
       category,
-      preview: PREVIEWS[name] ?? "",
+      preview: PREVIEWS[name] ?? FALLBACK_PREVIEWS[name] ?? "",
     };
   });
 

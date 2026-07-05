@@ -77,7 +77,7 @@ let LoomiDrawer = class LoomiDrawer extends LoomiElement {
         super(...arguments);
         this.name = "";
         this.title = "";
-        this.position = "right";
+        this.placement = "right";
         this.size = "medium";
         this.locale = "";
         this.open = false;
@@ -257,7 +257,7 @@ let LoomiDrawer = class LoomiDrawer extends LoomiElement {
         return html `
       ${this.backdrop ? html `<div class="loomi-backdrop ${animClass}"></div>` : nothing}
       <div
-        class="loomi-panel position-${this.position} size-${this.size} ${animClass}"
+        class="loomi-panel placement-${this.placement} size-${this.size} ${animClass}"
         role="dialog"
         aria-modal=${this.backdrop ? "true" : "false"}
         aria-label=${this.title || loomiT("drawer.dialog", {}, this.locale)}
@@ -290,7 +290,7 @@ __decorate([
 ], LoomiDrawer.prototype, "title", void 0);
 __decorate([
     property()
-], LoomiDrawer.prototype, "position", void 0);
+], LoomiDrawer.prototype, "placement", void 0);
 __decorate([
     property()
 ], LoomiDrawer.prototype, "size", void 0);

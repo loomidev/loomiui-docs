@@ -43,8 +43,10 @@ const CLOCK_STYLE = `
   }
   .loomi-clock-hour {
     position: absolute; left: 50%; top: 50%; width: 2.3rem; height: 2.3rem; margin: -1.15rem;
-    font-weight: 700;
     transform: rotate(var(--loomi-clock-angle)) translate(8.3rem) rotate(calc(-1 * var(--loomi-clock-angle)));
+  }
+  .loomi-clock button.loomi-clock-hour {
+    font-weight: 700;
   }
   .loomi-clock-minute {
     position: absolute; left: 50%; top: 50%; width: 1.7rem; height: 1.7rem; margin: -0.85rem;

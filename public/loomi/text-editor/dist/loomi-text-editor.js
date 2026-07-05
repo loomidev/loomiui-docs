@@ -725,7 +725,7 @@ let LoomiTextEditor = class LoomiTextEditor extends LoomiElement {
         return "p";
     }
     renderTooltip(label, content) {
-        return html `<loomi-tooltip content=${label} position="bottom">${content}</loomi-tooltip>`;
+        return html `<loomi-tooltip content=${label} placement="bottom">${content}</loomi-tooltip>`;
     }
     renderIcon(tool) {
         const icon = TOOL_ICONS[tool];

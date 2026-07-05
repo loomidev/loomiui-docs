@@ -121,13 +121,13 @@ let LoomiContextMenu = class LoomiContextMenu extends LoomiElement {
         super(...arguments);
         this.disabled = false;
         this.divided = false;
-        this.position = "auto";
+        this.placement = "auto";
         this.scrollable = false;
         this.height = 200;
         this.hideAfterClick = true;
         this.iconRight = false;
         this.open = false;
-        this.resolvedPosition = "left";
+        this.resolvedPlacement = "left";
         this.focusedIndex = -1;
         this.menuX = 0;
         this.menuY = 0;
@@ -254,22 +254,22 @@ let LoomiContextMenu = class LoomiContextMenu extends LoomiElement {
         const viewportHeight = document.documentElement.clientHeight || window.innerHeight;
         const leftFits = this.anchorX + menuWidth <= viewportWidth - margin;
         const rightFits = this.anchorX - menuWidth >= margin;
-        if (this.position !== "auto") {
-            this.resolvedPosition = this.position;
+        if (this.placement !== "auto") {
+            this.resolvedPlacement = this.placement;
         }
         else if (leftFits && !rightFits) {
-            this.resolvedPosition = "left";
+            this.resolvedPlacement = "left";
         }
         else if (rightFits && !leftFits) {
-            this.resolvedPosition = "right";
+            this.resolvedPlacement = "right";
         }
         else if (rightFits && this.anchorX > viewportWidth / 2) {
-            this.resolvedPosition = "right";
+            this.resolvedPlacement = "right";
         }
         else {
-            this.resolvedPosition = "left";
+            this.resolvedPlacement = "left";
         }
-        const desiredX = this.resolvedPosition === "right" ? this.anchorX - menuWidth : this.anchorX;
+        const desiredX = this.resolvedPlacement === "right" ? this.anchorX - menuWidth : this.anchorX;
         const maxX = Math.max(margin, viewportWidth - margin - menuWidth);
         const maxY = Math.max(margin, viewportHeight - margin - menuHeight);
         this.menuX = Math.min(Math.max(margin, desiredX), maxX);
@@ -313,7 +313,7 @@ let LoomiContextMenu = class LoomiContextMenu extends LoomiElement {
     </span>
     ${this.open
             ? html `<div
-          class="loomi-menu ${this.resolvedPosition} ${this.scrollable ? "scrollable" : ""}"
+          class="loomi-menu ${this.resolvedPlacement} ${this.scrollable ? "scrollable" : ""}"
           style=${`--loomi-context-menu-x:${this.menuX}px;--loomi-context-menu-y:${this.menuY}px;${this.scrollable ? `--loomi-menu-height:${this.height}px` : ""}`}
           role="menu"
           @click=${this.onItemsClick}
@@ -332,7 +332,7 @@ __decorate([
 ], LoomiContextMenu.prototype, "divided", void 0);
 __decorate([
     property()
-], LoomiContextMenu.prototype, "position", void 0);
+], LoomiContextMenu.prototype, "placement", void 0);
 __decorate([
     property({ type: Boolean })
 ], LoomiContextMenu.prototype, "scrollable", void 0);
@@ -350,7 +350,7 @@ __decorate([
 ], LoomiContextMenu.prototype, "open", void 0);
 __decorate([
     state()
-], LoomiContextMenu.prototype, "resolvedPosition", void 0);
+], LoomiContextMenu.prototype, "resolvedPlacement", void 0);
 __decorate([
     state()
 ], LoomiContextMenu.prototype, "focusedIndex", void 0);

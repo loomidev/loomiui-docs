@@ -21,7 +21,7 @@ let LoomiPopover = class LoomiPopover extends LoomiElement {
         super(...arguments);
         this.trigger = "information-circle";
         this.triggerOn = "click";
-        this.position = "bottom";
+        this.placement = "bottom";
         this.title = "";
         this.width = 280;
         this.disabled = false;
@@ -72,7 +72,7 @@ let LoomiPopover = class LoomiPopover extends LoomiElement {
       </slot>
     </button>
     ${this.open
-            ? html `<div class="loomi-panel pos-${this.position}" role="dialog" style="--loomi-pop-width:${this.width}px">
+            ? html `<div class="loomi-panel placement-${this.placement}" role="dialog" style="--loomi-pop-width:${this.width}px">
           ${this.title ? html `<div class="loomi-title">${this.title}</div>` : nothing}
           <div class="loomi-content"><slot></slot></div>
         </div>`
@@ -87,7 +87,7 @@ __decorate([
 ], LoomiPopover.prototype, "triggerOn", void 0);
 __decorate([
     property()
-], LoomiPopover.prototype, "position", void 0);
+], LoomiPopover.prototype, "placement", void 0);
 __decorate([
     property()
 ], LoomiPopover.prototype, "title", void 0);

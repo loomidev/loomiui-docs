@@ -12,5 +12,6 @@ yarn-error.log*
 /dist
 /src/content/docs/components
 /src/content/docs/pro-components
+/src/lib/preview-fallbacks.generated.mjs
 /.astro
 /.ai

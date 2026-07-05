@@ -30,7 +30,7 @@ let LoomiTimelineItem = class LoomiTimelineItem extends LoomiElement {
         this.anchor = "small";
         this.icon = "";
         this.avatar = "";
-        this.position = "left";
+        this.placement = "left";
         this.color = "primary";
     }
     static { this.styles = loomiStyles(componentStyles); }
@@ -86,7 +86,7 @@ __decorate([
 ], LoomiTimelineItem.prototype, "avatar", void 0);
 __decorate([
     property({ reflect: true })
-], LoomiTimelineItem.prototype, "position", void 0);
+], LoomiTimelineItem.prototype, "placement", void 0);
 __decorate([
     property()
 ], LoomiTimelineItem.prototype, "color", void 0);
@@ -105,7 +105,7 @@ let LoomiTimeline = class LoomiTimeline extends LoomiElement {
         this.completed = false;
         this.anchor = "small";
         this.icon = "";
-        this.position = "left";
+        this.placement = "left";
         this.color = "primary";
         this.sync = () => {
             const items = Array.from(this.querySelectorAll("loomi-timeline-item"));
@@ -118,8 +118,8 @@ let LoomiTimeline = class LoomiTimeline extends LoomiElement {
                     item.anchor = "big";
                 if (this.icon && !item.icon)
                     item.icon = this.icon;
-                if (this.position !== "left")
-                    item.position = this.position;
+                if (this.placement !== "left")
+                    item.placement = this.placement;
                 if (this.color && item.color === "primary")
                     item.color = this.color;
             });
@@ -130,7 +130,7 @@ let LoomiTimeline = class LoomiTimeline extends LoomiElement {
         this.sync();
     }
     render() {
-        return html `<div class="loomi-timeline position-${this.position}"><slot @slotchange=${this.sync}></slot></div>`;
+        return html `<div class="loomi-timeline placement-${this.placement}"><slot @slotchange=${this.sync}></slot></div>`;
     }
 };
 __decorate([
@@ -147,7 +147,7 @@ __decorate([
 ], LoomiTimeline.prototype, "icon", void 0);
 __decorate([
     property()
-], LoomiTimeline.prototype, "position", void 0);
+], LoomiTimeline.prototype, "placement", void 0);
 __decorate([
     property()
 ], LoomiTimeline.prototype, "color", void 0);

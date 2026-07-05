@@ -232,13 +232,13 @@ let LoomiDropmenu = class LoomiDropmenu extends LoomiElement {
         this.trigger = "";
         this.triggerOn = "click";
         this.divided = false;
-        this.position = "auto";
+        this.placement = "auto";
         this.scrollable = false;
         this.height = 200;
         this.hideAfterClick = true;
         this.iconRight = false;
         this.open = false;
-        this.resolvedPosition = "left";
+        this.resolvedPlacement = "left";
         this.focusedIndex = -1;
         this.placementFrame = 0;
         this.onItemsClick = (e) => {
@@ -337,8 +337,8 @@ let LoomiDropmenu = class LoomiDropmenu extends LoomiElement {
     resolvePlacement() {
         if (!this.open)
             return;
-        if (this.position !== "auto") {
-            this.resolvedPosition = this.position;
+        if (this.placement !== "auto") {
+            this.resolvedPlacement = this.placement;
             return;
         }
         const menu = this.renderRoot.querySelector(".loomi-menu");
@@ -363,16 +363,16 @@ let LoomiDropmenu = class LoomiDropmenu extends LoomiElement {
         const leftFits = leftAligned.start >= margin && leftAligned.end <= viewportWidth - margin;
         const rightFits = rightAligned.start >= margin && rightAligned.end <= viewportWidth - margin;
         if (leftFits && !rightFits) {
-            this.resolvedPosition = "left";
+            this.resolvedPlacement = "left";
         }
         else if (rightFits && !leftFits) {
-            this.resolvedPosition = "right";
+            this.resolvedPlacement = "right";
         }
         else if (leftVisible !== rightVisible) {
-            this.resolvedPosition = leftVisible > rightVisible ? "left" : "right";
+            this.resolvedPlacement = leftVisible > rightVisible ? "left" : "right";
         }
         else {
-            this.resolvedPosition = "left";
+            this.resolvedPlacement = "left";
         }
     }
     getTopLevelItems() {
@@ -399,7 +399,7 @@ let LoomiDropmenu = class LoomiDropmenu extends LoomiElement {
             this.applyItemDefaults();
     }
     get menuClass() {
-        return ["loomi-menu", this.resolvedPosition, this.scrollable && "scrollable"].filter(Boolean).join(" ");
+        return ["loomi-menu", this.resolvedPlacement, this.scrollable && "scrollable"].filter(Boolean).join(" ");
     }
     render() {
         const triggerPath = this.trigger ? getLoomiIcon(this.trigger.replace(/-icon$/, "")) : undefined;
@@ -443,7 +443,7 @@ __decorate([
 ], LoomiDropmenu.prototype, "divided", void 0);
 __decorate([
     property()
-], LoomiDropmenu.prototype, "position", void 0);
+], LoomiDropmenu.prototype, "placement", void 0);
 __decorate([
     property({ type: Boolean })
 ], LoomiDropmenu.prototype, "scrollable", void 0);
@@ -461,7 +461,7 @@ __decorate([
 ], LoomiDropmenu.prototype, "open", void 0);
 __decorate([
     state()
-], LoomiDropmenu.prototype, "resolvedPosition", void 0);
+], LoomiDropmenu.prototype, "resolvedPlacement", void 0);
 __decorate([
     state()
 ], LoomiDropmenu.prototype, "focusedIndex", void 0);

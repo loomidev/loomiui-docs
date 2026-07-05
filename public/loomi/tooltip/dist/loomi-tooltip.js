@@ -18,14 +18,14 @@ let LoomiTooltip = class LoomiTooltip extends LoomiElement {
     constructor() {
         super(...arguments);
         this.content = "";
-        this.position = "top";
+        this.placement = "top";
         this.shade = "dark";
     }
     static { this.styles = loomiStyles(componentStyles); }
     render() {
         return html `
       <slot></slot>
-      <span class="loomi-tip pos-${this.position}" role="tooltip">
+      <span class="loomi-tip placement-${this.placement}" role="tooltip">
         <slot name="content">${this.content}</slot>
       </span>
     `;
@@ -36,7 +36,7 @@ __decorate([
 ], LoomiTooltip.prototype, "content", void 0);
 __decorate([
     property()
-], LoomiTooltip.prototype, "position", void 0);
+], LoomiTooltip.prototype, "placement", void 0);
 __decorate([
     property({ reflect: true })
 ], LoomiTooltip.prototype, "shade", void 0);
