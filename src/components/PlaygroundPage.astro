@@ -681,6 +681,30 @@ const playgroundComponents = [
     ],
   },
   {
+    key: "lightbox",
+    title: "Lightbox",
+    tag: "loomi-lightbox-image",
+    packageName: "lightbox",
+    // No slotted <img> here — with none, the component renders its own trigger image
+    // straight from `src`/`alt`, so this stays fully attribute-driven like every other
+    // playground entry (see README's second Basic Usage example).
+    description: "Click an image to view it fullscreen, with an optional caption and group.",
+    defaults: {
+      src: "/avatars/female.jpg",
+      alt: "Portrait photo",
+      caption: "",
+      group: "",
+      open: false,
+    },
+    controls: [
+      { type: "text", key: "src", label: "Full-size src" },
+      { type: "text", key: "alt", label: "Alt text" },
+      { type: "text", key: "caption", label: "Caption" },
+      { type: "text", key: "group", label: "Group" },
+      { type: "boolean-attr", key: "open", label: "Open" },
+    ],
+  },
+  {
     key: "bell",
     title: "Bell",
     tag: "loomi-bell",

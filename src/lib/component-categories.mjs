@@ -26,7 +26,7 @@ const MEMBERS = {
   ],
   feedback: ["alert", "notification", "bell", "spinner", "progress", "processing", "progress-steps"],
   navigation: ["tab", "pagination", "dropmenu", "theme-switcher", "context-menu", "command-palette", "bottom-nav"],
-  overlay: ["modal", "popover", "tooltip", "drawer", "floating-panel"],
+  overlay: ["modal", "popover", "tooltip", "drawer", "floating-panel", "lightbox"],
   "data-display": [
     "table", "tag", "statistic", "rating", "timeline", "listview", "contact-card", "chart",
     "horizontal-line-graph", "clipboard", "timer", "data-grid", "calendar", "chat", "photo-gallery",

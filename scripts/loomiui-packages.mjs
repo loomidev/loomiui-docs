@@ -19,7 +19,7 @@ export const CATEGORY = {
     "rating", "timeline", "progress", "listview", "contact-card", "centered-content",
     "sortable", "processing", "horizontal-line-graph", "chart", "drawer", "clipboard",
     "divider", "qrcode", "timer", "data-grid", "calendar", "chat", "resizable",
-    "progress-steps", "video", "floating-panel", "photo-gallery",
+    "progress-steps", "video", "floating-panel", "photo-gallery", "lightbox",
   ],
   navigation: ["tab", "pagination", "dropmenu", "theme-switcher", "context-menu", "command-palette", "bottom-nav"],
 };
