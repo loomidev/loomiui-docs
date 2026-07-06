@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { html, nothing, svg } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { LoomiElement, loomiStyles, onClickOutside } from "@loomidev/core";
+import { LoomiElement, loomiStyles, nextMenuFocusIndex, onClickOutside } from "@loomidev/core";
 import { getLoomiIcon } from "@loomidev/icons";
 import { componentStyles } from "./generated/styles.css.js";
 const CHEVRON_RIGHT = svg `<path d="m9 18 6-6-6-6" />`;
@@ -168,21 +168,10 @@ let LoomiContextMenu = class LoomiContextMenu extends LoomiElement {
                 this.renderRoot.querySelector(".loomi-target")?.focus();
                 return;
             }
-            if (event.key === "ArrowDown") {
+            const target = nextMenuFocusIndex(event, this.focusedIndex, items.length);
+            if (target !== undefined) {
                 event.preventDefault();
-                this.focusItemAt(this.focusedIndex + 1);
-            }
-            else if (event.key === "ArrowUp") {
-                event.preventDefault();
-                this.focusItemAt(this.focusedIndex - 1);
-            }
-            else if (event.key === "Home") {
-                event.preventDefault();
-                this.focusItemAt(0);
-            }
-            else if (event.key === "End") {
-                event.preventDefault();
-                this.focusItemAt(items.length - 1);
+                this.focusItemAt(target);
             }
             else if ((event.key === "Enter" || event.key === " ") && this.focusedIndex >= 0) {
                 event.preventDefault();

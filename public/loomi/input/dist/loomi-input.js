@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { html, nothing } from "lit";
 import { customElement, property, query } from "lit/decorators.js";
 import { unsafeHTML } from "lit/directives/unsafe-html.js";
-import { LoomiElement, loomiT, themeStyles } from "@loomidev/core";
+import { LoomiElement, loomiT, randomSuffix, themeStyles } from "@loomidev/core";
 import { showLoomiNotification } from "@loomidev/notification";
 import "@loomidev/popover";
 import { getLoomiIcon } from "./icons.js";
@@ -45,7 +45,7 @@ let LoomiInput = class LoomiInput extends LoomiElement {
         this.internals = this.attachInternals();
         this.validationVisible = false;
         /** Falls back to a stable per-instance id when `name` is blank, so a `loomi-notification` toast (see `syncValidity`) re-renders in place across repeated validation failures instead of stacking. */
-        this.instanceId = Math.random().toString(36).slice(2, 8);
+        this.instanceId = randomSuffix();
         this.name = "";
         this.type = "text";
         this.label = "";

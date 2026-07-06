@@ -44,7 +44,7 @@ let LoomiProgressBar = class LoomiProgressBar extends LoomiElement {
       ${vpos === "top" ? labelEl : nothing}
       <div class="loomi-track" role="progressbar" aria-valuenow=${this.pct} aria-valuemin="0" aria-valuemax="100">
         <div class="loomi-fill ${this.shade === "dark" ? "dark" : ""} ${this.striped ? "striped" : ""} ${this.animated ? "animated" : ""}" style="width:${this.pct}%">
-          ${this.showLabel && this.inline ? html `<span>${this.pct}%</span>` : nothing}
+          ${this.showLabel && this.inline ? html `<span class="loomi-fill-label">${this.pct}%</span>` : nothing}
         </div>
         ${this.showTooltip ? html `<span class="loomi-bar-tooltip" style="left:${this.pct}%">${this.text}</span>` : nothing}
       </div>

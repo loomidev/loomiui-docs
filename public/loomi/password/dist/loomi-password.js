@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
-import { LoomiElement, loomiT, themeStyles } from "@loomidev/core";
+import { LoomiElement, loomiT, onClickOutside, randomSuffix, themeStyles } from "@loomidev/core";
 import { getLoomiIcon } from "@loomidev/icons";
 import { showLoomiNotification } from "@loomidev/notification";
 import { componentStyles } from "./generated/styles.css.js";
@@ -26,7 +26,7 @@ let LoomiPassword = class LoomiPassword extends LoomiElement {
         super(...arguments);
         this.internals = this.attachInternals();
         this.validationVisible = false;
-        this.instanceId = Math.random().toString(36).slice(2, 8);
+        this.instanceId = randomSuffix();
         this.name = "";
         this.label = "";
         this.locale = "";
@@ -52,10 +52,6 @@ let LoomiPassword = class LoomiPassword extends LoomiElement {
         this.invalid = false;
         this.revealed = false;
         this.prefixOpen = false;
-        this.onDocClick = (e) => {
-            if (this.prefixOpen && !e.composedPath().includes(this))
-                this.prefixOpen = false;
-        };
         this.onInput = (e) => {
             this.value = e.target.value;
             if (this.invalid)
@@ -74,11 +70,14 @@ let LoomiPassword = class LoomiPassword extends LoomiElement {
     static { this.formAssociated = true; }
     connectedCallback() {
         super.connectedCallback();
-        document.addEventListener("click", this.onDocClick, true);
+        this.cleanupClickOutside = onClickOutside(this, () => {
+            if (this.prefixOpen)
+                this.prefixOpen = false;
+        });
     }
     disconnectedCallback() {
         super.disconnectedCallback();
-        document.removeEventListener("click", this.onDocClick, true);
+        this.cleanupClickOutside?.();
     }
     willUpdate(_changed) {
         this.internals.setFormValue(this.value);

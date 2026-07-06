@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { html, nothing } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { ifDefined } from "lit/directives/if-defined.js";
-import { LoomiElement, themeStyles } from "@loomidev/core";
+import { LoomiElement, loomiStyles } from "@loomidev/core";
 import { getLoomiIcon } from "./icons.js";
 import { buttonStyles } from "./generated/styles.css.js";
 /** Closed palette for buttons: brand primary/secondary, plus semantic state colors. */
@@ -91,7 +91,7 @@ let LoomiButton = class LoomiButton extends LoomiElement {
             }
         };
     }
-    static { this.styles = [themeStyles, buttonStyles]; }
+    static { this.styles = loomiStyles(buttonStyles); }
     /** Make the spinner visible. No-op unless `has-spinner` is set. */
     startSpinner() {
         if (this.hasSpinner)

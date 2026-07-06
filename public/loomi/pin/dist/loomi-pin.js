@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { html, nothing, svg } from "lit";
 import { customElement, property, state, queryAll } from "lit/decorators.js";
-import { LoomiElement, loomiDefaultText, loomiStyles, loomiT } from "@loomidev/core";
+import { LoomiElement, loomiDefaultText, loomiStyles, loomiT, randomSuffix } from "@loomidev/core";
 import { showLoomiNotification } from "@loomidev/notification";
 import { componentStyles } from "./generated/styles.css.js";
 const DEFAULT_ERROR_MESSAGE = "Verification code is invalid";
@@ -22,7 +22,7 @@ let LoomiPin = class LoomiPin extends LoomiElement {
         super(...arguments);
         this.internals = this.attachInternals();
         /** Falls back to a stable per-instance id when `name` is blank, so a `loomi-notification` toast (see `showError`) re-renders in place across repeated validation failures instead of stacking. */
-        this.instanceId = Math.random().toString(36).slice(2, 8);
+        this.instanceId = randomSuffix();
         this.name = "";
         this.label = "";
         this.totalDigits = 4;

@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { html, nothing, svg } from "lit";
 import { customElement, property, state, query } from "lit/decorators.js";
-import { LoomiElement, loomiDefaultText, loomiT, themeStyles } from "@loomidev/core";
+import { LoomiElement, loomiDefaultText, loomiT, onClickOutside, themeStyles } from "@loomidev/core";
 import { componentStyles } from "./generated/styles.css.js";
 const CHEVRON = svg `<path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />`;
 const CHECK = svg `<path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />`;
@@ -63,10 +63,6 @@ let LoomiSelect = class LoomiSelect extends LoomiElement {
         this.selected = [];
         /** Index of the keyboard-highlighted option within `this.filtered`, while open. */
         this.activeIndex = -1;
-        this.onDocClick = (e) => {
-            if (this.open && !e.composedPath().includes(this))
-                this.close(true);
-        };
         this.onKeydown = (e) => {
             if (e.key === "Escape") {
                 this.close(true);
@@ -111,11 +107,14 @@ let LoomiSelect = class LoomiSelect extends LoomiElement {
     static { this.formAssociated = true; }
     connectedCallback() {
         super.connectedCallback();
-        document.addEventListener("click", this.onDocClick, true);
+        this.cleanupClickOutside = onClickOutside(this, () => {
+            if (this.open)
+                this.close(true);
+        });
     }
     disconnectedCallback() {
         super.disconnectedCallback();
-        document.removeEventListener("click", this.onDocClick, true);
+        this.cleanupClickOutside?.();
     }
     willUpdate(changed) {
         // Re-sync `selected` from `selectedValue` on first render AND whenever it's set

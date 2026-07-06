@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { html, nothing, svg } from "lit";
 import { customElement, property, state, query } from "lit/decorators.js";
 import { unsafeSVG } from "lit/directives/unsafe-svg.js";
-import { LoomiElement, loomiDefaultText, loomiT, themeStyles } from "@loomidev/core";
+import { LoomiElement, loomiDefaultText, loomiT, onClickOutside, themeStyles } from "@loomidev/core";
 import { componentStyles } from "./generated/styles.css.js";
 import { LOOMI_COUNTRIES } from "./generated/countries-data.js";
 const CHEVRON = svg `<path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />`;
@@ -141,10 +141,6 @@ let LoomiCountries = class LoomiCountries extends LoomiElement {
         this.selectedCode = "";
         /** Index of the keyboard-highlighted option within `this.filtered`, while open. */
         this.activeIndex = -1;
-        this.onDocClick = (e) => {
-            if (this.open && !e.composedPath().includes(this))
-                this.close(true);
-        };
         this.onPhoneInput = (e) => {
             const el = e.target;
             const clean = normalizePhoneValue(el.value, this.effectiveMask);
@@ -200,11 +196,14 @@ let LoomiCountries = class LoomiCountries extends LoomiElement {
     static { this.formAssociated = true; }
     connectedCallback() {
         super.connectedCallback();
-        document.addEventListener("click", this.onDocClick, true);
+        this.cleanupClickOutside = onClickOutside(this, () => {
+            if (this.open)
+                this.close(true);
+        });
     }
     disconnectedCallback() {
         super.disconnectedCallback();
-        document.removeEventListener("click", this.onDocClick, true);
+        this.cleanupClickOutside?.();
     }
     willUpdate(changed) {
         if (changed.has("selection")) {

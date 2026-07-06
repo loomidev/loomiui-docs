@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { html, nothing, svg } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
-import { LoomiElement, loomiStyles, onClickOutside } from "@loomidev/core";
+import { LoomiElement, loomiStyles, nextMenuFocusIndex, onClickOutside } from "@loomidev/core";
 import { getLoomiIcon } from "@loomidev/icons";
 import { componentStyles } from "./generated/styles.css.js";
 const ELLIPSIS = svg `<path d="M6 12a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0ZM13.5 12a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0ZM21 12a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z" fill="currentColor" />`;
@@ -266,21 +266,10 @@ let LoomiDropmenu = class LoomiDropmenu extends LoomiElement {
                 this.renderRoot.querySelector(".loomi-trigger")?.focus();
                 return;
             }
-            if (event.key === "ArrowDown") {
+            const target = nextMenuFocusIndex(event, this.focusedIndex, items.length);
+            if (target !== undefined) {
                 event.preventDefault();
-                this.focusItemAt(this.focusedIndex + 1);
-            }
-            else if (event.key === "ArrowUp") {
-                event.preventDefault();
-                this.focusItemAt(this.focusedIndex - 1);
-            }
-            else if (event.key === "Home") {
-                event.preventDefault();
-                this.focusItemAt(0);
-            }
-            else if (event.key === "End") {
-                event.preventDefault();
-                this.focusItemAt(items.length - 1);
+                this.focusItemAt(target);
             }
             else if ((event.key === "Enter" || event.key === " ") && this.focusedIndex >= 0) {
                 event.preventDefault();

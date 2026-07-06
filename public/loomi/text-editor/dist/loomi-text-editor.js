@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { html, nothing } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
-import { LoomiElement, loomiT, themeStyles } from "@loomidev/core";
+import { LoomiElement, loomiStyles, loomiT } from "@loomidev/core";
 import "@loomidev/filepicker/loomi-filepicker.js";
 import "@loomidev/icon/loomi-icon.js";
 import "@loomidev/input/loomi-input.js";
@@ -298,7 +298,7 @@ let LoomiTextEditor = class LoomiTextEditor extends LoomiElement {
         this.embedText = "";
         this.embedAlt = "";
     }
-    static { this.styles = [themeStyles, componentStyles]; }
+    static { this.styles = loomiStyles(componentStyles); }
     static { this.formAssociated = true; }
     get resolvedTools() {
         const rawTools = Array.isArray(this.tools)

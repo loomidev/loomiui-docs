@@ -376,13 +376,38 @@ Shared runtime helpers every component imports. Re-exports `themeStyles` and the
 from `@loomidev/theme`, plus:
 - `LoomiElement` — the base class every component extends instead of Lit's own
   `LitElement`, see [§8, step 6](#adding-a-new-component-step-by-step).
-- `loomiStyles(...styles)` — `return [themeStyles, ...styles]`. Used in every component's
-  `static styles`.
+- `loomiStyles(...styles)` — `return [themeStyles, motionStyles, elevationStyles,
+  focusStyles, ...styles]`. Used in every component's `static styles`.
+- `motionStyles` (`src/motion.ts`) — shared entrance-animation `@keyframes`
+  (`loomi-fade-in`, `loomi-pop-in`, `loomi-rise-in`, `loomi-drop-in`, `loomi-slide-in`,
+  `loomi-spin`) plus `--loomi-motion-duration`/`--loomi-motion-ease`/`--loomi-spin-duration`
+  tokens, with `prefers-reduced-motion` handled centrally. Don't hand-roll a new
+  fade/pop/slide/spin keyframe in a component package — reuse one of these.
+- `elevationStyles` (`src/elevation.ts`) — the shared `--loomi-shadow-elevated`
+  drop-shadow token for floating dialogs/panels (modal, drawer, floating-panel).
+- `focusStyles` (`src/focus.ts`) — the shared `--loomi-focus-ring-color` token. Never
+  hardcode a bare `--loomi-primary-<shade>` for a `:focus-visible` outline — the public
+  theme slots have no fallback, so an unfallback'd reference silently renders no outline
+  at all (a real bug found and fixed this way in several components).
 - `accentVars(color)` — the per-instance theming mechanism, see
-  [The theming model (so you don't break it)](#the-theming-model-so-you-dont-break-it).
+  [The theming model (so you don't break it)](#the-theming-model-so-you-dont-break-it). A component using per-instance accent
+  for its focus ring should reference `--_loomi-accent` directly rather than
+  `focusStyles`' token — nested `var()` inside an inherited custom property resolves at
+  the element where the *outer* property was declared, not at the element that
+  consumes it, so a shared `:host`-level token can't pick up an accent set on a
+  descendant wrapper.
 - `cssColor(color, shade)` — single themed value for inline use (e.g. a status dot).
 - `onClickOutside(el, handler)` — used by dropdowns/popovers/selects to close on outside
   click.
+- `randomSuffix()` — short random id, e.g. for de-duplicating notification keys across
+  component instances.
+- `nextMenuFocusIndex(event, currentIndex, itemCount)` — resolves an Arrow/Home/End
+  keydown into the next index to focus in a top-level menu. Extracted after `dropmenu`
+  and `context-menu` turned out to have byte-for-byte identical keydown logic for this;
+  it's deliberately a pure decision function (no DOM, no wrapping) rather than a
+  DOM-touching helper, since the two packages' `focusItemAt()`-style methods that
+  actually move focus stayed different enough (different item types, different
+  close/escape behavior) not to share.
 - `loomiT`/`setLoomiLocale`/`defineLoomiTranslations`/etc. (`src/i18n.ts`) — the shared
   translation lookup behind every component's built-in copy (placeholders, validation
   messages, aria labels, ...). See [Adding or updating translations](#adding-or-updating-translations) for how the
