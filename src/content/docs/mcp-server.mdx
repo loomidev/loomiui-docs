@@ -111,11 +111,11 @@ Press `Ctrl+C` to stop the test server and return to your terminal prompt.
 Most users do not need this. Use the source version only if you are developing LoomiUI
 itself or testing an unpublished local change to the MCP server.
 
-For example, if the LoomiUI source workspace lives at `~/Projects/kursor/litail`, build
+For example, if the LoomiUI source workspace lives at `~/Projects/loomiui`, build
 the server like this:
 
 ```bash
-cd ~/Projects/kursor/litail/components
+cd ~/Projects/loomiui/components
 pnpm --filter @loomidev/mcp-server build
 ```
 
@@ -126,7 +126,7 @@ Then point your MCP config at the built file with an absolute path:
   "mcpServers": {
     "loomiui": {
       "command": "node",
-      "args": ["/Users/your-name/Projects/kursor/litail/components/packages/mcp-server/dist/index.js"]
+      "args": ["/Users/your-name/Projects/loomiui/components/packages/mcp-server/dist/index.js"]
     }
   }
 }
@@ -136,7 +136,7 @@ You can also start that built server from a consuming app:
 
 ```bash
 cd ~/Projects/my-app
-node /Users/your-name/Projects/kursor/litail/components/packages/mcp-server/dist/index.js
+node /Users/your-name/Projects/loomiui/components/packages/mcp-server/dist/index.js
 ```
 
 That command still uses the local LoomiUI source workspace for the server code; it does

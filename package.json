@@ -2,6 +2,7 @@
   "name": "loomiui-docs",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "predev": "pnpm run prepare:content",
