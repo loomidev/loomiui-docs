@@ -142,6 +142,27 @@
   color-scheme: dark;
 }
 
+/* `<loomi-fab>` (non-docked) and `<loomi-bottom-nav>` position themselves with
+   `position: fixed`, anchored to a corner/edge of the viewport by design. Without a
+   containing block of its own, every such preview on the page collapses to 0x0 (nothing
+   in normal flow) and the real component escapes to the actual browser viewport corner —
+   several demos' worth stack on top of each other there instead of showing where each one
+   is meant to sit. `contain: layout` makes this box a containing block for fixed/absolute
+   descendants (same trick as an ancestor `transform`/`filter`), so they anchor to this
+   preview frame instead; `min-height` gives that frame room to show it.
+   `contain: layout` (like `transform`/`filter`) also creates a new stacking context, so an
+   open speed-dial or nav popover can no longer paint above *later* page content the way
+   its z-index intends — it'd render behind the next section's prose instead. `overflow:
+   hidden` clips it at the frame edge rather than letting it silently render behind
+   something; the extra min-height keeps a 3-item menu comfortably inside that clip. */
+.loomi-preview:has(loomi-fab:not([variant="docked"])),
+.loomi-preview:has(loomi-bottom-nav) {
+  position: relative;
+  contain: layout;
+  overflow: hidden;
+  min-height: 20rem;
+}
+
 starlight-toc nav ul {
   @apply space-y-2;
 }

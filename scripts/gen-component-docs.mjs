@@ -36,6 +36,7 @@ function titleCase(name) {
     qrcode: "QR Code",
     "data-grid": "Data Grid",
     calendar: "Calendar",
+    fab: "Floating Action Button",
   };
   if (special[name]) return special[name];
   return name.split("-").map((w) => w[0].toUpperCase() + w.slice(1)).join(" ");
