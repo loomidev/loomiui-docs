@@ -265,6 +265,7 @@ const setupDocsPreview = () => {
         end: new Date(year, month, day, 11, 0),
         color: "primary",
         description: "Quarterly roadmap review",
+        resourceId: "room-a",
       },
       {
         id: "evt_2",
@@ -272,6 +273,7 @@ const setupDocsPreview = () => {
         start: new Date(year, month, day, 12, 30),
         end: new Date(year, month, day, 13, 30),
         color: "success",
+        resourceId: "room-b",
       },
       {
         id: "evt_3",
@@ -288,6 +290,7 @@ const setupDocsPreview = () => {
         start: new Date(year, month, day, 14, 0),
         end: new Date(year, month, day, 15, 0),
         color: "secondary",
+        resourceId: "room-a",
       },
       {
         id: "evt_5",
@@ -302,6 +305,7 @@ const setupDocsPreview = () => {
         start: new Date(year, month, day, 9, 0),
         end: new Date(year, month, day, 9, 45),
         color: "error",
+        resourceId: "room-b",
       },
     ];
     calendar.resources = [
