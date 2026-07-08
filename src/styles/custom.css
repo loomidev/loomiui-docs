@@ -11,10 +11,10 @@
      page background — flatten it to match the page so the top bar reads as the same
      white/near-black surface as MarketingHeader's `bg-white/80` on the marketing pages. */
   --sl-color-bg-nav: var(--sl-color-bg);
-  --sl-sidebar-width: 16.875rem;
+  --sl-sidebar-width: 15rem;
   /* Starlight default is 45rem (720px) — too narrow for wide component previews
      like loomi-calendar (280px sidebar + week grid). */
-  --sl-content-width: 72rem;
+  --sl-content-width: 50rem;
   --loomi-toc-width: 12rem;
   --loomi-shell-max-width: 96rem;
 }
@@ -213,10 +213,31 @@ starlight-toc nav ul li a{
 
 /* Starlight's TwoColumnContent splits main vs right TOC using --sl-content-width and
    subtracts the left sidebar again — on laptop widths that often shrinks the main pane
-   below --sl-content-width. Give the content column nearly all remaining space instead. */
-@media (min-width: 72rem) {
+   below --sl-content-width. Give the content column nearly all remaining space, but cap
+   it at --sl-content-width so it doesn't keep growing unbounded on wide monitors (this
+   cap is the actual width lever now — .main-pane .sl-container below resets Starlight's
+   own max-width: var(--sl-content-width) rule to 100%, so without this min() the variable
+   did nothing on two-column pages). */
+@media (min-width: 68rem) {
+  /* --loomi-shell-extra-gutter (defined above) centers the shell against
+     --loomi-shell-max-width, a constant tuned for when the main pane filled all
+     available space. Now that it's capped at --sl-content-width instead, the shell's
+     real width is sidebar + content + toc — re-centering the gutter against that
+     actual sum (rather than the old constant) keeps the sidebar/header/toc symmetric
+     instead of hugging the left edge with all the leftover space dumped on the right.
+     Overrides the plain :root rule above on the same element (html *is* :root), so it
+     wins on specificity alone — no !important needed — and every consumer of the
+     variable (sidebar inset, main-frame padding, header padding, content-inline-start)
+     picks up the corrected value for free. */
+  html[data-has-sidebar][data-has-toc] {
+    --loomi-shell-extra-gutter: max(
+      0px,
+      calc((100vw - var(--sl-sidebar-width) - var(--sl-content-width) - var(--loomi-toc-width)) / 2)
+    );
+  }
+
   html[data-has-sidebar][data-has-toc] .main-pane {
-    width: calc(100% - var(--loomi-toc-width)) !important;
+    width: min(calc(100% - var(--loomi-toc-width)), var(--sl-content-width)) !important;
     max-width: none;
   }
 

@@ -88,6 +88,9 @@ export default defineConfig({
             // doc — `link`, not `slug`, same as how MarketingHeader/Header.astro link
             // to /components/ rather than a Starlight slug.
             { label: "Icons", link: "/icons/", attrs: { "data-icon": "squares-plus" } },
+            // Also a raw Astro page (src/pages/playground/index.astro) — dropped from
+            // the top bar on sidebar pages (Header.astro), so it lives here instead.
+            { label: "Playground", link: "/playground/", attrs: { "data-icon": "play-circle" } },
             { label: "MCP", slug: "mcp-server", attrs: { "data-icon": "cpu-chip" } },
             { label: "CLI", slug: "cli", attrs: { "data-icon": "command-line" } },
             { label: "Architecture", slug: "architecture", collapsed: true, attrs: { "data-icon": "building-library" } },

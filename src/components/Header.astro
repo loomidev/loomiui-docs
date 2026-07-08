@@ -27,6 +27,12 @@ import ThemeSelect from "./ThemeSelect.astro";
 import { PRO_LICENSING_URL } from "../lib/pro-licensing.mjs";
 
 const GITHUB_URL = "https://github.com/loomidev/loomiui-docs";
+// Sidebar pages (/components/* and the "Start Here" docs — see
+// src/starlightRouteData.ts) already carry their own left-nav navigation, so the
+// top bar drops the links that would otherwise duplicate it: "Docs" and
+// "Components" are both reachable from the sidebar, and "Get Started" just points
+// at /installation/, already the first "Start Here" entry.
+const { hasSidebar } = Astro.locals.starlightRoute;
 ---
 
 <div class="loomi-header">
@@ -35,8 +41,18 @@ const GITHUB_URL = "https://github.com/loomidev/loomiui-docs";
   </div>
 
   <nav class="loomi-header-nav sl-hidden lg:sl-flex">
-    <a href="/installation/" class="loomi-header-link" aria-current="page">Docs</a>
-    <a href="/components/" class="loomi-header-link">Components</a>
+    {
+      !hasSidebar && (
+        <>
+          <a href="/installation/" class="loomi-header-link" aria-current="page">
+            Docs
+          </a>
+          <a href="/components/" class="loomi-header-link">
+            Components
+          </a>
+        </>
+      )
+    }
     <a href="/playground/" class="loomi-header-link">Playground</a>
     <loomi-dropmenu position="auto" hide-after-click>
       <button slot="trigger" type="button" class="loomi-header-link loomi-header-resources">
@@ -75,7 +91,13 @@ const GITHUB_URL = "https://github.com/loomidev/loomiui-docs";
         ></path>
       </svg>
     </a>
-    <loomi-button class="hidden sm:inline-flex" type="secondary" size="small" tag="a" href="/installation/">Get Started</loomi-button>
+    {
+      !hasSidebar && (
+        <loomi-button class="hidden sm:inline-flex" type="secondary" size="small" tag="a" href="/installation/">
+          Get Started
+        </loomi-button>
+      )
+    }
     <loomi-button class="hidden sm:inline-flex" color="primary" size="small" tag="a" href={PRO_LICENSING_URL}>Get Pro</loomi-button>
   </div>
 </div>
