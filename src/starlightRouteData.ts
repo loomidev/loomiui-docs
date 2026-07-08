@@ -3,7 +3,7 @@ import { defineRouteMiddleware } from "@astrojs/starlight/route-data";
 // Every "Start Here" sidebar slug (astro.config.mjs) except Icons — that one is a raw
 // Astro page (src/pages/icons/index.astro), not a Starlight content-collection doc, so
 // it never runs through this middleware at all and is excluded for free.
-const START_HERE_SLUGS = ["installation", "customization", "contributing", "rtl-support", "mcp-server", "cli", "architecture"];
+const START_HERE_SLUGS = ["installation", "customization", "contributing", "i18n", "rtl-support", "mcp-server", "cli", "architecture"];
 
 // Docs navigation lives in the top bar for the homepage and other one-off pages, but
 // the component reference (/components/*) and the "Start Here" docs above keep the

@@ -83,6 +83,7 @@ export default defineConfig({
             { label: "Installation", slug: "installation", attrs: { "data-icon": "arrow-down-tray" } },
             { label: "Customization", slug: "customization", attrs: { "data-icon": "swatch" } },
             { label: "Contributing", slug: "contributing", attrs: { "data-icon": "code-bracket" } },
+            { label: "Internationalization", slug: "i18n", attrs: { "data-icon": "globe-alt" } },
             { label: "RTL Support", slug: "rtl-support", attrs: { "data-icon": "language" } },
             // Raw Astro page (src/pages/icons/index.astro), not a content-collection
             // doc — `link`, not `slug`, same as how MarketingHeader/Header.astro link

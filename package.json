@@ -12,9 +12,10 @@
     "build": "astro check && astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "prepare:content": "node scripts/copy-component-assets.mjs && node scripts/copy-pro-theme-assets.mjs && node scripts/copy-pro-template-screenshots.mjs && node scripts/gen-component-docs.mjs && node scripts/gen-contributing-doc.mjs && node scripts/gen-preview-fallbacks.mjs",
+    "prepare:content": "node scripts/copy-component-assets.mjs && node scripts/copy-pro-theme-assets.mjs && node scripts/copy-pro-template-screenshots.mjs && node scripts/gen-component-docs.mjs && node scripts/gen-contributing-doc.mjs && node scripts/gen-i18n-doc.mjs && node scripts/gen-preview-fallbacks.mjs",
     "gen:components": "node scripts/gen-component-docs.mjs",
     "gen:contributing": "node scripts/gen-contributing-doc.mjs",
+    "gen:i18n": "node scripts/gen-i18n-doc.mjs",
     "gen:preview-fallbacks": "node scripts/gen-preview-fallbacks.mjs",
     "copy:assets": "node scripts/copy-component-assets.mjs"
   },
