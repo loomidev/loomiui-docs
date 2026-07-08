@@ -32,7 +32,11 @@ const GITHUB_URL = "https://github.com/loomidev/loomiui-docs";
 // top bar drops the links that would otherwise duplicate it: "Docs" and
 // "Components" are both reachable from the sidebar, and "Get Started" just points
 // at /installation/, already the first "Start Here" entry.
-const { hasSidebar } = Astro.locals.starlightRoute;
+const { hasSidebar, id } = Astro.locals.starlightRoute;
+// The site-wide Pagefind search only stays in the top bar on individual component
+// detail pages (/components/<name>/) — everywhere else (marketing pages via
+// MarketingHeader.astro, and the "Start Here" docs here) drops it.
+const isComponentPage = id.startsWith("components/");
 ---
 
 <div class="loomi-header">
@@ -78,9 +82,13 @@ const { hasSidebar } = Astro.locals.starlightRoute;
   </nav>
 
   <div class="loomi-header-controls sl-flex print:hidden">
-    <div class="loomi-header-search">
-      <Search />
-    </div>
+    {
+      isComponentPage && (
+        <div class="loomi-header-search">
+          <Search />
+        </div>
+      )
+    }
     <ThemeSelect />
     <a href={GITHUB_URL} aria-label="GitHub" class="loomi-header-github hidden sm:inline-flex">
       <svg viewBox="0 0 24 24" class="h-5 w-5" fill="currentColor" aria-hidden="true">

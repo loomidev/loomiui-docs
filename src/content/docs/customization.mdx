@@ -46,6 +46,61 @@ This approach lets you manage your application’s theme from a single styleshee
   and lighter shades for soft backgrounds.
 </loomi-alert>
 
+## Using Tailwind CSS
+
+You don't need Tailwind to customize LoomiUI — the [token overrides above](#overriding-the-defaults)
+are plain CSS custom properties and work the same way in any project. If your app happens
+to use Tailwind, they don't need to go anywhere special: add the same `:root` block to
+the CSS file where you already `@import "tailwindcss"`.
+
+```css
+@import "tailwindcss";
+
+:root {
+  --loomi-primary-600: #16a34a;
+  --loomi-primary-700: #15803d;
+}
+```
+
+### Matching Tailwind utility classes
+
+By default, Tailwind's `bg-primary-600` class and LoomiUI's `--loomi-primary-600` token
+are unrelated — Tailwind uses its own built-in blue for "primary," so overriding the
+LoomiUI token re-colors `<loomi-button>` but not a `<div class="bg-primary-600">` you
+wrote yourself.
+
+To connect the two, import one extra file after Tailwind:
+
+```css
+@import "tailwindcss";
+@import "@loomidev/theme/tailwind-colors.css";
+```
+
+This tells Tailwind to build `bg-primary-600`, `text-error-500`, and every other
+`<color>-<shade>` utility out of LoomiUI's `--loomi-*` tokens instead of its own
+defaults. Now a single override re-colors both at once:
+
+```css
+:root {
+  --loomi-primary-600: #16a34a;
+}
+```
+
+```html
+<!-- Both turn green -->
+<div class="rounded-lg bg-primary-600 p-4 text-white">Tailwind markup</div>
+<loomi-button color="primary">Loomi component</loomi-button>
+```
+
+`@loomidev/theme` is already a dependency of every `@loomidev/*` component package, so if
+you have installed any Loomi component, importing this file doesn't require a separate install.
+
+<loomi-alert type="warning" show-close-icon="false">
+  <code>@theme inline</code> is Tailwind v4 (CSS-first config) syntax. On Tailwind v3, skip this
+  file and reference the tokens directly in your <code>tailwind.config.js</code> instead — or
+  just use the plain <code>:root</code> overrides above, which work on any Tailwind version.
+</loomi-alert>
+
 ## The 6 palette colors
 
 These are the built-in semantic palettes available out of the box.
