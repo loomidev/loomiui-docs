@@ -17,6 +17,8 @@ const heroFeatures = [
   { icon: "shield-check", title: "Accessible", desc: "Built-in a11y" },
   { icon: "adjustments-horizontal", title: "Customizable", desc: "CSS variables" },
   { icon: "sparkles", title: "Light & Dark", desc: "Theme ready" },
+  { icon: "code-bracket", title: "TypeScript", desc: "Fully typed" },
+  { icon: "bolt", title: "Lightweight", desc: "Tree-shakeable" },
 ];
 
 const componentCategories = ["All", "Data Entry", "Feedback", "Navigation", "Overlay", "Data Display", "Layout"];
@@ -54,17 +56,6 @@ const componentCategories = ["All", "Data Entry", "Feedback", "Navigation", "Ove
               <loomi-button color="primary" tag="a" href="/installation/" icon="arrow-right" icon-right>Get Started</loomi-button>
               <loomi-button type="secondary" outline tag="a" href="/components/">Explore Components</loomi-button>
             </div>
-            <div class="mt-12 grid grid-cols-2 gap-x-4 gap-y-5 sm:grid-cols-4">
-              {heroFeatures.map((item) => (
-                <div class="flex items-start gap-2.5">
-                  <span class="hero-bullet-icon"><loomi-icon name={item.icon} style="width:1rem;height:1rem"></loomi-icon></span>
-                  <div>
-                    <div class="text-sm font-semibold text-gray-900 dark:text-white">{item.title}</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400">{item.desc}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
 
           <div class="hero-stage relative hidden min-h-[28rem] lg:block" aria-hidden="true">
@@ -78,6 +69,7 @@ const componentCategories = ["All", "Data Entry", "Feedback", "Navigation", "Ove
                 <loomi-chart
                   type="line"
                   color="primary"
+                  style="--loomi-chart-max-height: 2.25rem"
                   data='[{"label":"1","value":12},{"label":"2","value":18},{"label":"3","value":15},{"label":"4","value":24},{"label":"5","value":21},{"label":"6","value":30}]'
                 ></loomi-chart>
               </div>
@@ -88,13 +80,38 @@ const componentCategories = ["All", "Data Entry", "Feedback", "Navigation", "Ove
               loomi-button
             </div>
 
-            <div class="hero-float absolute right-0 top-40 flex w-56 items-center gap-3">
-              <loomi-avatar image="/avatars/female.jpg" size="small"></loomi-avatar>
-              <div class="min-w-0 grow">
-                <div class="truncate text-sm font-semibold text-gray-900 dark:text-white">Olivia Rhye</div>
-                <div class="truncate text-xs text-gray-500 dark:text-gray-400">olivia@loomi.dev</div>
+            <div class="hero-float absolute left-0 top-56 w-52">
+              <div class="text-xs font-medium text-gray-500 dark:text-gray-400">Weekly Signups</div>
+              <div class="mt-2 h-12">
+                <loomi-chart
+                  type="bar"
+                  color="primary"
+                  color2="success"
+                  style="--loomi-chart-max-height: 3rem"
+                  data='[{"label":"Apr","value":14,"value2":10},{"label":"May","value":18,"value2":15},{"label":"Jun","value":20,"value2":24},{"label":"Jul","value":24,"value2":28}]'
+                ></loomi-chart>
               </div>
-              <loomi-icon name="chevron-down" style="width:1rem;height:1rem;color:#9ca3af"></loomi-icon>
+            </div>
+
+            <!-- z-index bump: every .hero-float sibling shares the same z-index:1 (home.css),
+                 so paint order falls back to DOM order. This card's dropdown menu pops out
+                 over the rating card below it, which comes later in the DOM and would
+                 otherwise paint on top and clip the open menu. -->
+            <div class="hero-float absolute right-0 top-40 w-56" style="z-index:5">
+              <loomi-dropmenu position="auto" hide-after-click style="display:block;width:100%">
+                <div slot="trigger" class="flex w-full cursor-pointer items-center gap-3 border-0 bg-transparent p-0 text-left">
+                  <loomi-avatar image="/avatars/female.jpg" size="small"></loomi-avatar>
+                  <div class="min-w-0 grow">
+                    <div class="truncate text-sm font-semibold text-gray-900 dark:text-white">Alice Wonderland</div>
+                    <div class="truncate text-xs text-gray-500 dark:text-gray-400">alice@loomiaui.com</div>
+                  </div>
+                  <loomi-icon name="chevron-down" style="width:1rem;height:1rem;color:#9ca3af"></loomi-icon>
+                </div>
+                <loomi-dropmenu-item icon="user-circle">Profile</loomi-dropmenu-item>
+                <loomi-dropmenu-item icon="cog-6-tooth">Settings</loomi-dropmenu-item>
+                <loomi-dropmenu-item divider></loomi-dropmenu-item>
+                <loomi-dropmenu-item icon="arrow-right-on-rectangle" variant="destructive">Log out</loomi-dropmenu-item>
+              </loomi-dropmenu>
             </div>
 
             <div class="hero-float absolute bottom-24 right-10 flex items-center gap-2">
@@ -110,6 +127,23 @@ const componentCategories = ["All", "Data Entry", "Feedback", "Navigation", "Ove
         </div>
       </section>
     </div>
+
+    <!-- Hero feature strip -->
+    <section class="border-t border-gray-100 dark:border-gray-900">
+      <div class="mx-auto max-w-6xl px-6 py-12">
+        <div class="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-6">
+          {heroFeatures.map((item) => (
+            <div class="flex items-start gap-2.5">
+              <span class="hero-bullet-icon"><loomi-icon name={item.icon} style="width:1rem;height:1rem"></loomi-icon></span>
+              <div>
+                <div class="text-sm font-semibold text-gray-900 dark:text-white">{item.title}</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">{item.desc}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
 
     <!-- One library, every stack -->
     <section class="border-t border-gray-100 dark:border-gray-900">
