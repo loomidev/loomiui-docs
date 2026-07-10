@@ -1,0 +1,236 @@
+<div class="proof-app mail-demo" data-mail-demo>
+  <aside class="mail-sidebar" aria-label="Mail folders">
+    <div class="mail-brand">
+      <loomi-avatar image="/avatars/female.jpg" label="Alice Wonderland" size="medium"></loomi-avatar>
+      <div>
+        <strong>Alice Wonderland</strong>
+        <span>alice@northstarops.example</span>
+      </div>
+    </div>
+
+    <nav class="mail-folders">
+      <button class="mail-folder active" type="button" data-mail-folder="inbox">
+        <loomi-icon name="inbox"></loomi-icon>
+        Inbox
+        <span data-mail-folder-count="inbox">6</span>
+      </button>
+      <button class="mail-folder" type="button" data-mail-folder="starred"><loomi-icon name="star"></loomi-icon> Starred <span>3</span></button>
+      <button class="mail-folder" type="button" data-mail-folder="sent"><loomi-icon name="paper-airplane"></loomi-icon> Sent</button>
+      <button class="mail-folder" type="button" data-mail-folder="drafts"><loomi-icon name="document-text"></loomi-icon> Drafts <span data-mail-folder-count="drafts">1</span></button>
+      <button class="mail-folder" type="button" data-mail-folder="snoozed"><loomi-icon name="clock"></loomi-icon> Snoozed</button>
+      <button class="mail-folder" type="button" data-mail-folder="archive"><loomi-icon name="archive-box"></loomi-icon> Archive</button>
+      <button class="mail-folder" type="button" data-mail-folder="trash"><loomi-icon name="trash"></loomi-icon> Trash</button>
+    </nav>
+
+    <div class="mail-labels">
+      <span>Labels</span>
+      <button type="button"><i class="dot dot-blue"></i> Partners</button>
+      <button type="button"><i class="dot dot-orange"></i> Finance</button>
+      <button type="button"><i class="dot dot-green"></i> Delivery</button>
+      <button type="button"><i class="dot dot-red"></i> Urgent</button>
+    </div>
+
+    <div class="app-sidebar-spacer"></div>
+
+    <loomi-dropmenu class="app-user-menu" position="top" hide-after-click>
+      <button slot="trigger" class="app-user-trigger" type="button">
+        <loomi-avatar image="/avatars/female.jpg" label="Alice Wonderland" size="small"></loomi-avatar>
+        <span>
+          <strong>Alice Wonderland</strong>
+          <small>Supervisor</small>
+        </span>
+        <loomi-icon name="chevron-up"></loomi-icon>
+      </button>
+      <loomi-dropmenu-item icon="user-circle" data-mail-user-action="profile">Profile</loomi-dropmenu-item>
+      <loomi-dropmenu-item icon="adjustments-horizontal" data-mail-user-action="preferences">Preferences</loomi-dropmenu-item>
+    </loomi-dropmenu>
+  </aside>
+
+  <section class="mail-list-pane">
+    <loomi-input class="mail-search" size="small" prefix-icon="magnifying-glass" placeholder="Search mail"></loomi-input>
+
+    <div class="mail-list" data-mail-list>
+      <button class="mail-row unread active" type="button" data-mail-id="launch-plan" data-recipient="Nadia Mensah">
+        <loomi-avatar image="/avatars/female2.jpg" label="Nadia Mensah"></loomi-avatar>
+        <span class="mail-row-copy">
+          <strong>Nadia Mensah</strong>
+          <span>Vendor launch plan is ready</span>
+          <small>Final checklist, vendor arrival windows, and the staffing handoff.</small>
+        </span>
+        <span class="mail-time">10:18 AM</span>
+        <span class="mail-unread-dot"></span>
+      </button>
+
+      <button class="mail-row" type="button" data-mail-id="billing-review" data-recipient="Owen Brooks">
+        <loomi-avatar image="/avatars/male.jpg" label="Owen Brooks"></loomi-avatar>
+        <span class="mail-row-copy">
+          <strong>Owen Brooks</strong>
+          <span>Q3 pricing review</span>
+          <small>I added the revised margin sheet and three supplier notes.</small>
+        </span>
+        <span class="mail-time">Yesterday</span>
+      </button>
+
+      <button class="mail-row unread" type="button" data-mail-id="dock-thread" data-recipient="Samira Cole">
+        <loomi-avatar image="/avatars/female.jpg" label="Samira Cole"></loomi-avatar>
+        <span class="mail-row-copy">
+          <strong>Samira Cole</strong>
+          <span>Thread: north dock staffing</span>
+          <small>Looping Malik in so we can confirm coverage before noon.</small>
+        </span>
+        <span class="mail-time">Jul 9</span>
+        <span class="mail-unread-dot"></span>
+      </button>
+
+      <button class="mail-row" type="button" data-mail-id="citylink" data-recipient="CityLink Air">
+        <loomi-avatar label="CA"></loomi-avatar>
+        <span class="mail-row-copy">
+          <strong>CityLink Air</strong>
+          <span>Freight slot confirmed</span>
+          <small>Your 18:45 loading bay reservation has been confirmed.</small>
+        </span>
+        <span class="mail-time">Jul 8</span>
+      </button>
+
+      <button class="mail-row unread" type="button" data-mail-id="atlas" data-recipient="Atlas Billing">
+        <loomi-avatar label="AB"></loomi-avatar>
+        <span class="mail-row-copy">
+          <strong>Atlas Billing</strong>
+          <span>Invoice batch needs approval</span>
+          <small>Four credits require supervisor approval before settlement.</small>
+        </span>
+        <span class="mail-time">Jul 7</span>
+        <span class="mail-unread-dot"></span>
+      </button>
+
+      <button class="mail-row" type="button" data-mail-id="mika" data-recipient="Mika Tan">
+        <loomi-avatar image="/avatars/male2.jpg" label="Mika Tan"></loomi-avatar>
+        <span class="mail-row-copy">
+          <strong>Mika Tan</strong>
+          <span>Training notes for new dispatchers</span>
+          <small>Sharing the updated queue triage checklist for review.</small>
+        </span>
+        <span class="mail-time">Jul 5</span>
+      </button>
+    </div>
+  </section>
+
+  <section class="mail-detail-pane">
+    <div class="mail-empty" data-mail-empty hidden>
+      <loomi-empty-state heading="No message open" message="Select a conversation from the list to read it."></loomi-empty-state>
+    </div>
+
+    <article class="mail-detail active" data-mail-detail="launch-plan">
+      <header class="mail-detail-toolbar">
+        <div class="mail-action-cluster">
+          <loomi-tooltip content="Reply" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="reply"><loomi-icon name="arrow-uturn-left"></loomi-icon></button></loomi-tooltip>
+          <loomi-tooltip content="Reply all" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="reply-all"><loomi-icon name="users"></loomi-icon></button></loomi-tooltip>
+          <loomi-tooltip content="Forward" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="forward"><loomi-icon name="arrow-uturn-right"></loomi-icon></button></loomi-tooltip>
+          <loomi-tooltip content="Delete" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="delete"><loomi-icon name="trash"></loomi-icon></button></loomi-tooltip>
+          <loomi-dropmenu class="mail-snooze-menu" position="bottom" hide-after-click>
+            <button slot="trigger" class="mail-icon-action" type="button" aria-label="Snooze"><loomi-icon name="clock"></loomi-icon></button>
+            <loomi-dropmenu-item icon="clock" data-mail-snooze="Later today">Later today <span slot="meta">6:00 PM</span></loomi-dropmenu-item>
+            <loomi-dropmenu-item icon="sun" data-mail-snooze="Tomorrow">Tomorrow morning</loomi-dropmenu-item>
+            <loomi-dropmenu-item icon="calendar-days" data-mail-snooze="Monday">Monday</loomi-dropmenu-item>
+            <loomi-dropmenu-item icon="calendar" data-mail-snooze="Custom date">Pick date</loomi-dropmenu-item>
+          </loomi-dropmenu>
+          <loomi-tooltip content="Pin or flag" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="pin"><loomi-icon name="flag"></loomi-icon></button></loomi-tooltip>
+          <loomi-tooltip content="Mark unread" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="unread"><loomi-icon name="envelope"></loomi-icon></button></loomi-tooltip>
+          <loomi-tooltip content="AI summary" placement="bottom"><button class="mail-icon-action ai" type="button" data-mail-action="ai"><loomi-icon name="sparkles"></loomi-icon></button></loomi-tooltip>
+        </div>
+        <button class="mail-close-detail" type="button" data-mail-action="close-detail" aria-label="Close message">
+          <loomi-icon name="x-mark"></loomi-icon>
+        </button>
+      </header>
+      <div class="mail-summary" data-mail-summary hidden></div>
+      <div class="mail-message-head">
+        <div>
+          <h3>Vendor launch plan is ready</h3>
+          <p><strong>Nadia Mensah</strong> nadia@harborpartners.example to me</p>
+        </div>
+        <span>10:18 AM</span>
+      </div>
+      <div class="mail-body">
+        <p>Alice, the vendor launch plan is ready for your final review. The two remaining risks are the cold-room handoff and a late label print for Eastgate.</p>
+        <p>I attached the route owner list and highlighted every arrival window that needs a supervisor at the dock.</p>
+        <div class="mail-thread">
+          <div class="thread-item">
+            <strong>Alice Wonderland</strong>
+            <p>Can you confirm whether Harbor Foods needs a second scanner at intake?</p>
+          </div>
+          <div class="thread-item">
+            <strong>Nadia Mensah</strong>
+            <p>Yes. I added it to the equipment list and assigned Marcus as owner.</p>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="mail-detail" data-mail-detail="billing-review" hidden>
+      <header class="mail-detail-toolbar">
+        <div class="mail-action-cluster">
+          <loomi-tooltip content="Reply" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="reply"><loomi-icon name="arrow-uturn-left"></loomi-icon></button></loomi-tooltip>
+          <loomi-tooltip content="Reply all" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="reply-all"><loomi-icon name="users"></loomi-icon></button></loomi-tooltip>
+          <loomi-tooltip content="Forward" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="forward"><loomi-icon name="arrow-uturn-right"></loomi-icon></button></loomi-tooltip>
+          <loomi-tooltip content="Delete" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="delete"><loomi-icon name="trash"></loomi-icon></button></loomi-tooltip>
+          <loomi-tooltip content="Snooze" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="snooze"><loomi-icon name="clock"></loomi-icon></button></loomi-tooltip>
+          <loomi-tooltip content="Pin or flag" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="pin"><loomi-icon name="flag"></loomi-icon></button></loomi-tooltip>
+          <loomi-tooltip content="Mark unread" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="unread"><loomi-icon name="envelope"></loomi-icon></button></loomi-tooltip>
+          <loomi-tooltip content="AI summary" placement="bottom"><button class="mail-icon-action ai" type="button" data-mail-action="ai"><loomi-icon name="sparkles"></loomi-icon></button></loomi-tooltip>
+        </div>
+        <button class="mail-close-detail" type="button" data-mail-action="close-detail" aria-label="Close message"><loomi-icon name="x-mark"></loomi-icon></button>
+      </header>
+      <div class="mail-summary" data-mail-summary hidden></div>
+      <div class="mail-message-head">
+        <div>
+          <h3>Q3 pricing review</h3>
+          <p><strong>Owen Brooks</strong> owen@ledgernorth.example to me</p>
+        </div>
+        <span>Yesterday</span>
+      </div>
+      <div class="mail-body">
+        <p>I added the revised margin sheet and three supplier notes. The biggest change is the refrigerated transport surcharge, which rises only on weekend loads.</p>
+      </div>
+    </article>
+
+    <article class="mail-detail" data-mail-detail="dock-thread" hidden>
+      <header class="mail-detail-toolbar">
+        <div class="mail-action-cluster">
+          <loomi-tooltip content="Reply" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="reply"><loomi-icon name="arrow-uturn-left"></loomi-icon></button></loomi-tooltip>
+          <loomi-tooltip content="Reply all" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="reply-all"><loomi-icon name="users"></loomi-icon></button></loomi-tooltip>
+          <loomi-tooltip content="Forward" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="forward"><loomi-icon name="arrow-uturn-right"></loomi-icon></button></loomi-tooltip>
+          <loomi-tooltip content="Delete" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="delete"><loomi-icon name="trash"></loomi-icon></button></loomi-tooltip>
+          <loomi-tooltip content="Snooze" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="snooze"><loomi-icon name="clock"></loomi-icon></button></loomi-tooltip>
+          <loomi-tooltip content="Pin or flag" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="pin"><loomi-icon name="flag"></loomi-icon></button></loomi-tooltip>
+          <loomi-tooltip content="Mark unread" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="unread"><loomi-icon name="envelope"></loomi-icon></button></loomi-tooltip>
+          <loomi-tooltip content="AI summary" placement="bottom"><button class="mail-icon-action ai" type="button" data-mail-action="ai"><loomi-icon name="sparkles"></loomi-icon></button></loomi-tooltip>
+        </div>
+        <button class="mail-close-detail" type="button" data-mail-action="close-detail" aria-label="Close message"><loomi-icon name="x-mark"></loomi-icon></button>
+      </header>
+      <div class="mail-summary" data-mail-summary hidden></div>
+      <div class="mail-message-head">
+        <div>
+          <h3>Thread: north dock staffing</h3>
+          <p><strong>Samira Cole</strong> samira@northstarops.example to me</p>
+        </div>
+        <span>Jul 9</span>
+      </div>
+      <div class="mail-body">
+        <div class="mail-thread">
+          <div class="thread-item">
+            <strong>Samira Cole</strong>
+            <p>Malik can cover the 11:00 handoff, but we still need one scanner trained on cold-room exceptions.</p>
+          </div>
+          <div class="thread-item">
+            <strong>Malik Jones</strong>
+            <p>I can train Theo during the first load if Alice approves the temporary reassignment.</p>
+          </div>
+          <div class="thread-item">
+            <strong>Alice Wonderland</strong>
+            <p>Approved. Keep Theo on aisle C after the training block.</p>
+          </div>
+        </div>
+      </div>
+    </article>
+  </section>
+</div>

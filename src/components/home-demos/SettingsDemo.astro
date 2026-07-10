@@ -1,0 +1,201 @@
+<div class="proof-app settings-demo" data-settings-demo>
+  <aside class="settings-side" aria-label="Settings sections">
+    <div class="settings-side-title">Settings</div>
+    <nav class="settings-nav">
+      <button class="settings-nav-item active" type="button" data-settings-nav="general"><loomi-icon name="cog-6-tooth"></loomi-icon> General</button>
+      <button class="settings-nav-item" type="button" data-settings-nav="profile"><loomi-icon name="user"></loomi-icon> Profile</button>
+      <button class="settings-nav-item" type="button" data-settings-nav="workspace"><loomi-icon name="building-office"></loomi-icon> Workspace</button>
+      <button class="settings-nav-item" type="button" data-settings-nav="projects"><loomi-icon name="folder"></loomi-icon> Projects</button>
+      <button class="settings-nav-item" type="button" data-settings-nav="members"><loomi-icon name="users"></loomi-icon> Members & Permissions</button>
+      <button class="settings-nav-item" type="button" data-settings-nav="roles"><loomi-icon name="shield-check"></loomi-icon> Roles</button>
+      <button class="settings-nav-item" type="button" data-settings-nav="notifications"><loomi-icon name="bell"></loomi-icon> Notifications</button>
+      <button class="settings-nav-item" type="button" data-settings-nav="integrations"><loomi-icon name="puzzle-piece"></loomi-icon> Integrations</button>
+      <button class="settings-nav-item" type="button" data-settings-nav="automation"><loomi-icon name="bolt"></loomi-icon> Automation</button>
+      <button class="settings-nav-item" type="button" data-settings-nav="security"><loomi-icon name="lock-closed"></loomi-icon> Security</button>
+      <button class="settings-nav-item" type="button" data-settings-nav="billing"><loomi-icon name="credit-card"></loomi-icon> Billing & Subscription</button>
+      <button class="settings-nav-item" type="button" data-settings-nav="import"><loomi-icon name="arrow-up-tray"></loomi-icon> Import / Export</button>
+      <button class="settings-nav-item" type="button" data-settings-nav="appearance"><loomi-icon name="swatch"></loomi-icon> Appearance</button>
+      <button class="settings-nav-item" type="button" data-settings-nav="localisation"><loomi-icon name="globe-alt"></loomi-icon> Localisation</button>
+    </nav>
+  </aside>
+
+  <main class="settings-main">
+    <header class="app-topbar settings-topbar">
+      <div>
+        <p class="app-eyebrow">Workspace admin</p>
+        <h3 data-settings-heading>General Settings</h3>
+      </div>
+      <div class="app-topbar-actions">
+        <loomi-input size="small" prefix-icon="magnifying-glass" placeholder="Search settings"></loomi-input>
+        <button class="icon-button" type="button" aria-label="Notifications"><loomi-bell color="error" animate-dot></loomi-bell></button>
+        <loomi-avatar image="/avatars/male.jpg" label="Kwame Mensah" size="small"></loomi-avatar>
+      </div>
+    </header>
+
+    <section class="settings-panel active" data-settings-panel="general">
+      <div class="settings-panel-head">
+        <div>
+          <h4>General Settings</h4>
+          <p>Core workspace identity, defaults, and communication settings.</p>
+        </div>
+        <loomi-button color="primary" size="small" icon="check" data-proof-toast="General settings saved">Save changes</loomi-button>
+      </div>
+
+      <div class="settings-clean-grid">
+        <loomi-card class="settings-section-card settings-section-card--wide">
+          <loomi-card-header>
+            <loomi-card-title>Workspace information</loomi-card-title>
+            <loomi-card-description>Keep the public workspace details short and recognizable.</loomi-card-description>
+          </loomi-card-header>
+          <loomi-card-content>
+            <div class="settings-form-grid">
+              <loomi-input label="Workspace name" value="AgriConnect Platform"></loomi-input>
+              <loomi-input label="Workspace URL" prefix="flowboard.com/" value="agriconnect"></loomi-input>
+              <loomi-textarea label="Description" rows="3" value="Platform for farmer loans, repayment tracking, and field operations."></loomi-textarea>
+            </div>
+          </loomi-card-content>
+        </loomi-card>
+
+        <loomi-card class="settings-logo-card">
+          <loomi-card-content>
+            <div class="workspace-logo-preview">
+              <loomi-icon name="leaf"></loomi-icon>
+            </div>
+            <loomi-button size="small" type="secondary" icon="arrow-up-tray" data-proof-toast="Logo picker opened">Change logo</loomi-button>
+            <small>Recommended: 512x512 PNG or JPG.</small>
+          </loomi-card-content>
+        </loomi-card>
+      </div>
+
+      <div class="settings-clean-grid settings-clean-grid--equal">
+        <loomi-card class="settings-section-card">
+          <loomi-card-header><loomi-card-title>Time & locale</loomi-card-title></loomi-card-header>
+          <loomi-card-content>
+            <div class="settings-form-grid settings-form-grid--compact">
+              <loomi-select label="Time zone" selected-value="accra" data='[{"label":"(GMT+00:00) Accra","value":"accra"},{"label":"(GMT+00:00) London","value":"london"},{"label":"(GMT-05:00) New York","value":"new-york"}]'></loomi-select>
+              <loomi-select label="Date format" selected-value="long" data='[{"label":"Jul 10, 2026","value":"long"},{"label":"10/07/2026","value":"slash"},{"label":"2026-07-10","value":"iso"}]'></loomi-select>
+              <loomi-select label="Time format" selected-value="12" data='[{"label":"12-hour (2:30 PM)","value":"12"},{"label":"24-hour (14:30)","value":"24"}]'></loomi-select>
+            </div>
+          </loomi-card-content>
+        </loomi-card>
+
+        <loomi-card class="settings-section-card">
+          <loomi-card-header><loomi-card-title>Default task behavior</loomi-card-title></loomi-card-header>
+          <loomi-card-content>
+            <div class="settings-toggle-list">
+              <label><span>Assign new tasks to creator</span><loomi-toggle></loomi-toggle></label>
+              <label><span>Set priority to medium</span><loomi-toggle checked></loomi-toggle></label>
+              <label><span>Allow comments by default</span><loomi-toggle checked></loomi-toggle></label>
+            </div>
+          </loomi-card-content>
+        </loomi-card>
+      </div>
+    </section>
+
+    <section class="settings-panel" data-settings-panel="profile" hidden>
+      <div class="settings-panel-head"><div><h4>Profile</h4><p>Personal details and contact preferences.</p></div><loomi-button size="small" color="primary" data-proof-toast="Profile saved">Save</loomi-button></div>
+      <div class="settings-clean-grid">
+        <loomi-card class="settings-section-card"><loomi-card-content><div class="profile-stack"><loomi-avatar image="/avatars/female.jpg" size="large"></loomi-avatar><loomi-input label="Full name" value="Alice Wonderland"></loomi-input><loomi-input label="Role" value="Supervisor"></loomi-input><loomi-input label="Email" value="alice@northstarops.example"></loomi-input></div></loomi-card-content></loomi-card>
+        <loomi-card class="settings-section-card"><loomi-card-header><loomi-card-title>Availability</loomi-card-title></loomi-card-header><loomi-card-content><loomi-select label="Status" selected-value="available" data='[{"label":"Available","value":"available"},{"label":"In a meeting","value":"meeting"},{"label":"Focus time","value":"focus"}]'></loomi-select><loomi-textarea label="Status note" rows="3" value="On dispatch supervision until 4 PM."></loomi-textarea></loomi-card-content></loomi-card>
+      </div>
+    </section>
+
+    <section class="settings-panel" data-settings-panel="workspace" hidden>
+      <div class="settings-panel-head"><div><h4>Workspace</h4><p>Teams, regions, and project defaults.</p></div><loomi-button size="small" color="primary" data-proof-toast="Workspace saved">Save</loomi-button></div>
+      <div class="settings-clean-grid settings-clean-grid--equal">
+        <loomi-card class="settings-section-card"><loomi-card-header><loomi-card-title>Regions</loomi-card-title></loomi-card-header><loomi-card-content><loomi-tag-input label="Operating regions" value="North,South,Central"></loomi-tag-input><loomi-select label="Default region" selected-value="north" data='[{"label":"North","value":"north"},{"label":"South","value":"south"},{"label":"Central","value":"central"}]'></loomi-select></loomi-card-content></loomi-card>
+        <loomi-card class="settings-section-card"><loomi-card-header><loomi-card-title>Project defaults</loomi-card-title></loomi-card-header><loomi-card-content><loomi-select label="Default view" selected-value="kanban" data='[{"label":"Kanban","value":"kanban"},{"label":"List","value":"list"},{"label":"Calendar","value":"calendar"}]'></loomi-select><loomi-select label="Default status" selected-value="todo" data='[{"label":"To Do","value":"todo"},{"label":"In Progress","value":"progress"},{"label":"Done","value":"done"}]'></loomi-select></loomi-card-content></loomi-card>
+      </div>
+    </section>
+
+    <section class="settings-panel" data-settings-panel="projects" hidden>
+      <div class="settings-panel-head"><div><h4>Projects</h4><p>Active project configuration and archival rules.</p></div><loomi-button size="small" color="primary" icon="plus" data-proof-toast="Project created">New project</loomi-button></div>
+      <loomi-table compact has-border has-hover>
+        <th slot="header">Project</th><th slot="header">Owner</th><th slot="header">Health</th><th slot="header">Archive rule</th>
+        <tr><td>AgriConnect Platform</td><td>Kwame Mensah</td><td><loomi-tag label="On track" color="green"></loomi-tag></td><td>After 90 inactive days</td></tr>
+        <tr><td>Mobile Redesign</td><td>Akosua Boateng</td><td><loomi-tag label="At risk" color="warning"></loomi-tag></td><td>Manual archive</td></tr>
+        <tr><td>Internal Tools</td><td>Kofi Asare</td><td><loomi-tag label="Needs review" color="error"></loomi-tag></td><td>After 30 inactive days</td></tr>
+      </loomi-table>
+    </section>
+
+    <section class="settings-panel" data-settings-panel="members" hidden>
+      <div class="settings-panel-head"><div><h4>Members & Permissions</h4><p>Invite people and control workspace access.</p></div><loomi-button size="small" color="primary" icon="user-plus" data-proof-toast="Invite dialog opened">Invite members</loomi-button></div>
+      <div class="settings-clean-grid settings-clean-grid--equal">
+        <loomi-card class="settings-section-card"><loomi-card-header><loomi-card-title>Invite defaults</loomi-card-title></loomi-card-header><loomi-card-content><loomi-select label="New member role" selected-value="member" data='[{"label":"Member","value":"member"},{"label":"Project admin","value":"project-admin"},{"label":"Viewer","value":"viewer"}]'></loomi-select><div class="settings-toggle-list"><label><span>Require admin approval</span><loomi-toggle checked></loomi-toggle></label><label><span>Allow guest accounts</span><loomi-toggle></loomi-toggle></label></div></loomi-card-content></loomi-card>
+        <loomi-card class="settings-section-card"><loomi-card-header><loomi-card-title>Permission summary</loomi-card-title></loomi-card-header><loomi-card-content><ul class="settings-mini-list"><li>4 administrators</li><li>16 project members</li><li>3 read-only collaborators</li></ul></loomi-card-content></loomi-card>
+      </div>
+    </section>
+
+    <section class="settings-panel" data-settings-panel="roles" hidden>
+      <div class="settings-panel-head"><div><h4>Roles</h4><p>Fine tune what each group can do.</p></div><loomi-button size="small" color="primary" data-proof-toast="Role changes saved">Save roles</loomi-button></div>
+      <loomi-table compact has-border>
+        <th slot="header">Permission</th><th slot="header">Admin</th><th slot="header">Manager</th><th slot="header">Viewer</th>
+        <tr><td>Create projects</td><td><loomi-checkbox checked></loomi-checkbox></td><td><loomi-checkbox checked></loomi-checkbox></td><td><loomi-checkbox></loomi-checkbox></td></tr>
+        <tr><td>Manage billing</td><td><loomi-checkbox checked></loomi-checkbox></td><td><loomi-checkbox></loomi-checkbox></td><td><loomi-checkbox></loomi-checkbox></td></tr>
+        <tr><td>Export reports</td><td><loomi-checkbox checked></loomi-checkbox></td><td><loomi-checkbox checked></loomi-checkbox></td><td><loomi-checkbox checked></loomi-checkbox></td></tr>
+      </loomi-table>
+    </section>
+
+    <section class="settings-panel" data-settings-panel="notifications" hidden>
+      <div class="settings-panel-head"><div><h4>Notifications</h4><p>Choose the updates people receive.</p></div><loomi-button size="small" color="primary" data-proof-toast="Notification settings saved">Save</loomi-button></div>
+      <div class="settings-clean-grid settings-clean-grid--equal">
+        <loomi-card class="settings-section-card"><loomi-card-header><loomi-card-title>Email</loomi-card-title></loomi-card-header><loomi-card-content><div class="settings-toggle-list"><label><span>Task assignments</span><loomi-toggle checked></loomi-toggle></label><label><span>Mentions and comments</span><loomi-toggle checked></loomi-toggle></label><label><span>Weekly report</span><loomi-toggle></loomi-toggle></label></div></loomi-card-content></loomi-card>
+        <loomi-card class="settings-section-card"><loomi-card-header><loomi-card-title>In-app</loomi-card-title></loomi-card-header><loomi-card-content><div class="settings-toggle-list"><label><span>Project updates</span><loomi-toggle checked></loomi-toggle></label><label><span>Deadline warnings</span><loomi-toggle checked></loomi-toggle></label><label><span>Billing notices</span><loomi-toggle checked></loomi-toggle></label></div></loomi-card-content></loomi-card>
+      </div>
+    </section>
+
+    <section class="settings-panel" data-settings-panel="integrations" hidden>
+      <div class="settings-panel-head"><div><h4>Integrations</h4><p>Connect workspace tools and data sources.</p></div><loomi-button size="small" color="primary" icon="plus" data-proof-toast="Integration catalog opened">Add integration</loomi-button></div>
+      <div class="integration-grid">
+        <loomi-card class="integration-card"><loomi-card-content><loomi-icon name="calendar-days"></loomi-icon><strong>Calendar</strong><span>Connected</span><loomi-toggle checked></loomi-toggle></loomi-card-content></loomi-card>
+        <loomi-card class="integration-card"><loomi-card-content><loomi-icon name="chat-bubble-left-right"></loomi-icon><strong>Team chat</strong><span>Connected</span><loomi-toggle checked></loomi-toggle></loomi-card-content></loomi-card>
+        <loomi-card class="integration-card"><loomi-card-content><loomi-icon name="document-chart-bar"></loomi-icon><strong>Data warehouse</strong><span>Needs setup</span><loomi-toggle></loomi-toggle></loomi-card-content></loomi-card>
+      </div>
+    </section>
+
+    <section class="settings-panel" data-settings-panel="automation" hidden>
+      <div class="settings-panel-head"><div><h4>Automation</h4><p>Rules that keep work moving.</p></div><loomi-button size="small" color="primary" icon="plus" data-proof-toast="Automation builder opened">New rule</loomi-button></div>
+      <loomi-card class="settings-section-card"><loomi-card-content><div class="automation-rule"><loomi-icon name="bolt"></loomi-icon><span><strong>Move overdue tasks to Escalated</strong><small>When due date passes and status is not Done.</small></span><loomi-toggle checked></loomi-toggle></div><div class="automation-rule"><loomi-icon name="bolt"></loomi-icon><span><strong>Notify manager on blocked card</strong><small>When a card stays blocked for 24 hours.</small></span><loomi-toggle checked></loomi-toggle></div></loomi-card-content></loomi-card>
+    </section>
+
+    <section class="settings-panel" data-settings-panel="security" hidden>
+      <div class="settings-panel-head"><div><h4>Security</h4><p>Authentication, sessions, and audit controls.</p></div><loomi-button size="small" color="primary" data-proof-toast="Security settings saved">Save</loomi-button></div>
+      <div class="settings-clean-grid settings-clean-grid--equal">
+        <loomi-card class="settings-section-card"><loomi-card-header><loomi-card-title>Authentication</loomi-card-title></loomi-card-header><loomi-card-content><div class="settings-toggle-list"><label><span>Require two-factor authentication</span><loomi-toggle checked></loomi-toggle></label><label><span>Allow SSO login</span><loomi-toggle checked></loomi-toggle></label></div><loomi-select label="Session timeout" selected-value="8" data='[{"label":"4 hours","value":"4"},{"label":"8 hours","value":"8"},{"label":"24 hours","value":"24"}]'></loomi-select></loomi-card-content></loomi-card>
+        <loomi-card class="settings-section-card"><loomi-card-header><loomi-card-title>Audit log</loomi-card-title></loomi-card-header><loomi-card-content><ul class="settings-mini-list"><li>Alice changed billing email</li><li>Kwame exported a project report</li><li>Akosua invited a collaborator</li></ul></loomi-card-content></loomi-card>
+      </div>
+    </section>
+
+    <section class="settings-panel" data-settings-panel="billing" hidden>
+      <div class="settings-panel-head"><div><h4>Billing & Subscription</h4><p>Plan, seats, and payment information.</p></div><loomi-button size="small" color="primary" data-proof-toast="Billing portal opened">Manage billing</loomi-button></div>
+      <div class="settings-clean-grid settings-clean-grid--equal">
+        <loomi-card class="settings-section-card"><loomi-card-header><loomi-card-title>Current plan</loomi-card-title><loomi-card-description>Business workspace</loomi-card-description></loomi-card-header><loomi-card-content><div class="billing-price">$149 <span>/ month</span></div><loomi-progress-bar percentage="76" show-percentage-label percentage-suffix=" seats used"></loomi-progress-bar></loomi-card-content></loomi-card>
+        <loomi-card class="settings-section-card"><loomi-card-header><loomi-card-title>Payment method</loomi-card-title></loomi-card-header><loomi-card-content><loomi-creditcard label="Card number" value="4242424242424242"></loomi-creditcard><loomi-button size="small" type="secondary" data-proof-toast="Payment method updated">Update card</loomi-button></loomi-card-content></loomi-card>
+      </div>
+    </section>
+
+    <section class="settings-panel" data-settings-panel="import" hidden>
+      <div class="settings-panel-head"><div><h4>Import / Export</h4><p>Move workspace data in and out safely.</p></div><loomi-button size="small" color="primary" data-proof-toast="Export started">Export workspace</loomi-button></div>
+      <div class="settings-clean-grid settings-clean-grid--equal">
+        <loomi-card class="settings-section-card"><loomi-card-header><loomi-card-title>Import data</loomi-card-title></loomi-card-header><loomi-card-content><loomi-filepicker placeholder-line1="Drop CSV or XLSX here" placeholder-line2="Members, tasks, or projects"></loomi-filepicker></loomi-card-content></loomi-card>
+        <loomi-card class="settings-section-card"><loomi-card-header><loomi-card-title>Export schedule</loomi-card-title></loomi-card-header><loomi-card-content><loomi-select label="Frequency" selected-value="weekly" data='[{"label":"Weekly","value":"weekly"},{"label":"Monthly","value":"monthly"},{"label":"Quarterly","value":"quarterly"}]'></loomi-select><loomi-checkbox checked>Include attachments</loomi-checkbox></loomi-card-content></loomi-card>
+      </div>
+    </section>
+
+    <section class="settings-panel" data-settings-panel="appearance" hidden>
+      <div class="settings-panel-head"><div><h4>Appearance</h4><p>Theme, density, and color preferences.</p></div><loomi-button size="small" color="primary" data-proof-toast="Appearance saved">Save</loomi-button></div>
+      <div class="settings-clean-grid settings-clean-grid--equal">
+        <loomi-card class="settings-section-card"><loomi-card-header><loomi-card-title>Theme</loomi-card-title></loomi-card-header><loomi-card-content><loomi-radio name="appearance-theme" value="system" checked>System</loomi-radio><loomi-radio name="appearance-theme" value="light">Light</loomi-radio><loomi-radio name="appearance-theme" value="dark">Dark</loomi-radio></loomi-card-content></loomi-card>
+        <loomi-card class="settings-section-card"><loomi-card-header><loomi-card-title>Density</loomi-card-title></loomi-card-header><loomi-card-content><loomi-slider label="Interface density" min="1" max="3" value="2"></loomi-slider><loomi-colorpicker label="Accent color" value="#2563eb"></loomi-colorpicker></loomi-card-content></loomi-card>
+      </div>
+    </section>
+
+    <section class="settings-panel" data-settings-panel="localisation" hidden>
+      <div class="settings-panel-head"><div><h4>Localisation</h4><p>Language, currency, and regional formatting.</p></div><loomi-button size="small" color="primary" data-proof-toast="Localisation saved">Save</loomi-button></div>
+      <div class="settings-clean-grid settings-clean-grid--equal">
+        <loomi-card class="settings-section-card"><loomi-card-header><loomi-card-title>Language</loomi-card-title></loomi-card-header><loomi-card-content><loomi-select label="Language" selected-value="en" data='[{"label":"English","value":"en"},{"label":"French","value":"fr"},{"label":"Arabic","value":"ar"}]'></loomi-select><loomi-select label="Currency" selected-value="ghs" data='[{"label":"GHS","value":"ghs"},{"label":"USD","value":"usd"},{"label":"EUR","value":"eur"}]'></loomi-select></loomi-card-content></loomi-card>
+        <loomi-card class="settings-section-card"><loomi-card-header><loomi-card-title>Regional settings</loomi-card-title></loomi-card-header><loomi-card-content><loomi-countries label="Country" selected-value="GH"></loomi-countries><loomi-timezonepicker label="Time zone" selected-value="Africa/Accra"></loomi-timezonepicker></loomi-card-content></loomi-card>
+      </div>
+    </section>
+  </main>
+</div>

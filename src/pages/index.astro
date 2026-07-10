@@ -1,6 +1,7 @@
 ---
 import { Image } from "astro:assets";
 import MarketingHeader from "../components/MarketingHeader.astro";
+import ProductProofDemos from "../components/home-demos/ProductProofDemos.astro";
 import ThemeProvider from "../components/ThemeProvider.astro";
 import icon from "../assets/icon.png";
 import { buildImportMap } from "../lib/import-map.mjs";
@@ -417,265 +418,7 @@ const componentCategories = ["All", "Data Entry", "Feedback", "Navigation", "Ove
       </div>
     </section>
 
-    <!-- A real library, not a demo -->
-    <section class="demo-band border-t border-gray-100 px-6 py-20 dark:border-gray-900">
-      <div class="mx-auto grid max-w-6xl items-end gap-8 md:grid-cols-[0.9fr_1.1fr]">
-        <div>
-          <div class="text-sm font-semibold uppercase tracking-[0.18em] text-primary-600 dark:text-primary-300">
-            Live product proof
-          </div>
-          <h2 class="mt-3 text-3xl font-bold sm:text-4xl">A real library, not a brochure.</h2>
-        </div>
-        <p class="max-w-2xl text-gray-600 dark:text-gray-400 md:justify-self-end">
-          Every control below is a real LoomiUI package — composed into a lightweight project workspace.
-          Switch projects, drag tasks across the board, open details, post comments, or create new work.
-        </p>
-      </div>
-
-      <loomi-card class="demo-card mx-auto mt-10 block max-w-6xl overflow-hidden" style="--loomi-card-spacing: 0">
-        <div class="demo-card-bar border-b border-gray-200 px-5 py-3 dark:border-gray-800">
-          <div class="flex items-center gap-2">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-          <div class="demo-title-lockup text-xs font-semibold uppercase tracking-[0.16em] text-gray-500 dark:text-gray-400">
-            <Image src={icon} alt="" class="h-5 w-5" />
-            <span>LoomiUI workspace</span>
-          </div>
-          <loomi-tag label="Interactive" color="green"></loomi-tag>
-        </div>
-
-        <div id="demo-app" class="demo-shell">
-          <div class="demo-toolbar">
-            <div class="demo-toolbar-start">
-              <loomi-select id="project-switcher" size="small" selected-value="redesign"></loomi-select>
-              <p class="demo-hint">Drag tasks · Click to open · Switch projects</p>
-            </div>
-            <div class="demo-toolbar-actions">
-              <loomi-button id="demo-new-task" type="secondary" size="small" icon="plus">Add task</loomi-button>
-              <loomi-button id="demo-new-project" color="primary" size="small" icon="folder-plus">New project</loomi-button>
-            </div>
-          </div>
-
-          <div class="demo-dash-header">
-            <div class="demo-dash-intro">
-              <h3 id="dash-project-name" class="demo-dash-title">Homepage Redesign</h3>
-              <p id="dash-project-meta" class="demo-dash-meta">Led by Michael K. Ocansey</p>
-            </div>
-            <div class="demo-dash-kicker">
-              <loomi-tag label="Active project" color="primary"></loomi-tag>
-              <span id="dash-health" class="demo-health demo-health--ok">On track</span>
-            </div>
-          </div>
-
-          <div class="demo-view-nav">
-            <loomi-button-group id="demo-nav" size="small">
-              <loomi-button-group-item label="Dashboard" value="dashboard" icon="chart-bar-square" selected></loomi-button-group-item>
-              <loomi-button-group-item label="Board" value="board" icon="view-columns"></loomi-button-group-item>
-            </loomi-button-group>
-          </div>
-
-          <div id="demo-panel-dashboard" class="demo-panel">
-            <div class="demo-stats-row">
-              <div class="demo-stats-stack">
-                <loomi-statistic id="stat-total" number="5" label="Total tasks" has-shadow="false"></loomi-statistic>
-                <loomi-statistic id="stat-complete" number="40%" label="Complete" has-shadow="false"></loomi-statistic>
-              </div>
-              <loomi-card class="demo-dash-card demo-completions-card">
-                <loomi-card-header>
-                  <loomi-card-title>Completions this month</loomi-card-title>
-                  <loomi-card-description>Daily tasks closed by teammate · Jun 18 – Jul 1</loomi-card-description>
-                </loomi-card-header>
-                <loomi-card-content>
-                  <loomi-chart
-                    id="chart-team-completions"
-                    type="bar"
-                    color="primary"
-                    color2="warning"
-                    color3="success"
-                    series-label="Michael"
-                    series2-label="Sara"
-                    series3-label="Robert"
-                    show-y-axis="false"
-                    class="demo-team-chart"
-                  ></loomi-chart>
-                  <div class="demo-chart-legend" aria-hidden="true">
-                    <span class="demo-chart-legend-item"><span class="demo-chart-legend-dot demo-chart-legend-dot--mk"></span>Michael</span>
-                    <span class="demo-chart-legend-item"><span class="demo-chart-legend-dot demo-chart-legend-dot--sf"></span>Sara</span>
-                    <span class="demo-chart-legend-item"><span class="demo-chart-legend-dot demo-chart-legend-dot--rb"></span>Robert</span>
-                  </div>
-                </loomi-card-content>
-              </loomi-card>
-            </div>
-
-            <loomi-card class="demo-dash-card">
-              <loomi-card-header>
-                <loomi-card-title>Sprint progress</loomi-card-title>
-              </loomi-card-header>
-              <loomi-card-content>
-                <loomi-progress-bar id="dash-progress" percentage="70" show-percentage-label percentage-suffix=" complete"></loomi-progress-bar>
-              </loomi-card-content>
-            </loomi-card>
-
-            <div class="demo-dash-grid">
-              <div class="demo-dash-main">
-                <loomi-card class="demo-dash-card">
-                  <loomi-card-header>
-                    <loomi-card-title>Tasks by status</loomi-card-title>
-                    <loomi-card-description>Current backlog split</loomi-card-description>
-                  </loomi-card-header>
-                  <loomi-card-content>
-                    <loomi-horizontal-line-graph id="status-graph"></loomi-horizontal-line-graph>
-                  </loomi-card-content>
-                </loomi-card>
-
-                <loomi-card class="demo-dash-card">
-                  <loomi-card-header>
-                    <loomi-card-title>Up next</loomi-card-title>
-                    <loomi-card-description>Click a task to open</loomi-card-description>
-                  </loomi-card-header>
-                  <loomi-card-content>
-                    <loomi-listview id="activity-list" compact class="block"></loomi-listview>
-                  </loomi-card-content>
-                </loomi-card>
-              </div>
-              <div class="demo-dash-side">
-                <loomi-card class="demo-dash-card demo-timeline-panel">
-                  <loomi-card-header>
-                    <loomi-card-title>Recent activity</loomi-card-title>
-                    <loomi-card-description>Latest project updates</loomi-card-description>
-                  </loomi-card-header>
-                  <loomi-card-content>
-                    <loomi-timelines id="activity-timeline" stacked anchor="big"></loomi-timelines>
-                  </loomi-card-content>
-                </loomi-card>
-              </div>
-            </div>
-          </div>
-
-          <div id="demo-panel-board" class="demo-panel" hidden>
-            <div class="demo-tab-body">
-              <div class="demo-board-toolbar">
-                <loomi-input id="board-search" size="small" prefix-icon="magnifying-glass" placeholder="Search tasks…"></loomi-input>
-              </div>
-              <div class="demo-board">
-                <div class="demo-board-col">
-                  <div class="demo-board-col-head">
-                    <span class="demo-board-dot demo-board-dot--todo"></span>
-                    To Do
-                    <span id="count-todo" class="demo-board-count">0</span>
-                  </div>
-                  <loomi-sortable id="col-todo" type="shared" group="board" has-handle></loomi-sortable>
-                </div>
-                <div class="demo-board-col">
-                  <div class="demo-board-col-head">
-                    <span class="demo-board-dot demo-board-dot--progress"></span>
-                    In Progress
-                    <span id="count-in-progress" class="demo-board-count">0</span>
-                  </div>
-                  <loomi-sortable id="col-in-progress" type="shared" group="board" has-handle></loomi-sortable>
-                </div>
-                <div class="demo-board-col">
-                  <div class="demo-board-col-head">
-                    <span class="demo-board-dot demo-board-dot--done"></span>
-                    Done
-                    <span id="count-done" class="demo-board-count">0</span>
-                  </div>
-                  <loomi-sortable id="col-done" type="shared" group="board" has-handle></loomi-sortable>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div id="task-panel" class="demo-task-panel" hidden>
-            <button type="button" id="task-panel-backdrop" class="demo-task-panel-backdrop" aria-label="Close task details"></button>
-            <aside class="demo-task-panel-sheet" aria-label="Task details">
-              <div class="demo-task-panel-head">
-                <loomi-tag id="detail-status" label="To Do" color="gray"></loomi-tag>
-                <loomi-button id="task-panel-close" type="secondary" size="small" icon="x-mark" aria-label="Close"></loomi-button>
-              </div>
-              <div class="demo-task-panel-body">
-                <h4 id="detail-title" class="demo-task-title"></h4>
-                <p id="detail-description" class="demo-task-desc"></p>
-                <p id="detail-due" class="demo-task-due"></p>
-                <div class="demo-task-fields">
-                  <loomi-select id="detail-assignee" label="Assigned to" size="small"></loomi-select>
-                  <loomi-select
-                    id="detail-status-select"
-                    label="Status"
-                    size="small"
-                    data='[{"label":"To Do","value":"todo"},{"label":"In Progress","value":"in-progress"},{"label":"Done","value":"done"}]'
-                  ></loomi-select>
-                </div>
-                <div>
-                  <div class="demo-section-label">Comments</div>
-                  <loomi-listview id="detail-comments" compact class="block"></loomi-listview>
-                  <div class="demo-comment-form">
-                    <loomi-textarea id="detail-comment-input" placeholder="Write a comment…" rows="2"></loomi-textarea>
-                    <loomi-button id="detail-comment-submit" size="small" color="primary" icon="paper-airplane">Post</loomi-button>
-                  </div>
-                </div>
-              </div>
-            </aside>
-          </div>
-
-          <div id="demo-toast" class="demo-toast hidden" aria-live="polite"></div>
-        </div>
-      </loomi-card>
-
-      <loomi-modal name="demo-new-task" title="New task" show-action-buttons="false" show-close-icon="true">
-        <form id="new-task-form" class="demo-modal-form" enctype="multipart/form-data">
-          <loomi-input name="title" label="Title" required></loomi-input>
-          <loomi-textarea name="description" label="Description" rows="3"></loomi-textarea>
-          <div class="demo-form-grid">
-            <loomi-select
-              name="assignee"
-              label="Assign to"
-              selected-value="mk"
-              data='[{"label":"Michael K. Ocansey","value":"mk"},{"label":"Sara Field","value":"sf"},{"label":"Robert Boateng","value":"rb"}]'
-            ></loomi-select>
-            <loomi-datepicker name="due_date" label="Due date"></loomi-datepicker>
-          </div>
-          <div class="demo-form-grid">
-            <loomi-timepicker name="due_time" label="Due time"></loomi-timepicker>
-            <loomi-filepicker name="attachment" placeholder-line1="Attach a file" placeholder-line2="Optional"></loomi-filepicker>
-          </div>
-          <div class="demo-modal-actions">
-            <loomi-button id="new-task-cancel" type="secondary" size="small">Cancel</loomi-button>
-            <loomi-button id="new-task-submit" can-submit color="primary" size="small" icon="check">Create task</loomi-button>
-          </div>
-        </form>
-      </loomi-modal>
-
-      <loomi-modal name="demo-new-project" title="New project" show-action-buttons="false" show-close-icon="true">
-        <form id="new-project-form" class="demo-modal-form">
-          <loomi-input name="name" label="Project name" required></loomi-input>
-          <div class="demo-form-grid">
-            <loomi-select
-              name="lead"
-              label="Project lead"
-              selected-value="mk"
-              data='[{"label":"Michael K. Ocansey","value":"mk"},{"label":"Sara Field","value":"sf"},{"label":"Robert Boateng","value":"rb"}]'
-            ></loomi-select>
-            <loomi-datepicker name="start_date" label="Start date"></loomi-datepicker>
-          </div>
-          <div class="demo-form-grid">
-            <loomi-input name="budget" label="Budget" prefix="$" numeric></loomi-input>
-            <loomi-select
-              name="health"
-              label="Health"
-              selected-value="Planning"
-              data='[{"label":"Planning","value":"Planning"},{"label":"On track","value":"On track"},{"label":"At risk","value":"At risk"}]'
-            ></loomi-select>
-          </div>
-          <div class="demo-modal-actions">
-            <loomi-button id="new-project-cancel" type="secondary" size="small">Cancel</loomi-button>
-            <loomi-button id="new-project-submit" can-submit color="primary" size="small" icon="check">Create project</loomi-button>
-          </div>
-        </form>
-      </loomi-modal>
-    </section>
+    <ProductProofDemos />
 
     <!-- Install CTA -->
     <section class="cta-band">
@@ -781,18 +524,24 @@ const componentCategories = ["All", "Data Entry", "Feedback", "Navigation", "Ove
       import "@loomidev/chart";
       import "@loomidev/rating";
       import "@loomidev/input";
+      import "@loomidev/password";
       import "@loomidev/select";
       import "@loomidev/checkbox";
       import "@loomidev/radio";
       import "@loomidev/toggle";
       import "@loomidev/textarea";
       import "@loomidev/datepicker";
+      import "@loomidev/date-range-picker";
       import "@loomidev/timepicker";
+      import "@loomidev/timezonepicker";
       import "@loomidev/filepicker";
       import "@loomidev/dropmenu";
       import "@loomidev/modal";
+      import "@loomidev/tooltip";
+      import "@loomidev/floating-panel";
       import "@loomidev/table";
       import "@loomidev/alert";
+      import "@loomidev/bell";
       import "@loomidev/button-group";
       import "@loomidev/tab";
       import "@loomidev/listview";
@@ -801,6 +550,12 @@ const componentCategories = ["All", "Data Entry", "Feedback", "Navigation", "Ove
       import "@loomidev/sortable";
       import "@loomidev/progress";
       import "@loomidev/timeline";
+      import "@loomidev/empty-state";
+      import "@loomidev/tag-input";
+      import "@loomidev/creditcard";
+      import "@loomidev/slider";
+      import "@loomidev/colorpicker";
+      import "@loomidev/countries";
       window.__loomiComponentsLoaded = true;
       window.dispatchEvent(new Event("loomi-components-loaded"));
     </script>
@@ -853,7 +608,7 @@ const componentCategories = ["All", "Data Entry", "Feedback", "Navigation", "Ove
     </script>
 
     <script>
-      import "../scripts/demo-workspace.ts";
+      import "../scripts/product-proof-demos.ts";
     </script>
   </body>
 </html>

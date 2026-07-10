@@ -1,0 +1,337 @@
+<div class="proof-app dashboard-demo" data-dashboard-demo>
+  <div class="dashboard-workspace" data-dashboard-workspace>
+    <aside class="app-sidebar dash-sidebar" aria-label="Dashboard demo navigation">
+      <div class="app-sidebar-brand">
+        <span class="brand-mark brand-mark--blue"><loomi-icon name="building-storefront"></loomi-icon></span>
+        <span>Northstar Ops</span>
+      </div>
+
+      <nav class="app-nav">
+        <button class="app-nav-item active" type="button" data-dashboard-nav="dashboard">
+          <loomi-icon name="home"></loomi-icon>
+          Dashboard
+        </button>
+        <button class="app-nav-item" type="button" data-dashboard-nav="orders">
+          <loomi-icon name="shopping-bag"></loomi-icon>
+          Orders
+          <span class="app-nav-count">18</span>
+        </button>
+        <button class="app-nav-item" type="button" data-dashboard-nav="deliveries">
+          <loomi-icon name="truck"></loomi-icon>
+          Deliveries
+        </button>
+        <button class="app-nav-item" type="button" data-dashboard-nav="analytics">
+          <loomi-icon name="chart-bar-square"></loomi-icon>
+          Analytics
+        </button>
+        <button class="app-nav-item" type="button" data-dashboard-nav="settings">
+          <loomi-icon name="cog-6-tooth"></loomi-icon>
+          Settings
+        </button>
+      </nav>
+
+      <div class="app-sidebar-spacer"></div>
+
+      <loomi-dropmenu class="app-user-menu" position="top" hide-after-click>
+        <button slot="trigger" class="app-user-trigger" type="button">
+          <loomi-avatar image="/avatars/female.jpg" label="Alice Wonderland" size="small"></loomi-avatar>
+          <span>
+            <strong>Alice Wonderland</strong>
+            <small>Supervisor</small>
+          </span>
+          <loomi-icon name="chevron-up"></loomi-icon>
+        </button>
+        <loomi-dropmenu-item icon="user-circle" data-dashboard-action="profile">Profile</loomi-dropmenu-item>
+        <loomi-dropmenu-item icon="adjustments-horizontal" data-dashboard-action="preferences">Preferences</loomi-dropmenu-item>
+        <loomi-dropmenu-item divider></loomi-dropmenu-item>
+        <loomi-dropmenu-item icon="arrow-right-on-rectangle" variant="destructive" data-dashboard-action="logout">Logout</loomi-dropmenu-item>
+      </loomi-dropmenu>
+    </aside>
+
+    <main class="app-main dash-main">
+      <section class="dash-panel active" data-dashboard-panel="dashboard">
+        <header class="app-topbar">
+          <div>
+            <p class="app-eyebrow">Operations command</p>
+            <h3>Good morning, Alice</h3>
+          </div>
+          <div class="app-topbar-actions">
+            <loomi-input size="small" prefix-icon="magnifying-glass" placeholder="Search routes, orders, people"></loomi-input>
+            <button class="icon-button" type="button" aria-label="Refresh dashboard" data-proof-toast="Dashboard refreshed">
+              <loomi-icon name="arrow-path"></loomi-icon>
+            </button>
+            <button class="icon-button" type="button" aria-label="Notifications">
+              <loomi-bell color="error" animate-dot></loomi-bell>
+            </button>
+          </div>
+        </header>
+
+        <div class="dash-metric-grid">
+          <loomi-card class="metric-card">
+            <loomi-card-content>
+              <span>Route revenue</span>
+              <strong>$318,920</strong>
+              <small class="positive">+8.7% this week</small>
+            </loomi-card-content>
+          </loomi-card>
+          <loomi-card class="metric-card">
+            <loomi-card-content>
+              <span>Open orders</span>
+              <strong>186</strong>
+              <small class="positive">32 ready to pack</small>
+            </loomi-card-content>
+          </loomi-card>
+          <loomi-card class="metric-card">
+            <loomi-card-content>
+              <span>Fulfillment SLA</span>
+              <strong>97.4%</strong>
+              <small class="positive">Above target</small>
+            </loomi-card-content>
+          </loomi-card>
+          <loomi-card class="metric-card">
+            <loomi-card-content>
+              <span>Driver score</span>
+              <strong>4.8</strong>
+              <small class="muted">From 2,408 ratings</small>
+            </loomi-card-content>
+          </loomi-card>
+        </div>
+
+        <div class="dash-content-grid">
+          <loomi-card class="dash-widget dash-widget--wide">
+            <loomi-card-header>
+              <loomi-card-title>Fulfillment pulse</loomi-card-title>
+              <loomi-card-description>Orders picked, packed, and handed to drivers.</loomi-card-description>
+            </loomi-card-header>
+            <loomi-card-content>
+              <loomi-chart
+                type="bar"
+                color="primary"
+                color2="success"
+                color3="warning"
+                series-label="Picked"
+                series2-label="Packed"
+                series3-label="Dispatched"
+                data='[{"label":"Mon","value":72,"value2":64,"value3":52},{"label":"Tue","value":86,"value2":78,"value3":71},{"label":"Wed","value":94,"value2":88,"value3":82},{"label":"Thu","value":78,"value2":72,"value3":69},{"label":"Fri","value":105,"value2":96,"value3":88},{"label":"Sat","value":62,"value2":58,"value3":53}]'
+              ></loomi-chart>
+            </loomi-card-content>
+          </loomi-card>
+
+          <loomi-card class="dash-widget">
+            <loomi-card-header>
+              <loomi-card-title>Traffic source</loomi-card-title>
+              <loomi-card-description>Orders by intake channel.</loomi-card-description>
+            </loomi-card-header>
+            <loomi-card-content>
+              <div class="source-stack">
+                <div><span>Retail portal</span><strong>46%</strong><loomi-progress-bar percentage="46"></loomi-progress-bar></div>
+                <div><span>Field reps</span><strong>31%</strong><loomi-progress-bar percentage="31" color="success"></loomi-progress-bar></div>
+                <div><span>Phone desk</span><strong>23%</strong><loomi-progress-bar percentage="23" color="warning"></loomi-progress-bar></div>
+              </div>
+            </loomi-card-content>
+          </loomi-card>
+        </div>
+
+        <loomi-card class="dash-widget">
+          <loomi-card-header>
+            <loomi-card-title>Warehouse crew</loomi-card-title>
+            <loomi-card-description>Live shift roster and current assignment.</loomi-card-description>
+          </loomi-card-header>
+          <loomi-card-content>
+            <loomi-table compact has-border has-hover>
+              <th slot="header">Worker ID</th>
+              <th slot="header">Member</th>
+              <th slot="header">Role</th>
+              <th slot="header">Zone</th>
+              <th slot="header">Status</th>
+              <tr>
+                <td>#NS-1842</td>
+                <td><span class="person-cell"><loomi-avatar image="/avatars/male.jpg" size="tiny"></loomi-avatar> Marcus Reed</span></td>
+                <td>Dispatch lead</td>
+                <td>North dock</td>
+                <td><loomi-tag label="Active" color="green"></loomi-tag></td>
+              </tr>
+              <tr>
+                <td>#NS-1847</td>
+                <td><span class="person-cell"><loomi-avatar image="/avatars/female2.jpg" size="tiny"></loomi-avatar> Priya Mensah</span></td>
+                <td>Inventory analyst</td>
+                <td>Cold room</td>
+                <td><loomi-tag label="Audit" color="orange"></loomi-tag></td>
+              </tr>
+              <tr>
+                <td>#NS-1855</td>
+                <td><span class="person-cell"><loomi-avatar image="/avatars/male2.jpg" size="tiny"></loomi-avatar> Theo Palmer</span></td>
+                <td>Picker</td>
+                <td>Aisle C</td>
+                <td><loomi-tag label="Active" color="green"></loomi-tag></td>
+              </tr>
+            </loomi-table>
+          </loomi-card-content>
+        </loomi-card>
+      </section>
+
+      <section class="dash-panel" data-dashboard-panel="orders" hidden>
+        <header class="app-topbar">
+          <div>
+            <p class="app-eyebrow">Order desk</p>
+            <h3>Orders</h3>
+          </div>
+          <div class="app-topbar-actions">
+            <loomi-select size="small" selected-value="all" data='[{"label":"All statuses","value":"all"},{"label":"Ready","value":"ready"},{"label":"Packed","value":"packed"},{"label":"Exception","value":"exception"}]'></loomi-select>
+            <loomi-button size="small" type="secondary" icon="arrow-down-tray" data-proof-toast="Order export queued">Export</loomi-button>
+          </div>
+        </header>
+        <loomi-card class="dash-widget">
+          <loomi-card-content>
+            <loomi-table compact has-border has-hover checkable>
+              <th slot="header">Order</th>
+              <th slot="header">Customer</th>
+              <th slot="header">Items</th>
+              <th slot="header">Window</th>
+              <th slot="header">Status</th>
+              <th slot="header">Actions</th>
+              <tr data-order-row="ready">
+                <td>#SO-90218</td>
+                <td>Harbor Foods</td>
+                <td>24 crates</td>
+                <td>10:00 - 12:00</td>
+                <td><loomi-tag label="Ready" color="green"></loomi-tag></td>
+                <td><loomi-button size="tiny" type="secondary" data-proof-toast="Order #SO-90218 opened">Open</loomi-button></td>
+              </tr>
+              <tr data-order-row="packed">
+                <td>#SO-90224</td>
+                <td>Eastgate Market</td>
+                <td>9 cartons</td>
+                <td>12:00 - 14:00</td>
+                <td><loomi-tag label="Packed" color="primary"></loomi-tag></td>
+                <td><loomi-button size="tiny" type="secondary" data-proof-toast="Order #SO-90224 opened">Open</loomi-button></td>
+              </tr>
+              <tr data-order-row="exception">
+                <td>#SO-90231</td>
+                <td>Linden Pharmacy</td>
+                <td>3 totes</td>
+                <td>14:00 - 16:00</td>
+                <td><loomi-tag label="Exception" color="error"></loomi-tag></td>
+                <td><loomi-button size="tiny" color="primary" data-proof-toast="Exception assigned to Alice">Resolve</loomi-button></td>
+              </tr>
+            </loomi-table>
+          </loomi-card-content>
+        </loomi-card>
+      </section>
+
+      <section class="dash-panel" data-dashboard-panel="deliveries" hidden>
+        <header class="app-topbar">
+          <div>
+            <p class="app-eyebrow">Fleet board</p>
+            <h3>Deliveries</h3>
+          </div>
+          <loomi-date-range-picker label="Route window" start-date="2026-07-10" end-date="2026-07-10"></loomi-date-range-picker>
+        </header>
+        <div class="delivery-grid">
+          <loomi-card class="dash-widget">
+            <loomi-card-header>
+              <loomi-card-title>Route N-14</loomi-card-title>
+              <loomi-card-description>Driver: Mina Clarke</loomi-card-description>
+            </loomi-card-header>
+            <loomi-card-content>
+              <loomi-progress-bar percentage="82" show-percentage-label percentage-suffix=" complete"></loomi-progress-bar>
+              <div class="delivery-stops">
+                <span><loomi-icon name="check-circle"></loomi-icon> Harbor Foods</span>
+                <span><loomi-icon name="check-circle"></loomi-icon> Ridge Clinic</span>
+                <span><loomi-icon name="map-pin"></loomi-icon> Orchard Cafe</span>
+              </div>
+            </loomi-card-content>
+          </loomi-card>
+          <loomi-card class="dash-widget">
+            <loomi-card-header>
+              <loomi-card-title>Route S-08</loomi-card-title>
+              <loomi-card-description>Driver: Jonah Bell</loomi-card-description>
+            </loomi-card-header>
+            <loomi-card-content>
+              <loomi-progress-bar percentage="54" color="warning" show-percentage-label percentage-suffix=" complete"></loomi-progress-bar>
+              <div class="delivery-stops">
+                <span><loomi-icon name="check-circle"></loomi-icon> Crown Grocers</span>
+                <span><loomi-icon name="map-pin"></loomi-icon> Bluebird Hotel</span>
+                <span><loomi-icon name="clock"></loomi-icon> Westside Labs</span>
+              </div>
+            </loomi-card-content>
+          </loomi-card>
+        </div>
+      </section>
+
+      <section class="dash-panel" data-dashboard-panel="analytics" hidden>
+        <header class="app-topbar">
+          <div>
+            <p class="app-eyebrow">Decision room</p>
+            <h3>Analytics</h3>
+          </div>
+          <loomi-button-group size="small">
+            <loomi-button-group-item label="Day" value="day"></loomi-button-group-item>
+            <loomi-button-group-item label="Week" value="week" selected></loomi-button-group-item>
+            <loomi-button-group-item label="Month" value="month"></loomi-button-group-item>
+          </loomi-button-group>
+        </header>
+        <div class="dash-content-grid">
+          <loomi-card class="dash-widget dash-widget--wide">
+            <loomi-card-header>
+              <loomi-card-title>Margin by region</loomi-card-title>
+              <loomi-card-description>North, South, and Central routes.</loomi-card-description>
+            </loomi-card-header>
+            <loomi-card-content>
+              <loomi-chart
+                type="line"
+                color="primary"
+                color2="success"
+                color3="warning"
+                series-label="North"
+                series2-label="South"
+                series3-label="Central"
+                data='[{"label":"W1","value":32,"value2":28,"value3":24},{"label":"W2","value":35,"value2":31,"value3":22},{"label":"W3","value":41,"value2":36,"value3":29},{"label":"W4","value":39,"value2":34,"value3":31}]'
+              ></loomi-chart>
+            </loomi-card-content>
+          </loomi-card>
+          <loomi-card class="dash-widget">
+            <loomi-card-header>
+              <loomi-card-title>Signals</loomi-card-title>
+            </loomi-card-header>
+            <loomi-card-content>
+              <ul class="signal-list">
+                <li><loomi-tag label="Win" color="green"></loomi-tag> North dock packing is 14 minutes faster.</li>
+                <li><loomi-tag label="Watch" color="orange"></loomi-tag> South route has three weather delays.</li>
+                <li><loomi-tag label="Shift" color="primary"></loomi-tag> Cold-room demand moved to mornings.</li>
+              </ul>
+            </loomi-card-content>
+          </loomi-card>
+        </div>
+      </section>
+
+      <section class="dash-panel" data-dashboard-panel="settings" hidden>
+        <header class="app-topbar">
+          <div>
+            <p class="app-eyebrow">Workspace controls</p>
+            <h3>Dashboard settings</h3>
+          </div>
+          <loomi-button color="primary" size="small" icon="check" data-proof-toast="Dashboard settings saved">Save changes</loomi-button>
+        </header>
+        <div class="settings-lite-grid">
+          <loomi-input label="Workspace name" value="Northstar Ops"></loomi-input>
+          <loomi-select label="Default route region" selected-value="north" data='[{"label":"North","value":"north"},{"label":"South","value":"south"},{"label":"Central","value":"central"}]'></loomi-select>
+          <div class="toggle-row"><span>Show delay alerts</span><loomi-toggle checked></loomi-toggle></div>
+          <div class="toggle-row"><span>Auto-assign exceptions</span><loomi-toggle></loomi-toggle></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="dashboard-login" data-dashboard-login hidden>
+    <loomi-card class="login-card">
+      <loomi-card-content>
+        <loomi-avatar image="/avatars/female.jpg" label="Alice Wonderland" size="large"></loomi-avatar>
+        <h3>Alice Wonderland</h3>
+        <p>Supervisor</p>
+        <loomi-password id="dashboard-login-password" label="Password" placeholder="Enter password" required></loomi-password>
+        <loomi-button color="primary" data-dashboard-login-submit icon="lock-open">Unlock dashboard</loomi-button>
+      </loomi-card-content>
+    </loomi-card>
+  </div>
+</div>

@@ -17,7 +17,8 @@
     "gen:contributing": "node scripts/gen-contributing-doc.mjs",
     "gen:i18n": "node scripts/gen-i18n-doc.mjs",
     "gen:preview-fallbacks": "node scripts/gen-preview-fallbacks.mjs",
-    "copy:assets": "node scripts/copy-component-assets.mjs"
+    "copy:assets": "node scripts/copy-component-assets.mjs",
+    "watch:components": "node scripts/watch-component-docs.mjs"
   },
   "dependencies": {
     "@astrojs/starlight": "^0.40.0",

@@ -1,0 +1,255 @@
+---
+import { Image } from "astro:assets";
+import icon from "../../assets/icon.png";
+---
+
+<div class="proof-app kanban-demo" data-kanban-demo>
+  <aside class="app-sidebar kanban-sidebar" aria-label="Kanban demo navigation">
+    <div class="app-sidebar-brand kanban-brand">
+      <Image src={icon} alt="" class="kanban-logo" />
+      <span>loomi UI</span>
+    </div>
+
+    <nav class="app-nav">
+      <button class="app-nav-item active" type="button" data-kanban-nav="dashboard">
+        <loomi-icon name="home"></loomi-icon>
+        Dashboard
+      </button>
+      <button class="app-nav-item" type="button" data-kanban-nav="tasks">
+        <loomi-icon name="view-columns"></loomi-icon>
+        Tasks
+      </button>
+      <button class="app-nav-item" type="button" data-kanban-nav="calendar">
+        <loomi-icon name="calendar-days"></loomi-icon>
+        Calendar
+      </button>
+      <button class="app-nav-item" type="button" data-kanban-nav="messages">
+        <loomi-icon name="chat-bubble-left-right"></loomi-icon>
+        Messages
+        <span class="app-nav-count">3</span>
+      </button>
+      <button class="app-nav-item" type="button" data-kanban-nav="files">
+        <loomi-icon name="folder"></loomi-icon>
+        Files
+      </button>
+      <button class="app-nav-item" type="button" data-kanban-nav="team">
+        <loomi-icon name="users"></loomi-icon>
+        Team
+      </button>
+    </nav>
+
+    <div class="app-sidebar-spacer"></div>
+
+    <loomi-dropmenu class="kanban-project-menu" position="top" hide-after-click>
+      <button slot="trigger" class="project-trigger" type="button">
+        <span>
+          <small>Active project</small>
+          <strong>AgriConnect Platform</strong>
+        </span>
+        <loomi-icon name="chevron-up"></loomi-icon>
+      </button>
+      <loomi-dropmenu-item icon="leaf" data-proof-toast="AgriConnect selected">AgriConnect Platform</loomi-dropmenu-item>
+      <loomi-dropmenu-item icon="device-phone-mobile" data-proof-toast="Mobile refresh selected">Mobile Refresh</loomi-dropmenu-item>
+      <loomi-dropmenu-item icon="globe-alt" data-proof-toast="Marketing website selected">Marketing Website</loomi-dropmenu-item>
+    </loomi-dropmenu>
+
+    <loomi-dropmenu class="app-user-menu" position="top" hide-after-click>
+      <button slot="trigger" class="app-user-trigger" type="button">
+        <loomi-avatar image="/avatars/male.jpg" label="Kwame Mensah" size="small"></loomi-avatar>
+        <span>
+          <strong>Kwame Mensah</strong>
+          <small>Project Manager</small>
+        </span>
+        <loomi-icon name="chevron-up"></loomi-icon>
+      </button>
+      <loomi-dropmenu-item icon="user-circle" data-proof-toast="Profile opened">Profile</loomi-dropmenu-item>
+      <loomi-dropmenu-item icon="adjustments-horizontal" data-proof-toast="Preferences opened">Preferences</loomi-dropmenu-item>
+      <loomi-dropmenu-item divider></loomi-dropmenu-item>
+      <loomi-dropmenu-item icon="arrow-right-on-rectangle" data-proof-toast="Signed out of workspace">Logout</loomi-dropmenu-item>
+    </loomi-dropmenu>
+  </aside>
+
+  <main class="app-main kanban-main">
+    <header class="app-topbar kanban-topbar">
+      <div>
+        <p class="app-eyebrow" data-kanban-kicker>Project overview</p>
+        <h3 data-kanban-heading>Dashboard</h3>
+      </div>
+      <div class="app-topbar-actions">
+        <loomi-input size="small" prefix-icon="magnifying-glass" placeholder="Search tasks, projects, people"></loomi-input>
+        <button class="icon-button" type="button" aria-label="Notifications"><loomi-bell color="error" animate-dot></loomi-bell></button>
+      </div>
+    </header>
+
+    <section class="kanban-panel active" data-kanban-panel="dashboard">
+      <div class="kanban-stat-grid">
+        <loomi-card class="metric-card"><loomi-card-content><span>Total tasks</span><strong>42</strong><small class="positive">+12% from last week</small></loomi-card-content></loomi-card>
+        <loomi-card class="metric-card"><loomi-card-content><span>In progress</span><strong>14</strong><small class="positive">+8% from last week</small></loomi-card-content></loomi-card>
+        <loomi-card class="metric-card"><loomi-card-content><span>Completed</span><strong>24</strong><small class="positive">+20% from last week</small></loomi-card-content></loomi-card>
+        <loomi-card class="metric-card"><loomi-card-content><span>Overdue</span><strong>4</strong><small class="negative">2 need owners</small></loomi-card-content></loomi-card>
+      </div>
+      <div class="kanban-dashboard-grid">
+        <loomi-card class="dash-widget">
+          <loomi-card-header>
+            <loomi-card-title>Tasks by status</loomi-card-title>
+            <loomi-card-description>Current sprint shape.</loomi-card-description>
+          </loomi-card-header>
+          <loomi-card-content>
+            <loomi-horizontal-line-graph
+              data='[{"label":"To Do","value":6,"color":"#0ea5e9"},{"label":"In Progress","value":14,"color":"#f59e0b"},{"label":"Review","value":8,"color":"#8b5cf6"},{"label":"Done","value":14,"color":"#22c55e"}]'
+            ></loomi-horizontal-line-graph>
+          </loomi-card-content>
+        </loomi-card>
+        <loomi-card class="dash-widget dash-widget--wide">
+          <loomi-card-header>
+            <loomi-card-title>Task activity</loomi-card-title>
+            <loomi-card-description>Completed, created, and moved this week.</loomi-card-description>
+          </loomi-card-header>
+          <loomi-card-content>
+            <loomi-chart
+              type="line"
+              color="success"
+              color2="warning"
+              color3="primary"
+              series-label="Completed"
+              series2-label="Created"
+              series3-label="Moved"
+              data='[{"label":"Mon","value":16,"value2":9,"value3":6},{"label":"Tue","value":21,"value2":14,"value3":10},{"label":"Wed","value":30,"value2":12,"value3":8},{"label":"Thu","value":33,"value2":24,"value3":16},{"label":"Fri","value":39,"value2":28,"value3":19}]'
+            ></loomi-chart>
+          </loomi-card-content>
+        </loomi-card>
+      </div>
+      <div class="kanban-lower-grid">
+        <loomi-card class="dash-widget">
+          <loomi-card-header><loomi-card-title>Project overview</loomi-card-title></loomi-card-header>
+          <loomi-card-content>
+            <div class="project-list">
+              <span><strong>AgriConnect Platform</strong><loomi-progress-bar percentage="60" color="success"></loomi-progress-bar></span>
+              <span><strong>Mobile Redesign</strong><loomi-progress-bar percentage="35" color="warning"></loomi-progress-bar></span>
+              <span><strong>Internal Tools</strong><loomi-progress-bar percentage="25" color="error"></loomi-progress-bar></span>
+            </div>
+          </loomi-card-content>
+        </loomi-card>
+        <loomi-card class="dash-widget">
+          <loomi-card-header><loomi-card-title>Recent activity</loomi-card-title></loomi-card-header>
+          <loomi-card-content>
+            <ul class="activity-list">
+              <li><loomi-icon name="check-circle"></loomi-icon> You completed "Update privacy policy page"</li>
+              <li><loomi-icon name="arrow-right"></loomi-icon> Kofi moved "Integrate SMS notifications"</li>
+              <li><loomi-icon name="plus"></loomi-icon> Ama created "Create UI style guide"</li>
+            </ul>
+          </loomi-card-content>
+        </loomi-card>
+      </div>
+    </section>
+
+    <section class="kanban-panel" data-kanban-panel="tasks" hidden>
+      <div class="kanban-task-toolbar">
+        <h4>AgriConnect Platform</h4>
+        <div>
+          <loomi-button size="small" type="secondary" icon="funnel">Filter</loomi-button>
+          <loomi-select size="small" selected-value="status" data='[{"label":"Group by: Status","value":"status"},{"label":"Group by: Owner","value":"owner"},{"label":"Group by: Priority","value":"priority"}]'></loomi-select>
+          <loomi-button size="small" color="primary" icon="plus" data-proof-toast="New task form opened">New task</loomi-button>
+        </div>
+      </div>
+      <div class="kanban-board">
+        <section class="kanban-column todo">
+          <header>To Do <span>6</span></header>
+          <loomi-sortable data-kanban-sortable="todo" group="agriconnect" has-handle></loomi-sortable>
+        </section>
+        <section class="kanban-column progress">
+          <header>In Progress <span>4</span></header>
+          <loomi-sortable data-kanban-sortable="progress" group="agriconnect" has-handle></loomi-sortable>
+        </section>
+        <section class="kanban-column review">
+          <header>In Review <span>3</span></header>
+          <loomi-sortable data-kanban-sortable="review" group="agriconnect" has-handle></loomi-sortable>
+        </section>
+        <section class="kanban-column done">
+          <header>Done <span>5</span></header>
+          <loomi-sortable data-kanban-sortable="done" group="agriconnect" has-handle></loomi-sortable>
+        </section>
+      </div>
+    </section>
+
+    <section class="kanban-panel" data-kanban-panel="calendar" hidden>
+      <div class="calendar-layout">
+        <loomi-card class="dash-widget">
+          <loomi-card-header><loomi-card-title>July sprint calendar</loomi-card-title></loomi-card-header>
+          <loomi-card-content>
+            <div class="mini-calendar">
+              {Array.from({ length: 35 }, (_, i) => (
+                <button type="button" class={i === 10 || i === 16 || i === 23 ? "has-event" : ""}>{i + 1 <= 31 ? i + 1 : ""}</button>
+              ))}
+            </div>
+          </loomi-card-content>
+        </loomi-card>
+        <loomi-card class="dash-widget">
+          <loomi-card-header><loomi-card-title>Today</loomi-card-title></loomi-card-header>
+          <loomi-card-content>
+            <ul class="schedule-list">
+              <li><strong>09:30</strong> Sprint planning</li>
+              <li><strong>12:00</strong> Design review</li>
+              <li><strong>16:00</strong> Staging deploy check</li>
+            </ul>
+          </loomi-card-content>
+        </loomi-card>
+      </div>
+    </section>
+
+    <section class="kanban-panel" data-kanban-panel="messages" hidden>
+      <div class="kanban-message-layout">
+        <div class="conversation-list">
+          <button class="conversation active" type="button"><loomi-avatar image="/avatars/female2.jpg" size="small"></loomi-avatar><span><strong>Akosua Boateng</strong><small>Can you share the latest wireframes?</small></span></button>
+          <button class="conversation" type="button"><loomi-avatar image="/avatars/male2.jpg" size="small"></loomi-avatar><span><strong>Kofi Asare</strong><small>The API integration is complete.</small></span></button>
+          <button class="conversation" type="button"><loomi-avatar label="DT" size="small"></loomi-avatar><span><strong>Design Team</strong><small>Added new components to the library.</small></span></button>
+        </div>
+        <loomi-card class="message-thread">
+          <loomi-card-header><loomi-card-title>Akosua Boateng</loomi-card-title><loomi-card-description>UI/UX Designer</loomi-card-description></loomi-card-header>
+          <loomi-card-content>
+            <div class="chat-bubble incoming">Hi Kwame, can you share the latest wireframes for the dashboard?</div>
+            <div class="chat-bubble outgoing">Sure. I updated them based on the feedback. See attached.</div>
+            <div class="attachment-pill"><loomi-icon name="document"></loomi-icon> dashboard_wireframes_v2.fig</div>
+            <loomi-textarea rows="2" placeholder="Write a message..."></loomi-textarea>
+            <loomi-button size="small" color="primary" icon="paper-airplane" data-proof-toast="Message sent">Send</loomi-button>
+          </loomi-card-content>
+        </loomi-card>
+      </div>
+    </section>
+
+    <section class="kanban-panel" data-kanban-panel="files" hidden>
+      <div class="files-toolbar">
+        <loomi-input size="small" prefix-icon="magnifying-glass" placeholder="Search files and folders"></loomi-input>
+        <loomi-button size="small" type="secondary" icon="folder-plus" data-proof-toast="New folder created">New folder</loomi-button>
+        <loomi-button size="small" color="primary" icon="plus" data-proof-toast="Upload started">New</loomi-button>
+      </div>
+      <loomi-table compact has-border has-hover checkable>
+        <th slot="header">Name</th>
+        <th slot="header">Owner</th>
+        <th slot="header">Last modified</th>
+        <th slot="header">Size</th>
+        <tr><td><span class="file-cell"><loomi-icon name="folder"></loomi-icon> Project Brief</span></td><td>Kwame Mensah</td><td>Jul 10, 2026</td><td>-</td></tr>
+        <tr><td><span class="file-cell"><loomi-icon name="document-text"></loomi-icon> Requirements.pdf</span></td><td>Akosua Boateng</td><td>Jul 9, 2026</td><td>2.4 MB</td></tr>
+        <tr><td><span class="file-cell"><loomi-icon name="table-cells"></loomi-icon> Research Summary.xlsx</span></td><td>Kofi Asare</td><td>Jul 8, 2026</td><td>312 KB</td></tr>
+      </loomi-table>
+    </section>
+
+    <section class="kanban-panel" data-kanban-panel="team" hidden>
+      <div class="kanban-stat-grid">
+        <loomi-card class="metric-card"><loomi-card-content><span>Total members</span><strong>23</strong><small class="positive">2 new this month</small></loomi-card-content></loomi-card>
+        <loomi-card class="metric-card"><loomi-card-content><span>Active members</span><strong>20</strong><small class="muted">No change</small></loomi-card-content></loomi-card>
+        <loomi-card class="metric-card"><loomi-card-content><span>Administrators</span><strong>4</strong><small class="muted">No change</small></loomi-card-content></loomi-card>
+      </div>
+      <loomi-table compact has-border has-hover>
+        <th slot="header">Member</th>
+        <th slot="header">Role</th>
+        <th slot="header">Team</th>
+        <th slot="header">Workload</th>
+        <th slot="header">Status</th>
+        <tr><td><span class="person-cell"><loomi-avatar image="/avatars/male.jpg" size="tiny"></loomi-avatar> Kwame Mensah</span></td><td><loomi-tag label="Project Manager" color="green"></loomi-tag></td><td>Development</td><td>80%</td><td><loomi-tag label="Active" color="green"></loomi-tag></td></tr>
+        <tr><td><span class="person-cell"><loomi-avatar image="/avatars/female2.jpg" size="tiny"></loomi-avatar> Akosua Boateng</span></td><td><loomi-tag label="UI/UX Designer" color="primary"></loomi-tag></td><td>Product Design</td><td>60%</td><td><loomi-tag label="Active" color="green"></loomi-tag></td></tr>
+        <tr><td><span class="person-cell"><loomi-avatar image="/avatars/male2.jpg" size="tiny"></loomi-avatar> Kofi Asare</span></td><td><loomi-tag label="Backend Developer" color="violet"></loomi-tag></td><td>Development</td><td>95%</td><td><loomi-tag label="Active" color="green"></loomi-tag></td></tr>
+      </loomi-table>
+    </section>
+  </main>
+</div>
