@@ -1,3 +1,39 @@
+---
+const crewRows = [
+  { id: "#NS-1842", avatar: "/avatars/male.jpg", name: "Marcus Reed", role: "Dispatch lead", zone: "North dock", status: "Active", status_color: "green" },
+  { id: "#NS-1847", avatar: "/avatars/female2.jpg", name: "Priya Mensah", role: "Inventory analyst", zone: "Cold room", status: "Audit", status_color: "orange" },
+  { id: "#NS-1855", avatar: "/avatars/male2.jpg", name: "Theo Palmer", role: "Picker", zone: "Aisle C", status: "Active", status_color: "green" },
+];
+
+const crewRowTemplate = `
+  <tr>
+    <td>{id}</td>
+    <td><span class="person-cell"><loomi-avatar image="{avatar}" size="tiny"></loomi-avatar> {name}</span></td>
+    <td>{role}</td>
+    <td>{zone}</td>
+    <td><loomi-tag label="{status}" color="{status_color}"></loomi-tag></td>
+  </tr>
+`;
+
+const orderRows = [
+  { order: "#SO-90218", customer: "Harbor Foods", items: "24 crates", window: "10:00 - 12:00", status: "Ready", status_color: "green", btn_label: "Open", btn_type: "secondary", btn_color: "", btn_toast: "Order #SO-90218 opened" },
+  { order: "#SO-90224", customer: "Eastgate Market", items: "9 cartons", window: "12:00 - 14:00", status: "Packed", status_color: "primary", btn_label: "Open", btn_type: "secondary", btn_color: "", btn_toast: "Order #SO-90224 opened" },
+  { order: "#SO-90231", customer: "Linden Pharmacy", items: "3 totes", window: "14:00 - 16:00", status: "Exception", status_color: "error", btn_label: "Resolve", btn_type: "primary", btn_color: "primary", btn_toast: "Exception assigned to Alice" },
+];
+
+const orderRowTemplate = `
+  <tr>
+    <td><loomi-checkbox no-clearing></loomi-checkbox></td>
+    <td>{order}</td>
+    <td>{customer}</td>
+    <td>{items}</td>
+    <td>{window}</td>
+    <td><loomi-tag label="{status}" color="{status_color}"></loomi-tag></td>
+    <td><loomi-button size="tiny" type="{btn_type}" color="{btn_color}" data-proof-toast="{btn_toast}">{btn_label}</loomi-button></td>
+  </tr>
+`;
+---
+
 <div class="proof-app dashboard-demo" data-dashboard-demo>
   <div class="dashboard-workspace" data-dashboard-workspace>
     <aside class="app-sidebar dash-sidebar" aria-label="Dashboard demo navigation">
@@ -138,33 +174,15 @@
             <loomi-card-description>Live shift roster and current assignment.</loomi-card-description>
           </loomi-card-header>
           <loomi-card-content>
-            <loomi-table compact has-border has-hover>
-              <th slot="header">Worker ID</th>
-              <th slot="header">Member</th>
-              <th slot="header">Role</th>
-              <th slot="header">Zone</th>
-              <th slot="header">Status</th>
-              <tr>
-                <td>#NS-1842</td>
-                <td><span class="person-cell"><loomi-avatar image="/avatars/male.jpg" size="tiny"></loomi-avatar> Marcus Reed</span></td>
-                <td>Dispatch lead</td>
-                <td>North dock</td>
-                <td><loomi-tag label="Active" color="green"></loomi-tag></td>
-              </tr>
-              <tr>
-                <td>#NS-1847</td>
-                <td><span class="person-cell"><loomi-avatar image="/avatars/female2.jpg" size="tiny"></loomi-avatar> Priya Mensah</span></td>
-                <td>Inventory analyst</td>
-                <td>Cold room</td>
-                <td><loomi-tag label="Audit" color="orange"></loomi-tag></td>
-              </tr>
-              <tr>
-                <td>#NS-1855</td>
-                <td><span class="person-cell"><loomi-avatar image="/avatars/male2.jpg" size="tiny"></loomi-avatar> Theo Palmer</span></td>
-                <td>Picker</td>
-                <td>Aisle C</td>
-                <td><loomi-tag label="Active" color="green"></loomi-tag></td>
-              </tr>
+            <loomi-table compact has-border has-hover layout="custom" data={JSON.stringify(crewRows)}>
+              <template slot="header">
+                <th>Worker ID</th>
+                <th>Member</th>
+                <th>Role</th>
+                <th>Zone</th>
+                <th>Status</th>
+              </template>
+              <template slot="row" set:html={crewRowTemplate}></template>
             </loomi-table>
           </loomi-card-content>
         </loomi-card>
@@ -183,37 +201,17 @@
         </header>
         <loomi-card class="dash-widget">
           <loomi-card-content>
-            <loomi-table compact has-border has-hover checkable>
-              <th slot="header">Order</th>
-              <th slot="header">Customer</th>
-              <th slot="header">Items</th>
-              <th slot="header">Window</th>
-              <th slot="header">Status</th>
-              <th slot="header">Actions</th>
-              <tr data-order-row="ready">
-                <td>#SO-90218</td>
-                <td>Harbor Foods</td>
-                <td>24 crates</td>
-                <td>10:00 - 12:00</td>
-                <td><loomi-tag label="Ready" color="green"></loomi-tag></td>
-                <td><loomi-button size="tiny" type="secondary" data-proof-toast="Order #SO-90218 opened">Open</loomi-button></td>
-              </tr>
-              <tr data-order-row="packed">
-                <td>#SO-90224</td>
-                <td>Eastgate Market</td>
-                <td>9 cartons</td>
-                <td>12:00 - 14:00</td>
-                <td><loomi-tag label="Packed" color="primary"></loomi-tag></td>
-                <td><loomi-button size="tiny" type="secondary" data-proof-toast="Order #SO-90224 opened">Open</loomi-button></td>
-              </tr>
-              <tr data-order-row="exception">
-                <td>#SO-90231</td>
-                <td>Linden Pharmacy</td>
-                <td>3 totes</td>
-                <td>14:00 - 16:00</td>
-                <td><loomi-tag label="Exception" color="error"></loomi-tag></td>
-                <td><loomi-button size="tiny" color="primary" data-proof-toast="Exception assigned to Alice">Resolve</loomi-button></td>
-              </tr>
+            <loomi-table compact has-border has-hover layout="custom" data={JSON.stringify(orderRows)}>
+              <template slot="header">
+                <th></th>
+                <th>Order</th>
+                <th>Customer</th>
+                <th>Items</th>
+                <th>Window</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </template>
+              <template slot="row" set:html={orderRowTemplate}></template>
             </loomi-table>
           </loomi-card-content>
         </loomi-card>

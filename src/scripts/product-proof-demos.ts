@@ -35,49 +35,51 @@ const kanbanHeadings: Record<string, { title: string; kicker: string }> = {
   team: { title: "Team", kicker: "Members and workload" },
 };
 
-const settingsHeadings: Record<string, string> = {
-  general: "General Settings",
-  profile: "Profile",
-  workspace: "Workspace",
-  projects: "Projects",
-  members: "Members & Permissions",
-  roles: "Roles",
-  notifications: "Notifications",
-  integrations: "Integrations",
-  automation: "Automation",
-  security: "Security",
-  billing: "Billing & Subscription",
-  import: "Import / Export",
-  appearance: "Appearance",
-  localisation: "Localisation",
+type KanbanColumnKey = "todo" | "progress" | "done";
+
+type KanbanTask = {
+  id: string;
+  title: string;
+  team: string;
+  date: string; // ISO yyyy-mm-dd
+  assignee: string; // teammate id
 };
 
-const kanbanTasks = {
-  todo: [
-    { id: "design-login", label: "Design login and registration flow", meta: "UI/UX - May 22 - 2 comments", avatarImage: "/avatars/female2.jpg" },
-    { id: "ci-pipeline", label: "Set up CI/CD pipeline for staging", meta: "DevOps - May 24 - 1 comment", avatarImage: "/avatars/male.jpg" },
-    { id: "roles", label: "Define user roles and permissions", meta: "Backend - May 25 - 3 comments", avatarImage: "/avatars/male2.jpg" },
-    { id: "payments", label: "Research payment gateway options", meta: "Research - May 26", avatarImage: "/avatars/female.jpg" },
-  ],
-  progress: [
-    { id: "dashboard-layout", label: "Build dashboard layout and widgets", meta: "UI/UX - May 20 - 4 comments", avatarImage: "/avatars/male.jpg" },
-    { id: "auth", label: "Implement user authentication", meta: "Backend - May 21 - 2 comments", avatarImage: "/avatars/female2.jpg" },
-    { id: "sms", label: "Integrate SMS notifications", meta: "Backend - May 23 - 1 comment", avatarImage: "/avatars/male2.jpg" },
-    { id: "landing", label: "Create landing page content", meta: "Content - May 24", avatarImage: "/avatars/female.jpg" },
-  ],
-  review: [
-    { id: "transactions", label: "Transaction history API endpoint", meta: "Backend - May 19 - Review", avatarImage: "/avatars/male.jpg" },
-    { id: "privacy", label: "Update privacy policy page", meta: "Content - May 18 - Review", avatarImage: "/avatars/female2.jpg" },
-    { id: "responsive", label: "Fix responsive issues on mobile", meta: "UI/UX - May 17 - Review", avatarImage: "/avatars/male2.jpg" },
-  ],
-  done: [
-    { id: "kickoff", label: "Project kickoff and requirements", meta: "Done - May 10", avatarImage: "/avatars/male.jpg" },
-    { id: "schema", label: "Database schema design", meta: "Done - May 11", avatarImage: "/avatars/male2.jpg" },
-    { id: "repo", label: "Set up project repository", meta: "Done - May 12", avatarImage: "/avatars/female2.jpg" },
-    { id: "env", label: "Configure environment variables", meta: "Done - May 13", avatarImage: "/avatars/male.jpg" },
-    { id: "style-guide", label: "Create UI style guide", meta: "Done - May 14", avatarImage: "/avatars/female.jpg" },
-  ],
+const kanbanTeammates = [
+  { id: "kwame", name: "Kwame Mensah", role: "Project Manager", image: "/avatars/male.jpg" },
+  { id: "akosua", name: "Akosua Boateng", role: "UI/UX Designer", image: "/avatars/female2.jpg" },
+  { id: "kofi", name: "Kofi Asare", role: "Backend Developer", image: "/avatars/male2.jpg" },
+  { id: "ama", name: "Ama Serwaa", role: "Frontend Developer", image: "/avatars/female.jpg" },
+];
+
+const kanbanTaskData: Record<string, KanbanTask> = {
+  "design-login": { id: "design-login", title: "Design login and registration flow", team: "UI/UX", date: "2026-07-15", assignee: "akosua" },
+  "ci-pipeline": { id: "ci-pipeline", title: "Set up CI/CD pipeline for staging", team: "DevOps", date: "2026-07-17", assignee: "kofi" },
+  "roles": { id: "roles", title: "Define user roles and permissions", team: "Backend", date: "2026-07-18", assignee: "kofi" },
+  "payments": { id: "payments", title: "Research payment gateway options", team: "Research", date: "2026-07-20", assignee: "kwame" },
+  "dashboard-layout": { id: "dashboard-layout", title: "Build dashboard layout and widgets", team: "UI/UX", date: "2026-07-11", assignee: "akosua" },
+  "auth": { id: "auth", title: "Implement user authentication", team: "Backend", date: "2026-07-14", assignee: "kofi" },
+  "sms": { id: "sms", title: "Integrate SMS notifications", team: "Backend", date: "2026-07-16", assignee: "ama" },
+  "landing": { id: "landing", title: "Create landing page content", team: "Content", date: "2026-07-13", assignee: "ama" },
+  "kickoff": { id: "kickoff", title: "Project kickoff and requirements", team: "Planning", date: "2026-07-01", assignee: "kwame" },
+  "schema": { id: "schema", title: "Database schema design", team: "Backend", date: "2026-07-02", assignee: "kofi" },
+  "repo": { id: "repo", title: "Set up project repository", team: "DevOps", date: "2026-07-03", assignee: "kwame" },
+  "env": { id: "env", title: "Configure environment variables", team: "DevOps", date: "2026-07-06", assignee: "ama" },
+  "style-guide": { id: "style-guide", title: "Create UI style guide", team: "UI/UX", date: "2026-07-07", assignee: "akosua" },
 };
+
+const kanbanColumns: Record<KanbanColumnKey, string[]> = {
+  todo: ["design-login", "ci-pipeline", "roles", "payments"],
+  progress: ["dashboard-layout", "auth", "sms", "landing"],
+  done: ["kickoff", "schema", "repo", "env", "style-guide"],
+};
+
+const KANBAN_COLUMN_LABELS: Record<KanbanColumnKey, string> = { todo: "To Do", progress: "In Progress", done: "Done" };
+const KANBAN_COLUMN_TAG_COLORS: Record<KanbanColumnKey, string> = { todo: "primary", progress: "orange", done: "green" };
+
+let kanbanTeamFilter = "all";
+let kanbanDrawerTaskId: string | null = null;
+let kanbanAssignTaskId: string | null = null;
 
 function pathElement<T extends HTMLElement>(event: Event, selector: string): T | null {
   return (event.composedPath().find((node) => node instanceof HTMLElement && node.matches(selector)) as T | undefined) ?? null;
@@ -87,7 +89,14 @@ function showModal(name: string): void {
   document.querySelector<ModalElement>(`loomi-modal[name="${name}"]`)?.show?.();
 }
 
+type NotifyFn = (title: string, message?: string, type?: string, dismissIn?: number) => void;
+
 function showToast(message: string): void {
+  const notify = (window as Window & { showLoomiNotification?: NotifyFn }).showLoomiNotification;
+  if (notify) {
+    notify(message, "", "success", 4);
+    return;
+  }
   const toast = document.getElementById("proof-toast");
   if (!toast) return;
   toast.textContent = message;
@@ -151,7 +160,13 @@ function mailToolbarHtml(): string {
         <loomi-tooltip content="Reply all" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="reply-all"><loomi-icon name="users"></loomi-icon></button></loomi-tooltip>
         <loomi-tooltip content="Forward" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="forward"><loomi-icon name="arrow-uturn-right"></loomi-icon></button></loomi-tooltip>
         <loomi-tooltip content="Delete" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="delete"><loomi-icon name="trash"></loomi-icon></button></loomi-tooltip>
-        <loomi-tooltip content="Snooze" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="snooze"><loomi-icon name="clock"></loomi-icon></button></loomi-tooltip>
+        <loomi-dropmenu class="mail-snooze-menu" position="bottom" hide-after-click>
+          <loomi-tooltip slot="trigger" content="Snooze" placement="bottom"><button class="mail-icon-action" type="button" aria-label="Snooze"><loomi-icon name="clock"></loomi-icon></button></loomi-tooltip>
+          <loomi-dropmenu-item icon="clock" data-mail-snooze="Later today">Later today <span slot="meta">6:00 PM</span></loomi-dropmenu-item>
+          <loomi-dropmenu-item icon="sun" data-mail-snooze="Tomorrow">Tomorrow morning</loomi-dropmenu-item>
+          <loomi-dropmenu-item icon="calendar-days" data-mail-snooze="Monday">Monday</loomi-dropmenu-item>
+          <loomi-dropmenu-item icon="calendar" data-mail-snooze="Custom date">Pick date</loomi-dropmenu-item>
+        </loomi-dropmenu>
         <loomi-tooltip content="Pin or flag" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="pin"><loomi-icon name="flag"></loomi-icon></button></loomi-tooltip>
         <loomi-tooltip content="Mark unread" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="unread"><loomi-icon name="envelope"></loomi-icon></button></loomi-tooltip>
         <loomi-tooltip content="AI summary" placement="bottom"><button class="mail-icon-action ai" type="button" data-mail-action="ai"><loomi-icon name="sparkles"></loomi-icon></button></loomi-tooltip>
@@ -222,11 +237,11 @@ function decrementFolderCount(folder: string): void {
   node.textContent = String(Math.max(0, (Number(node.textContent?.trim()) || 0) - 1));
 }
 
-function dockReplyPanel(root: HTMLElement, mode: string): void {
+function dockReplyPanel(root: HTMLElement, mode: string, recipientOverride?: string): void {
   const panel = document.querySelector<FloatingPanelElement>('loomi-floating-panel[name="mail-reply-panel"]');
   if (!panel) return;
   const row = root.querySelector<HTMLElement>(".mail-row.active");
-  const recipient = row?.dataset.recipient ?? "Nadia Mensah";
+  const recipient = recipientOverride ?? row?.dataset.recipient ?? "Nadia Mensah";
   const recipientNode = document.getElementById("mail-reply-recipient");
   if (recipientNode) recipientNode.textContent = recipient;
   panel.title = mode;
@@ -248,6 +263,31 @@ function dockReplyPanel(root: HTMLElement, mode: string): void {
   panel.show?.();
 }
 
+function selectMailFolder(root: HTMLElement, folder: HTMLElement): void {
+  for (const button of root.querySelectorAll<HTMLElement>("[data-mail-folder]")) {
+    button.classList.toggle("active", button === folder);
+  }
+  const key = folder.dataset.mailFolder;
+  let visible = 0;
+  for (const row of root.querySelectorAll<HTMLElement>(".mail-row")) {
+    const show = key === "inbox" || (key === "starred" && row.classList.contains("is-pinned"));
+    row.hidden = !show;
+    if (show) visible += 1;
+  }
+  const empty = root.querySelector<HTMLElement>("[data-mail-list-empty]");
+  if (empty) empty.hidden = visible > 0;
+  if (visible === 0) {
+    for (const detail of root.querySelectorAll<HTMLElement>("[data-mail-detail]")) {
+      detail.hidden = true;
+      detail.classList.remove("active");
+    }
+    root.querySelector<HTMLElement>("[data-mail-empty]")?.removeAttribute("hidden");
+  } else {
+    const first = root.querySelector<HTMLElement>(".mail-row:not([hidden])")?.dataset.mailId;
+    if (first) openMail(root, first);
+  }
+}
+
 function initMail(): void {
   const root = document.querySelector<HTMLElement>("[data-mail-demo]");
   if (!root) return;
@@ -257,6 +297,23 @@ function initMail(): void {
     const row = pathElement<HTMLElement>(event, "[data-mail-id]");
     if (row?.dataset.mailId) {
       openMail(root, row.dataset.mailId);
+      return;
+    }
+
+    if (pathElement(event, "[data-mail-compose]")) {
+      dockReplyPanel(root, "New message", "Add recipient");
+      return;
+    }
+
+    const folder = pathElement<HTMLElement>(event, "[data-mail-folder]");
+    if (folder?.dataset.mailFolder) {
+      selectMailFolder(root, folder);
+      return;
+    }
+
+    const label = pathElement<HTMLElement>(event, "[data-mail-label]")?.dataset.mailLabel;
+    if (label) {
+      showToast(`Filtered by label: ${label}`);
       return;
     }
 
@@ -318,7 +375,6 @@ function initMail(): void {
       }
       return;
     }
-    if (action === "snooze") showToast("Open the clock menu to choose a snooze time");
   });
 
   document.getElementById("mail-reply-send")?.addEventListener("click", () => {
@@ -341,47 +397,316 @@ function initMail(): void {
   });
 }
 
-async function decorateSortableMenus(sortable: SortableElement): Promise<void> {
+type DrawerElement = HTMLElement & { show?: () => void; hide?: () => void };
+type AutocompleteElement = HTMLElement & { data?: Array<Record<string, string>>; value?: string };
+type CalendarElement = HTMLElement & { events?: Array<Record<string, unknown>> };
+type ValueElement = HTMLElement & { value?: string; selectedValue?: string };
+
+function kanbanTeammate(id: string): (typeof kanbanTeammates)[number] {
+  return kanbanTeammates.find((t) => t.id === id) ?? kanbanTeammates[0];
+}
+
+function kanbanColumnOf(id: string): KanbanColumnKey | null {
+  for (const col of Object.keys(kanbanColumns) as KanbanColumnKey[]) {
+    if (kanbanColumns[col].includes(id)) return col;
+  }
+  return null;
+}
+
+function formatKanbanDate(iso: string): string {
+  const date = new Date(`${iso}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return iso;
+  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+function kanbanTaskMatchesFilter(id: string): boolean {
+  return kanbanTeamFilter === "all" || kanbanTaskData[id]?.team === kanbanTeamFilter;
+}
+
+function kanbanSortableFor(root: HTMLElement, col: KanbanColumnKey): SortableElement | null {
+  return root.querySelector<SortableElement>(`[data-kanban-sortable="${col}"]`);
+}
+
+function renderKanbanColumn(root: HTMLElement, col: KanbanColumnKey): void {
+  const sortable = kanbanSortableFor(root, col);
+  if (!sortable) return;
+  sortable.items = kanbanColumns[col].filter(kanbanTaskMatchesFilter).map((id) => {
+    const task = kanbanTaskData[id];
+    return {
+      id,
+      label: task.title,
+      meta: `${task.team}\n${formatKanbanDate(task.date)}`,
+      avatarImage: kanbanTeammate(task.assignee).image,
+      className: col === "done" ? "done-task" : "",
+    };
+  });
+  void decorateKanbanSortable(root, sortable, col);
+}
+
+function updateKanbanCounts(root: HTMLElement): void {
+  (Object.keys(kanbanColumns) as KanbanColumnKey[]).forEach((col) => {
+    const header = kanbanSortableFor(root, col)?.closest(".kanban-column")?.querySelector("header span");
+    if (header) header.textContent = String(kanbanColumns[col].filter(kanbanTaskMatchesFilter).length);
+  });
+}
+
+function syncKanbanCalendar(root: HTMLElement): void {
+  const calendar = root.querySelector<CalendarElement>("[data-kanban-calendar]");
+  if (!calendar) return;
+  const colors: Record<KanbanColumnKey, string> = { todo: "primary", progress: "warning", done: "success" };
+  const events: Array<Record<string, unknown>> = [];
+  (Object.keys(kanbanColumns) as KanbanColumnKey[]).forEach((col) => {
+    kanbanColumns[col].forEach((id) => {
+      const task = kanbanTaskData[id];
+      if (!task) return;
+      const start = new Date(`${task.date}T09:00:00`);
+      events.push({
+        id,
+        title: task.title,
+        start,
+        end: new Date(start.getTime() + 60 * 60 * 1000),
+        color: colors[col],
+        description: `${task.team} - ${KANBAN_COLUMN_LABELS[col]} - ${kanbanTeammate(task.assignee).name}`,
+      });
+    });
+  });
+  calendar.events = events;
+}
+
+function renderKanbanBoard(root: HTMLElement): void {
+  (Object.keys(kanbanColumns) as KanbanColumnKey[]).forEach((col) => renderKanbanColumn(root, col));
+  updateKanbanCounts(root);
+  syncKanbanCalendar(root);
+}
+
+function syncKanbanColumnFromSortable(root: HTMLElement, col: KanbanColumnKey): void {
+  const sortable = kanbanSortableFor(root, col);
+  if (!sortable) return;
+  const visibleIds = (sortable.items ?? []).map((item) => String(item.id));
+  const visibleSet = new Set(visibleIds);
+  const hidden = kanbanColumns[col].filter((id) => !visibleSet.has(id) && !kanbanTaskMatchesFilter(id));
+  kanbanColumns[col] = [...visibleIds, ...hidden];
+}
+
+function moveKanbanTask(root: HTMLElement, id: string, target: KanbanColumnKey): void {
+  const current = kanbanColumnOf(id);
+  if (!current || current === target) return;
+  kanbanColumns[current] = kanbanColumns[current].filter((taskId) => taskId !== id);
+  kanbanColumns[target] = [id, ...kanbanColumns[target]];
+  renderKanbanBoard(root);
+  showToast(`"${kanbanTaskData[id]?.title}" moved to ${KANBAN_COLUMN_LABELS[target]}`);
+}
+
+function deleteKanbanTask(root: HTMLElement, id: string): void {
+  const col = kanbanColumnOf(id);
+  if (!col) return;
+  kanbanColumns[col] = kanbanColumns[col].filter((taskId) => taskId !== id);
+  const title = kanbanTaskData[id]?.title ?? "Task";
+  delete kanbanTaskData[id];
+  renderKanbanBoard(root);
+  showToast(`"${title}" deleted`);
+}
+
+function teammateAutocompleteData(excludeId?: string): Array<Record<string, string>> {
+  return kanbanTeammates
+    .filter((t) => t.id !== excludeId)
+    .map((t) => ({ label: t.name, value: t.id, description: t.role, image: t.image }));
+}
+
+function openKanbanAssigneeModal(id: string): void {
+  const task = kanbanTaskData[id];
+  if (!task) return;
+  kanbanAssignTaskId = id;
+  const label = document.querySelector<HTMLElement>("[data-kam-task]");
+  if (label) label.textContent = `"${task.title}" is assigned to ${kanbanTeammate(task.assignee).name}. Hand it to:`;
+  const picker = document.getElementById("kam-picker") as AutocompleteElement | null;
+  if (picker) {
+    picker.data = teammateAutocompleteData(task.assignee);
+    picker.setAttribute("selected-value", "");
+    picker.value = "";
+  }
+  showModal("kanban-assignee-modal");
+}
+
+function openKanbanTaskDrawer(id: string): void {
+  const task = kanbanTaskData[id];
+  const col = kanbanColumnOf(id);
+  if (!task || !col) return;
+  kanbanDrawerTaskId = id;
+  const drawer = document.querySelector<DrawerElement>('loomi-drawer[name="kanban-task-drawer"]');
+  if (!drawer) return;
+  const assignee = kanbanTeammate(task.assignee);
+  drawer.querySelector("[data-ktd-title]")!.textContent = task.title;
+  const status = drawer.querySelector("[data-ktd-status]");
+  status?.setAttribute("label", KANBAN_COLUMN_LABELS[col]);
+  status?.setAttribute("color", KANBAN_COLUMN_TAG_COLORS[col]);
+  drawer.querySelector("[data-ktd-team]")!.textContent = task.team;
+  drawer.querySelector("[data-ktd-date]")!.textContent = formatKanbanDate(task.date);
+  drawer.querySelector("[data-ktd-assignee]")!.textContent = assignee.name;
+  drawer.querySelector("[data-ktd-avatar]")?.setAttribute("image", assignee.image);
+  const toggle = drawer.querySelector<HTMLElement>("[data-ktd-toggle]");
+  if (toggle) {
+    toggle.textContent = col === "done" ? "Reopen task" : "Mark as done";
+    toggle.setAttribute("icon", col === "done" ? "arrow-uturn-left" : "check");
+  }
+  drawer.show?.();
+}
+
+/* Doubled class selectors so these rules outrank the component's adopted
+   stylesheets, which cascade after injected <style> elements at equal specificity. */
+const KANBAN_CARD_STYLE = `
+  .loomi-row.loomi-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+    align-items: start;
+    gap: 0.1rem 0.55rem;
+    padding: 0.7rem 0.75rem;
+  }
+  .loomi-row .loomi-handle { grid-column: 1; grid-row: 1 / span 2; margin-top: 0.15rem; }
+  .loomi-row .loomi-text { grid-column: 2; grid-row: 1 / span 2; }
+  .loomi-row .loomi-label { color: var(--loomi-text); font-weight: 400; line-height: 1.35; white-space: normal; }
+  .loomi-row .loomi-meta { margin-top: 0.35rem; white-space: pre-line; line-height: 1.45; }
+  .loomi-row loomi-dropmenu { grid-column: 3; grid-row: 1; justify-self: end; margin: -0.2rem -0.2rem 0 0; }
+  .loomi-row .loomi-avatar-slot { grid-column: 3; grid-row: 2; align-self: end; justify-self: end; cursor: pointer; border-radius: 9999px; }
+  .loomi-row .loomi-avatar-slot:hover { outline: 2px solid rgb(148 163 184 / 0.6); outline-offset: 1px; }
+  .loomi-row.done-task .loomi-label { text-decoration: line-through; color: rgb(100 116 139); }
+`;
+
+async function decorateKanbanSortable(root: HTMLElement, sortable: SortableElement, col: KanbanColumnKey): Promise<void> {
   await sortable.updateComplete;
-  const root = sortable.shadowRoot;
-  if (!root) return;
-  if (!root.querySelector("[data-kanban-row-style]")) {
+  const shadow = sortable.shadowRoot;
+  if (!shadow) return;
+  if (!shadow.querySelector("[data-kanban-row-style]")) {
     const style = document.createElement("style");
     style.dataset.kanbanRowStyle = "true";
-    style.textContent = `
-      .loomi-row { align-items:flex-start; padding:.8rem; min-height:5.2rem; }
-      .loomi-label { color:var(--loomi-text); font-weight:700; line-height:1.35; white-space:normal; }
-      .loomi-meta { margin-top:.35rem; white-space:normal; }
-      loomi-dropmenu { margin-left:.35rem; flex:none; }
-    `;
-    root.append(style);
+    style.textContent = KANBAN_CARD_STYLE;
+    shadow.append(style);
   }
-  root.querySelectorAll<HTMLElement>(".loomi-row").forEach((row) => {
+  const rowTaskId = (node: HTMLElement): string => node.closest<HTMLElement>(".loomi-row")?.dataset.id ?? "";
+  shadow.querySelectorAll<HTMLElement>(".loomi-row").forEach((row) => {
+    const avatarSlot = row.querySelector<HTMLElement>(".loomi-avatar-slot");
+    if (avatarSlot && !avatarSlot.dataset.kanbanWired) {
+      avatarSlot.dataset.kanbanWired = "true";
+      avatarSlot.setAttribute("title", "Reassign");
+      avatarSlot.addEventListener("click", (event) => {
+        event.stopPropagation();
+        openKanbanAssigneeModal(rowTaskId(avatarSlot));
+      });
+    }
     if (row.querySelector("loomi-dropmenu")) return;
-    const title = row.querySelector(".loomi-label")?.textContent?.trim() || "Task";
     const menu = document.createElement("loomi-dropmenu");
     menu.setAttribute("position", "left");
     menu.setAttribute("hide-after-click", "");
-    ["Open details", "Assign owner", "Duplicate", "Archive"].forEach((label) => {
+    menu.addEventListener("click", (event) => event.stopPropagation());
+    const actions: Array<{ label: string; icon: string; run: (id: string) => void; destructive?: boolean }> = [
+      { label: "Open details", icon: "document-text", run: (id) => openKanbanTaskDrawer(id) },
+      { label: "Reassign", icon: "user-circle", run: (id) => openKanbanAssigneeModal(id) },
+      col === "done"
+        ? { label: "Reopen", icon: "arrow-uturn-left", run: (id) => moveKanbanTask(root, id, "progress") }
+        : { label: "Mark as done", icon: "check", run: (id) => moveKanbanTask(root, id, "done") },
+      { label: "Delete", icon: "trash", run: (id) => deleteKanbanTask(root, id), destructive: true },
+    ];
+    for (const action of actions) {
       const item = document.createElement("loomi-dropmenu-item");
-      item.textContent = label;
-      if (label === "Archive") item.setAttribute("variant", "destructive");
+      item.textContent = action.label;
+      item.setAttribute("icon", action.icon);
+      if (action.destructive) item.setAttribute("variant", "destructive");
       item.addEventListener("click", (event) => {
         event.stopPropagation();
-        showToast(`${label}: ${title}`);
+        action.run(rowTaskId(item));
       });
       menu.append(item);
-    });
+    }
     row.append(menu);
   });
 }
 
-function updateKanbanCounts(root: HTMLElement): void {
-  root.querySelectorAll<SortableElement>("[data-kanban-sortable]").forEach((sortable) => {
-    const count = sortable.items?.length ?? 0;
-    const header = sortable.closest(".kanban-column")?.querySelector("header span");
-    if (header) header.textContent = String(count);
+function initKanbanBoard(root: HTMLElement): void {
+  (Object.keys(kanbanColumns) as KanbanColumnKey[]).forEach((col) => {
+    const sortable = kanbanSortableFor(root, col);
+    if (!sortable) return;
+    sortable.addEventListener("item-click", (event) => {
+      const id = String((event as CustomEvent).detail?.item?.id ?? "");
+      if (id) openKanbanTaskDrawer(id);
+    });
+    sortable.addEventListener("reorder", () => {
+      syncKanbanColumnFromSortable(root, col);
+      void decorateKanbanSortable(root, sortable, col);
+    });
+    sortable.addEventListener("transfer", () => {
+      syncKanbanColumnFromSortable(root, col);
+      renderKanbanColumn(root, col);
+      updateKanbanCounts(root);
+      syncKanbanCalendar(root);
+    });
   });
+
+  // Details drawer actions
+  const drawer = document.querySelector<DrawerElement>('loomi-drawer[name="kanban-task-drawer"]');
+  drawer?.addEventListener("click", (event) => {
+    if (!kanbanDrawerTaskId) return;
+    if (pathElement(event, "[data-ktd-reassign]")) {
+      openKanbanAssigneeModal(kanbanDrawerTaskId);
+      return;
+    }
+    if (pathElement(event, "[data-ktd-toggle]")) {
+      const col = kanbanColumnOf(kanbanDrawerTaskId);
+      if (!col) return;
+      moveKanbanTask(root, kanbanDrawerTaskId, col === "done" ? "progress" : "done");
+      openKanbanTaskDrawer(kanbanDrawerTaskId);
+    }
+  });
+
+  // Reassign picker
+  const picker = document.getElementById("kam-picker") as AutocompleteElement | null;
+  picker?.addEventListener("select", (event) => {
+    const teammateId = String((event as CustomEvent).detail?.value ?? "");
+    const task = kanbanAssignTaskId ? kanbanTaskData[kanbanAssignTaskId] : null;
+    if (!task || !teammateId) return;
+    task.assignee = teammateId;
+    renderKanbanBoard(root);
+    document.querySelector<ModalElement>('loomi-modal[name="kanban-assignee-modal"]')?.hide?.();
+    if (kanbanDrawerTaskId === task.id) openKanbanTaskDrawer(task.id);
+    showToast(`"${task.title}" assigned to ${kanbanTeammate(teammateId).name}`);
+  });
+
+  // New task drawer
+  const newTaskDrawer = document.querySelector<DrawerElement>('loomi-drawer[name="kanban-new-task-drawer"]');
+  const newAssignee = document.getElementById("knt-assignee") as AutocompleteElement | null;
+  if (newAssignee) newAssignee.data = teammateAutocompleteData();
+  newTaskDrawer?.addEventListener("click", (event) => {
+    if (pathElement(event, "[data-knt-cancel]")) {
+      newTaskDrawer.hide?.();
+      return;
+    }
+    if (!pathElement(event, "[data-knt-add]")) return;
+    const title = (document.getElementById("knt-title") as ValueElement | null)?.value?.trim();
+    if (!title) {
+      showToast("Give the task a title first");
+      return;
+    }
+    const team = (document.getElementById("knt-team") as ValueElement | null)?.selectedValue || "UI/UX";
+    const date = (document.getElementById("knt-date") as ValueElement | null)?.value || "2026-07-21";
+    const assignee = newAssignee?.value || "kwame";
+    const column = ((document.getElementById("knt-column") as ValueElement | null)?.selectedValue || "todo") as KanbanColumnKey;
+    const id = `task-${Date.now()}`;
+    kanbanTaskData[id] = { id, title, team, date, assignee: kanbanTeammates.some((t) => t.id === assignee) ? assignee : "kwame" };
+    kanbanColumns[column] = [id, ...kanbanColumns[column]];
+    renderKanbanBoard(root);
+    newTaskDrawer.hide?.();
+    const titleField = document.getElementById("knt-title") as ValueElement | null;
+    if (titleField) titleField.value = "";
+    showToast(`"${title}" added to ${KANBAN_COLUMN_LABELS[column]}`);
+  });
+
+  // Calendar event click -> task details
+  root.querySelector<CalendarElement>("[data-kanban-calendar]")?.addEventListener("loomi-event-click", (event) => {
+    const id = String((event as CustomEvent).detail?.event?.id ?? "");
+    if (id && kanbanTaskData[id]) openKanbanTaskDrawer(id);
+  });
+
+  renderKanbanBoard(root);
 }
 
 function initKanban(): void {
@@ -390,33 +715,47 @@ function initKanban(): void {
 
   root.addEventListener("click", (event) => {
     const nav = pathElement<HTMLElement>(event, "[data-kanban-nav]");
-    if (!nav?.dataset.kanbanNav) return;
-    const key = nav.dataset.kanbanNav;
-    activatePanel(root, "[data-kanban-nav]", "[data-kanban-panel]", key);
-    const heading = kanbanHeadings[key];
-    const title = root.querySelector<HTMLElement>("[data-kanban-heading]");
-    const kicker = root.querySelector<HTMLElement>("[data-kanban-kicker]");
-    if (heading && title && kicker) {
-      title.textContent = heading.title;
-      kicker.textContent = heading.kicker;
+    if (nav?.dataset.kanbanNav) {
+      const key = nav.dataset.kanbanNav;
+      activatePanel(root, "[data-kanban-nav]", "[data-kanban-panel]", key);
+      const heading = kanbanHeadings[key];
+      const title = root.querySelector<HTMLElement>("[data-kanban-heading]");
+      const kicker = root.querySelector<HTMLElement>("[data-kanban-kicker]");
+      if (heading && title && kicker) {
+        title.textContent = heading.title;
+        kicker.textContent = heading.kicker;
+      }
+      return;
+    }
+
+    if (pathElement(event, "[data-kanban-new-task]")) {
+      document.querySelector<DrawerElement>('loomi-drawer[name="kanban-new-task-drawer"]')?.show?.();
+      return;
+    }
+
+    const filterItem = pathElement<HTMLElement>(event, "[data-kanban-filter]");
+    if (filterItem?.dataset.kanbanFilter) {
+      kanbanTeamFilter = filterItem.dataset.kanbanFilter;
+      for (const item of root.querySelectorAll<HTMLElement>("[data-kanban-filter]")) {
+        if (item.dataset.kanbanFilter === kanbanTeamFilter) item.setAttribute("icon", "check");
+        else item.removeAttribute("icon");
+      }
+      const label = root.querySelector<HTMLElement>("[data-kanban-filter-label]");
+      if (label) label.textContent = kanbanTeamFilter === "all" ? "Filter" : kanbanTeamFilter;
+      renderKanbanBoard(root);
+      return;
+    }
+
+    const convo = pathElement<HTMLElement>(event, ".conversation");
+    if (convo) {
+      for (const c of root.querySelectorAll<HTMLElement>(".conversation")) c.classList.toggle("active", c === convo);
+      const name = convo.querySelector("strong")?.textContent?.trim() ?? "Conversation";
+      const threadTitle = root.querySelector<HTMLElement>(".message-thread loomi-card-title");
+      if (threadTitle) threadTitle.textContent = name;
     }
   });
 
-  root.querySelectorAll<SortableElement>("[data-kanban-sortable]").forEach((sortable) => {
-    const key = sortable.dataset.kanbanSortable as keyof typeof kanbanTasks;
-    sortable.items = [...(kanbanTasks[key] ?? [])];
-    sortable.addEventListener("item-click", (event) => {
-      const detail = (event as CustomEvent).detail?.item?.label ?? "Task";
-      showToast(`Opened ${detail}`);
-    });
-    sortable.addEventListener("reorder", () => void decorateSortableMenus(sortable));
-    sortable.addEventListener("transfer", () => {
-      updateKanbanCounts(root);
-      void decorateSortableMenus(sortable);
-    });
-    void decorateSortableMenus(sortable);
-  });
-  updateKanbanCounts(root);
+  initKanbanBoard(root);
 }
 
 function initSettings(): void {
@@ -426,10 +765,7 @@ function initSettings(): void {
   root.addEventListener("click", (event) => {
     const nav = pathElement<HTMLElement>(event, "[data-settings-nav]");
     if (!nav?.dataset.settingsNav) return;
-    const key = nav.dataset.settingsNav;
-    activatePanel(root, "[data-settings-nav]", "[data-settings-panel]", key);
-    const heading = root.querySelector<HTMLElement>("[data-settings-heading]");
-    if (heading) heading.textContent = settingsHeadings[key] ?? nav.textContent?.trim() ?? "Settings";
+    activatePanel(root, "[data-settings-nav]", "[data-settings-panel]", nav.dataset.settingsNav);
   });
 }
 

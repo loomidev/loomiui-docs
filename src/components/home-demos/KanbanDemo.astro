@@ -1,6 +1,39 @@
 ---
 import { Image } from "astro:assets";
 import icon from "../../assets/icon.png";
+
+const fileRows = [
+  { icon: "folder", name: "Project Brief", owner: "Kwame Mensah", modified: "Jul 10, 2026", size: "-" },
+  { icon: "document-text", name: "Requirements.pdf", owner: "Akosua Boateng", modified: "Jul 9, 2026", size: "2.4 MB" },
+  { icon: "table-cells", name: "Research Summary.xlsx", owner: "Kofi Asare", modified: "Jul 8, 2026", size: "312 KB" },
+  { icon: "photo", name: "Brand Assets.zip", owner: "Ama Serwaa", modified: "Jul 6, 2026", size: "32.8 MB" },
+];
+
+const fileRowTemplate = `
+  <tr>
+    <td><loomi-checkbox no-clearing></loomi-checkbox></td>
+    <td><span class="file-cell"><loomi-icon name="{icon}"></loomi-icon> {name}</span></td>
+    <td>{owner}</td>
+    <td>{modified}</td>
+    <td>{size}</td>
+  </tr>
+`;
+
+const teamRows = [
+  { avatar: "/avatars/male.jpg", name: "Kwame Mensah", role: "Project Manager", role_color: "green", team: "Development", workload: "80", status: "Active", status_color: "green" },
+  { avatar: "/avatars/female2.jpg", name: "Akosua Boateng", role: "UI/UX Designer", role_color: "primary", team: "Product Design", workload: "60", status: "Active", status_color: "green" },
+  { avatar: "/avatars/male2.jpg", name: "Kofi Asare", role: "Backend Developer", role_color: "violet", team: "Development", workload: "95", status: "Away", status_color: "orange" },
+];
+
+const teamRowTemplate = `
+  <tr>
+    <td><span class="person-cell"><loomi-avatar image="{avatar}" size="tiny"></loomi-avatar> {name}</span></td>
+    <td><loomi-tag label="{role}" color="{role_color}"></loomi-tag></td>
+    <td>{team}</td>
+    <td><loomi-progress-bar percentage="{workload}" show-percentage-label></loomi-progress-bar></td>
+    <td><loomi-tag label="{status}" color="{status_color}"></loomi-tag></td>
+  </tr>
+`;
 ---
 
 <div class="proof-app kanban-demo" data-kanban-demo>
@@ -48,7 +81,7 @@ import icon from "../../assets/icon.png";
         </span>
         <loomi-icon name="chevron-up"></loomi-icon>
       </button>
-      <loomi-dropmenu-item icon="leaf" data-proof-toast="AgriConnect selected">AgriConnect Platform</loomi-dropmenu-item>
+      <loomi-dropmenu-item icon="sun" data-proof-toast="AgriConnect selected">AgriConnect Platform</loomi-dropmenu-item>
       <loomi-dropmenu-item icon="device-phone-mobile" data-proof-toast="Mobile refresh selected">Mobile Refresh</loomi-dropmenu-item>
       <loomi-dropmenu-item icon="globe-alt" data-proof-toast="Marketing website selected">Marketing Website</loomi-dropmenu-item>
     </loomi-dropmenu>
@@ -147,9 +180,18 @@ import icon from "../../assets/icon.png";
       <div class="kanban-task-toolbar">
         <h4>AgriConnect Platform</h4>
         <div>
-          <loomi-button size="small" type="secondary" icon="funnel">Filter</loomi-button>
+          <loomi-dropmenu class="kanban-filter-menu" position="bottom" hide-after-click>
+            <loomi-button slot="trigger" size="small" type="secondary" icon="funnel"><span data-kanban-filter-label>Filter</span></loomi-button>
+            <loomi-dropmenu-item icon="check" data-kanban-filter="all">All teams</loomi-dropmenu-item>
+            <loomi-dropmenu-item data-kanban-filter="UI/UX">UI/UX</loomi-dropmenu-item>
+            <loomi-dropmenu-item data-kanban-filter="Backend">Backend</loomi-dropmenu-item>
+            <loomi-dropmenu-item data-kanban-filter="DevOps">DevOps</loomi-dropmenu-item>
+            <loomi-dropmenu-item data-kanban-filter="Content">Content</loomi-dropmenu-item>
+            <loomi-dropmenu-item data-kanban-filter="Research">Research</loomi-dropmenu-item>
+            <loomi-dropmenu-item data-kanban-filter="Planning">Planning</loomi-dropmenu-item>
+          </loomi-dropmenu>
           <loomi-select size="small" selected-value="status" data='[{"label":"Group by: Status","value":"status"},{"label":"Group by: Owner","value":"owner"},{"label":"Group by: Priority","value":"priority"}]'></loomi-select>
-          <loomi-button size="small" color="primary" icon="plus" data-proof-toast="New task form opened">New task</loomi-button>
+          <loomi-button size="small" color="primary" icon="plus" data-kanban-new-task>New task</loomi-button>
         </div>
       </div>
       <div class="kanban-board">
@@ -161,10 +203,6 @@ import icon from "../../assets/icon.png";
           <header>In Progress <span>4</span></header>
           <loomi-sortable data-kanban-sortable="progress" group="agriconnect" has-handle></loomi-sortable>
         </section>
-        <section class="kanban-column review">
-          <header>In Review <span>3</span></header>
-          <loomi-sortable data-kanban-sortable="review" group="agriconnect" has-handle></loomi-sortable>
-        </section>
         <section class="kanban-column done">
           <header>Done <span>5</span></header>
           <loomi-sortable data-kanban-sortable="done" group="agriconnect" has-handle></loomi-sortable>
@@ -173,27 +211,8 @@ import icon from "../../assets/icon.png";
     </section>
 
     <section class="kanban-panel" data-kanban-panel="calendar" hidden>
-      <div class="calendar-layout">
-        <loomi-card class="dash-widget">
-          <loomi-card-header><loomi-card-title>July sprint calendar</loomi-card-title></loomi-card-header>
-          <loomi-card-content>
-            <div class="mini-calendar">
-              {Array.from({ length: 35 }, (_, i) => (
-                <button type="button" class={i === 10 || i === 16 || i === 23 ? "has-event" : ""}>{i + 1 <= 31 ? i + 1 : ""}</button>
-              ))}
-            </div>
-          </loomi-card-content>
-        </loomi-card>
-        <loomi-card class="dash-widget">
-          <loomi-card-header><loomi-card-title>Today</loomi-card-title></loomi-card-header>
-          <loomi-card-content>
-            <ul class="schedule-list">
-              <li><strong>09:30</strong> Sprint planning</li>
-              <li><strong>12:00</strong> Design review</li>
-              <li><strong>16:00</strong> Staging deploy check</li>
-            </ul>
-          </loomi-card-content>
-        </loomi-card>
+      <div class="kanban-calendar-shell">
+        <loomi-calendar class="kanban-calendar" data-kanban-calendar view="month"></loomi-calendar>
       </div>
     </section>
 
@@ -223,14 +242,15 @@ import icon from "../../assets/icon.png";
         <loomi-button size="small" type="secondary" icon="folder-plus" data-proof-toast="New folder created">New folder</loomi-button>
         <loomi-button size="small" color="primary" icon="plus" data-proof-toast="Upload started">New</loomi-button>
       </div>
-      <loomi-table compact has-border has-hover checkable>
-        <th slot="header">Name</th>
-        <th slot="header">Owner</th>
-        <th slot="header">Last modified</th>
-        <th slot="header">Size</th>
-        <tr><td><span class="file-cell"><loomi-icon name="folder"></loomi-icon> Project Brief</span></td><td>Kwame Mensah</td><td>Jul 10, 2026</td><td>-</td></tr>
-        <tr><td><span class="file-cell"><loomi-icon name="document-text"></loomi-icon> Requirements.pdf</span></td><td>Akosua Boateng</td><td>Jul 9, 2026</td><td>2.4 MB</td></tr>
-        <tr><td><span class="file-cell"><loomi-icon name="table-cells"></loomi-icon> Research Summary.xlsx</span></td><td>Kofi Asare</td><td>Jul 8, 2026</td><td>312 KB</td></tr>
+      <loomi-table compact has-border has-hover layout="custom" data={JSON.stringify(fileRows)}>
+        <template slot="header">
+          <th></th>
+          <th>Name</th>
+          <th>Owner</th>
+          <th>Last modified</th>
+          <th>Size</th>
+        </template>
+        <template slot="row" set:html={fileRowTemplate}></template>
       </loomi-table>
     </section>
 
@@ -240,15 +260,15 @@ import icon from "../../assets/icon.png";
         <loomi-card class="metric-card"><loomi-card-content><span>Active members</span><strong>20</strong><small class="muted">No change</small></loomi-card-content></loomi-card>
         <loomi-card class="metric-card"><loomi-card-content><span>Administrators</span><strong>4</strong><small class="muted">No change</small></loomi-card-content></loomi-card>
       </div>
-      <loomi-table compact has-border has-hover>
-        <th slot="header">Member</th>
-        <th slot="header">Role</th>
-        <th slot="header">Team</th>
-        <th slot="header">Workload</th>
-        <th slot="header">Status</th>
-        <tr><td><span class="person-cell"><loomi-avatar image="/avatars/male.jpg" size="tiny"></loomi-avatar> Kwame Mensah</span></td><td><loomi-tag label="Project Manager" color="green"></loomi-tag></td><td>Development</td><td>80%</td><td><loomi-tag label="Active" color="green"></loomi-tag></td></tr>
-        <tr><td><span class="person-cell"><loomi-avatar image="/avatars/female2.jpg" size="tiny"></loomi-avatar> Akosua Boateng</span></td><td><loomi-tag label="UI/UX Designer" color="primary"></loomi-tag></td><td>Product Design</td><td>60%</td><td><loomi-tag label="Active" color="green"></loomi-tag></td></tr>
-        <tr><td><span class="person-cell"><loomi-avatar image="/avatars/male2.jpg" size="tiny"></loomi-avatar> Kofi Asare</span></td><td><loomi-tag label="Backend Developer" color="violet"></loomi-tag></td><td>Development</td><td>95%</td><td><loomi-tag label="Active" color="green"></loomi-tag></td></tr>
+      <loomi-table compact has-border has-hover layout="custom" data={JSON.stringify(teamRows)}>
+        <template slot="header">
+          <th>Member</th>
+          <th>Role</th>
+          <th>Team</th>
+          <th>Workload</th>
+          <th>Status</th>
+        </template>
+        <template slot="row" set:html={teamRowTemplate}></template>
       </loomi-table>
     </section>
   </main>

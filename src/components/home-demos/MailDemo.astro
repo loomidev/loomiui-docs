@@ -1,12 +1,6 @@
 <div class="proof-app mail-demo" data-mail-demo>
   <aside class="mail-sidebar" aria-label="Mail folders">
-    <div class="mail-brand">
-      <loomi-avatar image="/avatars/female.jpg" label="Alice Wonderland" size="medium"></loomi-avatar>
-      <div>
-        <strong>Alice Wonderland</strong>
-        <span>alice@northstarops.example</span>
-      </div>
-    </div>
+    <loomi-button class="mail-compose" color="primary" icon="pencil-square" data-mail-compose>Compose</loomi-button>
 
     <nav class="mail-folders">
       <button class="mail-folder active" type="button" data-mail-folder="inbox">
@@ -24,10 +18,10 @@
 
     <div class="mail-labels">
       <span>Labels</span>
-      <button type="button"><i class="dot dot-blue"></i> Partners</button>
-      <button type="button"><i class="dot dot-orange"></i> Finance</button>
-      <button type="button"><i class="dot dot-green"></i> Delivery</button>
-      <button type="button"><i class="dot dot-red"></i> Urgent</button>
+      <button type="button" data-mail-label="Partners"><i class="dot dot-blue"></i> Partners</button>
+      <button type="button" data-mail-label="Finance"><i class="dot dot-orange"></i> Finance</button>
+      <button type="button" data-mail-label="Delivery"><i class="dot dot-green"></i> Delivery</button>
+      <button type="button" data-mail-label="Urgent"><i class="dot dot-red"></i> Urgent</button>
     </div>
 
     <div class="app-sidebar-spacer"></div>
@@ -48,6 +42,10 @@
 
   <section class="mail-list-pane">
     <loomi-input class="mail-search" size="small" prefix-icon="magnifying-glass" placeholder="Search mail"></loomi-input>
+
+    <div class="mail-list-empty" data-mail-list-empty hidden>
+      <loomi-empty-state heading="Nothing here" message="This folder has no messages yet."></loomi-empty-state>
+    </div>
 
     <div class="mail-list" data-mail-list>
       <button class="mail-row unread active" type="button" data-mail-id="launch-plan" data-recipient="Nadia Mensah">
@@ -128,7 +126,7 @@
           <loomi-tooltip content="Forward" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="forward"><loomi-icon name="arrow-uturn-right"></loomi-icon></button></loomi-tooltip>
           <loomi-tooltip content="Delete" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="delete"><loomi-icon name="trash"></loomi-icon></button></loomi-tooltip>
           <loomi-dropmenu class="mail-snooze-menu" position="bottom" hide-after-click>
-            <button slot="trigger" class="mail-icon-action" type="button" aria-label="Snooze"><loomi-icon name="clock"></loomi-icon></button>
+            <loomi-tooltip slot="trigger" content="Snooze" placement="bottom"><button class="mail-icon-action" type="button" aria-label="Snooze"><loomi-icon name="clock"></loomi-icon></button></loomi-tooltip>
             <loomi-dropmenu-item icon="clock" data-mail-snooze="Later today">Later today <span slot="meta">6:00 PM</span></loomi-dropmenu-item>
             <loomi-dropmenu-item icon="sun" data-mail-snooze="Tomorrow">Tomorrow morning</loomi-dropmenu-item>
             <loomi-dropmenu-item icon="calendar-days" data-mail-snooze="Monday">Monday</loomi-dropmenu-item>
@@ -173,7 +171,13 @@
           <loomi-tooltip content="Reply all" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="reply-all"><loomi-icon name="users"></loomi-icon></button></loomi-tooltip>
           <loomi-tooltip content="Forward" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="forward"><loomi-icon name="arrow-uturn-right"></loomi-icon></button></loomi-tooltip>
           <loomi-tooltip content="Delete" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="delete"><loomi-icon name="trash"></loomi-icon></button></loomi-tooltip>
-          <loomi-tooltip content="Snooze" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="snooze"><loomi-icon name="clock"></loomi-icon></button></loomi-tooltip>
+          <loomi-dropmenu class="mail-snooze-menu" position="bottom" hide-after-click>
+            <loomi-tooltip slot="trigger" content="Snooze" placement="bottom"><button class="mail-icon-action" type="button" aria-label="Snooze"><loomi-icon name="clock"></loomi-icon></button></loomi-tooltip>
+            <loomi-dropmenu-item icon="clock" data-mail-snooze="Later today">Later today <span slot="meta">6:00 PM</span></loomi-dropmenu-item>
+            <loomi-dropmenu-item icon="sun" data-mail-snooze="Tomorrow">Tomorrow morning</loomi-dropmenu-item>
+            <loomi-dropmenu-item icon="calendar-days" data-mail-snooze="Monday">Monday</loomi-dropmenu-item>
+            <loomi-dropmenu-item icon="calendar" data-mail-snooze="Custom date">Pick date</loomi-dropmenu-item>
+          </loomi-dropmenu>
           <loomi-tooltip content="Pin or flag" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="pin"><loomi-icon name="flag"></loomi-icon></button></loomi-tooltip>
           <loomi-tooltip content="Mark unread" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="unread"><loomi-icon name="envelope"></loomi-icon></button></loomi-tooltip>
           <loomi-tooltip content="AI summary" placement="bottom"><button class="mail-icon-action ai" type="button" data-mail-action="ai"><loomi-icon name="sparkles"></loomi-icon></button></loomi-tooltip>
@@ -200,7 +204,13 @@
           <loomi-tooltip content="Reply all" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="reply-all"><loomi-icon name="users"></loomi-icon></button></loomi-tooltip>
           <loomi-tooltip content="Forward" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="forward"><loomi-icon name="arrow-uturn-right"></loomi-icon></button></loomi-tooltip>
           <loomi-tooltip content="Delete" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="delete"><loomi-icon name="trash"></loomi-icon></button></loomi-tooltip>
-          <loomi-tooltip content="Snooze" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="snooze"><loomi-icon name="clock"></loomi-icon></button></loomi-tooltip>
+          <loomi-dropmenu class="mail-snooze-menu" position="bottom" hide-after-click>
+            <loomi-tooltip slot="trigger" content="Snooze" placement="bottom"><button class="mail-icon-action" type="button" aria-label="Snooze"><loomi-icon name="clock"></loomi-icon></button></loomi-tooltip>
+            <loomi-dropmenu-item icon="clock" data-mail-snooze="Later today">Later today <span slot="meta">6:00 PM</span></loomi-dropmenu-item>
+            <loomi-dropmenu-item icon="sun" data-mail-snooze="Tomorrow">Tomorrow morning</loomi-dropmenu-item>
+            <loomi-dropmenu-item icon="calendar-days" data-mail-snooze="Monday">Monday</loomi-dropmenu-item>
+            <loomi-dropmenu-item icon="calendar" data-mail-snooze="Custom date">Pick date</loomi-dropmenu-item>
+          </loomi-dropmenu>
           <loomi-tooltip content="Pin or flag" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="pin"><loomi-icon name="flag"></loomi-icon></button></loomi-tooltip>
           <loomi-tooltip content="Mark unread" placement="bottom"><button class="mail-icon-action" type="button" data-mail-action="unread"><loomi-icon name="envelope"></loomi-icon></button></loomi-tooltip>
           <loomi-tooltip content="AI summary" placement="bottom"><button class="mail-icon-action ai" type="button" data-mail-action="ai"><loomi-icon name="sparkles"></loomi-icon></button></loomi-tooltip>

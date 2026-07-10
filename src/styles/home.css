@@ -1691,6 +1691,48 @@
   margin-top: 0.9rem;
 }
 
+.proof-perm-shell {
+  overflow-x: auto;
+  border: 1px solid rgb(226 232 240);
+  border-radius: 12px;
+  background: white;
+}
+
+.dark .proof-perm-shell {
+  border-color: rgb(51 65 85);
+  background: rgb(2 6 23 / 0.4);
+}
+
+.proof-perm-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.proof-perm-table th,
+.proof-perm-table td {
+  border-bottom: 1px solid rgb(226 232 240);
+  padding: 0.6rem 0.9rem;
+  text-align: left;
+}
+
+.dark .proof-perm-table th,
+.dark .proof-perm-table td {
+  border-bottom-color: rgb(30 41 59);
+}
+
+.proof-perm-table thead th {
+  color: rgb(100 116 139);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.proof-perm-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
 .delivery-stops span,
 .activity-list li {
   display: flex;
@@ -1793,20 +1835,9 @@
   padding: 1rem;
 }
 
-.mail-brand {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.mail-brand strong,
-.mail-brand span {
+.mail-compose {
   display: block;
-}
-
-.mail-brand span {
-  color: rgb(100 116 139);
-  font-size: 0.78rem;
+  width: 100%;
 }
 
 .mail-folders,
@@ -1873,6 +1904,10 @@
 .mail-list {
   display: grid;
   gap: 0.4rem;
+}
+
+.mail-list-empty {
+  padding: 2rem 0.5rem;
 }
 
 .mail-row {
@@ -2119,6 +2154,19 @@
   color: rgb(243 244 246);
 }
 
+.kanban-sidebar .app-user-trigger,
+.kanban-sidebar .project-trigger,
+.dark .kanban-sidebar .app-user-trigger,
+.dark .kanban-sidebar .project-trigger {
+  border-color: rgb(255 255 255 / 0.18);
+  background: rgb(255 255 255 / 0.08);
+}
+
+.kanban-sidebar .app-user-trigger small,
+.kanban-sidebar .project-trigger small {
+  color: rgb(209 213 219);
+}
+
 .kanban-sidebar .app-nav-item:hover,
 .kanban-sidebar .app-nav-item.active {
   background: rgb(255 255 255 / 0.12);
@@ -2177,7 +2225,7 @@
 
 .kanban-board {
   display: grid;
-  grid-template-columns: repeat(4, minmax(13rem, 1fr));
+  grid-template-columns: repeat(3, minmax(13rem, 1fr));
   gap: 0.85rem;
   overflow-x: auto;
   padding: 0 1.25rem 1.25rem;
@@ -2199,10 +2247,6 @@
 
 .kanban-column.progress {
   background: rgb(255 251 235);
-}
-
-.kanban-column.review {
-  background: rgb(250 245 255);
 }
 
 .kanban-column.done {
@@ -2228,7 +2272,6 @@
   display: block;
 }
 
-.calendar-layout,
 .kanban-message-layout,
 .settings-clean-grid,
 .integration-grid {
@@ -2238,26 +2281,84 @@
   padding: 0 1.25rem 1.25rem;
 }
 
-.mini-calendar {
+.kanban-calendar-shell {
+  padding: 0 1.25rem 1.25rem;
+}
+
+.kanban-calendar {
+  display: block;
+  height: 37rem;
+}
+
+.kanban-filter-menu {
+  display: inline-block;
+}
+
+.kanban-drawer-body {
   display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 0.35rem;
+  gap: 1rem;
+  padding: 0.25rem 0;
 }
 
-.mini-calendar button {
-  aspect-ratio: 1;
-  border: 1px solid rgb(226 232 240);
-  border-radius: 8px;
-  background: white;
-  color: rgb(51 65 85);
+.kanban-drawer-body h4 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.ktd-meta-grid {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.65rem 1.1rem;
+  align-items: center;
+}
+
+.ktd-label {
+  color: rgb(100 116 139);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ktd-assignee {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+  color: inherit;
   font: inherit;
+  text-align: left;
 }
 
-.mini-calendar button.has-event {
-  border-color: rgb(37 99 235);
-  background: rgb(239 246 255);
-  color: rgb(29 78 216);
-  font-weight: 800;
+.ktd-assignee loomi-icon {
+  width: 0.9rem;
+  height: 0.9rem;
+  color: rgb(100 116 139);
+}
+
+.kanban-drawer-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.25rem;
+}
+
+.kanban-assignee-body {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.kam-task {
+  margin: 0;
+  color: rgb(71 85 105);
+  font-size: 0.9rem;
+}
+
+.dark .kam-task {
+  color: rgb(148 163 184);
 }
 
 .conversation-list {
@@ -2517,7 +2618,6 @@
   .dash-content-grid,
   .kanban-dashboard-grid,
   .kanban-lower-grid,
-  .calendar-layout,
   .kanban-message-layout,
   .settings-clean-grid {
     grid-template-columns: 1fr;
@@ -2578,7 +2678,7 @@
   }
 
   .kanban-board {
-    grid-template-columns: repeat(4, minmax(13rem, 17rem));
+    grid-template-columns: repeat(3, minmax(13rem, 17rem));
   }
 }
 

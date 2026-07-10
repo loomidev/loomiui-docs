@@ -158,5 +158,61 @@ import SettingsDemo from "./SettingsDemo.astro";
     </div>
   </loomi-modal>
 
+  <loomi-drawer name="kanban-task-drawer" title="Task details">
+    <div class="kanban-drawer-body">
+      <h4 data-ktd-title>Task</h4>
+      <div class="ktd-meta-grid">
+        <span class="ktd-label">Status</span>
+        <span><loomi-tag data-ktd-status label="To Do" color="primary"></loomi-tag></span>
+        <span class="ktd-label">Team</span>
+        <span data-ktd-team>-</span>
+        <span class="ktd-label">Due date</span>
+        <span data-ktd-date>-</span>
+        <span class="ktd-label">Assignee</span>
+        <button class="ktd-assignee" type="button" data-ktd-reassign>
+          <loomi-avatar data-ktd-avatar size="tiny"></loomi-avatar>
+          <span data-ktd-assignee>-</span>
+          <loomi-icon name="pencil-square"></loomi-icon>
+        </button>
+      </div>
+      <loomi-textarea rows="3" label="Notes" placeholder="Add a note for the team..."></loomi-textarea>
+      <div class="kanban-drawer-actions">
+        <loomi-button size="small" type="secondary" icon="user-circle" data-ktd-reassign>Reassign</loomi-button>
+        <loomi-button size="small" color="primary" icon="check" data-ktd-toggle>Mark as done</loomi-button>
+      </div>
+    </div>
+  </loomi-drawer>
+
+  <loomi-drawer name="kanban-new-task-drawer" title="New task">
+    <div class="kanban-drawer-body">
+      <loomi-input id="knt-title" label="Title" placeholder="What needs doing?" required></loomi-input>
+      <loomi-select
+        id="knt-team"
+        label="Team"
+        selected-value="UI/UX"
+        data='[{"label":"UI/UX","value":"UI/UX"},{"label":"Backend","value":"Backend"},{"label":"DevOps","value":"DevOps"},{"label":"Content","value":"Content"},{"label":"Research","value":"Research"},{"label":"Planning","value":"Planning"}]'
+      ></loomi-select>
+      <loomi-datepicker id="knt-date" label="Due date" selected-value="2026-07-21"></loomi-datepicker>
+      <loomi-autocomplete id="knt-assignee" label="Assignee" placeholder="Search teammates"></loomi-autocomplete>
+      <loomi-select
+        id="knt-column"
+        label="Add to"
+        selected-value="todo"
+        data='[{"label":"To Do","value":"todo"},{"label":"In Progress","value":"progress"},{"label":"Done","value":"done"}]'
+      ></loomi-select>
+      <div class="kanban-drawer-actions">
+        <loomi-button size="small" type="secondary" data-knt-cancel>Cancel</loomi-button>
+        <loomi-button size="small" color="primary" icon="plus" data-knt-add>Add task</loomi-button>
+      </div>
+    </div>
+  </loomi-drawer>
+
+  <loomi-modal name="kanban-assignee-modal" title="Reassign task" show-action-buttons="false" show-close-icon>
+    <div class="kanban-assignee-body">
+      <p data-kam-task class="kam-task"></p>
+      <loomi-autocomplete id="kam-picker" label="Assign to" placeholder="Search teammates"></loomi-autocomplete>
+    </div>
+  </loomi-modal>
+
   <div id="proof-toast" class="proof-toast hidden" role="status" aria-live="polite"></div>
 </section>

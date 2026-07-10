@@ -1,3 +1,15 @@
+---
+const projectRows = [
+  { project: "AgriConnect Platform", owner: "Kwame Mensah", health: "On track", health_color: "green", rule: "After 90 inactive days" },
+  { project: "Mobile Redesign", owner: "Akosua Boateng", health: "At risk", health_color: "warning", rule: "Manual archive" },
+  { project: "Internal Tools", owner: "Kofi Asare", health: "Needs review", health_color: "error", rule: "After 30 inactive days" },
+];
+
+const projectRowTemplate = `
+  <tr><td>{project}</td><td>{owner}</td><td><loomi-tag label="{health}" color="{health_color}"></loomi-tag></td><td>{rule}</td></tr>
+`;
+---
+
 <div class="proof-app settings-demo" data-settings-demo>
   <aside class="settings-side" aria-label="Settings sections">
     <div class="settings-side-title">Settings</div>
@@ -23,7 +35,7 @@
     <header class="app-topbar settings-topbar">
       <div>
         <p class="app-eyebrow">Workspace admin</p>
-        <h3 data-settings-heading>General Settings</h3>
+        <h3>Settings</h3>
       </div>
       <div class="app-topbar-actions">
         <loomi-input size="small" prefix-icon="magnifying-glass" placeholder="Search settings"></loomi-input>
@@ -59,7 +71,7 @@
         <loomi-card class="settings-logo-card">
           <loomi-card-content>
             <div class="workspace-logo-preview">
-              <loomi-icon name="leaf"></loomi-icon>
+              <loomi-icon name="tree" source="iconsax"></loomi-icon>
             </div>
             <loomi-button size="small" type="secondary" icon="arrow-up-tray" data-proof-toast="Logo picker opened">Change logo</loomi-button>
             <small>Recommended: 512x512 PNG or JPG.</small>
@@ -110,11 +122,9 @@
 
     <section class="settings-panel" data-settings-panel="projects" hidden>
       <div class="settings-panel-head"><div><h4>Projects</h4><p>Active project configuration and archival rules.</p></div><loomi-button size="small" color="primary" icon="plus" data-proof-toast="Project created">New project</loomi-button></div>
-      <loomi-table compact has-border has-hover>
-        <th slot="header">Project</th><th slot="header">Owner</th><th slot="header">Health</th><th slot="header">Archive rule</th>
-        <tr><td>AgriConnect Platform</td><td>Kwame Mensah</td><td><loomi-tag label="On track" color="green"></loomi-tag></td><td>After 90 inactive days</td></tr>
-        <tr><td>Mobile Redesign</td><td>Akosua Boateng</td><td><loomi-tag label="At risk" color="warning"></loomi-tag></td><td>Manual archive</td></tr>
-        <tr><td>Internal Tools</td><td>Kofi Asare</td><td><loomi-tag label="Needs review" color="error"></loomi-tag></td><td>After 30 inactive days</td></tr>
+      <loomi-table compact has-border has-hover layout="custom" data={JSON.stringify(projectRows)}>
+        <template slot="header"><th>Project</th><th>Owner</th><th>Health</th><th>Archive rule</th></template>
+        <template slot="row" set:html={projectRowTemplate}></template>
       </loomi-table>
     </section>
 
@@ -128,12 +138,19 @@
 
     <section class="settings-panel" data-settings-panel="roles" hidden>
       <div class="settings-panel-head"><div><h4>Roles</h4><p>Fine tune what each group can do.</p></div><loomi-button size="small" color="primary" data-proof-toast="Role changes saved">Save roles</loomi-button></div>
-      <loomi-table compact has-border>
-        <th slot="header">Permission</th><th slot="header">Admin</th><th slot="header">Manager</th><th slot="header">Viewer</th>
-        <tr><td>Create projects</td><td><loomi-checkbox checked></loomi-checkbox></td><td><loomi-checkbox checked></loomi-checkbox></td><td><loomi-checkbox></loomi-checkbox></td></tr>
-        <tr><td>Manage billing</td><td><loomi-checkbox checked></loomi-checkbox></td><td><loomi-checkbox></loomi-checkbox></td><td><loomi-checkbox></loomi-checkbox></td></tr>
-        <tr><td>Export reports</td><td><loomi-checkbox checked></loomi-checkbox></td><td><loomi-checkbox checked></loomi-checkbox></td><td><loomi-checkbox checked></loomi-checkbox></td></tr>
-      </loomi-table>
+      <div class="proof-perm-shell">
+        <table class="proof-perm-table">
+          <thead>
+            <tr><th>Permission</th><th>Admin</th><th>Manager</th><th>Viewer</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Create projects</td><td><loomi-checkbox checked></loomi-checkbox></td><td><loomi-checkbox checked></loomi-checkbox></td><td><loomi-checkbox></loomi-checkbox></td></tr>
+            <tr><td>Manage billing</td><td><loomi-checkbox checked></loomi-checkbox></td><td><loomi-checkbox></loomi-checkbox></td><td><loomi-checkbox></loomi-checkbox></td></tr>
+            <tr><td>Export reports</td><td><loomi-checkbox checked></loomi-checkbox></td><td><loomi-checkbox checked></loomi-checkbox></td><td><loomi-checkbox checked></loomi-checkbox></td></tr>
+            <tr><td>Invite members</td><td><loomi-checkbox checked></loomi-checkbox></td><td><loomi-checkbox checked></loomi-checkbox></td><td><loomi-checkbox></loomi-checkbox></td></tr>
+          </tbody>
+        </table>
+      </div>
     </section>
 
     <section class="settings-panel" data-settings-panel="notifications" hidden>
