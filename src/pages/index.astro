@@ -321,6 +321,65 @@ const componentCategories = ["All", "Data Entry", "Feedback", "Navigation", "Ove
             </div>
             <div class="component-tile-label">Badge</div>
           </div>
+
+          <div class="component-tile" data-cat="data-entry">
+            <div class="component-tile-preview">
+              <loomi-autocomplete placeholder="Search teammates" size="small"></loomi-autocomplete>
+            </div>
+            <div class="component-tile-label">Autocomplete</div>
+          </div>
+
+          <div class="component-tile" data-cat="feedback">
+            <div class="component-tile-preview">
+              <loomi-button size="small" type="secondary" onclick="showLoomiNotification('Saved', 'Your changes were saved.')">Notify me</loomi-button>
+            </div>
+            <div class="component-tile-label">Notification</div>
+          </div>
+
+          <div class="component-tile" data-cat="overlay">
+            <div class="component-tile-preview">
+              <loomi-button size="small" type="secondary" onclick="showLoomiDrawer('grid-drawer-demo')">Open drawer</loomi-button>
+              <loomi-drawer name="grid-drawer-demo" title="Filters">
+                A real sliding panel from the <code>@loomidev/drawer</code> package.
+              </loomi-drawer>
+            </div>
+            <div class="component-tile-label">Drawer</div>
+          </div>
+
+          <div class="component-tile" data-cat="layout">
+            <div class="component-tile-preview w-full">
+              <loomi-sortable items='[{"id":"a","label":"Tomatoes"},{"id":"b","label":"Lettuce"}]'></loomi-sortable>
+            </div>
+            <div class="component-tile-label">Sortable</div>
+          </div>
+
+          <div class="component-tile" data-cat="data-display">
+            <div class="component-tile-preview w-full">
+              <div style="height:5.5rem;width:100%;overflow:hidden">
+                <loomi-calendar view="week" week-starts="monday" style="display:block;width:140%;transform:scale(.58);transform-origin:top left"></loomi-calendar>
+              </div>
+            </div>
+            <div class="component-tile-label">Calendar</div>
+          </div>
+
+          <div class="component-tile" data-cat="data-display">
+            <div class="component-tile-preview w-full">
+              <div style="height:5.5rem;width:100%;overflow:hidden;display:flex;flex-direction:column;justify-content:center;gap:.3rem;padding:0 .5rem;transform:scale(.9)">
+                <loomi-chat-message text="Can we ship this today?" sender="Sara" sender-id="sara" bubble-color="success" show-avatar></loomi-chat-message>
+                <loomi-chat-message text="Yes — pushing now." sender="You" sender-id="you" bubble-color="primary" outgoing show-avatar></loomi-chat-message>
+              </div>
+            </div>
+            <div class="component-tile-label">Chat</div>
+          </div>
+
+          <div class="component-tile" data-cat="overlay">
+            <div class="component-tile-preview w-full">
+              <div style="height:5.5rem;width:100%;overflow:hidden;position:relative">
+                <loomi-floating-panel name="grid-floating-panel-demo" title="Notes" open top="6%" left="6%" width="88%" height="82%" no-drag resizable="false" show-close-icon="false" style="position:absolute"></loomi-floating-panel>
+              </div>
+            </div>
+            <div class="component-tile-label">Floating Panel</div>
+          </div>
         </div>
 
         <div class="mt-10 text-center">
@@ -560,6 +619,7 @@ const componentCategories = ["All", "Data Entry", "Feedback", "Navigation", "Ove
       import "@loomidev/drawer";
       import "@loomidev/autocomplete";
       import "@loomidev/calendar";
+      import "@loomidev/chat";
       window.__loomiComponentsLoaded = true;
       window.dispatchEvent(new Event("loomi-components-loaded"));
     </script>

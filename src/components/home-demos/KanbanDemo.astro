@@ -217,22 +217,69 @@ const teamRowTemplate = `
     </section>
 
     <section class="kanban-panel" data-kanban-panel="messages" hidden>
-      <div class="kanban-message-layout">
-        <div class="conversation-list">
-          <button class="conversation active" type="button"><loomi-avatar image="/avatars/female2.jpg" size="small"></loomi-avatar><span><strong>Akosua Boateng</strong><small>Can you share the latest wireframes?</small></span></button>
-          <button class="conversation" type="button"><loomi-avatar image="/avatars/male2.jpg" size="small"></loomi-avatar><span><strong>Kofi Asare</strong><small>The API integration is complete.</small></span></button>
-          <button class="conversation" type="button"><loomi-avatar label="DT" size="small"></loomi-avatar><span><strong>Design Team</strong><small>Added new components to the library.</small></span></button>
-        </div>
-        <loomi-card class="message-thread">
-          <loomi-card-header><loomi-card-title>Akosua Boateng</loomi-card-title><loomi-card-description>UI/UX Designer</loomi-card-description></loomi-card-header>
-          <loomi-card-content>
-            <div class="chat-bubble incoming">Hi Kwame, can you share the latest wireframes for the dashboard?</div>
-            <div class="chat-bubble outgoing">Sure. I updated them based on the feedback. See attached.</div>
-            <div class="attachment-pill"><loomi-icon name="document"></loomi-icon> dashboard_wireframes_v2.fig</div>
-            <loomi-textarea rows="2" placeholder="Write a message..."></loomi-textarea>
-            <loomi-button size="small" color="primary" icon="paper-airplane" data-proof-toast="Message sent">Send</loomi-button>
-          </loomi-card-content>
-        </loomi-card>
+      <div class="kanban-chat-layout">
+        <loomi-chat-window
+          class="kanban-chat"
+          data-kanban-chat
+          title="Akosua Boateng"
+          description="UI/UX Designer"
+          current-user-id="kwame"
+          active-conversation-id="akosua"
+          show-conversations
+          show-avatars
+          show-header-avatars="false"
+          show-reset="false"
+          input-placeholder="Write a message..."
+          window-height="36rem"
+        >
+          <div slot="conversations-header" class="kanban-chat-inbox">
+            <div class="kanban-chat-inbox-top">
+              <strong>Inbox</strong>
+              <loomi-tooltip content="New message"><button class="mail-icon-action" type="button" data-kanban-chat-compose><loomi-icon name="pencil-square"></loomi-icon></button></loomi-tooltip>
+            </div>
+            <div class="kanban-chat-chips">
+              <button class="kanban-chat-chip active" type="button" data-kanban-chat-filter="all">All <span data-kanban-chat-count="all"></span></button>
+              <button class="kanban-chat-chip" type="button" data-kanban-chat-filter="unread">Unread <span data-kanban-chat-count="unread"></span></button>
+              <button class="kanban-chat-chip" type="button" data-kanban-chat-filter="mentions">Mentions</button>
+              <button class="kanban-chat-chip" type="button" data-kanban-chat-filter="starred">Starred</button>
+              <button class="kanban-chat-chip" type="button" data-kanban-chat-filter="archived">Archived</button>
+            </div>
+          </div>
+          <div slot="header-actions" class="kanban-chat-callbar">
+            <loomi-tooltip content="Video call"><button class="mail-icon-action" type="button" data-proof-toast="Starting video call"><loomi-icon name="video-camera"></loomi-icon></button></loomi-tooltip>
+            <loomi-tooltip content="Voice call"><button class="mail-icon-action" type="button" data-proof-toast="Calling..."><loomi-icon name="phone"></loomi-icon></button></loomi-tooltip>
+            <loomi-tooltip content="Contact details"><button class="mail-icon-action" type="button" data-kanban-chat-details-toggle><loomi-icon name="information-circle"></loomi-icon></button></loomi-tooltip>
+            <loomi-tooltip content="Collapse conversation list"><button class="mail-icon-action" type="button" data-kanban-chat-collapse><loomi-icon name="view-columns"></loomi-icon></button></loomi-tooltip>
+          </div>
+        </loomi-chat-window>
+
+        <aside class="kanban-chat-details" data-kanban-chat-details>
+          <div class="kanban-chat-details-head">
+            <loomi-avatar data-kcd-avatar image="/avatars/female2.jpg" size="large"></loomi-avatar>
+            <strong data-kcd-name>Akosua Boateng</strong>
+            <span data-kcd-role>UI/UX Designer</span>
+          </div>
+          <div class="kanban-chat-details-section">
+            <h5>About</h5>
+            <dl>
+              <dt>Local time</dt><dd data-kcd-time>10:24 AM</dd>
+              <dt>Email</dt><dd data-kcd-email>akosua@agriconnect.app</dd>
+              <dt>Phone</dt><dd data-kcd-phone>+233 24 123 4567</dd>
+            </dl>
+          </div>
+          <div class="kanban-chat-details-section">
+            <h5>Shared</h5>
+            <button type="button" class="kanban-chat-shared-row" data-proof-toast="Shared files opened"><loomi-icon name="document"></loomi-icon> Files <span>12</span></button>
+            <button type="button" class="kanban-chat-shared-row" data-proof-toast="Shared links opened"><loomi-icon name="link"></loomi-icon> Links <span>5</span></button>
+            <button type="button" class="kanban-chat-shared-row" data-proof-toast="Shared tasks opened"><loomi-icon name="clipboard-document-check"></loomi-icon> Tasks <span>7</span></button>
+          </div>
+          <div class="kanban-chat-details-section">
+            <h5>Options</h5>
+            <label class="kanban-chat-option"><loomi-icon name="bell-slash"></loomi-icon> Mute notifications <loomi-toggle data-kcd-mute></loomi-toggle></label>
+            <button type="button" class="kanban-chat-option-btn" data-proof-toast="Conversation archived"><loomi-icon name="archive-box"></loomi-icon> Archive conversation</button>
+            <button type="button" class="kanban-chat-option-btn destructive" data-kanban-chat-delete><loomi-icon name="trash"></loomi-icon> Delete conversation</button>
+          </div>
+        </aside>
       </div>
     </section>
 

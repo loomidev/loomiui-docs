@@ -81,6 +81,75 @@ let kanbanTeamFilter = "all";
 let kanbanDrawerTaskId: string | null = null;
 let kanbanAssignTaskId: string | null = null;
 
+type KanbanChatMessage = {
+  id: string;
+  senderId: string;
+  text: string;
+  time?: string;
+  attachment?: { name: string; meta?: string; icon?: string };
+};
+
+type KanbanChatContact = {
+  id: string;
+  name: string;
+  role: string;
+  image?: string;
+  label?: string;
+  phone: string;
+  preview: string;
+  time: string;
+  unread: number;
+  starred?: boolean;
+  mentions?: boolean;
+  archived?: boolean;
+  typing?: boolean;
+  reply: string;
+  members?: string[];
+};
+
+const kanbanChatContacts: KanbanChatContact[] = [
+  { id: "akosua", name: "Akosua Boateng", role: "UI/UX Designer", image: "/avatars/female2.jpg", phone: "+233 24 123 4567", preview: "Can you share the latest wireframes for the dashboard?", time: "10:24 AM", unread: 2, starred: true, typing: true, reply: "Perfect, reviewing them now!" },
+  { id: "kofi", name: "Kofi Asare", role: "Backend Developer", image: "/avatars/male2.jpg", phone: "+233 24 555 8210", preview: "The API integration is complete. Ready for testing.", time: "9:15 AM", unread: 1, reply: "I'll push the test cases shortly." },
+  { id: "ama", name: "Ama Serwaa", role: "Frontend Developer", image: "/avatars/female.jpg", phone: "+233 20 771 0034", preview: "Thanks! I've updated the content based on your feedback.", time: "Yesterday", unread: 0, starred: true, reply: "Will do, thanks Kwame!" },
+  { id: "design", name: "Design Team", role: "8 members", label: "DT", phone: "-", preview: "Akosua: Added new components to the library.", time: "Yesterday", unread: 2, mentions: true, reply: "I'll walk everyone through them on Friday.", members: ["akosua", "ama", "kofi"] },
+  { id: "yaw", name: "Yaw Mensah", role: "DevOps Engineer", image: "/avatars/male.jpg", phone: "+233 26 400 1187", preview: "Reminder: Sprint planning tomorrow at 10am.", time: "Jul 8", unread: 0, reply: "See you at planning." },
+  { id: "efua", name: "Efua Duku", role: "Content Strategist", image: "/avatars/female2.jpg", phone: "+233 27 909 5522", preview: "Please review the copy for the landing page.", time: "Jul 7", unread: 0, archived: true, reply: "No rush - whenever you get a moment." },
+];
+
+const kanbanChatTranscripts: Record<string, KanbanChatMessage[]> = {
+  akosua: [
+    { id: "ak-1", senderId: "akosua", text: "Hi Kwame, can you share the latest wireframes for the dashboard?", time: "10:21 AM" },
+    { id: "ak-2", senderId: "kwame", text: "Hi Akosua, sure! I've just updated them based on the feedback. See attached.", time: "10:22 AM" },
+    { id: "ak-3", senderId: "kwame", text: "", time: "10:22 AM", attachment: { name: "dashboard_wireframes_v2.fig", meta: "Figma File - 4.6 MB", icon: "document" } },
+    { id: "ak-4", senderId: "akosua", text: "Looks great! I'll review and share my thoughts.", time: "10:23 AM" },
+    { id: "ak-5", senderId: "kwame", text: "Thanks! Let me know if you need anything else.", time: "10:24 AM" },
+  ],
+  kofi: [
+    { id: "ko-1", senderId: "kofi", text: "The API integration is complete. Ready for testing.", time: "9:12 AM" },
+    { id: "ko-2", senderId: "kwame", text: "Great work! Does it cover the repayment endpoints too?", time: "9:14 AM" },
+    { id: "ko-3", senderId: "kofi", text: "Yes - loans, repayments, and the field-ops summary.", time: "9:15 AM" },
+  ],
+  ama: [
+    { id: "am-1", senderId: "ama", text: "Thanks! I've updated the content based on your feedback.", time: "Yesterday" },
+    { id: "am-2", senderId: "kwame", text: "Looks much sharper. Ship it to staging when ready.", time: "Yesterday" },
+  ],
+  design: [
+    { id: "dt-1", senderId: "akosua", text: "Added new components to the library.", time: "Yesterday" },
+    { id: "dt-2", senderId: "ama", text: "Nice! Are the empty states in there as well?", time: "Yesterday" },
+    { id: "dt-3", senderId: "akosua", text: "Yes, plus the new table density options.", time: "Yesterday" },
+  ],
+  yaw: [
+    { id: "ya-1", senderId: "yaw", text: "Reminder: Sprint planning tomorrow at 10am.", time: "Jul 8" },
+    { id: "ya-2", senderId: "kwame", text: "Thanks Yaw, I'll have the backlog groomed tonight.", time: "Jul 8" },
+  ],
+  efua: [
+    { id: "ef-1", senderId: "efua", text: "Please review the copy for the landing page.", time: "Jul 7" },
+  ],
+};
+
+let kanbanChatFilter = "all";
+let kanbanActiveChat = "akosua";
+
 function pathElement<T extends HTMLElement>(event: Event, selector: string): T | null {
   return (event.composedPath().find((node) => node instanceof HTMLElement && node.matches(selector)) as T | undefined) ?? null;
 }
@@ -622,6 +691,154 @@ async function decorateKanbanSortable(root: HTMLElement, sortable: SortableEleme
   });
 }
 
+type ChatWindowElement = HTMLElement & {
+  participants?: Array<Record<string, string>>;
+  conversations?: Array<Record<string, unknown>>;
+  messages?: KanbanChatMessage[];
+  typing?: boolean;
+};
+
+function kanbanChatContact(id: string): KanbanChatContact | undefined {
+  return kanbanChatContacts.find((contact) => contact.id === id);
+}
+
+function kanbanChatEl(root: HTMLElement): ChatWindowElement | null {
+  return root.querySelector<ChatWindowElement>("[data-kanban-chat]");
+}
+
+function kanbanChatContactMatchesFilter(contact: KanbanChatContact): boolean {
+  if (kanbanChatFilter === "archived") return !!contact.archived;
+  if (contact.archived) return false;
+  if (kanbanChatFilter === "unread") return contact.unread > 0;
+  if (kanbanChatFilter === "mentions") return !!contact.mentions;
+  if (kanbanChatFilter === "starred") return !!contact.starred;
+  return true;
+}
+
+function renderKanbanChatList(root: HTMLElement): void {
+  const chat = kanbanChatEl(root);
+  if (!chat) return;
+  chat.conversations = kanbanChatContacts.filter(kanbanChatContactMatchesFilter).map((contact) => ({
+    id: contact.id,
+    name: contact.name,
+    preview: contact.preview,
+    time: contact.time,
+    unread: contact.unread,
+    image: contact.image,
+    label: contact.label,
+  }));
+  const inbox = kanbanChatContacts.filter((contact) => !contact.archived);
+  const allCount = root.querySelector<HTMLElement>('[data-kanban-chat-count="all"]');
+  if (allCount) allCount.textContent = String(inbox.length);
+  const unreadTotal = inbox.filter((contact) => contact.unread > 0).length;
+  const unreadCount = root.querySelector<HTMLElement>('[data-kanban-chat-count="unread"]');
+  if (unreadCount) unreadCount.textContent = unreadTotal > 0 ? String(unreadTotal) : "";
+}
+
+function updateKanbanChatDetails(root: HTMLElement, contact: KanbanChatContact): void {
+  const details = root.querySelector<HTMLElement>("[data-kanban-chat-details]");
+  if (!details) return;
+  const avatar = details.querySelector("[data-kcd-avatar]");
+  avatar?.setAttribute("image", contact.image ?? "");
+  avatar?.setAttribute("label", contact.label ?? contact.name);
+  details.querySelector("[data-kcd-name]")!.textContent = contact.name;
+  details.querySelector("[data-kcd-role]")!.textContent = contact.role;
+  details.querySelector("[data-kcd-time]")!.textContent = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  details.querySelector("[data-kcd-email]")!.textContent = contact.id === "design" ? "design@agriconnect.app" : `${contact.id}@agriconnect.app`;
+  details.querySelector("[data-kcd-phone]")!.textContent = contact.phone;
+}
+
+function kanbanChatParticipantFor(id: string): Record<string, string> {
+  const contact = kanbanChatContact(id);
+  return contact
+    ? { id: contact.id, name: contact.name, image: contact.image ?? "", label: contact.label ?? "" }
+    : { id, name: id };
+}
+
+function openKanbanChatConversation(root: HTMLElement, id: string): void {
+  const contact = kanbanChatContact(id);
+  const chat = kanbanChatEl(root);
+  if (!contact || !chat) return;
+  kanbanActiveChat = id;
+  contact.unread = 0;
+  chat.setAttribute("active-conversation-id", id);
+  chat.setAttribute("title", contact.name);
+  chat.setAttribute("description", contact.role);
+  const memberIds = contact.members ?? [contact.id];
+  chat.participants = [
+    { id: "kwame", name: "Kwame Mensah", image: "/avatars/male.jpg" },
+    ...memberIds.map(kanbanChatParticipantFor),
+  ];
+  chat.messages = [...(kanbanChatTranscripts[id] ?? [])];
+  chat.typing = !!contact.typing;
+  updateKanbanChatDetails(root, contact);
+  renderKanbanChatList(root);
+}
+
+function deleteKanbanChatConversation(root: HTMLElement): void {
+  const index = kanbanChatContacts.findIndex((contact) => contact.id === kanbanActiveChat);
+  if (index < 0) return;
+  const [removed] = kanbanChatContacts.splice(index, 1);
+  delete kanbanChatTranscripts[removed.id];
+  showToast(`Conversation with ${removed.name} deleted`);
+  const next = kanbanChatContacts.find(kanbanChatContactMatchesFilter) ?? kanbanChatContacts[0];
+  if (next) openKanbanChatConversation(root, next.id);
+  else renderKanbanChatList(root);
+}
+
+function initKanbanChat(root: HTMLElement): void {
+  const chat = kanbanChatEl(root);
+  if (!chat) return;
+
+  chat.addEventListener("conversation-select", (event) => {
+    const id = String((event as CustomEvent).detail?.conversation?.id ?? "");
+    if (id) openKanbanChatConversation(root, id);
+  });
+
+  chat.addEventListener("send", (event) => {
+    const message = (event as CustomEvent).detail?.message as KanbanChatMessage | undefined;
+    const contact = kanbanChatContact(kanbanActiveChat);
+    if (!message || !contact) return;
+    (kanbanChatTranscripts[kanbanActiveChat] ??= []).push(message);
+    contact.preview = message.text;
+    contact.time = message.time ?? "Now";
+    contact.typing = false;
+    renderKanbanChatList(root);
+
+    const conversationAtSend = kanbanActiveChat;
+    window.setTimeout(() => {
+      if (kanbanActiveChat === conversationAtSend) chat.typing = true;
+    }, 600);
+    window.setTimeout(() => {
+      const replyContact = kanbanChatContact(conversationAtSend);
+      if (!replyContact) return;
+      const reply: KanbanChatMessage = {
+        id: `reply-${Date.now()}`,
+        senderId: replyContact.members?.[0] ?? replyContact.id,
+        text: replyContact.reply,
+        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      };
+      (kanbanChatTranscripts[conversationAtSend] ??= []).push(reply);
+      replyContact.preview = reply.text;
+      replyContact.time = reply.time ?? "Now";
+      if (kanbanActiveChat === conversationAtSend) {
+        chat.typing = false;
+        chat.messages = [...kanbanChatTranscripts[conversationAtSend]];
+      } else {
+        replyContact.unread += 1;
+      }
+      renderKanbanChatList(root);
+    }, 2200);
+  });
+
+  root.querySelector("[data-kcd-mute]")?.addEventListener("change", (event) => {
+    const checked = !!(event.target as HTMLInputElement & { checked?: boolean }).checked;
+    showToast(checked ? "Notifications muted" : "Notifications unmuted");
+  });
+
+  openKanbanChatConversation(root, kanbanActiveChat);
+}
+
 function initKanbanBoard(root: HTMLElement): void {
   (Object.keys(kanbanColumns) as KanbanColumnKey[]).forEach((col) => {
     const sortable = kanbanSortableFor(root, col);
@@ -746,16 +963,38 @@ function initKanban(): void {
       return;
     }
 
-    const convo = pathElement<HTMLElement>(event, ".conversation");
-    if (convo) {
-      for (const c of root.querySelectorAll<HTMLElement>(".conversation")) c.classList.toggle("active", c === convo);
-      const name = convo.querySelector("strong")?.textContent?.trim() ?? "Conversation";
-      const threadTitle = root.querySelector<HTMLElement>(".message-thread loomi-card-title");
-      if (threadTitle) threadTitle.textContent = name;
+    const chatFilter = pathElement<HTMLElement>(event, "[data-kanban-chat-filter]");
+    if (chatFilter?.dataset.kanbanChatFilter) {
+      kanbanChatFilter = chatFilter.dataset.kanbanChatFilter;
+      for (const chip of root.querySelectorAll<HTMLElement>("[data-kanban-chat-filter]")) {
+        chip.classList.toggle("active", chip === chatFilter);
+      }
+      renderKanbanChatList(root);
+      return;
+    }
+
+    if (pathElement(event, "[data-kanban-chat-compose]")) {
+      showToast("New message started");
+      return;
+    }
+
+    if (pathElement(event, "[data-kanban-chat-collapse]")) {
+      kanbanChatEl(root)?.toggleAttribute("conversations-avatars-only");
+      return;
+    }
+
+    if (pathElement(event, "[data-kanban-chat-details-toggle]")) {
+      root.querySelector<HTMLElement>("[data-kanban-chat-details]")?.toggleAttribute("hidden");
+      return;
+    }
+
+    if (pathElement(event, "[data-kanban-chat-delete]")) {
+      deleteKanbanChatConversation(root);
     }
   });
 
   initKanbanBoard(root);
+  initKanbanChat(root);
 }
 
 function initSettings(): void {
