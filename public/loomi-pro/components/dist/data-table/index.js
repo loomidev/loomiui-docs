@@ -5,4 +5,3 @@ export function defineLoomiProDataTable() {
         customElements.define("loomi-pro-data-table", LoomiProDataTable);
     }
 }
-//# sourceMappingURL=index.js.map

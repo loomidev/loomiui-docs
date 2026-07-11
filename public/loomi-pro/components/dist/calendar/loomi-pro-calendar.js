@@ -619,4 +619,3 @@ export class LoomiProCalendar extends LoomiElement {
         }
     }
 }
-//# sourceMappingURL=loomi-pro-calendar.js.map

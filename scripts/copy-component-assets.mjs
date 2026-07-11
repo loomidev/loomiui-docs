@@ -5,8 +5,8 @@
 // Run `pnpm --filter ./components/packages/* build` (or just `pnpm build` at the
 // components monorepo root) FIRST so each package's dist/ is up to date, then run this.
 
-import { cpSync, existsSync, rmSync, mkdirSync } from "node:fs";
-import { dirname, resolve } from "node:path";
+import { cpSync, existsSync, rmSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, resolve, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { ALL_PACKAGE_NAMES } from "./loomiui-packages.mjs";
 
@@ -17,6 +17,20 @@ const PUBLIC_LOOMI = resolve(__dirname, "../public/loomi");
 // Only .js is needed in the browser — skip .d.ts/.d.ts.map/.js.map so we don't ship
 // type declarations and source maps as public static assets.
 const isRuntimeFile = (path) => !/\.(d\.ts|d\.ts\.map|js\.map)$/.test(path);
+
+// The maps aren't copied, so drop the sourceMappingURL comments too — otherwise
+// devtools requests every missing .map and floods the dev server log with 404s.
+const stripSourceMapComments = (dir) => {
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const path = join(dir, entry.name);
+    if (entry.isDirectory()) stripSourceMapComments(path);
+    else if (entry.name.endsWith(".js")) {
+      const code = readFileSync(path, "utf8");
+      const stripped = code.replace(/^\/\/# sourceMappingURL=.+$/gm, "");
+      if (stripped !== code) writeFileSync(path, stripped);
+    }
+  }
+};
 
 rmSync(PUBLIC_LOOMI, { recursive: true, force: true });
 mkdirSync(PUBLIC_LOOMI, { recursive: true });
@@ -30,6 +44,7 @@ for (const name of ALL_PACKAGE_NAMES) {
   }
   const dest = resolve(PUBLIC_LOOMI, name, "dist");
   cpSync(src, dest, { recursive: true, filter: isRuntimeFile });
+  stripSourceMapComments(dest);
   copied++;
 }
 

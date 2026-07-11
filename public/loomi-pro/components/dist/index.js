@@ -30,4 +30,3 @@ export function registerLoomiProComponents() {
     defineLoomiProFilterBuilder();
     defineLoomiProCalendar();
 }
-//# sourceMappingURL=index.js.map

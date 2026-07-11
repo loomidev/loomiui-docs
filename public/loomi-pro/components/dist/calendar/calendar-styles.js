@@ -563,4 +563,3 @@ export const calendarStyles = css `
   .event-warning { background: var(--loomi-warning-100, #fef3c7); color: var(--loomi-warning-800, #92400e); border-color: var(--loomi-warning-200, #fde68a); }
   .event-error { background: var(--loomi-error-100, #fee2e2); color: var(--loomi-error-800, #991b1b); border-color: var(--loomi-error-200, #fecaca); }
 `;
-//# sourceMappingURL=calendar-styles.js.map

@@ -481,4 +481,3 @@ export class LoomiProDateRangePicker extends LoomiElement {
         return `${primary} compared with ${formatDate(this.compareStartDate)} - ${formatDate(this.compareEndDate)}`;
     }
 }
-//# sourceMappingURL=loomi-pro-date-range-picker.js.map

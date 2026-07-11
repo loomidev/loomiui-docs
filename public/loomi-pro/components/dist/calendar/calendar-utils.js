@@ -268,4 +268,3 @@ export function dateFromResourcePosition(day, offsetX, trackWidth, startHour, en
     next.setHours(startHour, minutes, 0, 0);
     return next;
 }
-//# sourceMappingURL=calendar-utils.js.map

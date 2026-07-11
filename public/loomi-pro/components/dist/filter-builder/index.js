@@ -5,4 +5,3 @@ export function defineLoomiProFilterBuilder() {
         customElements.define("loomi-pro-filter-builder", LoomiProFilterBuilder);
     }
 }
-//# sourceMappingURL=index.js.map

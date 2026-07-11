@@ -5,4 +5,3 @@ export function defineLoomiProCommandPalette() {
         customElements.define("loomi-pro-command-palette", LoomiProCommandPalette);
     }
 }
-//# sourceMappingURL=index.js.map

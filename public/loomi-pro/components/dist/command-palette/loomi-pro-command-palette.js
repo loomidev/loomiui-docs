@@ -388,4 +388,3 @@ export class LoomiProCommandPalette extends LoomiElement {
         }));
     }
 }
-//# sourceMappingURL=loomi-pro-command-palette.js.map

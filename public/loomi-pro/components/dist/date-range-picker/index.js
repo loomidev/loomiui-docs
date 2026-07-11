@@ -5,4 +5,3 @@ export function defineLoomiProDateRangePicker() {
         customElements.define("loomi-pro-date-range-picker", LoomiProDateRangePicker);
     }
 }
-//# sourceMappingURL=index.js.map

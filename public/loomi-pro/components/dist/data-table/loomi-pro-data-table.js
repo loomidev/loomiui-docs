@@ -689,4 +689,3 @@ export class LoomiProDataTable extends LoomiElement {
         return rows.length > 0 && rows.every((row) => this.selectedKeys.includes(this.getRowKey(row)));
     }
 }
-//# sourceMappingURL=loomi-pro-data-table.js.map

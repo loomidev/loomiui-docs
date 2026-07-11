@@ -364,4 +364,3 @@ export class LoomiProFilterBuilder extends LoomiElement {
         return typeof currentValue === "string" ? currentValue : "";
     }
 }
-//# sourceMappingURL=loomi-pro-filter-builder.js.map

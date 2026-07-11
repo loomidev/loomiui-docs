@@ -5,4 +5,3 @@ export function defineLoomiProCalendar() {
         customElements.define("loomi-pro-calendar", LoomiProCalendar);
     }
 }
-//# sourceMappingURL=index.js.map
