@@ -15,13 +15,13 @@ export const CATEGORY = {
     "date-range-picker", "filter-builder", "autocomplete",
   ],
   content: [
-    "card", "avatar", "accordion", "tag", "tooltip", "popover", "empty-state", "statistic",
+    "card", "avatar", "accordion", "arc-meter", "tag", "tooltip", "popover", "empty-state", "statistic",
     "rating", "timeline", "progress", "listview", "contact-card", "centered-content",
     "sortable", "processing", "horizontal-line-graph", "chart", "drawer", "clipboard",
     "divider", "qrcode", "timer", "data-grid", "calendar", "chat", "resizable",
     "progress-steps", "video", "floating-panel", "photo-gallery", "lightbox",
   ],
-  navigation: ["tab", "pagination", "dropmenu", "theme-switcher", "context-menu", "command-palette", "bottom-nav"],
+  navigation: ["tab", "pagination", "dropmenu", "theme-switcher", "context-menu", "command-palette", "bottom-nav", "profile-menu", "side-nav"],
 };
 
 export const COMPONENT_NAMES = Object.values(CATEGORY).flat();

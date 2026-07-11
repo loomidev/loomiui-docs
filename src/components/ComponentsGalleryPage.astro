@@ -74,6 +74,8 @@ const PREVIEWS: Record<string, string> = {
   "theme-switcher": `<loomi-theme-switcher style="display:block;transform:scale(.75)"></loomi-theme-switcher>`,
   "context-menu": `<loomi-context-menu><button slot="target" style="border:1px solid var(--loomi-surface-border,#e5e7eb);border-radius:.45rem;padding:.45rem .65rem;font-size:.78rem;background:var(--loomi-surface,#fff)">Right-click file</button><loomi-context-menu-item icon="document-duplicate">Duplicate</loomi-context-menu-item><loomi-context-menu-item icon="pencil-square">Rename</loomi-context-menu-item></loomi-context-menu>`,
   "bottom-nav": `<div style="height:5.5rem;width:100%;overflow:hidden;position:relative"><loomi-bottom-nav active="home" active-style="pill" style="position:absolute;bottom:0.35rem;left:50%;right:auto;transform:translateX(-50%) scale(.72);transform-origin:bottom center;width:92%"><loomi-bottom-nav-item name="home" icon="home">Home</loomi-bottom-nav-item><loomi-bottom-nav-item name="cart" icon="shopping-cart" badge="3">Cart</loomi-bottom-nav-item><loomi-bottom-nav-item name="profile" icon="user">Profile</loomi-bottom-nav-item></loomi-bottom-nav></div>`,
+  "profile-menu": `<loomi-profile-menu name="Olivia Rhye" description="olivia@loomi.dev" avatar-label="OR" dotted><loomi-dropmenu-item icon="user-circle">Profile</loomi-dropmenu-item><loomi-dropmenu-item icon="cog-6-tooth">Settings</loomi-dropmenu-item></loomi-profile-menu>`,
+  "side-nav": `<div style="height:5.5rem;width:100%;overflow:hidden;display:flex;justify-content:center"><loomi-side-nav label="Workspace" state="icons" style="height:100%;--loomi-side-nav-icon-width:4.25rem"><loomi-side-nav-item icon="home" label="Home" active></loomi-side-nav-item><loomi-side-nav-item icon="calendar" label="Calendar"></loomi-side-nav-item><loomi-side-nav-item icon="cog-6-tooth" label="Settings"></loomi-side-nav-item></loomi-side-nav></div>`,
 
   // Overlay
   modal: `<loomi-button size="small" color="primary" onclick="showLoomiModal('prev-modal')">Open Modal</loomi-button><loomi-modal name="prev-modal" title="Preview">Preview content.</loomi-modal>`,
@@ -87,6 +89,7 @@ const PREVIEWS: Record<string, string> = {
   table: `<loomi-table compact data='[{"Name":"Olivia Rhye","Status":"Active"},{"Name":"Liam Carter","Status":"Invited"}]' class="w-full"></loomi-table>`,
   tag: `<loomi-tag label="New" color="primary"></loomi-tag>`,
   statistic: `<loomi-statistic number="34,500" label="Total payments"></loomi-statistic>`,
+  "arc-meter": `<loomi-arc-meter markers="4" active-marker="2" title="Guarded" description="Protection level" style="--loomi-arc-meter-width:8.5rem"></loomi-arc-meter>`,
   rating: `<loomi-rating rating="4" name="prev-rating" clickable="false" color="orange"></loomi-rating>`,
   timeline: `<div style="height:5.5rem;width:100%;overflow:hidden;display:flex;align-items:center;padding-left:0.5rem"><div style="transform:scale(.8);transform-origin:left center"><loomi-timelines><loomi-timeline date="2d ago" content="Activated"></loomi-timeline></loomi-timelines></div></div>`,
   listview: `<loomi-card class="w-full"><loomi-card-content style="padding:0"><loomi-listview><loomi-listview-item><loomi-avatar size="small" image="/avatars/john.svg"></loomi-avatar><div style="font-weight:500;font-size:.78rem">Olivia Rhye</div></loomi-listview-item></loomi-listview></loomi-card-content></loomi-card>`,
