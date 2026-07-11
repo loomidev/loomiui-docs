@@ -71,12 +71,12 @@ const templateFamilies = [
     </div>
 
     <div class="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4" id="template-families">
-      {templateFamilies.map((family) => (
+      {templateFamilies.map((family, index) => (
         <button
           type="button"
-          class="family-card"
+          class:list={["family-card", index === 0 && "is-active"]}
           data-template={family.key}
-          aria-pressed="false"
+          aria-pressed={index === 0 ? "true" : "false"}
         >
           <span class="family-icon"><loomi-icon name={family.icon}></loomi-icon></span>
           <strong>{family.name}</strong>
@@ -89,16 +89,14 @@ const templateFamilies = [
   <section class="mt-8 preview-panel" aria-live="polite">
     <div class="preview-copy">
       <p class="section-eyebrow">Preview</p>
-      <h2 id="preview-title">Choose a template family</h2>
-      <p id="preview-description">Select a template and framework to see its included screens and open the live preview.</p>
+      <h2 id="preview-title">{templateFamilies[0].name}</h2>
+      <p id="preview-description">{templateFamilies[0].description}</p>
 
       <div class="mt-6">
-        <div class="selector-label">Framework</div>
+        <div class="selector-label">Available for</div>
         <div class="mt-2 flex flex-wrap gap-2" id="framework-selector">
-          {Object.entries(frameworks).map(([key, label]) => (
-            <button type="button" class="framework-pill" data-framework={key} aria-pressed="false">
-              {label}
-            </button>
+          {Object.values(frameworks).map((label) => (
+            <span class="framework-tag">{label}</span>
           ))}
         </div>
       </div>
@@ -106,26 +104,21 @@ const templateFamilies = [
       <div class="mt-7">
         <div class="selector-label">Included screens</div>
         <ul class="included-list" id="included-pages">
-          <li class="included-placeholder">Choose a template family to see its screens.</li>
+          {templateFamilies[0].pages.map((page) => <li>{page}</li>)}
         </ul>
       </div>
 
-      <a class="preview-link is-disabled" id="preview-link" aria-disabled="true">
+      <a class="preview-link" id="preview-link" href="/pro/templates/admin/vite-lit/">
         View Live Preview
         <loomi-icon name="arrow-right"></loomi-icon>
       </a>
     </div>
 
-    <a class="preview-image-wrap is-empty" id="preview-image-link" tabindex="-1" aria-hidden="true">
-      <div class="preview-empty" id="preview-empty">
-        <loomi-icon name="rectangle-stack"></loomi-icon>
-        <strong>Your template preview will appear here</strong>
-        <span>Choose a family and framework above.</span>
-      </div>
+    <a class="preview-image-wrap" id="preview-image-link" href="/pro/templates/admin/vite-lit/" tabindex="-1">
       <img
         id="preview-image"
-        alt=""
-        hidden
+        src="/pro/templates/admin/vite-lit/dashboard-desktop.png"
+        alt="Admin Pro dashboard preview"
       />
     </a>
   </section>
@@ -139,17 +132,15 @@ const templateFamilies = [
     <loomi-button color="primary" tag="a" href={PRO_LICENSING_URL}>View Pro licenses</loomi-button>
   </section>
 
-  <script is:inline define:vars={{ templateFamilies, frameworks }}>
+  <script is:inline define:vars={{ templateFamilies }}>
     const familyButtons = Array.from(document.querySelectorAll("[data-template]"));
-    const frameworkButtons = Array.from(document.querySelectorAll("[data-framework]"));
     const title = document.getElementById("preview-title");
     const description = document.getElementById("preview-description");
     const pages = document.getElementById("included-pages");
     const previewLink = document.getElementById("preview-link");
     const imageLink = document.getElementById("preview-image-link");
     const image = document.getElementById("preview-image");
-    let selectedTemplate = null;
-    let selectedFramework = null;
+    let selectedTemplate = templateFamilies[0].key;
 
     function selectedFamily() {
       return templateFamilies.find((family) => family.key === selectedTemplate);
@@ -164,50 +155,19 @@ const templateFamilies = [
         button.setAttribute("aria-pressed", String(active));
       });
 
-      frameworkButtons.forEach((button) => {
-        const active = button.dataset.framework === selectedFramework;
-        button.classList.toggle("is-active", active);
-        button.setAttribute("aria-pressed", String(active));
-      });
+      title.textContent = family.name;
+      description.textContent = family.description;
+      pages.replaceChildren(...family.pages.map((label) => {
+        const item = document.createElement("li");
+        item.textContent = label;
+        return item;
+      }));
 
-      if (family) {
-        title.textContent = family.name;
-        description.textContent = family.description;
-        pages.replaceChildren(...family.pages.map((label) => {
-          const item = document.createElement("li");
-          item.textContent = label;
-          return item;
-        }));
-      } else {
-        title.textContent = "Choose a template family";
-        description.textContent = "Select a template and framework to see its included screens and open the live preview.";
-        const placeholder = document.createElement("li");
-        placeholder.className = "included-placeholder";
-        placeholder.textContent = "Choose a template family to see its screens.";
-        pages.replaceChildren(placeholder);
-      }
-
-      const ready = Boolean(family && selectedFramework);
-      previewLink.classList.toggle("is-disabled", !ready);
-      previewLink.setAttribute("aria-disabled", String(!ready));
-      imageLink.classList.toggle("is-empty", !ready);
-      imageLink.setAttribute("aria-hidden", String(!ready));
-      image.hidden = !ready;
-      document.getElementById("preview-empty").hidden = ready;
-
-      if (ready) {
-        const href = `/pro/templates/${family.key}/${selectedFramework}/`;
-        const frameworkLabel = frameworks[selectedFramework];
-        previewLink.href = href;
-        imageLink.href = href;
-        image.src = `${href}dashboard-desktop.png`;
-        image.alt = `${family.name} ${frameworkLabel} dashboard preview`;
-      } else {
-        previewLink.removeAttribute("href");
-        imageLink.removeAttribute("href");
-        image.removeAttribute("src");
-        image.alt = "";
-      }
+      const href = `/pro/templates/${family.key}/vite-lit/`;
+      previewLink.href = href;
+      imageLink.href = href;
+      image.src = `${href}dashboard-desktop.png`;
+      image.alt = `${family.name} dashboard preview`;
     }
 
     familyButtons.forEach((button) => button.addEventListener("click", () => {
@@ -215,10 +175,6 @@ const templateFamilies = [
       render();
     }));
 
-    frameworkButtons.forEach((button) => button.addEventListener("click", () => {
-      selectedFramework = button.dataset.framework;
-      render();
-    }));
   </script>
 </ProLandingShell>
 
@@ -239,19 +195,13 @@ const templateFamilies = [
   .preview-copy { padding: 2rem; }
   .preview-copy > p { color: rgb(75 85 99); line-height: 1.65; }
   .preview-copy > .section-eyebrow { color: rgb(37 99 235); }
-  .framework-pill { border: 1px solid rgb(209 213 219); border-radius: 999px; background: white; padding: .45rem .75rem; color: rgb(55 65 81); font: inherit; font-size: .8rem; font-weight: 650; cursor: pointer; }
-  .framework-pill.is-active { border-color: rgb(37 99 235); background: rgb(37 99 235); color: white; }
-  .included-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .65rem 1.75rem; margin: .85rem 0 0; padding-left: 1.15rem; list-style: disc; color: rgb(75 85 99); font-size: .875rem; }
-  .included-list li::marker { color: rgb(37 99 235); }
-  .included-list .included-placeholder { grid-column: 1 / -1; color: rgb(107 114 128); }
+  .framework-tag { border: 1px solid rgb(209 213 219); border-radius: 999px; background: white; padding: .45rem .75rem; color: rgb(55 65 81); font-size: .8rem; font-weight: 650; }
+  .included-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .65rem 1.75rem; margin: .85rem 0 0; padding: 0; list-style: none; color: rgb(75 85 99); font-size: .875rem; }
+  :global(#included-pages > li) { position: relative; padding-left: 1rem; }
+  :global(#included-pages > li::before) { position: absolute; left: 0; content: "•"; color: rgb(37 99 235); font-size: 1.15em; line-height: 1; font-weight: 800; }
   .preview-link { display: inline-flex; align-items: center; gap: .45rem; margin-top: 1.75rem; color: rgb(37 99 235); font-weight: 700; text-decoration: none; }
-  .preview-link.is-disabled { color: rgb(156 163 175); cursor: not-allowed; pointer-events: none; }
   .preview-link loomi-icon { width: 1rem; height: 1rem; }
   .preview-image-wrap { display: flex; min-height: 30rem; align-items: center; padding: 2rem 0 2rem 2rem; background: linear-gradient(145deg, rgb(219 234 254), rgb(238 242 255)); }
-  .preview-image-wrap.is-empty { justify-content: center; padding: 2rem; pointer-events: none; }
-  .preview-empty { display: grid; justify-items: center; gap: .5rem; color: rgb(71 85 105); text-align: center; }
-  .preview-empty loomi-icon { width: 2rem; height: 2rem; margin-bottom: .35rem; color: rgb(96 165 250); }
-  .preview-empty span { font-size: .875rem; color: rgb(100 116 139); }
   .preview-image-wrap img { width: 100%; border: 1px solid rgb(203 213 225); border-right: 0; border-radius: .85rem 0 0 .85rem; box-shadow: 0 24px 50px rgb(30 64 175 / .18); }
   .purchase-panel { display: flex; align-items: center; justify-content: space-between; gap: 2rem; margin-top: 4rem; border-radius: 1.25rem; background: rgb(239 246 255); padding: 2rem; }
   .purchase-panel p:last-child { margin: .65rem 0 0; color: rgb(75 85 99); }
@@ -261,8 +211,7 @@ const templateFamilies = [
   :global(.dark) .family-card > span:last-child { color: rgb(156 163 175); }
   :global(.dark) .family-icon { background: rgb(30 58 138 / .5); color: rgb(147 197 253); }
   :global(.dark) .preview-panel { border-color: rgb(55 65 81); background: rgb(17 24 39); }
-  :global(.dark) .framework-pill { border-color: rgb(75 85 99); background: rgb(31 41 55); color: rgb(209 213 219); }
-  :global(.dark) .framework-pill.is-active { border-color: rgb(59 130 246); background: rgb(37 99 235); color: white; }
+  :global(.dark) .framework-tag { border-color: rgb(75 85 99); background: rgb(31 41 55); color: rgb(209 213 219); }
   :global(.dark) .preview-image-wrap { background: linear-gradient(145deg, rgb(30 58 138 / .55), rgb(49 46 129 / .4)); }
   :global(.dark) .purchase-panel { background: rgb(30 58 138 / .3); }
   @media (max-width: 767px) {
