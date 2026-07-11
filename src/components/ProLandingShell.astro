@@ -1,0 +1,49 @@
+---
+import MarketingHeader from "./MarketingHeader.astro";
+import { buildImportMap } from "../lib/import-map.mjs";
+import "../styles/home.css";
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+const importMap = buildImportMap();
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.png" />
+    <script type="importmap" is:inline set:html={JSON.stringify(importMap)} />
+  </head>
+  <body class="bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
+    <MarketingHeader />
+
+    <main class="mx-auto max-w-6xl px-6 py-12 sm:py-16">
+      <slot />
+    </main>
+
+    <footer class="border-t border-gray-200 dark:border-gray-800">
+      <div class="mx-auto max-w-6xl px-6 py-10 text-sm text-gray-500 dark:text-gray-400">
+        <div class="flex flex-wrap justify-center gap-6">
+          <a href="/installation/" class="hover:text-primary-600 dark:hover:text-primary-400">Installation</a>
+          <a href="/components/" class="hover:text-primary-600 dark:hover:text-primary-400">Components</a>
+          <a href="/pro/" class="hover:text-primary-600 dark:hover:text-primary-400">Pro</a>
+          <a href="/cli/" class="hover:text-primary-600 dark:hover:text-primary-400">CLI</a>
+          <a href="/contributing/" class="hover:text-primary-600 dark:hover:text-primary-400">Contributing</a>
+        </div>
+        <p class="mt-6 text-center">© {new Date().getFullYear()} LoomiUI.</p>
+      </div>
+    </footer>
+
+    <script type="module" is:inline>
+      import "@loomidev/button";
+      import "@loomidev/icon";
+    </script>
+  </body>
+</html>

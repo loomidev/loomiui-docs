@@ -1,0 +1,197 @@
+---
+import ProLandingShell from "./ProLandingShell.astro";
+import { PRO_LICENSING_URL } from "../lib/pro-licensing.mjs";
+
+const title = "Themes - LoomiUI Pro";
+const description = "Theme presets, design tokens, visual tooling, and matching Figma resources for LoomiUI.";
+
+const presets = [
+  { name: "Default Loomi", description: "Balanced blue surfaces for general product interfaces.", colors: ["#2563eb", "#60a5fa", "#eff6ff", "#111827"] },
+  { name: "SaaS Admin", description: "Clean, compact styling for dashboards and settings.", colors: ["#4f46e5", "#818cf8", "#eef2ff", "#1e1b4b"] },
+  { name: "Fintech", description: "Confident green and slate for financial products.", colors: ["#059669", "#34d399", "#ecfdf5", "#064e3b"] },
+  { name: "Healthcare", description: "Calm teal surfaces with clear semantic states.", colors: ["#0d9488", "#5eead4", "#f0fdfa", "#134e4a"] },
+  { name: "Developer Tools", description: "Focused violet styling for technical interfaces.", colors: ["#7c3aed", "#a78bfa", "#f5f3ff", "#2e1065"] },
+  { name: "High Contrast", description: "Stronger boundaries and contrast for accessible UI.", colors: ["#1d4ed8", "#facc15", "#ffffff", "#000000"] },
+];
+
+const workflow = [
+  { number: "01", title: "Choose a preset", description: "Start with a visual direction designed for a real product category." },
+  { number: "02", title: "Adjust the tokens", description: "Tune color, typography, radius, density, and light or dark surfaces." },
+  { number: "03", title: "Export and ship", description: "Generate CSS variables, JSON, or TypeScript for your application." },
+];
+
+const resources = [
+  { title: "Token System", icon: "variable", href: "/pro/themes/token-system/", description: "Understand the semantic contract behind every preset." },
+  { title: "Theme Builder", icon: "adjustments-horizontal", href: "/pro/themes/theme-builder/", description: "Customize and preview a theme visually before export." },
+  { title: "Figma Kit", icon: "beaker", href: "/pro/themes/figma-kit/", description: "Design with the same components and tokens used in code." },
+  { title: "Assets & Brand", icon: "photo", href: "/pro/themes/assets-brand/", description: "Use matching product, launch, and social visuals." },
+  { title: "Accessibility", icon: "eye", href: "/pro/themes/accessibility-quality/", description: "Review contrast, focus, motion, and migration quality." },
+];
+---
+
+<ProLandingShell title={title} description={description}>
+  <section class="theme-hero">
+    <div class="max-w-3xl">
+      <div class="feature-kicker">LoomiUI Pro</div>
+      <h1 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">Customize LoomiUI without rebuilding every component</h1>
+      <p class="mt-5 text-lg leading-8 text-gray-600 dark:text-gray-400">
+        Choose a production-ready preset, adapt a shared token system to your brand, and export a theme that stays consistent across every LoomiUI component.
+      </p>
+      <div class="mt-7 flex flex-wrap gap-3">
+        <loomi-button color="primary" tag="a" href="/pro/themes/theme-presets/">Explore presets</loomi-button>
+        <loomi-button type="secondary" tag="a" href="/pro/themes/theme-builder/">Open theme builder</loomi-button>
+      </div>
+    </div>
+    <div class="hero-swatch" aria-hidden="true">
+      <div class="hero-swatch-header"><span></span><span></span><span></span></div>
+      <div class="hero-swatch-body">
+        <div class="hero-sidebar"></div>
+        <div class="hero-content">
+          <div class="hero-line wide"></div><div class="hero-line"></div>
+          <div class="hero-panels"><span></span><span></span><span></span></div>
+          <div class="hero-table"></div><div class="hero-table short"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-20" aria-labelledby="presets-heading">
+    <div class="section-heading">
+      <div>
+        <p class="section-eyebrow">Start visually</p>
+        <h2 id="presets-heading">Theme presets</h2>
+      </div>
+      <a href="/pro/themes/theme-presets/">View all 12 presets <loomi-icon name="arrow-right"></loomi-icon></a>
+    </div>
+
+    <div class="preset-grid">
+      {presets.map((preset) => (
+        <a class="preset-card" href="/pro/themes/theme-presets/">
+          <div class="preset-colors" aria-hidden="true">
+            {preset.colors.map((color, index) => <span style={`--swatch:${color};--size:${index === 0 ? "3" : "1"}`}></span>)}
+          </div>
+          <div class="preset-copy">
+            <strong>{preset.name}</strong>
+            <p>{preset.description}</p>
+          </div>
+          <loomi-icon name="chevron-right"></loomi-icon>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="workflow-section" aria-labelledby="workflow-heading">
+    <div class="workflow-intro">
+      <p class="section-eyebrow">A simple workflow</p>
+      <h2 id="workflow-heading">From preset to product</h2>
+      <p>Presets are the starting point. Tokens and tooling make them yours.</p>
+    </div>
+    <ol class="workflow-list">
+      {workflow.map((step) => (
+        <li>
+          <span>{step.number}</span>
+          <div><strong>{step.title}</strong><p>{step.description}</p></div>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="mt-20" aria-labelledby="resources-heading">
+    <div class="section-heading">
+      <div>
+        <p class="section-eyebrow">Go deeper when you need to</p>
+        <h2 id="resources-heading">Tools and resources</h2>
+      </div>
+      <p>Everything supporting the presets, organized by the job it helps you complete.</p>
+    </div>
+
+    <div class="resource-list">
+      {resources.map((resource) => (
+        <a href={resource.href}>
+          <span class="resource-icon"><loomi-icon name={resource.icon}></loomi-icon></span>
+          <span><strong>{resource.title}</strong><small>{resource.description}</small></span>
+          <loomi-icon name="arrow-right"></loomi-icon>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="purchase-panel">
+    <div>
+      <p class="section-eyebrow">Included with LoomiUI Pro</p>
+      <h2>Design and code from one system</h2>
+      <p>Get every preset, the Theme Builder, token exports, Figma resources, private docs, and updates.</p>
+    </div>
+    <loomi-button color="primary" tag="a" href={PRO_LICENSING_URL}>View Pro licenses</loomi-button>
+  </section>
+</ProLandingShell>
+
+<style>
+  .theme-hero { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(20rem, .85fr); align-items: center; gap: 4rem; }
+  .hero-swatch { overflow: hidden; border: 1px solid rgb(191 219 254); border-radius: 1.25rem; background: white; box-shadow: 0 25px 60px rgb(37 99 235 / .16); transform: rotate(2deg); }
+  .hero-swatch-header { display: flex; gap: .35rem; border-bottom: 1px solid rgb(219 234 254); padding: .8rem; }
+  .hero-swatch-header span { width: .5rem; height: .5rem; border-radius: 50%; background: rgb(191 219 254); }
+  .hero-swatch-body { display: grid; grid-template-columns: 4.5rem 1fr; min-height: 18rem; }
+  .hero-sidebar { background: rgb(30 64 175); }
+  .hero-content { padding: 1.5rem; background: rgb(248 250 252); }
+  .hero-line { width: 38%; height: .55rem; border-radius: 1rem; background: rgb(191 219 254); }
+  .hero-line.wide { width: 62%; height: .8rem; margin-bottom: .55rem; background: rgb(37 99 235); }
+  .hero-panels { display: grid; grid-template-columns: repeat(3, 1fr); gap: .6rem; margin-top: 1.5rem; }
+  .hero-panels span { height: 3.8rem; border: 1px solid rgb(219 234 254); border-radius: .6rem; background: white; }
+  .hero-table { height: 2rem; margin-top: 1.25rem; border-radius: .45rem; background: rgb(219 234 254); }
+  .hero-table.short { width: 80%; margin-top: .55rem; background: rgb(226 232 240); }
+  .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 2rem; }
+  .section-heading h2, .workflow-intro h2, .purchase-panel h2 { margin: .25rem 0 0; font-size: 1.75rem; line-height: 1.2; font-weight: 750; letter-spacing: -.025em; }
+  .section-heading > p { margin: 0; max-width: 31rem; color: rgb(75 85 99); line-height: 1.6; }
+  .section-heading > a { display: inline-flex; flex: none; align-items: center; gap: .35rem; color: rgb(37 99 235); font-size: .875rem; font-weight: 700; text-decoration: none; }
+  .section-heading > a loomi-icon { width: 1rem; height: 1rem; }
+  .section-eyebrow { margin: 0; color: rgb(37 99 235); font-size: .75rem; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+  .preset-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: 1.75rem; }
+  .preset-card { position: relative; overflow: hidden; border: 1px solid rgb(229 231 235); border-radius: 1rem; background: white; color: rgb(17 24 39); text-decoration: none; transition: transform .15s, box-shadow .15s; }
+  .preset-card:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgb(15 23 42 / .08); }
+  .preset-colors { display: grid; grid-template-columns: 3fr 1fr 1fr 1fr; height: 7rem; }
+  .preset-colors span { background: var(--swatch); }
+  .preset-copy { padding: 1rem 2.5rem 1rem 1rem; }
+  .preset-copy strong { font-size: .95rem; }
+  .preset-copy p { margin: .35rem 0 0; color: rgb(107 114 128); font-size: .8rem; line-height: 1.5; }
+  .preset-card > loomi-icon { position: absolute; right: 1rem; bottom: 1.2rem; width: .95rem; height: .95rem; color: rgb(37 99 235); }
+  .workflow-section { display: grid; grid-template-columns: .8fr 1.2fr; gap: 5rem; margin-top: 5rem; border-radius: 1.25rem; background: rgb(249 250 251); padding: 2.5rem; }
+  .workflow-intro > p:last-child { margin: .75rem 0 0; color: rgb(75 85 99); line-height: 1.65; }
+  .workflow-list { margin: 0; padding: 0; list-style: none; }
+  .workflow-list li { display: grid; grid-template-columns: 2.5rem 1fr; gap: 1rem; padding: 1.15rem 0; border-bottom: 1px solid rgb(229 231 235); }
+  .workflow-list li:first-child { padding-top: 0; }
+  .workflow-list li:last-child { padding-bottom: 0; border-bottom: 0; }
+  .workflow-list li > span { color: rgb(37 99 235); font-size: .75rem; font-weight: 800; letter-spacing: .08em; }
+  .workflow-list strong { font-size: .95rem; }
+  .workflow-list p { margin: .3rem 0 0; color: rgb(107 114 128); font-size: .875rem; line-height: 1.5; }
+  .resource-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; margin-top: 1.75rem; }
+  .resource-list > a { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 1rem; border: 1px solid rgb(229 231 235); border-radius: .9rem; padding: 1rem; color: rgb(17 24 39); text-decoration: none; }
+  .resource-list > a:hover { border-color: rgb(147 197 253); }
+  .resource-icon { display: grid; width: 2.5rem; height: 2.5rem; place-items: center; border-radius: .75rem; background: rgb(239 246 255); color: rgb(37 99 235); }
+  .resource-icon loomi-icon, .resource-list > a > loomi-icon { width: 1.1rem; height: 1.1rem; }
+  .resource-list small { display: block; margin-top: .2rem; color: rgb(107 114 128); font-size: .8rem; line-height: 1.4; }
+  .resource-list > a > loomi-icon { color: rgb(37 99 235); }
+  .purchase-panel { display: flex; align-items: center; justify-content: space-between; gap: 2rem; margin-top: 4rem; border-radius: 1.25rem; background: rgb(239 246 255); padding: 2rem; }
+  .purchase-panel p:last-child { margin: .65rem 0 0; color: rgb(75 85 99); }
+  :global(.dark) .hero-swatch { border-color: rgb(30 64 175); background: rgb(15 23 42); }
+  :global(.dark) .hero-swatch-header { border-color: rgb(30 58 138); }
+  :global(.dark) .hero-content { background: rgb(17 24 39); }
+  :global(.dark) .hero-panels span { border-color: rgb(51 65 85); background: rgb(30 41 59); }
+  :global(.dark) .section-heading > p, :global(.dark) .workflow-intro > p:last-child, :global(.dark) .purchase-panel p:last-child { color: rgb(156 163 175); }
+  :global(.dark) .preset-card, :global(.dark) .resource-list > a { border-color: rgb(55 65 81); background: rgb(17 24 39); color: rgb(243 244 246); }
+  :global(.dark) .preset-copy p, :global(.dark) .workflow-list p, :global(.dark) .resource-list small { color: rgb(156 163 175); }
+  :global(.dark) .workflow-section { background: rgb(17 24 39); }
+  :global(.dark) .workflow-list li { border-color: rgb(55 65 81); }
+  :global(.dark) .resource-icon { background: rgb(30 58 138 / .5); color: rgb(147 197 253); }
+  :global(.dark) .purchase-panel { background: rgb(30 58 138 / .3); }
+  @media (max-width: 900px) {
+    .theme-hero { grid-template-columns: 1fr; }
+    .hero-swatch { display: none; }
+    .preset-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .workflow-section { grid-template-columns: 1fr; gap: 2.5rem; }
+  }
+  @media (max-width: 640px) {
+    .section-heading, .purchase-panel { align-items: flex-start; flex-direction: column; }
+    .preset-grid, .resource-list { grid-template-columns: 1fr; }
+  }
+</style>

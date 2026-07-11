@@ -222,16 +222,27 @@ const setupDocsPreview = () => {
   document.querySelectorAll("loomi-calendar").forEach((calendar) => {
     if (calendar.dataset.docsReady) return;
     calendar.dataset.docsReady = "true";
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth();
-    const day = today.getDate();
+    // Week/month views hide weekends by default, so demo events pinned to a
+    // Saturday/Sunday "today" would be invisible. Anchor the demo data to the
+    // following Monday on weekends and focus the calendar there.
+    const anchor = new Date();
+    const isWeekend = anchor.getDay() === 0 || anchor.getDay() === 6;
+    if (anchor.getDay() === 6) anchor.setDate(anchor.getDate() + 2);
+    else if (anchor.getDay() === 0) anchor.setDate(anchor.getDate() + 1);
+    const year = anchor.getFullYear();
+    const month = anchor.getMonth();
+    const day = anchor.getDate();
     calendar.editable = true;
     calendar.view = calendar.getAttribute("view") || "week";
     calendar.weekStarts = calendar.getAttribute("week-starts") || "monday";
-    const demoStart = new Date();
-    demoStart.setSeconds(0, 0);
-    demoStart.setMinutes(Math.ceil(demoStart.getMinutes() / 30) * 30 + 30);
+    calendar.date = new Date(anchor);
+    const demoStart = new Date(anchor);
+    if (isWeekend) {
+      demoStart.setHours(11, 0, 0, 0);
+    } else {
+      demoStart.setSeconds(0, 0);
+      demoStart.setMinutes(Math.ceil(demoStart.getMinutes() / 30) * 30 + 30);
+    }
     const demoEnd = new Date(demoStart.getTime() + 2 * 60 * 60 * 1000);
     const demoInviteeAvatars = [
       "https://i.pravatar.cc/80?img=1",

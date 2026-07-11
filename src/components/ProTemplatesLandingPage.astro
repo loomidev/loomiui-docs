@@ -1,0 +1,241 @@
+---
+import ProLandingShell from "./ProLandingShell.astro";
+import { PRO_LICENSING_URL } from "../lib/pro-licensing.mjs";
+
+const title = "Templates - LoomiUI Pro";
+const description = "Production-ready application templates for Lit, Next.js, Nuxt, and Laravel Inertia.";
+
+const frameworks = {
+  "vite-lit": "Lit",
+  "next-react": "Next.js",
+  nuxt: "Nuxt",
+  "laravel-inertia": "Laravel + Inertia",
+};
+
+const templateFamilies = [
+  {
+    key: "admin",
+    name: "Admin Pro",
+    icon: "shield-check",
+    description: "A complete administration workspace for teams, permissions, billing, reports, and settings.",
+    pages: ["Dashboard", "Users and teams", "Roles and permissions", "Billing", "Reports", "Settings"],
+    variants: ["vite-lit", "next-react", "nuxt", "laravel-inertia"],
+  },
+  {
+    key: "saas",
+    name: "SaaS Starter",
+    icon: "rocket-launch",
+    description: "Authentication, onboarding, organizations, subscriptions, API keys, and account settings.",
+    pages: ["Authentication", "Onboarding", "Organizations", "Billing", "API keys", "Account settings"],
+    variants: ["vite-lit", "next-react"],
+  },
+  {
+    key: "crm",
+    name: "CRM",
+    icon: "users",
+    description: "A practical sales workspace for leads, contacts, companies, deals, tasks, and reporting.",
+    pages: ["Leads", "Contacts", "Companies", "Deals pipeline", "Tasks", "Reports"],
+    variants: ["vite-lit", "next-react"],
+  },
+  {
+    key: "analytics",
+    name: "Analytics Dashboard",
+    icon: "chart-bar",
+    description: "Metrics, segments, cohorts, saved reports, comparisons, alerts, and export workflows.",
+    pages: ["Overview", "Metrics", "Segments", "Cohorts", "Saved reports", "Export center"],
+    variants: ["vite-lit", "next-react"],
+  },
+];
+---
+
+<ProLandingShell title={title} description={description}>
+  <section class="max-w-3xl">
+    <div class="feature-kicker">LoomiUI Pro</div>
+    <h1 class="mt-3 text-4xl font-bold tracking-tight sm:text-5xl">Production-ready application templates</h1>
+    <p class="mt-5 text-lg leading-8 text-gray-600 dark:text-gray-400">
+      Start with a complete product shell, choose the framework your team already uses, and adapt real screens instead of assembling a demo from disconnected examples.
+    </p>
+    <div class="mt-7 flex flex-wrap gap-3">
+      <loomi-button color="primary" tag="a" href={PRO_LICENSING_URL}>Get Pro</loomi-button>
+      <loomi-button type="secondary" tag="a" href="/pro/">Explore all Pro</loomi-button>
+    </div>
+  </section>
+
+  <section class="mt-16" aria-labelledby="template-family-heading">
+    <div class="section-heading">
+      <div>
+        <p class="section-eyebrow">Choose a starting point</p>
+        <h2 id="template-family-heading">Template families</h2>
+      </div>
+      <p>Each family includes a coherent application shell, responsive states, and working page patterns.</p>
+    </div>
+
+    <div class="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4" id="template-families">
+      {templateFamilies.map((family, index) => (
+        <button
+          type="button"
+          class:list={["family-card", index === 0 && "is-active"]}
+          data-template={family.key}
+          aria-pressed={index === 0 ? "true" : "false"}
+        >
+          <span class="family-icon"><loomi-icon name={family.icon}></loomi-icon></span>
+          <strong>{family.name}</strong>
+          <span>{family.description}</span>
+        </button>
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-8 preview-panel" aria-live="polite">
+    <div class="preview-copy">
+      <p class="section-eyebrow">Preview</p>
+      <h2 id="preview-title">Admin Pro</h2>
+      <p id="preview-description">{templateFamilies[0].description}</p>
+
+      <div class="mt-6">
+        <div class="selector-label">Framework</div>
+        <div class="mt-2 flex flex-wrap gap-2" id="framework-selector">
+          {Object.entries(frameworks).map(([key, label], index) => (
+            <button type="button" class:list={["framework-pill", index === 0 && "is-active"]} data-framework={key}>
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div class="mt-7">
+        <div class="selector-label">Included screens</div>
+        <ul class="included-list" id="included-pages">
+          {templateFamilies[0].pages.map((page) => <li>{page}</li>)}
+        </ul>
+      </div>
+
+      <a class="preview-link" id="preview-link" href="/pro/templates/admin/vite-lit/">
+        View Lit preview
+        <loomi-icon name="arrow-right"></loomi-icon>
+      </a>
+    </div>
+
+    <a class="preview-image-wrap" id="preview-image-link" href="/pro/templates/admin/vite-lit/" tabindex="-1">
+      <img
+        id="preview-image"
+        src="/pro/templates/admin/vite-lit/dashboard-desktop.png"
+        alt="Admin Pro Lit dashboard preview"
+      />
+    </a>
+  </section>
+
+  <section class="purchase-panel">
+    <div>
+      <p class="section-eyebrow">One license, every template</p>
+      <h2>Pick a foundation. Keep your stack.</h2>
+      <p>Get every available template variant, private documentation, updates, and Pro tooling.</p>
+    </div>
+    <loomi-button color="primary" tag="a" href={PRO_LICENSING_URL}>View Pro licenses</loomi-button>
+  </section>
+
+  <script is:inline define:vars={{ templateFamilies, frameworks }}>
+    const familyButtons = Array.from(document.querySelectorAll("[data-template]"));
+    const frameworkButtons = Array.from(document.querySelectorAll("[data-framework]"));
+    const title = document.getElementById("preview-title");
+    const description = document.getElementById("preview-description");
+    const pages = document.getElementById("included-pages");
+    const previewLink = document.getElementById("preview-link");
+    const imageLink = document.getElementById("preview-image-link");
+    const image = document.getElementById("preview-image");
+    let selectedTemplate = templateFamilies[0].key;
+    let selectedFramework = templateFamilies[0].variants[0];
+
+    function selectedFamily() {
+      return templateFamilies.find((family) => family.key === selectedTemplate);
+    }
+
+    function render() {
+      const family = selectedFamily();
+      if (!family.variants.includes(selectedFramework)) selectedFramework = family.variants[0];
+
+      familyButtons.forEach((button) => {
+        const active = button.dataset.template === selectedTemplate;
+        button.classList.toggle("is-active", active);
+        button.setAttribute("aria-pressed", String(active));
+      });
+
+      frameworkButtons.forEach((button) => {
+        const available = family.variants.includes(button.dataset.framework);
+        button.disabled = !available;
+        button.classList.toggle("is-active", button.dataset.framework === selectedFramework);
+      });
+
+      title.textContent = family.name;
+      description.textContent = family.description;
+      pages.replaceChildren(...family.pages.map((label) => {
+        const item = document.createElement("li");
+        item.textContent = label;
+        return item;
+      }));
+
+      const href = `/pro/templates/${family.key}/${selectedFramework}/`;
+      const frameworkLabel = frameworks[selectedFramework];
+      previewLink.href = href;
+      previewLink.firstChild.textContent = `View ${frameworkLabel} preview `;
+      imageLink.href = href;
+      image.src = `${href}dashboard-desktop.png`;
+      image.alt = `${family.name} ${frameworkLabel} dashboard preview`;
+    }
+
+    familyButtons.forEach((button) => button.addEventListener("click", () => {
+      selectedTemplate = button.dataset.template;
+      render();
+    }));
+
+    frameworkButtons.forEach((button) => button.addEventListener("click", () => {
+      selectedFramework = button.dataset.framework;
+      render();
+    }));
+  </script>
+</ProLandingShell>
+
+<style>
+  .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 2rem; }
+  .section-heading h2, .preview-copy h2, .purchase-panel h2 { margin: .25rem 0 0; font-size: 1.75rem; line-height: 1.2; font-weight: 750; letter-spacing: -.025em; }
+  .section-heading > p { margin: 0; max-width: 34rem; color: rgb(75 85 99); line-height: 1.6; }
+  .section-eyebrow, .selector-label { margin: 0; color: rgb(37 99 235); font-size: .75rem; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+  .family-card { appearance: none; width: 100%; border: 1px solid rgb(229 231 235); border-radius: 1rem; background: white; padding: 1.15rem; color: rgb(17 24 39); text-align: left; cursor: pointer; transition: border-color .15s, box-shadow .15s, transform .15s; }
+  .family-card:hover { border-color: rgb(147 197 253); transform: translateY(-2px); }
+  .family-card.is-active { border-color: rgb(37 99 235); box-shadow: 0 0 0 3px rgb(219 234 254); }
+  .family-card strong, .family-card > span:last-child { display: block; }
+  .family-card strong { margin-top: 1rem; font-size: 1rem; }
+  .family-card > span:last-child { margin-top: .45rem; color: rgb(107 114 128); font-size: .875rem; line-height: 1.5; }
+  .family-icon { display: grid; width: 2.25rem; height: 2.25rem; place-items: center; border-radius: .7rem; background: rgb(239 246 255); color: rgb(37 99 235); }
+  .family-icon loomi-icon { width: 1.15rem; height: 1.15rem; }
+  .preview-panel { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); overflow: hidden; border: 1px solid rgb(229 231 235); border-radius: 1.25rem; background: rgb(249 250 251); }
+  .preview-copy { padding: 2rem; }
+  .preview-copy > p { color: rgb(75 85 99); line-height: 1.65; }
+  .preview-copy > .section-eyebrow { color: rgb(37 99 235); }
+  .framework-pill { border: 1px solid rgb(209 213 219); border-radius: 999px; background: white; padding: .45rem .75rem; color: rgb(55 65 81); font: inherit; font-size: .8rem; font-weight: 650; cursor: pointer; }
+  .framework-pill.is-active { border-color: rgb(37 99 235); background: rgb(37 99 235); color: white; }
+  .framework-pill:disabled { opacity: .35; cursor: not-allowed; }
+  .included-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .65rem 1rem; margin: .85rem 0 0; padding: 0; list-style: none; color: rgb(75 85 99); font-size: .875rem; }
+  .included-list li::before { content: "✓"; margin-right: .45rem; color: rgb(37 99 235); font-weight: 800; }
+  .preview-link { display: inline-flex; align-items: center; gap: .45rem; margin-top: 1.75rem; color: rgb(37 99 235); font-weight: 700; text-decoration: none; }
+  .preview-link loomi-icon { width: 1rem; height: 1rem; }
+  .preview-image-wrap { display: flex; min-height: 30rem; align-items: center; padding: 2rem 0 2rem 2rem; background: linear-gradient(145deg, rgb(219 234 254), rgb(238 242 255)); }
+  .preview-image-wrap img { width: 100%; border: 1px solid rgb(203 213 225); border-right: 0; border-radius: .85rem 0 0 .85rem; box-shadow: 0 24px 50px rgb(30 64 175 / .18); }
+  .purchase-panel { display: flex; align-items: center; justify-content: space-between; gap: 2rem; margin-top: 4rem; border-radius: 1.25rem; background: rgb(239 246 255); padding: 2rem; }
+  .purchase-panel p:last-child { margin: .65rem 0 0; color: rgb(75 85 99); }
+  :global(.dark) .section-heading > p, :global(.dark) .preview-copy > p, :global(.dark) .included-list, :global(.dark) .purchase-panel p:last-child { color: rgb(156 163 175); }
+  :global(.dark) .family-card { border-color: rgb(55 65 81); background: rgb(17 24 39); color: rgb(243 244 246); }
+  :global(.dark) .family-card.is-active { border-color: rgb(96 165 250); box-shadow: 0 0 0 3px rgb(30 58 138 / .6); }
+  :global(.dark) .family-card > span:last-child { color: rgb(156 163 175); }
+  :global(.dark) .family-icon { background: rgb(30 58 138 / .5); color: rgb(147 197 253); }
+  :global(.dark) .preview-panel { border-color: rgb(55 65 81); background: rgb(17 24 39); }
+  :global(.dark) .framework-pill { border-color: rgb(75 85 99); background: rgb(31 41 55); color: rgb(209 213 219); }
+  :global(.dark) .framework-pill.is-active { border-color: rgb(59 130 246); background: rgb(37 99 235); color: white; }
+  :global(.dark) .preview-image-wrap { background: linear-gradient(145deg, rgb(30 58 138 / .55), rgb(49 46 129 / .4)); }
+  :global(.dark) .purchase-panel { background: rgb(30 58 138 / .3); }
+  @media (max-width: 767px) {
+    .section-heading, .purchase-panel { align-items: flex-start; flex-direction: column; }
+    .preview-panel { grid-template-columns: 1fr; }
+    .preview-image-wrap { min-height: 0; padding: 0 0 1.5rem 1.5rem; }
+  }
+</style>

@@ -12,6 +12,19 @@
 // Starlight's `head` config never reaches it).
 import { ALL_PACKAGE_NAMES } from "../../scripts/loomiui-packages.mjs";
 
+// Pro component entry points served from public/loomi-pro/ — each maps a
+// `@loomdev-pro/components/<name>` subpath import (used by the pro-components
+// doc pages' preview scripts) onto its copied dist folder. Bare subpath imports
+// need explicit entries because import-map prefix matching is literal and the
+// specifiers carry no `/index.js`.
+const PRO_COMPONENT_NAMES = [
+  "calendar",
+  "command-palette",
+  "data-table",
+  "date-range-picker",
+  "filter-builder",
+];
+
 export function buildImportMap() {
   return {
     imports: {
@@ -21,6 +34,14 @@ export function buildImportMap() {
         ALL_PACKAGE_NAMES.flatMap((name) => [
           [`@loomidev/${name}`, `/loomi/${name}/dist/index.js`],
           [`@loomidev/${name}/`, `/loomi/${name}/dist/`],
+        ]),
+      ),
+      "@loomdev-pro/components": "/loomi-pro/components/dist/index.js",
+      "@loomdev-pro/components/": "/loomi-pro/components/dist/",
+      ...Object.fromEntries(
+        PRO_COMPONENT_NAMES.map((name) => [
+          `@loomdev-pro/components/${name}`,
+          `/loomi-pro/components/dist/${name}/index.js`,
         ]),
       ),
     },
