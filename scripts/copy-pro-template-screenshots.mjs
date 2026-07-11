@@ -12,13 +12,19 @@ const publicTemplates = resolve(__dirname, "../public/pro/templates");
 const templates = ["admin", "saas", "crm", "analytics"];
 const variantsByTemplate = {
   admin: ["vite-lit", "next-react", "nuxt", "laravel-inertia"],
-  saas: ["vite-lit", "next-react"],
-  crm: ["vite-lit", "next-react"],
-  analytics: ["vite-lit", "next-react"],
+  saas: ["vite-lit", "next-react", "nuxt", "laravel-inertia"],
+  crm: ["vite-lit", "next-react", "nuxt", "laravel-inertia"],
+  analytics: ["vite-lit", "next-react", "nuxt", "laravel-inertia"],
 };
 const previewFallbacks = {
   "admin/nuxt": "admin/next-react",
   "admin/laravel-inertia": "admin/next-react",
+  "saas/nuxt": "saas/next-react",
+  "saas/laravel-inertia": "saas/next-react",
+  "crm/nuxt": "crm/next-react",
+  "crm/laravel-inertia": "crm/next-react",
+  "analytics/nuxt": "analytics/next-react",
+  "analytics/laravel-inertia": "analytics/next-react",
 };
 const shots = ["dashboard-desktop.png", "dashboard-mobile.png"];
 

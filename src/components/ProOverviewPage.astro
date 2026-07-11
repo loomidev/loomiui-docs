@@ -1,1079 +1,199 @@
 ---
-// Pro overview hub at /pro/ — links to the templates and themes galleries.
-import MarketingHeader from "./MarketingHeader.astro";
-import ProSidebar from "./ProSidebar.astro";
-import { buildImportMap } from "../lib/import-map.mjs";
-import {
-  PRO_AREAS,
-  PRO_CATEGORIES,
-  proAreaCounts,
-  proCatalogItems,
-  proCategoryCounts,
-} from "../lib/pro-catalog.mjs";
+import ProLandingShell from "./ProLandingShell.astro";
 import { PRO_LICENSING_URL } from "../lib/pro-licensing.mjs";
-import "../styles/home.css";
 
-const importMap = buildImportMap();
 const title = "LoomiUI Pro";
-const description =
-  "Application starter kits, premium themes, Figma assets, and production tooling — browse everything included in LoomiUI Pro.";
-const areaCounts = proAreaCounts() as Record<string, number>;
-const categoryCounts = proCategoryCounts() as Record<string, number>;
-const items = proCatalogItems();
-const featuredTemplates = items.filter((item) => item.previewImage && item.title.endsWith("vite-lit")).slice(0, 4);
-const workflowStats = [
-  { label: "Template pages", value: areaCounts.templates },
-  { label: "Theme assets", value: areaCounts.themes },
-  { label: "Categories", value: PRO_CATEGORIES.length },
+const description = "Production-ready templates, themes, design resources, and tooling for teams building with LoomiUI.";
+
+const workflow = [
+  { number: "01", title: "Choose a foundation", description: "Start from a complete application template or a production-ready theme preset." },
+  { number: "02", title: "Adapt it to your product", description: "Use shared tokens, real screens, and framework variants instead of disconnected examples." },
+  { number: "03", title: "Ship and keep moving", description: "Rely on private documentation, tooling, updates, and reusable product patterns." },
+];
+
+const included = [
+  { icon: "rectangle-stack", title: "Application templates", description: "Admin, SaaS, CRM, and analytics product foundations across four framework choices.", href: "/pro/templates/" },
+  { icon: "swatch", title: "Themes and tokens", description: "Twelve presets, semantic design tokens, visual editing, and multiple export formats.", href: "/pro/themes/" },
+  { icon: "beaker", title: "Design resources", description: "A matching Figma kit, product frames, brand assets, and launch-ready visuals.", href: "/pro/themes/figma-kit/" },
+  { icon: "command-line", title: "Production tooling", description: "CLI workflows, private packages, upgrade guidance, and customer-ready releases.", href: "/cli/" },
 ];
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
-    <meta name="description" content={description} />
-    <link rel="icon" href="/favicon.png" />
-    <script type="importmap" is:inline set:html={JSON.stringify(importMap)} />
-  </head>
-  <body class="bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
-    <MarketingHeader />
-
-    <div class="mx-auto max-w-7xl px-6 py-10 lg:grid lg:grid-cols-[15rem_1fr] lg:items-start lg:gap-10">
-      <ProSidebar currentPath="/pro/" />
-
-      <div class="mt-10 min-w-0 lg:mt-0">
-        <section class="pro-hero">
-          <div class="pro-hero-copy">
-            <div class="feature-kicker">Premium UI system</div>
-            <h1>LoomiUI Pro</h1>
-            <p>
-              Application starter kits, premium themes, Figma assets, and production tooling for teams
-              building polished product interfaces with LoomiUI.
-            </p>
-            <div class="pro-hero-actions">
-              <loomi-button color="primary" size="small" tag="a" href={PRO_LICENSING_URL}>Buy Pro</loomi-button>
-              <loomi-button type="secondary" size="small" tag="a" href="/pro/licensing/">Compare licenses</loomi-button>
-            </div>
-            <div class="pro-stat-strip" aria-label="Pro catalog summary">
-              {workflowStats.map((stat) => (
-                <div class="pro-stat">
-                  <strong>{stat.value}</strong>
-                  <span>{stat.label}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div class="pro-hero-preview" aria-label="Pro product preview">
-            <div class="pro-preview-toolbar">
-              <span></span>
-              <span></span>
-              <span></span>
-              <div>Loomi Pro workspace</div>
-            </div>
-            <div class="pro-preview-grid">
-              <div class="pro-preview-pane pro-preview-pane-main">
-                <div class="pro-preview-label">Template kit</div>
-                <h2>Admin Pro</h2>
-                <p>Dashboard, users, roles, billing, reports, settings, and ready-made states.</p>
-                <div class="pro-preview-bars">
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                </div>
-              </div>
-              <div class="pro-preview-pane">
-                <div class="pro-preview-label">Theme preset</div>
-                <div class="pro-swatch-row">
-                  <span class="swatch-blue"></span>
-                  <span class="swatch-green"></span>
-                  <span class="swatch-rose"></span>
-                  <span class="swatch-gold"></span>
-                </div>
-                <p>Semantic tokens for light, dark, high contrast, and brand variants.</p>
-              </div>
-              <div class="pro-preview-pane">
-                <div class="pro-preview-label">Tooling</div>
-                <code>loomi-pro add admin-pro</code>
-                <p>Private packages, docs, and scaffold commands.</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <div class="mt-10 grid gap-5 sm:grid-cols-2">
-          {PRO_AREAS.map((area) => (
-            <a href={area.href} class="pro-area-card">
-              <span class="pro-area-icon">
-                <loomi-icon name={area.icon} style="width:1.5rem;height:1.5rem"></loomi-icon>
-              </span>
-              <div class="pro-area-body">
-                <div class="pro-area-title">{area.label}</div>
-                <p class="pro-area-desc">
-                  {area.key === "templates"
-                    ? "Starter kits, page templates, and framework variants for shipping production apps."
-                    : "Design tokens, theme presets, Figma kit, and brand assets."}
-                </p>
-                <span class="pro-area-count">{areaCounts[area.key]} items</span>
-              </div>
-              <loomi-icon name="chevron-right" class="pro-area-arrow" style="width:1rem;height:1rem"></loomi-icon>
-            </a>
-          ))}
-        </div>
-
-        <section class="pro-section">
-          <div class="pro-section-heading">
-            <div>
-              <div class="feature-kicker">Featured kits</div>
-              <h2>Start from a real product surface</h2>
-            </div>
-            <a href="/pro/templates/" class="pro-section-link">
-              View templates
-              <loomi-icon name="arrow-right" style="width:0.9rem;height:0.9rem"></loomi-icon>
-            </a>
-          </div>
-
-          <div class="pro-template-strip">
-            {featuredTemplates.map((item) => (
-              <a href={item.href ?? "/pro/templates/"} class="pro-template-card">
-                <img src={item.previewImage} alt={`${item.title} preview`} loading="lazy" decoding="async" />
-                <div>
-                  <strong>{item.title}</strong>
-                  <span>{item.description}</span>
-                </div>
-              </a>
-            ))}
-          </div>
-        </section>
-
-        <section class="pro-section" id="catalog">
-          <div class="pro-section-heading">
-            <div>
-              <div class="feature-kicker">Everything included</div>
-              <h2>Browse the full Pro catalog</h2>
-            </div>
-            <div class="pro-sort-wrap">
-              <select id="sort-select" class="sort-select" aria-label="Sort Pro catalog">
-                <option value="title">Sort by: Name</option>
-                <option value="category">Sort by: Category</option>
-              </select>
-              <loomi-icon name="chevron-down" class="sort-select-chevron" style="width:0.85rem;height:0.85rem"></loomi-icon>
-            </div>
-          </div>
-
-          <div class="pro-catalog-controls">
-            <div class="relative grow">
-              <loomi-icon name="magnifying-glass" class="search-icon" style="width:1rem;height:1rem"></loomi-icon>
-              <input
-                type="text"
-                data-role="search-input"
-                placeholder="Search Pro templates, themes, and assets..."
-                class="main-search"
-                aria-label="Search Pro catalog"
-              />
-            </div>
-          </div>
-
-          <div class="pro-filter-row" id="area-pills" aria-label="Pro catalog areas">
-            {PRO_AREAS.map((area) => (
-              <button
-                type="button"
-                class:list={["filter-pill", area.key === "templates" && "is-active"]}
-                aria-pressed={area.key === "templates" ? "true" : "false"}
-                data-filter={area.key}
-                data-filter-type="area"
-              >
-                {area.label}
-              </button>
-            ))}
-          </div>
-
-          <div class="pro-section-tabs" id="section-tabs" aria-label="Pro catalog sections">
-            {PRO_AREAS.map((area) => (
-              <button
-                type="button"
-                class:list={["section-tab", area.key === "templates" && "is-active", area.key !== "templates" && "hidden"]}
-                aria-pressed={area.key === "templates" ? "true" : "false"}
-                data-filter="all"
-                data-filter-type="category"
-                data-tab-area={area.key}
-              >
-                All {area.label.toLowerCase()}
-              </button>
-            ))}
-            {PRO_CATEGORIES.map((cat) => (
-              <button
-                type="button"
-                class:list={["section-tab", cat.area !== "templates" && "hidden"]}
-                aria-pressed="false"
-                data-filter={cat.key}
-                data-filter-type="category"
-                data-tab-area={cat.area}
-              >
-                {cat.label}
-              </button>
-            ))}
-          </div>
-
-          <p id="no-results" class="no-results hidden">No Pro items match your search.</p>
-
-          <div class="pro-catalog-grid" id="pro-grid">
-            {items.map((item) => {
-              const category = PRO_CATEGORIES.find((cat) => cat.key === item.category);
-              const area = PRO_AREAS.find((entry) => entry.key === item.area);
-              const Tag = item.href ? "a" : "article";
-              return (
-                <Tag
-                  href={item.href ?? undefined}
-                  class:list={["pro-item-card", item.area !== "templates" && "hidden"]}
-                  data-area={item.area}
-                  data-category={item.category}
-                  data-title={item.title.toLowerCase()}
-                  data-search={item.search}
-                >
-                  <div class="pro-item-icon">
-                    <loomi-icon name={item.icon} style="width:1.25rem;height:1.25rem"></loomi-icon>
-                  </div>
-                  <div class="pro-item-body">
-                    <div class="pro-item-eyebrow">{area?.label} / {category?.label}</div>
-                    <div class="pro-item-title">{item.title}</div>
-                    <p>{item.description}</p>
-                    <span>{categoryCounts[item.category]} in category</span>
-                  </div>
-                  {item.href && <loomi-icon name="chevron-right" class="pro-item-arrow" style="width:0.95rem;height:0.95rem"></loomi-icon>}
-                </Tag>
-              );
-            })}
-          </div>
-        </section>
-
-        <section id="buy-pro" class="pro-buy-band">
-          <div>
-            <div class="feature-kicker">Private package access</div>
-            <h2>Ready to build with Pro?</h2>
-            <p>
-              Get application templates, premium themes, Figma kit, private docs, and updates for
-              the product surfaces your team ships every week.
-            </p>
-          </div>
-          <div class="pro-buy-actions">
-            <loomi-button color="primary" size="small" tag="a" href={PRO_LICENSING_URL}>Buy Pro</loomi-button>
-            <loomi-button type="secondary" size="small" tag="a" href="/components/">Browse free components</loomi-button>
-          </div>
-        </section>
+<ProLandingShell title={title} description={description}>
+  <section class="pro-hero">
+    <div class="pro-hero-copy">
+      <div class="feature-kicker">A production layer for LoomiUI</div>
+      <h1>Ship complete product surfaces, not component demos</h1>
+      <p>
+        LoomiUI Pro gives your team application foundations, brand-ready themes, matching design assets, and the tooling needed to move from idea to production faster.
+      </p>
+      <div class="pro-hero-actions">
+        <loomi-button color="primary" tag="a" href="/pro/templates/">Explore templates</loomi-button>
+        <loomi-button type="secondary" tag="a" href="/pro/themes/">Explore themes</loomi-button>
       </div>
     </div>
 
-    <footer class="border-t border-gray-200 dark:border-gray-800">
-      <div class="mx-auto max-w-6xl px-6 py-10 text-sm text-gray-500 dark:text-gray-400">
-        <div class="flex flex-wrap justify-center gap-6">
-          <a href="/installation/" class="hover:text-primary-600 dark:hover:text-primary-400">Installation</a>
-          <a href="/components/" class="hover:text-primary-600 dark:hover:text-primary-400">Components</a>
-          <a href="/pro/" class="hover:text-primary-600 dark:hover:text-primary-400">Pro</a>
-          <a href="/contributing/" class="hover:text-primary-600 dark:hover:text-primary-400">Contributing</a>
+    <div class="product-composition" aria-hidden="true">
+      <div class="composition-window">
+        <div class="composition-bar"><span></span><span></span><span></span></div>
+        <div class="composition-app">
+          <div class="composition-nav"></div>
+          <div class="composition-content">
+            <div class="composition-title"></div>
+            <div class="composition-metrics"><span></span><span></span><span></span></div>
+            <div class="composition-table"></div>
+            <div class="composition-row"></div>
+          </div>
         </div>
-        <p class="mt-6 text-center">© {new Date().getFullYear()} LoomiUI.</p>
       </div>
-    </footer>
+      <div class="composition-swatches"><span></span><span></span><span></span><span></span></div>
+    </div>
+  </section>
 
-    <script type="module" is:inline>
-      import "@loomidev/button";
-      import "@loomidev/icon";
-    </script>
+  <section class="direction-grid" aria-label="Explore LoomiUI Pro">
+    <a href="/pro/templates/" class="direction-card templates-card">
+      <div class="direction-icon"><loomi-icon name="rectangle-stack"></loomi-icon></div>
+      <div>
+        <p class="section-eyebrow">Start with the product</p>
+        <h2>Application templates</h2>
+        <p>Complete Admin, SaaS, CRM, and Analytics foundations with real routes, responsive states, and framework variants.</p>
+        <span>Explore templates <loomi-icon name="arrow-right"></loomi-icon></span>
+      </div>
+    </a>
+    <a href="/pro/themes/" class="direction-card themes-card">
+      <div class="direction-icon"><loomi-icon name="swatch"></loomi-icon></div>
+      <div>
+        <p class="section-eyebrow">Start with the brand</p>
+        <h2>Themes and design system</h2>
+        <p>Production presets, semantic tokens, visual tooling, and Figma resources that stay aligned with the code.</p>
+        <span>Explore themes <loomi-icon name="arrow-right"></loomi-icon></span>
+      </div>
+    </a>
+  </section>
 
-    <script is:inline>
-      const grid = document.getElementById("pro-grid");
-      const cards = Array.from(grid.querySelectorAll(".pro-item-card"));
-      const searchInputs = document.querySelectorAll("[data-role='search-input']");
-      const filterButtons = document.querySelectorAll("[data-filter]");
-      const sortSelect = document.getElementById("sort-select");
-      const noResults = document.getElementById("no-results");
-      const sectionTabs = document.querySelectorAll("[data-tab-area]");
-      const categoryLabels = new Map(
-        cards.map((card) => [card.dataset.category, card.querySelector(".pro-item-eyebrow")?.textContent ?? ""]),
-      );
-      const categoryAreas = new Map(cards.map((card) => [card.dataset.category, card.dataset.area]));
-      const state = {
-        query: "",
-        area: "templates",
-        category: "all",
-        sort: "title",
-      };
+  <section class="workflow-section" aria-labelledby="workflow-heading">
+    <div class="workflow-intro">
+      <p class="section-eyebrow">A clearer path to production</p>
+      <h2 id="workflow-heading">From foundation to shipped product</h2>
+      <p>Pro supports the work around your components—the screens, brand system, and repeatable workflows that turn them into an application.</p>
+    </div>
+    <ol class="workflow-list">
+      {workflow.map((step) => (
+        <li>
+          <span>{step.number}</span>
+          <div><strong>{step.title}</strong><p>{step.description}</p></div>
+        </li>
+      ))}
+    </ol>
+  </section>
 
-      function setActivePill() {
-        filterButtons.forEach((btn) => {
-          const isAreaButton = btn.dataset.filterType === "area";
-          const isSectionTab = btn.dataset.filterType === "category";
-          const tabArea = btn.dataset.tabArea;
-          const active = isAreaButton
-            ? btn.dataset.filter === state.area
-            : isSectionTab && btn.dataset.filter === state.category && (!tabArea || tabArea === state.area);
-          btn.classList.toggle("is-active", active);
-          if (btn.hasAttribute("aria-pressed")) btn.setAttribute("aria-pressed", String(active));
-        });
+  <section class="included-section" aria-labelledby="included-heading">
+    <div class="section-heading">
+      <div>
+        <p class="section-eyebrow">One connected system</p>
+        <h2 id="included-heading">What Pro includes</h2>
+      </div>
+      <p>Choose the surface you need now. The rest is there when your product grows.</p>
+    </div>
+    <div class="included-grid">
+      {included.map((item) => (
+        <a href={item.href}>
+          <span class="included-icon"><loomi-icon name={item.icon}></loomi-icon></span>
+          <strong>{item.title}</strong>
+          <p>{item.description}</p>
+          <loomi-icon name="arrow-right"></loomi-icon>
+        </a>
+      ))}
+    </div>
+  </section>
 
-        sectionTabs.forEach((tab) => {
-          tab.classList.toggle("hidden", tab.dataset.tabArea !== state.area);
-        });
-      }
-
-      function matchesFilter(card) {
-        if (card.dataset.area !== state.area) return false;
-        if (state.category === "all") return true;
-        return card.dataset.category === state.category;
-      }
-
-      function applyFilters() {
-        const q = state.query.trim().toLowerCase();
-        let visible = 0;
-        for (const card of cards) {
-          const show = matchesFilter(card) && (!q || card.dataset.search.includes(q));
-          card.classList.toggle("hidden", !show);
-          if (show) visible++;
-        }
-        noResults.classList.toggle("hidden", visible !== 0);
-      }
-
-      function applySort() {
-        const sorted = cards.slice().sort((a, b) => {
-          if (state.sort === "category") {
-            const byCategory = (categoryLabels.get(a.dataset.category) ?? "").localeCompare(
-              categoryLabels.get(b.dataset.category) ?? "",
-            );
-            if (byCategory !== 0) return byCategory;
-          }
-          return (a.dataset.title ?? "").localeCompare(b.dataset.title ?? "");
-        });
-        for (const card of sorted) grid.appendChild(card);
-      }
-
-      searchInputs.forEach((input) => {
-        input.addEventListener("input", (event) => {
-          state.query = event.target.value;
-          searchInputs.forEach((other) => {
-            if (other !== event.target) other.value = state.query;
-          });
-          applyFilters();
-        });
-      });
-
-      filterButtons.forEach((button) => {
-        button.addEventListener("click", () => {
-          if (button.dataset.filterType === "area") {
-            state.area = button.dataset.filter;
-            state.category = "all";
-          } else {
-            state.category = button.dataset.filter;
-            state.area = button.dataset.tabArea ?? categoryAreas.get(state.category) ?? state.area;
-          }
-          setActivePill();
-          applyFilters();
-        });
-      });
-
-      sortSelect?.addEventListener("change", (event) => {
-        state.sort = event.target.value;
-        applySort();
-      });
-
-      setActivePill();
-      applySort();
-      applyFilters();
-    </script>
-  </body>
-</html>
+  <section class="purchase-panel">
+    <div>
+      <p class="section-eyebrow">Build on LoomiUI with confidence</p>
+      <h2>Give your next product a stronger starting point</h2>
+      <p>Get every template, theme preset, design resource, private package, and future update.</p>
+    </div>
+    <div class="purchase-actions">
+      <loomi-button color="primary" tag="a" href={PRO_LICENSING_URL}>View Pro licenses</loomi-button>
+      <loomi-button type="secondary" tag="a" href="/components/">Browse free components</loomi-button>
+    </div>
+  </section>
+</ProLandingShell>
 
 <style>
-  .pro-hero {
-    position: relative;
-    overflow: hidden;
-    border-radius: 1.25rem;
-    border: 1px solid rgb(203 213 225);
-    background:
-      linear-gradient(135deg, rgb(248 250 252), rgb(239 246 255) 48%, rgb(240 253 250)),
-      white;
-    padding: clamp(1.25rem, 3vw, 2rem);
-    display: grid;
-    gap: 1.5rem;
-  }
-  .dark .pro-hero {
-    border-color: rgb(51 65 85);
-    background:
-      linear-gradient(135deg, rgb(15 23 42), rgb(30 41 59) 52%, rgb(20 83 45 / 0.45)),
-      rgb(15 23 42);
-  }
-  @media (min-width: 960px) {
-    .pro-hero {
-      grid-template-columns: minmax(0, 0.96fr) minmax(22rem, 1fr);
-      align-items: center;
-    }
-  }
-  .pro-hero-copy h1 {
-    margin: 0.5rem 0 0;
-    max-width: 12ch;
-    color: rgb(15 23 42);
-    font-size: clamp(2.5rem, 4.8vw, 4.25rem);
-    line-height: 0.96;
-    font-weight: 800;
-  }
-  .dark .pro-hero-copy h1 {
-    color: white;
-  }
-  .pro-hero-copy p {
-    margin-top: 1rem;
-    max-width: 34rem;
-    color: rgb(71 85 105);
-    font-size: 1rem;
-    line-height: 1.65;
-  }
-  .dark .pro-hero-copy p {
-    color: rgb(203 213 225);
-  }
-  .pro-hero-actions {
-    margin-top: 1.5rem;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-  }
-  .pro-stat-strip {
-    margin-top: 1.75rem;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.75rem;
-  }
-  .pro-stat {
-    border-radius: 0.75rem;
-    border: 1px solid rgb(226 232 240 / 0.9);
-    background: rgb(255 255 255 / 0.74);
-    padding: 0.85rem;
-  }
-  .dark .pro-stat {
-    border-color: rgb(71 85 105 / 0.8);
-    background: rgb(15 23 42 / 0.72);
-  }
-  .pro-stat strong,
-  .pro-stat span {
-    display: block;
-  }
-  .pro-stat strong {
-    color: rgb(15 23 42);
-    font-size: 1.6rem;
-    line-height: 1;
-  }
-  .dark .pro-stat strong {
-    color: white;
-  }
-  .pro-stat span {
-    margin-top: 0.25rem;
-    color: rgb(100 116 139);
-    font-size: 0.78rem;
-    font-weight: 600;
-  }
-  .dark .pro-stat span {
-    color: rgb(148 163 184);
-  }
-  .pro-hero-preview {
-    border-radius: 1rem;
-    border: 1px solid rgb(148 163 184 / 0.45);
-    background: rgb(15 23 42);
-    box-shadow: 0 30px 70px -38px rgb(15 23 42 / 0.7);
-    color: white;
-    min-height: 20rem;
-    overflow: hidden;
-  }
-  .pro-preview-toolbar {
-    display: flex;
-    align-items: center;
-    gap: 0.45rem;
-    border-bottom: 1px solid rgb(255 255 255 / 0.1);
-    background: rgb(2 6 23 / 0.55);
-    padding: 0.8rem 1rem;
-    color: rgb(148 163 184);
-    font-size: 0.78rem;
-    font-weight: 600;
-  }
-  .pro-preview-toolbar span {
-    width: 0.65rem;
-    height: 0.65rem;
-    border-radius: 999px;
-    background: rgb(248 113 113);
-  }
-  .pro-preview-toolbar span:nth-child(2) {
-    background: rgb(250 204 21);
-  }
-  .pro-preview-toolbar span:nth-child(3) {
-    background: rgb(74 222 128);
-  }
-  .pro-preview-toolbar div {
-    margin-left: auto;
-  }
-  .pro-preview-grid {
-    display: grid;
-    gap: 0.85rem;
-    padding: 1rem;
-  }
-  @media (min-width: 620px) {
-    .pro-preview-grid {
-      grid-template-columns: 1.15fr 0.85fr;
-    }
-    .pro-preview-pane-main {
-      grid-row: span 2;
-    }
-  }
-  .pro-preview-pane {
-    border-radius: 0.85rem;
-    border: 1px solid rgb(255 255 255 / 0.1);
-    background: linear-gradient(180deg, rgb(255 255 255 / 0.1), rgb(255 255 255 / 0.04));
-    padding: 1rem;
-  }
-  .pro-preview-pane h2 {
-    margin: 1.25rem 0 0.45rem;
-    font-size: 1.6rem;
-    font-weight: 800;
-  }
-  .pro-preview-pane p {
-    color: rgb(203 213 225);
-    font-size: 0.86rem;
-    line-height: 1.55;
-  }
-  .pro-preview-label {
-    color: rgb(147 197 253);
-    font-size: 0.72rem;
-    font-weight: 800;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-  .pro-preview-bars {
-    margin-top: 1.75rem;
-    display: grid;
-    gap: 0.65rem;
-  }
-  .pro-preview-bars span {
-    height: 0.65rem;
-    border-radius: 999px;
-    background: rgb(96 165 250 / 0.42);
-  }
-  .pro-preview-bars span:nth-child(2) {
-    width: 76%;
-    background: rgb(45 212 191 / 0.42);
-  }
-  .pro-preview-bars span:nth-child(3) {
-    width: 56%;
-    background: rgb(251 191 36 / 0.44);
-  }
-  .pro-swatch-row {
-    margin: 1rem 0 1.25rem;
-    display: flex;
-    gap: 0.5rem;
-  }
-  .pro-swatch-row span {
-    width: 2.25rem;
-    height: 2.25rem;
-    border-radius: 0.65rem;
-    border: 1px solid rgb(255 255 255 / 0.14);
-  }
-  .swatch-blue {
-    background: rgb(37 99 235);
-  }
-  .swatch-green {
-    background: rgb(16 185 129);
-  }
-  .swatch-rose {
-    background: rgb(244 63 94);
-  }
-  .swatch-gold {
-    background: rgb(245 158 11);
-  }
-  .pro-preview-pane code {
-    margin: 1rem 0 0.85rem;
-    display: block;
-    overflow-wrap: anywhere;
-    border-radius: 0.6rem;
-    background: rgb(2 6 23 / 0.58);
-    padding: 0.7rem;
-    color: rgb(191 219 254);
-    font-size: 0.8rem;
-  }
-  .pro-area-card {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    border-radius: 0.85rem;
-    border: 1px solid rgb(226 232 240);
-    background: white;
-    padding: 1.25rem;
-    text-decoration: none;
-    color: inherit;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
-  }
-  .pro-area-card:hover {
-    border-color: rgb(37 99 235 / 0.35);
-    box-shadow: 0 12px 28px -16px rgb(37 99 235 / 0.35);
-    transform: translateY(-1px);
-  }
-  .dark .pro-area-card {
-    border-color: rgb(51 65 85);
-    background: rgb(15 23 42 / 0.55);
-  }
-  .pro-area-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 3rem;
-    height: 3rem;
-    border-radius: 0.85rem;
-    background: rgb(239 246 255);
-    color: rgb(37 99 235);
-    flex-shrink: 0;
-  }
-  .dark .pro-area-icon {
-    background: rgb(30 58 138 / 0.35);
-    color: rgb(147 197 253);
-  }
-  .pro-area-body {
-    flex: 1;
-    min-width: 0;
-  }
-  .pro-area-title {
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: rgb(15 23 42);
-  }
-  .dark .pro-area-title {
-    color: white;
-  }
-  .pro-area-desc {
-    margin-top: 0.35rem;
-    font-size: 0.88rem;
-    line-height: 1.5;
-    color: rgb(100 116 139);
-  }
-  .dark .pro-area-desc {
-    color: rgb(148 163 184);
-  }
-  .pro-area-count {
-    display: inline-block;
-    margin-top: 0.75rem;
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: rgb(37 99 235);
-  }
-  .dark .pro-area-count {
-    color: rgb(147 197 253);
-  }
-  .pro-area-arrow {
-    margin-top: 0.35rem;
-    color: rgb(203 213 225);
-    flex-shrink: 0;
-  }
-  .pro-area-card:hover .pro-area-arrow {
-    color: rgb(37 99 235);
-  }
-  .pro-section {
-    margin-top: 3rem;
-  }
-  .pro-section-heading {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  @media (min-width: 720px) {
-    .pro-section-heading {
-      flex-direction: row;
-      align-items: end;
-      justify-content: space-between;
-    }
-  }
-  .pro-section-heading h2 {
-    margin-top: 0.35rem;
-    color: rgb(15 23 42);
-    font-size: clamp(1.7rem, 4vw, 2.35rem);
-    line-height: 1.05;
-    font-weight: 800;
-  }
-  .dark .pro-section-heading h2 {
-    color: white;
-  }
-  .pro-section-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    color: rgb(37 99 235);
-    font-size: 0.88rem;
-    font-weight: 700;
-  }
-  .pro-template-strip {
-    margin-top: 1.25rem;
-    display: grid;
-    gap: 1rem;
-  }
-  @media (min-width: 720px) {
-    .pro-template-strip {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-  .pro-template-card {
-    display: grid;
-    overflow: hidden;
-    border-radius: 0.85rem;
-    border: 1px solid rgb(226 232 240);
-    background: white;
-    color: inherit;
-    text-decoration: none;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
-  }
-  .pro-template-card:hover {
-    border-color: rgb(37 99 235 / 0.38);
-    box-shadow: 0 18px 32px -22px rgb(37 99 235 / 0.55);
-    transform: translateY(-1px);
-  }
-  .dark .pro-template-card {
-    border-color: rgb(51 65 85);
-    background: rgb(15 23 42 / 0.58);
-  }
-  .pro-template-card img {
-    width: 100%;
-    aspect-ratio: 16 / 10;
-    object-fit: cover;
-    background: rgb(241 245 249);
-  }
-  .pro-template-card div {
-    padding: 1rem;
-  }
-  .pro-template-card strong,
-  .pro-template-card span {
-    display: block;
-  }
-  .pro-template-card strong {
-    color: rgb(15 23 42);
-    font-size: 0.98rem;
-  }
-  .dark .pro-template-card strong {
-    color: white;
-  }
-  .pro-template-card span {
-    margin-top: 0.35rem;
-    color: rgb(100 116 139);
-    font-size: 0.82rem;
-    line-height: 1.45;
-  }
-  .dark .pro-template-card span {
-    color: rgb(148 163 184);
-  }
-  .pro-sort-wrap {
-    position: relative;
-    width: 100%;
-  }
-  @media (min-width: 520px) {
-    .pro-sort-wrap {
-      width: 13rem;
-    }
-  }
-  .sort-select {
-    width: 100%;
-    appearance: none;
-    border-radius: 0.6rem;
-    border: 1px solid rgb(226 232 240);
-    background: white;
-    padding: 0.55rem 2rem 0.55rem 0.75rem;
-    color: rgb(15 23 42);
-    font-size: 0.85rem;
-    font-weight: 600;
-  }
-  .dark .sort-select {
-    border-color: rgb(51 65 85);
-    background: rgb(15 23 42 / 0.6);
-    color: white;
-  }
-  .sort-select-chevron {
-    position: absolute;
-    right: 0.7rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: rgb(148 163 184);
-    pointer-events: none;
-  }
-  .pro-catalog-controls {
-    margin-top: 1.25rem;
-    display: flex;
-  }
-  .pro-filter-row {
-    margin-top: 1rem;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-  .filter-pill {
-    cursor: pointer;
-    border-radius: 999px;
-    border: 1px solid rgb(226 232 240);
-    background: white;
-    padding: 0.38rem 0.72rem;
-    color: rgb(71 85 105);
-    font-family: inherit;
-    font-size: 0.8rem;
-    font-weight: 650;
-  }
-  .filter-pill:hover {
-    border-color: rgb(37 99 235 / 0.4);
-    color: rgb(37 99 235);
-  }
-  .filter-pill.is-active {
-    border-color: rgb(37 99 235);
-    background: rgb(37 99 235);
-    color: white;
-  }
-  .dark .filter-pill {
-    border-color: rgb(51 65 85);
-    background: rgb(15 23 42 / 0.6);
-    color: rgb(203 213 225);
-  }
-  .dark .filter-pill.is-active {
-    border-color: rgb(96 165 250);
-    background: rgb(37 99 235);
-    color: white;
-  }
-  .pro-section-tabs {
-    margin-top: 0.75rem;
-    display: flex;
-    gap: 0.25rem;
-    overflow-x: auto;
-    border-bottom: 1px solid rgb(226 232 240);
-    scrollbar-width: none;
-  }
-  .pro-section-tabs::-webkit-scrollbar {
-    display: none;
-  }
-  .dark .pro-section-tabs {
-    border-bottom-color: rgb(51 65 85);
-  }
-  .section-tab {
-    cursor: pointer;
-    flex: 0 0 auto;
-    border: 0;
-    border-bottom: 2px solid transparent;
-    background: transparent;
-    padding: 0.65rem 0.85rem;
-    color: rgb(100 116 139);
-    font-family: inherit;
-    font-size: 0.82rem;
-    font-weight: 700;
-  }
-  .section-tab:hover {
-    color: rgb(37 99 235);
-  }
-  .section-tab.is-active {
-    border-bottom-color: rgb(37 99 235);
-    color: rgb(37 99 235);
-  }
-  .section-tab.hidden {
-    display: none;
-  }
-  .dark .section-tab {
-    color: rgb(148 163 184);
-  }
-  .dark .section-tab:hover,
-  .dark .section-tab.is-active {
-    color: rgb(147 197 253);
-  }
-  .dark .section-tab.is-active {
-    border-bottom-color: rgb(147 197 253);
-  }
-  .no-results {
-    margin-top: 1rem;
-    border-radius: 0.75rem;
-    border: 1px dashed rgb(203 213 225);
-    padding: 1rem;
-    color: rgb(100 116 139);
-    font-size: 0.9rem;
-  }
-  .dark .no-results {
-    border-color: rgb(71 85 105);
-    color: rgb(148 163 184);
-  }
-  .pro-catalog-grid {
-    margin-top: 1.5rem;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
-    gap: 1rem;
-  }
-  .pro-item-card {
-    position: relative;
-    display: flex;
-    gap: 0.9rem;
-    min-height: 10.25rem;
-    border-radius: 0.85rem;
-    border: 1px solid rgb(226 232 240);
-    background: white;
-    padding: 1rem;
-    color: inherit;
-    text-decoration: none;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
-  }
-  .pro-item-card:hover {
-    border-color: rgb(37 99 235 / 0.35);
-    box-shadow: 0 14px 28px -20px rgb(37 99 235 / 0.5);
-    transform: translateY(-1px);
-  }
-  .dark .pro-item-card {
-    border-color: rgb(51 65 85);
-    background: rgb(15 23 42 / 0.56);
-  }
-  .pro-item-card.hidden {
-    display: none;
-  }
-  .pro-item-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 2.65rem;
-    height: 2.65rem;
-    flex: 0 0 auto;
-    border-radius: 0.75rem;
-    background: rgb(239 246 255);
-    color: rgb(37 99 235);
-  }
-  .dark .pro-item-icon {
-    background: rgb(30 58 138 / 0.35);
-    color: rgb(147 197 253);
-  }
-  .pro-item-body {
-    min-width: 0;
-    padding-right: 1rem;
-  }
-  .pro-item-eyebrow {
-    color: rgb(37 99 235);
-    font-size: 0.7rem;
-    font-weight: 800;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
-  .dark .pro-item-eyebrow {
-    color: rgb(147 197 253);
-  }
-  .pro-item-title {
-    margin-top: 0.35rem;
-    color: rgb(15 23 42);
-    font-size: 1rem;
-    font-weight: 750;
-    line-height: 1.25;
-  }
-  .dark .pro-item-title {
-    color: white;
-  }
-  .pro-item-body p {
-    margin-top: 0.45rem;
-    color: rgb(100 116 139);
-    font-size: 0.82rem;
-    line-height: 1.45;
-  }
-  .dark .pro-item-body p {
-    color: rgb(148 163 184);
-  }
-  .pro-item-body span {
-    margin-top: 0.65rem;
-    display: inline-flex;
-    color: rgb(100 116 139);
-    font-size: 0.76rem;
-    font-weight: 650;
-  }
-  .dark .pro-item-body span {
-    color: rgb(148 163 184);
-  }
-  .pro-item-arrow {
-    position: absolute;
-    right: 1rem;
-    top: 1rem;
-    color: rgb(203 213 225);
-  }
-  .pro-item-card:hover .pro-item-arrow {
-    color: rgb(37 99 235);
-  }
-  .pro-buy-band {
-    margin-top: 3rem;
-    display: grid;
-    gap: 1.5rem;
-    border-radius: 1rem;
-    border: 1px solid rgb(37 99 235 / 0.2);
-    background: linear-gradient(135deg, rgb(239 246 255), rgb(240 253 250));
-    padding: clamp(1.25rem, 3vw, 2rem);
-  }
-  @media (min-width: 800px) {
-    .pro-buy-band {
-      grid-template-columns: minmax(0, 1fr) auto;
-      align-items: center;
-    }
-  }
-  .dark .pro-buy-band {
-    border-color: rgb(96 165 250 / 0.24);
-    background: linear-gradient(135deg, rgb(30 58 138 / 0.32), rgb(20 83 45 / 0.22));
-  }
-  .pro-buy-band h2 {
-    margin-top: 0.35rem;
-    color: rgb(15 23 42);
-    font-size: 2rem;
-    font-weight: 800;
-    line-height: 1.1;
-  }
-  .dark .pro-buy-band h2 {
-    color: white;
-  }
-  .pro-buy-band p {
-    margin-top: 0.65rem;
-    max-width: 44rem;
-    color: rgb(71 85 105);
-    line-height: 1.65;
-  }
-  .dark .pro-buy-band p {
-    color: rgb(203 213 225);
-  }
-  .pro-buy-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-  }
-  @media (max-width: 520px) {
-    .pro-stat-strip {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 0.45rem;
-    }
-    .pro-stat {
-      padding: 0.65rem;
-    }
-    .pro-stat strong {
-      font-size: 1.25rem;
-    }
-    .pro-stat span {
-      font-size: 0.68rem;
-      line-height: 1.25;
-    }
-    .pro-hero-copy h1 {
-      font-size: 2.35rem;
-    }
-    .pro-hero-copy p {
-      font-size: 0.98rem;
-      line-height: 1.6;
-    }
-    .pro-hero-preview {
-      min-height: 0;
-    }
-    .pro-preview-grid {
-      padding: 0.75rem;
-    }
-    .pro-preview-pane {
-      padding: 0.85rem;
-    }
-    .pro-preview-pane:not(.pro-preview-pane-main) {
-      display: none;
-    }
-    .pro-preview-pane h2 {
-      margin-top: 0.85rem;
-      font-size: 1.55rem;
-    }
-    .pro-preview-bars {
-      margin-top: 1.25rem;
-    }
+  .pro-hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(22rem, .95fr); align-items: center; gap: 4rem; padding: 1rem 0 2rem; }
+  .pro-hero-copy h1 { margin: .7rem 0 0; max-width: 15ch; font-size: clamp(2.75rem, 5vw, 4.15rem); line-height: 1; font-weight: 800; letter-spacing: -.05em; }
+  .pro-hero-copy > p { max-width: 39rem; margin: 1.4rem 0 0; color: rgb(75 85 99); font-size: 1.1rem; line-height: 1.75; }
+  .pro-hero-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.75rem; }
+  .product-composition { position: relative; padding: 2rem 0 2.5rem; }
+  .composition-window { overflow: hidden; border: 1px solid rgb(191 219 254); border-radius: 1.25rem; background: white; box-shadow: 0 28px 70px rgb(37 99 235 / .18); transform: rotate(1.5deg); }
+  .composition-bar { display: flex; gap: .35rem; padding: .8rem; border-bottom: 1px solid rgb(219 234 254); }
+  .composition-bar span { width: .5rem; height: .5rem; border-radius: 50%; background: rgb(191 219 254); }
+  .composition-app { display: grid; grid-template-columns: 4.75rem 1fr; min-height: 20rem; }
+  .composition-nav { background: rgb(30 64 175); }
+  .composition-content { padding: 1.5rem; background: rgb(248 250 252); }
+  .composition-title { width: 52%; height: .85rem; border-radius: 999px; background: rgb(37 99 235); }
+  .composition-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: .65rem; margin-top: 1.5rem; }
+  .composition-metrics span { height: 4rem; border: 1px solid rgb(219 234 254); border-radius: .65rem; background: white; }
+  .composition-table { height: 5.5rem; margin-top: 1rem; border-radius: .65rem; background: rgb(219 234 254); }
+  .composition-row { width: 76%; height: 1.25rem; margin-top: .75rem; border-radius: .45rem; background: rgb(226 232 240); }
+  .composition-swatches { position: absolute; right: -1rem; bottom: .25rem; display: flex; gap: .45rem; border: 1px solid rgb(226 232 240); border-radius: 1rem; background: white; padding: .75rem; box-shadow: 0 15px 35px rgb(15 23 42 / .12); }
+  .composition-swatches span { width: 2.6rem; height: 2.6rem; border-radius: .65rem; background: #2563eb; }
+  .composition-swatches span:nth-child(2) { background: #4f46e5; }
+  .composition-swatches span:nth-child(3) { background: #0d9488; }
+  .composition-swatches span:nth-child(4) { background: #f59e0b; }
+  .direction-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; margin-top: 4rem; }
+  .direction-card { display: grid; grid-template-columns: auto 1fr; gap: 1.25rem; overflow: hidden; border: 1px solid rgb(229 231 235); border-radius: 1.25rem; padding: 2rem; color: rgb(17 24 39); text-decoration: none; transition: transform .15s, box-shadow .15s, border-color .15s; }
+  .direction-card:hover { transform: translateY(-2px); border-color: rgb(147 197 253); box-shadow: 0 18px 40px rgb(15 23 42 / .08); }
+  .templates-card { background: linear-gradient(145deg, white, rgb(239 246 255)); }
+  .themes-card { background: linear-gradient(145deg, white, rgb(245 243 255)); }
+  .direction-icon, .included-icon { display: grid; width: 2.75rem; height: 2.75rem; place-items: center; border-radius: .8rem; background: rgb(219 234 254); color: rgb(37 99 235); }
+  .direction-icon loomi-icon, .included-icon loomi-icon { width: 1.25rem; height: 1.25rem; }
+  .direction-card h2, .workflow-intro h2, .section-heading h2, .purchase-panel h2 { margin: .3rem 0 0; font-size: 1.75rem; line-height: 1.2; font-weight: 750; letter-spacing: -.025em; }
+  .direction-card div > p:not(.section-eyebrow) { margin: .75rem 0 0; color: rgb(75 85 99); line-height: 1.65; }
+  .direction-card div > span { display: inline-flex; align-items: center; gap: .4rem; margin-top: 1.25rem; color: rgb(37 99 235); font-weight: 700; }
+  .direction-card div > span loomi-icon { width: 1rem; height: 1rem; }
+  .section-eyebrow { margin: 0; color: rgb(37 99 235); font-size: .75rem; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+  .workflow-section { display: grid; grid-template-columns: .8fr 1.2fr; gap: 5rem; margin-top: 5rem; border-radius: 1.25rem; background: rgb(249 250 251); padding: 2.5rem; }
+  .workflow-intro > p:last-child { margin: .8rem 0 0; color: rgb(75 85 99); line-height: 1.65; }
+  .workflow-list { margin: 0; padding: 0; list-style: none; }
+  .workflow-list li { display: grid; grid-template-columns: 2.5rem 1fr; gap: 1rem; padding: 1.15rem 0; border-bottom: 1px solid rgb(229 231 235); }
+  .workflow-list li:first-child { padding-top: 0; }
+  .workflow-list li:last-child { padding-bottom: 0; border-bottom: 0; }
+  .workflow-list li > span { color: rgb(37 99 235); font-size: .75rem; font-weight: 800; letter-spacing: .08em; }
+  .workflow-list strong { font-size: .95rem; }
+  .workflow-list p { margin: .3rem 0 0; color: rgb(107 114 128); font-size: .875rem; line-height: 1.5; }
+  .included-section { margin-top: 5rem; }
+  .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 2rem; }
+  .section-heading > p { max-width: 30rem; margin: 0; color: rgb(75 85 99); line-height: 1.6; }
+  .included-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; margin-top: 1.75rem; }
+  .included-grid > a { position: relative; border: 1px solid rgb(229 231 235); border-radius: 1rem; padding: 1.25rem; color: rgb(17 24 39); text-decoration: none; }
+  .included-grid > a:hover { border-color: rgb(147 197 253); }
+  .included-grid strong { display: block; margin-top: 1rem; }
+  .included-grid p { margin: .5rem 0 0; color: rgb(107 114 128); font-size: .85rem; line-height: 1.55; }
+  .included-grid > a > loomi-icon { position: absolute; top: 1.5rem; right: 1.25rem; width: 1rem; height: 1rem; color: rgb(37 99 235); }
+  .purchase-panel { display: flex; align-items: center; justify-content: space-between; gap: 2rem; margin-top: 4rem; border-radius: 1.25rem; background: rgb(239 246 255); padding: 2rem; }
+  .purchase-panel p:last-child { margin: .65rem 0 0; color: rgb(75 85 99); }
+  .purchase-actions { display: flex; flex-wrap: wrap; gap: .75rem; }
+  :global(.dark) .pro-hero-copy > p, :global(.dark) .direction-card div > p:not(.section-eyebrow), :global(.dark) .workflow-intro > p:last-child, :global(.dark) .section-heading > p, :global(.dark) .purchase-panel p:last-child { color: rgb(156 163 175); }
+  :global(.dark) .composition-window, :global(.dark) .composition-swatches { border-color: rgb(55 65 81); background: rgb(15 23 42); }
+  :global(.dark) .composition-bar { border-color: rgb(30 58 138); }
+  :global(.dark) .composition-content { background: rgb(17 24 39); }
+  :global(.dark) .composition-metrics span { border-color: rgb(51 65 85); background: rgb(30 41 59); }
+  :global(.dark) .direction-card, :global(.dark) .included-grid > a { border-color: rgb(55 65 81); background: rgb(17 24 39); color: rgb(243 244 246); }
+  :global(.dark) .workflow-section { background: rgb(17 24 39); }
+  :global(.dark) .workflow-list li { border-color: rgb(55 65 81); }
+  :global(.dark) .workflow-list p, :global(.dark) .included-grid p { color: rgb(156 163 175); }
+  :global(.dark) .purchase-panel { background: rgb(30 58 138 / .3); }
+  @media (max-width: 960px) {
+    .pro-hero { grid-template-columns: 1fr; }
+    .product-composition { max-width: 38rem; }
+    .included-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 700px) {
+    .direction-grid, .workflow-section, .included-grid { grid-template-columns: 1fr; }
+    .workflow-section { gap: 2.5rem; }
+    .section-heading, .purchase-panel { align-items: flex-start; flex-direction: column; }
+    .product-composition { display: none; }
   }
 </style>
