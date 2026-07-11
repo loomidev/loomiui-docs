@@ -30,6 +30,15 @@ jobs:
           repository: loomidev/loomiui
           path: components
 
+      # LoomiUI Pro is private. LOOMI_PRO_REPO_TOKEN must have read access to
+      # loomidev/loomiui-pro (a GitHub App installation token is preferred).
+      - name: Checkout Pro
+        uses: actions/checkout@v4
+        with:
+          repository: loomidev/loomiui-pro
+          token: ${{ secrets.LOOMI_PRO_REPO_TOKEN }}
+          path: pro
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -43,6 +52,7 @@ jobs:
           cache-dependency-path: |
             docs/pnpm-lock.yaml
             components/pnpm-lock.yaml
+            pro/pnpm-lock.yaml
 
       - name: Install components dependencies
         run: pnpm install --frozen-lockfile
@@ -52,12 +62,17 @@ jobs:
         run: pnpm build
         working-directory: components
 
+      - name: Install Pro dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: pro
+
       - name: Install docs dependencies
         run: pnpm install --frozen-lockfile
         working-directory: docs
 
-      # Runs the prebuild hook (copy-component-assets, gen-component-docs,
-      # gen-contributing-doc) then `astro check && astro build`.
+      # The prebuild hook compiles all Pro preview dependencies and the four
+      # real Lit applications, copies them into public/pro/live/, prepares the
+      # remaining generated content, then runs `astro check && astro build`.
       - name: Build docs site
         run: pnpm build
         working-directory: docs
