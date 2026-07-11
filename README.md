@@ -49,6 +49,21 @@ works without a bundler on the docs side:
 Both scripts run automatically via `predev`/`prebuild` (see below) — you don't need to
 run them by hand in normal use.
 
+### Pro template previews
+
+The Pro template pages embed the actual Vite/Lit applications built from the sibling
+`../pro` repository. Build and publish the four preview applications into the docs
+static assets with:
+
+```bash
+pnpm previews:build
+pnpm dev
+```
+
+The Vite builds are copied to `public/pro/live/<family>/` and become part of the
+normal static docs deployment. Run `pnpm previews:serve` only when you want to inspect
+the four Pro builds independently on ports `4821` through `4824`.
+
 ## Regenerating component pages from source
 
 Component pages are derived from each `@loomidev/*` package's `README.md`
@@ -77,7 +92,7 @@ pnpm dev
 ## Build
 
 ```bash
-pnpm build     # prepare:content -> astro check -> astro build -> dist/
+pnpm build     # build Pro previews -> prepare:content -> astro check -> astro build
 pnpm preview   # serve the production build locally
 ```
 

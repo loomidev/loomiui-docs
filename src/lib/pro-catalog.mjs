@@ -220,7 +220,7 @@ export function templatePreviewHref(title) {
   const slug = TEMPLATE_SLUGS[label];
   if (!slug) return null;
 
-  return `/pro/templates/${slug}/${variant}/`;
+  return `/pro/templates/${slug}/preview/`;
 }
 
 /** Desktop dashboard screenshot for shipped template variants. */

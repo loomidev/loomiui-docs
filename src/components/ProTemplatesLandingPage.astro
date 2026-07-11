@@ -108,13 +108,13 @@ const templateFamilies = [
         </ul>
       </div>
 
-      <a class="preview-link" id="preview-link" href="/pro/templates/admin/vite-lit/">
+      <a class="preview-link" id="preview-link" href="/pro/templates/admin/preview/">
         View Live Preview
         <loomi-icon name="arrow-right"></loomi-icon>
       </a>
     </div>
 
-    <a class="preview-image-wrap" id="preview-image-link" href="/pro/templates/admin/vite-lit/" tabindex="-1">
+    <a class="preview-image-wrap" id="preview-image-link" href="/pro/templates/admin/preview/" tabindex="-1">
       <img
         id="preview-image"
         src="/pro/templates/admin/vite-lit/dashboard-desktop.png"
@@ -163,10 +163,10 @@ const templateFamilies = [
         return item;
       }));
 
-      const href = `/pro/templates/${family.key}/vite-lit/`;
-      previewLink.href = href;
-      imageLink.href = href;
-      image.src = `${href}dashboard-desktop.png`;
+      const previewHref = `/pro/templates/${family.key}/preview/`;
+      previewLink.href = previewHref;
+      imageLink.href = previewHref;
+      image.src = `/pro/templates/${family.key}/vite-lit/dashboard-desktop.png`;
       image.alt = `${family.name} dashboard preview`;
     }
 
