@@ -86,12 +86,36 @@ const planRevenueChartData = JSON.stringify([
   { label: "Business", value: 52 },
   { label: "Enterprise", value: 71 },
 ]);
-const customerRows = JSON.stringify([
-  { name: "Northstar Labs", plan: "Business", seats: 42, status: "Active", mrr: "$4,200" },
-  { name: "Aster Health", plan: "Enterprise", seats: 118, status: "Active", mrr: "$11,800" },
-  { name: "Kite Commerce", plan: "Growth", seats: 24, status: "Trial", mrr: "$1,640" },
-  { name: "Clarity Legal", plan: "Business", seats: 36, status: "Active", mrr: "$3,600" },
+const campaignRows = JSON.stringify([
+  { id: 1, campaign: "Spring Launch 2024", status: "Active", statusColor: "success", channel: "Paid Search", budget: "$24,000", spend: "$18,432", roi: "3.21x", created: "May 12, 2024" },
+  { id: 2, campaign: "Brand Awareness Q2", status: "Active", statusColor: "success", channel: "Social Media", budget: "$15,000", spend: "$9,762", roi: "2.64x", created: "May 08, 2024" },
+  { id: 3, campaign: "Product Webinar", status: "Paused", statusColor: "warning", channel: "Email", budget: "$8,000", spend: "$2,139", roi: "1.08x", created: "May 03, 2024" },
+  { id: 4, campaign: "SEO Content Push", status: "Active", statusColor: "success", channel: "Organic Search", budget: "$6,000", spend: "$1,248", roi: "2.12x", created: "Apr 28, 2024" },
+  { id: 5, campaign: "Retargeting May", status: "Draft", statusColor: "gray", channel: "Display Ads", budget: "$10,000", spend: "$0", roi: "–", created: "Apr 25, 2024" },
+  { id: 6, campaign: "Summer Sale Teaser", status: "Active", statusColor: "success", channel: "Paid Search", budget: "$12,000", spend: "$4,310", roi: "1.94x", created: "Apr 21, 2024" },
+  { id: 7, campaign: "Partner Co-marketing", status: "Paused", statusColor: "warning", channel: "Referral", budget: "$9,000", spend: "$3,522", roi: "1.42x", created: "Apr 16, 2024" },
+  { id: 8, campaign: "Newsletter Revamp", status: "Draft", statusColor: "gray", channel: "Email", budget: "$4,000", spend: "$0", roi: "–", created: "Apr 12, 2024" },
 ]);
+const teamRows = JSON.stringify([
+  { id: 1, name: "Sarah Connor", email: "sarah@example.com", role: "Manager", status: "Active" },
+  { id: 2, name: "John Doe", email: "john@example.com", role: "Editor", status: "Active" },
+  { id: 3, name: "Ama Mensah", email: "ama@example.com", role: "Analyst", status: "Invited" },
+  { id: 4, name: "Kwame Boateng", email: "kwame@example.com", role: "Viewer", status: "Pending" },
+]);
+const orderRows = JSON.stringify([
+  { order: "#1001", customer: "Acme Corp", amount: "$1,250.00", status: "Paid" },
+  { order: "#1002", customer: "Globex Inc", amount: "$980.00", status: "Processing" },
+  { order: "#1003", customer: "Initech", amount: "$650.00", status: "Shipped" },
+  { order: "#1004", customer: "Umbrella Co", amount: "$2,100.00", status: "Cancelled" },
+]);
+const orderActionIcons = JSON.stringify([
+  { icon: "eye", name: "view", tip: "View" },
+  { icon: "pencil", name: "edit", tip: "Edit" },
+  { icon: "trash", name: "delete", tip: "Delete", color: "error" },
+]);
+// Row template for the campaigns table — `{key}` placeholders are loomi-table's own
+// substitution syntax, kept out of the markup so Astro doesn't parse them as expressions.
+const campaignRowTemplate = "<tr><td><strong>{campaign}</strong></td><td><loomi-tag label=\"{status}\" color=\"{statusColor}\" rounded></loomi-tag></td><td>{channel}</td><td>{budget}</td><td>{spend}</td><td>{roi}</td><td>{created}</td></tr>";
 
 function sparkline(values: number[]) {
   const width = 120;
@@ -115,8 +139,6 @@ const metricCards = [
 const analyticsMetrics = [
   { label: "Total users", value: "24.8K", delta: "18.6%", spark: sparkline([44, 50, 47, 58, 54, 63, 60, 70, 66, 76]) },
   { label: "New users", value: "12.4K", delta: "16.3%", spark: sparkline([30, 44, 36, 50, 42, 56, 48, 62, 54, 66]) },
-  { label: "Sessions", value: "38.7K", delta: "12.8%", spark: sparkline([50, 58, 52, 64, 58, 70, 62, 74, 68, 80]) },
-  { label: "Engagement rate", value: "64.2%", delta: "8.4%", spark: sparkline([38, 46, 40, 52, 46, 56, 50, 60, 54, 64]) },
 ];
 const stripSpark = sparkline([30, 45, 38, 52, 46, 60, 54, 68, 60, 74]);
 
@@ -143,13 +165,6 @@ const acquisitionSourceRows = JSON.stringify([
   { "source / medium": "linkedin / social", users: "1.6K", "new users": "1.2K", "engagement rate": "57.3%" },
   { "source / medium": "newsletter / email", users: "1.2K", "new users": "1.0K", "engagement rate": "64.5%" },
   { "source / medium": "referral / partner", users: "1.0K", "new users": "0.8K", "engagement rate": "54.1%" },
-]);
-const landingPageRows = JSON.stringify([
-  { page: "/pricing", users: "3.2K", "new users": "2.6K" },
-  { page: "/features", users: "2.4K", "new users": "1.9K" },
-  { page: "/", users: "2.1K", "new users": "1.6K" },
-  { page: "/blog/ai-trends-2024", users: "1.6K", "new users": "1.2K" },
-  { page: "/integrations", users: "1.3K", "new users": "1.0K" },
 ]);
 
 const initialFont = (initialTokens?.typography?.fontFamily ?? "Inter").split(",")[0].trim().replace(/["']/g, "");
@@ -375,60 +390,143 @@ function paletteFor(preset: any) {
                   </loomi-card-content>
                 </loomi-card>
               </div>
-              <div class="demo-grid">
-                <loomi-card size="sm">
-                  <loomi-card-header><loomi-card-title>Acquisition by source / medium</loomi-card-title><loomi-card-description>Where new users come from</loomi-card-description></loomi-card-header>
-                  <loomi-card-content>
-                    <loomi-table compact has-hover data={acquisitionSourceRows}></loomi-table>
-                    <div class="card-footer-action"><loomi-button type="secondary" size="small">View all sources</loomi-button></div>
-                  </loomi-card-content>
-                </loomi-card>
-                <loomi-card size="sm">
-                  <loomi-card-header><loomi-card-title>Top landing pages</loomi-card-title><loomi-card-description>Entry pages ranked by traffic</loomi-card-description></loomi-card-header>
-                  <loomi-card-content>
-                    <loomi-table compact has-hover data={landingPageRows}></loomi-table>
-                    <div class="card-footer-action"><loomi-button type="secondary" size="small">View all pages</loomi-button></div>
-                  </loomi-card-content>
-                </loomi-card>
-              </div>
-            </div>
-            </loomi-tab>
-
-            <loomi-tab label="Tables" icon="table-cells">
-            <div class="preview-canvas">
-              <div class="demo-section-heading"><div><small>Customer directory</small><h3>Tables</h3><p>Search accounts, review plans, and monitor workspace health.</p></div><loomi-button color="primary" size="small" icon="plus">Add customer</loomi-button></div>
-              <div class="customer-summary">
-                <loomi-statistic label="Total customers" number="1,284" radius="large"></loomi-statistic>
-                <loomi-statistic label="Active trials" number="86" radius="large"></loomi-statistic>
-                <loomi-statistic label="Expansion MRR" number="12.6k" currency="$" radius="large"></loomi-statistic>
-              </div>
-              <loomi-card size="sm">
-                <loomi-card-header><loomi-card-title>Customer accounts</loomi-card-title><loomi-card-description>Latest plan and revenue status</loomi-card-description></loomi-card-header>
+              <loomi-card size="sm" class="canvas-block">
+                <loomi-card-header><loomi-card-title>Acquisition by source / medium</loomi-card-title><loomi-card-description>Where new users come from</loomi-card-description></loomi-card-header>
                 <loomi-card-content>
-                  <loomi-table compact has-border has-hover searchable sortable search-placeholder="Search customer accounts…" data={customerRows}></loomi-table>
+                  <loomi-table compact has-hover data={acquisitionSourceRows}></loomi-table>
+                  <div class="card-footer-action"><loomi-button type="secondary" size="small">View all sources</loomi-button></div>
                 </loomi-card-content>
               </loomi-card>
             </div>
             </loomi-tab>
 
-            <loomi-tab label="Forms" icon="pencil-square">
+            <loomi-tab label="Tables" icon="table-cells">
             <div class="preview-canvas">
-              <div class="demo-section-heading"><div><small>Data entry</small><h3>Forms</h3><p>Inputs, selects, and helper text inherit the preset tokens.</p></div></div>
+              <div class="demo-section-heading">
+                <div><small>Data display</small><h3>Data tables</h3><p>Display and manage structured data with clarity.</p></div>
+                <div class="demo-toolbar-group">
+                  <loomi-input type="search" placeholder="Search…" size="small" no-clearing aria-label="Search records"></loomi-input>
+                  <loomi-button type="secondary" size="small" icon="funnel">Filter</loomi-button>
+                  <loomi-button color="primary" size="small" icon="plus">Add record</loomi-button>
+                </div>
+              </div>
+              <loomi-card size="sm" class="canvas-block">
+                <loomi-card-header><loomi-card-title>Basic table</loomi-card-title><loomi-card-description>A standard table with sorting, alignment, and row actions.</loomi-card-description></loomi-card-header>
+                <loomi-card-content>
+                  <div class="card-toolbar"><loomi-button type="secondary" size="small" icon="arrow-down-tray">Download</loomi-button></div>
+                  <loomi-table
+                    layout="custom"
+                    paginated
+                    pagination-style="numbers"
+                    page-size="5"
+                    total-label="Showing :a to :b of :c results"
+                    compact
+                    has-hover
+                    has-shadow="false"
+                    data={campaignRows}
+                  >
+                    <template slot="header"><th>Campaign</th><th>Status</th><th>Channel</th><th>Budget</th><th>Spend</th><th>ROI</th><th>Created</th></template>
+                    <template slot="row" set:html={campaignRowTemplate}></template>
+                  </loomi-table>
+                </loomi-card-content>
+              </loomi-card>
               <div class="demo-grid">
                 <loomi-card size="sm">
-                  <loomi-card-header><loomi-card-title>Workspace profile</loomi-card-title><loomi-card-description>General identity and regional defaults</loomi-card-description></loomi-card-header>
-                  <loomi-card-content class="settings-fields">
-                    <loomi-input label="Workspace name" value="Loomi Cloud" size="small"></loomi-input>
-                    <loomi-input label="Workspace URL" prefix="app.loomi.dev/" value="loomi-cloud" size="small"></loomi-input>
-                    <loomi-select label="Time zone" selected-value="accra" data='[{"label":"Accra (GMT)","value":"accra"},{"label":"London (GMT)","value":"london"},{"label":"New York (EST)","value":"new-york"}]'></loomi-select>
+                  <loomi-card-header><loomi-card-title>Row selection</loomi-card-title><loomi-card-description>Select one or more rows to take bulk actions.</loomi-card-description></loomi-card-header>
+                  <loomi-card-content>
+                    <div class="card-toolbar"><loomi-select size="small" placeholder="Bulk actions" aria-label="Bulk actions" no-clearing data='[{"label":"Activate","value":"activate"},{"label":"Deactivate","value":"deactivate"},{"label":"Remove","value":"remove"}]'></loomi-select></div>
+                    <loomi-table id="selection-demo-table" checkable compact has-hover has-shadow="false" selected-value="1,2" exclude-columns="id" data={teamRows}></loomi-table>
+                    <div class="table-footer"><span id="selection-count">2 rows selected</span><button type="button" class="table-link" id="clear-selection">Clear selection</button></div>
                   </loomi-card-content>
                 </loomi-card>
                 <loomi-card size="sm">
-                  <loomi-card-header><loomi-card-title>Invite a teammate</loomi-card-title><loomi-card-description>Send an invitation with a workspace role</loomi-card-description></loomi-card-header>
+                  <loomi-card-header><loomi-card-title>Inline actions</loomi-card-title><loomi-card-description>Take action on each row without leaving the table.</loomi-card-description></loomi-card-header>
+                  <loomi-card-content>
+                    <loomi-table compact has-hover has-shadow="false" data={orderRows} action-icons={orderActionIcons}></loomi-table>
+                    <div class="table-footer"><button type="button" class="table-link">View all orders <loomi-icon name="arrow-right"></loomi-icon></button></div>
+                  </loomi-card-content>
+                </loomi-card>
+              </div>
+            </div>
+            </loomi-tab>
+
+            <loomi-tab label="Forms" icon="pencil-square">
+            <div class="preview-canvas">
+              <div class="demo-section-heading">
+                <div><small>Data entry</small><h3>Form elements</h3><p>A comprehensive collection of form controls and states.</p></div>
+                <div class="demo-toolbar-group">
+                  <loomi-button type="secondary" size="small">Reset</loomi-button>
+                  <loomi-button color="primary" size="small">Save changes</loomi-button>
+                </div>
+              </div>
+              <loomi-card size="sm" class="canvas-block">
+                <loomi-card-header><loomi-card-title>Basic inputs</loomi-card-title></loomi-card-header>
+                <loomi-card-content>
+                  <div class="form-grid">
+                    <loomi-input label="Text input" placeholder="Enter campaign name" size="small" no-clearing></loomi-input>
+                    <loomi-input type="email" label="Email" value="hello@loomidev.com" size="small" no-clearing></loomi-input>
+                    <loomi-select label="Select" selected-value="paid-search" no-clearing data='[{"label":"Paid Search","value":"paid-search"},{"label":"Social Media","value":"social"},{"label":"Email Marketing","value":"email"}]'></loomi-select>
+                    <loomi-textarea label="Textarea" rows="2" value="Brief description of the campaign goals and objectives." no-clearing></loomi-textarea>
+                    <loomi-input label="Number" numeric value="25000" size="small" no-clearing></loomi-input>
+                    <loomi-datepicker label="Date" selected-value="2024-05-12" format="D d M, Y" size="small"></loomi-datepicker>
+                  </div>
+                </loomi-card-content>
+              </loomi-card>
+              <div class="demo-grid">
+                <loomi-card size="sm">
+                  <loomi-card-header><loomi-card-title>Checkboxes &amp; radios</loomi-card-title></loomi-card-header>
+                  <loomi-card-content>
+                    <div class="choice-grid">
+                      <div>
+                        <small class="field-label">Channels</small>
+                        <loomi-checkbox label="Paid Search" checked></loomi-checkbox>
+                        <loomi-checkbox label="Social Media" checked></loomi-checkbox>
+                        <loomi-checkbox label="Email Marketing"></loomi-checkbox>
+                      </div>
+                      <div>
+                        <small class="field-label">Priority</small>
+                        <loomi-radio name="demo-priority" label="Low" value="low"></loomi-radio>
+                        <loomi-radio name="demo-priority" label="Medium" value="medium" checked></loomi-radio>
+                        <loomi-radio name="demo-priority" label="High" value="high"></loomi-radio>
+                      </div>
+                    </div>
+                  </loomi-card-content>
+                </loomi-card>
+                <loomi-card size="sm">
+                  <loomi-card-header><loomi-card-title>Toggle &amp; switch</loomi-card-title></loomi-card-header>
+                  <loomi-card-content class="toggle-stack">
+                    <loomi-toggle justified checked><span class="toggle-copy"><strong>Email notifications</strong><small>Send me campaign performance updates</small></span></loomi-toggle>
+                    <loomi-toggle justified><span class="toggle-copy"><strong>Auto optimize budget</strong><small>Automatically adjust budget allocation</small></span></loomi-toggle>
+                  </loomi-card-content>
+                </loomi-card>
+              </div>
+              <div class="demo-grid-3">
+                <loomi-card size="sm">
+                  <loomi-card-header><loomi-card-title>Input states</loomi-card-title></loomi-card-header>
                   <loomi-card-content class="settings-fields">
-                    <loomi-input label="Email address" type="email" placeholder="teammate@company.com" size="small"></loomi-input>
-                    <loomi-select label="Role" selected-value="editor" data='[{"label":"Admin","value":"admin"},{"label":"Editor","value":"editor"},{"label":"Viewer","value":"viewer"}]'></loomi-select>
-                    <loomi-button color="primary" size="small" icon="paper-airplane">Send invite</loomi-button>
+                    <loomi-input label="Default" placeholder="Placeholder text" size="small" no-clearing></loomi-input>
+                    <loomi-input label="Filled" value="Valid input" size="small" no-clearing></loomi-input>
+                    <loomi-input label="Disabled" value="Disabled input" disabled size="small" no-clearing></loomi-input>
+                    <loomi-input id="error-state-input" label="Error" placeholder="Invalid input" required error-message="Please enter a valid value." show-error-inline size="small" no-clearing></loomi-input>
+                  </loomi-card-content>
+                </loomi-card>
+                <loomi-card size="sm">
+                  <loomi-card-header><loomi-card-title>File upload</loomi-card-title></loomi-card-header>
+                  <loomi-card-content>
+                    <loomi-filepicker accepted-file-types=".pdf,.png,.jpg" max-file-size="10mb" placeholder-line1="Drag and drop files here or browse to upload" placeholder-line2="Allowed: PDF, PNG, JPG (Max 10MB)"></loomi-filepicker>
+                  </loomi-card-content>
+                </loomi-card>
+                <loomi-card size="sm">
+                  <loomi-card-header><loomi-card-title>Select (multi) &amp; rating</loomi-card-title></loomi-card-header>
+                  <loomi-card-content class="settings-fields">
+                    <loomi-select label="Ad platforms" multiple selected-value="google,facebook,linkedin" no-clearing data='[{"label":"Google Ads","value":"google"},{"label":"Facebook Ads","value":"facebook"},{"label":"LinkedIn Ads","value":"linkedin"},{"label":"X Ads","value":"x"}]'></loomi-select>
+                    <div>
+                      <small class="field-label">Ratings</small>
+                      <div class="rating-row">
+                        <loomi-rating rating="4" color="success"></loomi-rating>
+                        <span class="metric-compare">4 out of 5</span>
+                      </div>
+                    </div>
                   </loomi-card-content>
                 </loomi-card>
               </div>
@@ -632,14 +730,18 @@ function paletteFor(preset: any) {
     import "@loomidev/alert";
     import "@loomidev/card";
     import "@loomidev/chart";
+    import "@loomidev/checkbox";
     import "@loomidev/datepicker";
+    import "@loomidev/filepicker";
     import "@loomidev/input";
     import "@loomidev/progress";
+    import "@loomidev/radio";
+    import "@loomidev/rating";
     import "@loomidev/select";
-    import "@loomidev/statistic";
     import "@loomidev/tab";
     import "@loomidev/table";
     import "@loomidev/tag";
+    import "@loomidev/textarea";
     import "@loomidev/toggle";
   </script>
   <script type="application/json" id="theme-preset-data" is:inline set:html={JSON.stringify(themeBundle)}></script>
@@ -838,6 +940,27 @@ function paletteFor(preset: any) {
     document.getElementById("view-retention")?.addEventListener("click", () => {
       document.getElementById("retention-card")?.scrollIntoView({ behavior: "smooth", block: "center" });
     });
+    const selectionTable = document.getElementById("selection-demo-table");
+    const selectionCount = document.getElementById("selection-count");
+    selectionTable?.addEventListener("loomi-selection-change", (event: any) => {
+      const count = event.detail?.ids?.length ?? 0;
+      selectionCount!.textContent = `${count} row${count === 1 ? "" : "s"} selected`;
+    });
+    // The table has no public clear API (`selected-value` is initial state only), so
+    // clear by toggling each checked row checkbox through its own click handler —
+    // this also fires loomi-selection-change, which keeps the count label in sync.
+    document.getElementById("clear-selection")?.addEventListener("click", () => {
+      selectionTable?.shadowRoot
+        ?.querySelectorAll<HTMLElement>("tbody loomi-checkbox[checked]")
+        .forEach((box) => ((box.shadowRoot?.querySelector("input") as HTMLElement | null) ?? box).click());
+    });
+    // The "Error" input-state demo: run the component's own required-field check so
+    // it renders its invalid style without user interaction.
+    void customElements.whenDefined("loomi-input").then(async () => {
+      const errorInput = document.getElementById("error-state-input") as any;
+      await errorInput?.updateComplete;
+      errorInput?.validate?.();
+    });
     document.querySelectorAll<HTMLButtonElement>("[data-dismiss-alert]").forEach((button) => {
       button.addEventListener("click", () => {
         const alert = button.closest<HTMLElement>(".demo-alert, .mini-alert");
@@ -907,12 +1030,14 @@ function paletteFor(preset: any) {
   .preview-frame[data-viewport="tablet"] .preview-canvas { max-width: 46rem; }
   .preview-frame[data-viewport="mobile"] .preview-canvas { max-width: 25rem; }
 
-  .demo-toolbar { display: flex; align-items: center; justify-content: flex-end; gap: .5rem; margin-bottom: .85rem; }
+  .demo-toolbar { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-bottom: .85rem; }
   .demo-toolbar-group { display: flex; flex: none; align-items: center; gap: .5rem; }
-  .demo-toolbar loomi-datepicker, .demo-toolbar-group loomi-datepicker { width: 14.5rem; }
+  .demo-toolbar loomi-datepicker, .demo-toolbar-group loomi-datepicker { width: 17rem; flex: none; }
+  .demo-toolbar-group loomi-input { width: 10rem; }
   .card-toolbar { display: flex; justify-content: flex-end; margin-bottom: .5rem; }
   .card-toolbar loomi-select { width: 8rem; }
   .card-footer-action { margin-top: .75rem; }
+  .canvas-block { display: block; margin-top: .65rem; }
 
   .demo-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr)); gap: .65rem; }
   .metric-card { display: grid; gap: .25rem; min-width: 0; border: 1px solid var(--preview-border); border-radius: var(--preview-radius); background: var(--preview-surface); padding: .9rem .9rem .55rem; }
@@ -940,8 +1065,18 @@ function paletteFor(preset: any) {
   .demo-section-heading small { color: var(--preview-text-muted); font-size: .65rem; }
   .demo-section-heading h3 { margin: .15rem 0 0; font-size: 1.2rem; letter-spacing: -.025em; }
   .demo-section-heading p { margin: .25rem 0 0; color: var(--preview-text-muted); font-size: .7rem; }
-  .customer-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: .65rem; margin-bottom: .65rem; }
-  .customer-summary loomi-statistic { min-width: 0; }
+  .demo-grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .65rem; margin-top: .65rem; }
+  .demo-grid-3 loomi-card { min-width: 0; }
+  .form-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem 1rem; }
+  .choice-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+  .field-label { display: block; margin-bottom: .5rem; color: var(--preview-text-muted); font-size: .68rem; font-weight: 700; }
+  .toggle-copy { display: grid; gap: .15rem; }
+  .toggle-copy strong { font-size: .78rem; }
+  .toggle-copy small { color: var(--preview-text-muted); font-size: .68rem; }
+  .rating-row { display: flex; align-items: center; gap: .6rem; }
+  .table-footer { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-top: .6rem; color: var(--preview-text-muted); font-size: .72rem; }
+  .table-link { display: inline-flex; align-items: center; gap: .3rem; border: 0; background: none; padding: 0; color: var(--preview-primary-strong); font-size: .72rem; font-weight: 700; cursor: pointer; }
+  .table-link loomi-icon { width: .8rem; height: .8rem; }
   .progress-stack, .settings-fields, .toggle-stack { display: grid; gap: .75rem; }
   .progress-stack > div { display: grid; gap: .35rem; color: var(--loomi-text-secondary); font-size: .7rem; }
   .preview-canvas > loomi-alert { display: block; margin-top: .65rem; }
@@ -1012,12 +1147,13 @@ function paletteFor(preset: any) {
      respond to the canvas width (container queries), not the page width. */
   @container (max-width: 54rem) {
     .demo-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .demo-grid-3, .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
   @container (max-width: 40rem) {
-    .demo-grid { grid-template-columns: 1fr; }
+    .demo-grid, .demo-grid-3, .form-grid, .choice-grid { grid-template-columns: 1fr; }
   }
   @container (max-width: 30rem) {
-    .demo-metrics, .customer-summary { grid-template-columns: 1fr; }
+    .demo-metrics { grid-template-columns: 1fr; }
     .demo-toolbar { flex-wrap: wrap; justify-content: flex-start; }
     .demo-alert { flex-wrap: wrap; }
     .demo-section-heading { align-items: flex-start; flex-direction: column; }
