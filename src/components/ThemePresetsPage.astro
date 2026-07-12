@@ -606,8 +606,25 @@ function paletteFor(preset: any) {
             </loomi-tab>
           </loomi-tabs>
         </div>
+      </div>
+    </div>
 
-      <aside class="theme-inspector" aria-label="Theme inspector">
+  </section>
+
+  <aside
+    class="theme-inspector"
+    aria-label="Theme inspector"
+    style={`
+      --preview-primary:${initialTokens?.color?.primary?.[500] ?? initialPreset.primary500};
+      --preview-primary-soft:${initialTokens?.color?.primary?.[50] ?? "#eff6ff"};
+      --preview-primary-strong:${initialTokens?.color?.primary?.[700] ?? initialPreset.primary500};
+      --preview-surface:${initialTokens?.color?.surface?.base ?? "#ffffff"};
+      --preview-surface-muted:${initialTokens?.color?.surface?.muted ?? "#f8fafc"};
+      --preview-border:${initialTokens?.color?.surface?.border ?? "#e2e8f0"};
+      --preview-text:${initialTokens?.color?.text?.base ?? "#0f172a"};
+      --preview-text-muted:${initialTokens?.color?.text?.muted ?? "#64748b"};
+    `}
+  >
         <div class="inspector-label">Theme inspector</div>
 
         <div class="inspector-block">
@@ -649,11 +666,7 @@ function paletteFor(preset: any) {
         </div>
 
         <loomi-button type="secondary" tag="a" href="/pro/themes/theme-builder/" icon="arrow-top-right-on-square" block>Open in Theme Builder</loomi-button>
-      </aside>
-      </div>
-    </div>
-
-  </section>
+  </aside>
 
   <section class="delivery-section">
     <div>
@@ -708,6 +721,7 @@ function paletteFor(preset: any) {
     const viewportButtons = Array.from(document.querySelectorAll<HTMLButtonElement>(".viewport-button[data-viewport]"));
     const pmButtons = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-pm]"));
     const workbench = document.getElementById("preset-workbench") as HTMLElement;
+    const inspector = document.querySelector<HTMLElement>(".theme-inspector")!;
     const previewFrame = document.getElementById("preview-frame") as HTMLElement;
     const presetName = document.getElementById("selected-preset-name") as HTMLElement;
     const presetDescription = document.getElementById("selected-preset-description") as HTMLElement;
@@ -778,7 +792,10 @@ function paletteFor(preset: any) {
         "--preview-radius": mode?.component?.panelRadius ?? "12px",
         "--preview-shadow": mode?.component?.cardShadow ?? "0 1px 3px rgba(15,23,42,.1)",
       };
-      Object.entries(values).forEach(([property, value]) => workbench.style.setProperty(property, String(value)));
+      Object.entries(values).forEach(([property, value]) => {
+        workbench.style.setProperty(property, String(value));
+        inspector.style.setProperty(property, String(value));
+      });
       workbench.dataset.loomiMode = activeMode;
 
       setTokenGroup("--loomi-primary", primary);

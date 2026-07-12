@@ -1218,9 +1218,9 @@
 .proof-shell {
   overflow: hidden;
   border: 1px solid rgb(226 232 240);
-  border-radius: 10px;
+  border-radius: 18px;
   background: rgb(255 255 255);
-  box-shadow: 0 30px 90px rgb(15 23 42 / 0.14);
+  box-shadow: 0 24px 64px rgb(15 23 42 / 0.11);
 }
 
 .dark .proof-shell {
@@ -1236,7 +1236,7 @@
   gap: 1rem;
   border-bottom: 1px solid rgb(226 232 240);
   background: rgb(255 255 255 / 0.9);
-  padding: 0.75rem 1rem;
+  padding: 0.65rem 1rem;
 }
 
 .dark .proof-window-bar {
@@ -1290,15 +1290,19 @@
 
 .proof-tabs {
   display: block;
-  padding: 1rem;
+  padding: 0.75rem;
 }
+
+.proof-followup { color: rgb(100 116 139); font-size: .82rem; }
+.proof-followup p { margin: 0; }
+.dark .proof-followup { color: rgb(148 163 184); }
 
 .proof-app {
   display: grid;
-  min-height: 43rem;
+  min-height: 38rem;
   overflow: hidden;
   border: 1px solid rgb(226 232 240);
-  border-radius: 8px;
+  border-radius: 12px;
   background: rgb(248 250 252);
   color: rgb(15 23 42);
 }

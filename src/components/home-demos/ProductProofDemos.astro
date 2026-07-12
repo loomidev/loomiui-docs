@@ -1,26 +1,23 @@
 ---
 import DashboardDemo from "./DashboardDemo.astro";
 import KanbanDemo from "./KanbanDemo.astro";
-import MailDemo from "./MailDemo.astro";
-import SettingsDemo from "./SettingsDemo.astro";
 ---
 
 <section class="proof-band border-t border-gray-100 px-6 py-20 dark:border-gray-900">
-  <div class="mx-auto grid max-w-7xl items-end gap-8 md:grid-cols-[0.9fr_1.1fr]">
+  <div class="mx-auto max-w-3xl text-center">
     <div>
       <div class="text-sm font-semibold uppercase tracking-[0.18em] text-primary-600 dark:text-primary-300">
         Live product proof
       </div>
-      <h2 class="mt-3 text-3xl font-bold sm:text-4xl">Four real app demos, built from LoomiUI.</h2>
+      <h2 class="mt-3 text-3xl font-bold sm:text-4xl">Two real product workflows, built from LoomiUI.</h2>
     </div>
-    <p class="max-w-2xl text-gray-600 dark:text-gray-400 md:justify-self-end">
-      Switch between a command dashboard, a sortable project workspace, a threaded inbox,
-      and a complete settings console. The controls are live LoomiUI components wired into
-      product-style workflows.
+    <p class="mx-auto mt-4 max-w-2xl text-gray-600 dark:text-gray-400">
+      Explore an operations dashboard and a collaborative project workspace. Both use live
+      LoomiUI components wired into realistic product interactions.
     </p>
   </div>
 
-  <div id="product-proof-demos" class="proof-shell mx-auto mt-10 max-w-7xl">
+  <div id="product-proof-demos" class="proof-shell mx-auto mt-10 max-w-6xl">
     <div class="proof-window-bar">
       <div class="proof-window-dots" aria-hidden="true">
         <span></span>
@@ -41,56 +38,13 @@ import SettingsDemo from "./SettingsDemo.astro";
       <loomi-tab label="Kanban" icon="view-columns">
         <KanbanDemo />
       </loomi-tab>
-      <loomi-tab label="Mail" icon="envelope">
-        <MailDemo />
-      </loomi-tab>
-      <loomi-tab label="Settings" icon="cog-6-tooth">
-        <SettingsDemo />
-      </loomi-tab>
     </loomi-tabs>
   </div>
 
-  <loomi-floating-panel
-    name="mail-reply-panel"
-    title="Reply"
-    width="25rem"
-    height="24rem"
-    top="18%"
-    left="62%"
-    minimize
-    maximize
-    show-close-icon
-    bounded
-    auto-save-id=""
-  >
-    <div class="proof-reply-panel">
-      <div class="proof-reply-to">
-        <span>To</span>
-        <strong id="mail-reply-recipient">Nadia Mensah</strong>
-      </div>
-      <loomi-textarea
-        id="mail-reply-body"
-        rows="7"
-        label="Message"
-        placeholder="Write your reply..."
-      ></loomi-textarea>
-      <div class="proof-reply-tools">
-        <loomi-button size="small" type="secondary" icon="paper-clip">Attach</loomi-button>
-        <loomi-button id="mail-reply-send" size="small" color="primary" icon="paper-airplane">Send</loomi-button>
-      </div>
-    </div>
-  </loomi-floating-panel>
-
-  <loomi-modal
-    name="mail-save-draft-modal"
-    title="Save draft?"
-    ok-button-label="Yes"
-    cancel-button-label="Discard"
-    type="warning"
-    icon="document-text"
-  >
-    <p class="proof-modal-copy">Do you want to save this reply as a draft?</p>
-  </loomi-modal>
+  <div class="proof-followup mx-auto mt-6 flex max-w-6xl flex-wrap items-center justify-between gap-3">
+    <p>Want to test individual properties instead?</p>
+    <loomi-button type="secondary" tag="a" href="/playground/" size="small" icon="arrow-right" icon-right>Open the Playground</loomi-button>
+  </div>
 
   <loomi-modal name="dashboard-profile-modal" title="Profile" show-action-buttons="false" show-close-icon>
     <div class="proof-profile-modal">
@@ -120,39 +74,6 @@ import SettingsDemo from "./SettingsDemo.astro";
       <div>
         <strong>Keyboard shortcuts</strong>
         <span>Enable power-user navigation.</span>
-      </div>
-      <loomi-toggle></loomi-toggle>
-    </div>
-  </loomi-modal>
-
-  <loomi-modal name="mail-profile-modal" title="Mail profile" show-action-buttons="false" show-close-icon>
-    <div class="proof-profile-modal">
-      <loomi-avatar image="/avatars/female.jpg" label="Alice Wonderland" size="large"></loomi-avatar>
-      <div>
-        <h3>Alice Wonderland</h3>
-        <p>Supervisor - Priority inbox</p>
-      </div>
-      <loomi-input label="Signature name" value="Alice Wonderland"></loomi-input>
-      <loomi-textarea label="Signature" rows="3" value="Alice Wonderland&#10;Supervisor"></loomi-textarea>
-      <loomi-button class="proof-modal-save" color="primary" data-proof-toast="Mail profile saved">Save profile</loomi-button>
-    </div>
-  </loomi-modal>
-
-  <loomi-modal name="mail-preferences-modal" title="Mail preferences" show-action-buttons="false" show-close-icon>
-    <div class="proof-pref-grid">
-      <div>
-        <strong>Smart summaries</strong>
-        <span>Show AI summaries on long threads.</span>
-      </div>
-      <loomi-toggle checked></loomi-toggle>
-      <div>
-        <strong>Priority sender badges</strong>
-        <span>Highlight leadership and customer mail.</span>
-      </div>
-      <loomi-toggle checked></loomi-toggle>
-      <div>
-        <strong>Send undo window</strong>
-        <span>Delay outgoing mail by ten seconds.</span>
       </div>
       <loomi-toggle></loomi-toggle>
     </div>
