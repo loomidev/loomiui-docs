@@ -222,7 +222,9 @@ const templateFamilies = [
       selectedTemplate = family.key;
       render();
 
-      const previewSrc = `/pro/live/${family.key}/`;
+      // Point at the file itself. Some static hosts do not resolve a directory URL
+      // to the copied index.html, which leaves the modal iframe on the site's 404.
+      const previewSrc = `/pro/live/${family.key}/index.html`;
       if (previewFrame.getAttribute("src") !== previewSrc) {
         previewLoading.classList.remove("is-hidden");
         previewLoadingTitle.textContent = `Loading ${family.name}`;
