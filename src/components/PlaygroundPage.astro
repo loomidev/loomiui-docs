@@ -1127,13 +1127,15 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
               <h2>Component</h2>
             </div>
             <p class="playground-picker-note">Choose from components with editable HTML attributes.</p>
-            <select
+            <loomi-select
               id="component-select"
-              class="playground-native-select"
+              class="playground-loomi-select"
               aria-label="Select a component"
-            >
-              {componentOptions.map((option) => <option value={option.value}>{option.label}</option>)}
-            </select>
+              selected-value={componentOptions[0]?.value}
+              data={JSON.stringify(componentOptions)}
+              searchable
+              no-clearing
+            ></loomi-select>
           </section>
 
           <aside class="playground-controls-panel" aria-label="Component props">
@@ -1193,7 +1195,11 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
       };
       const components = JSON.parse(document.getElementById("playground-data")!.textContent || "[]") as PlaygroundComponent[];
       const byKey = new Map(components.map((component) => [component.key, component]));
-      const select = document.getElementById("component-select") as HTMLSelectElement;
+      type PlaygroundSelect = HTMLElement & {
+        data: Array<{ label: string; value: string }>;
+        selectedValue: string;
+      };
+      const select = document.getElementById("component-select") as PlaygroundSelect;
       const titleEl = document.getElementById("component-title") as HTMLElement;
       const descriptionEl = document.getElementById("component-description") as HTMLElement;
       const docsLink = document.getElementById("docs-link") as HTMLAnchorElement;
@@ -1296,17 +1302,14 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
         wrapper.append(text);
 
         if (control.type === "select") {
-          const input = document.createElement("select");
-          input.className = "playground-native-select";
-          for (const option of control.options ?? []) {
-            const optionEl = document.createElement("option");
-            optionEl.value = option;
-            optionEl.textContent = option || "Default";
-            input.append(optionEl);
-          }
-          input.value = String(values[control.key] ?? "");
-          input.addEventListener("change", () => {
-            values[control.key] = input.value;
+          const input = document.createElement("loomi-select") as PlaygroundSelect;
+          input.className = "playground-loomi-select";
+          input.data = (control.options ?? []).map((option) => ({ label: option || "Default", value: option }));
+          input.selectedValue = String(values[control.key] ?? "");
+          input.setAttribute("no-clearing", "");
+          input.addEventListener("loomi-select", (event: any) => {
+            input.selectedValue = event.detail.value;
+            values[control.key] = event.detail.value;
             renderPreview();
           });
           wrapper.append(input);
@@ -1364,7 +1367,10 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
         renderPreview();
       }
 
-      select.addEventListener("change", () => activate(select.value));
+      select.addEventListener("loomi-select", (event: any) => {
+        select.selectedValue = event.detail.value;
+        activate(event.detail.value);
+      });
       resetButton.addEventListener("click", () => activate(active.key));
       copyButton.addEventListener("click", async () => {
         await navigator.clipboard?.writeText(codeEl.textContent ?? "");
@@ -1429,8 +1435,7 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
   .playground-field > span {
     font-weight: 700;
   }
-  .playground-field input,
-  .playground-native-select {
+  .playground-field input {
     width: 100%;
     border-radius: 0.6rem;
     border: 1px solid rgb(226 232 240);
@@ -1440,8 +1445,7 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
     font: inherit;
     font-weight: 500;
   }
-  .dark .playground-field input,
-  .dark .playground-native-select {
+  .dark .playground-field input {
     border-color: rgb(51 65 85);
     background: rgb(15 23 42 / 0.72);
     color: white;
@@ -1453,7 +1457,7 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
     line-height: 1.5;
   }
   .dark .playground-picker-note { color: rgb(148 163 184); }
-  .playground-native-select { appearance: auto; cursor: pointer; }
+  .playground-loomi-select { display: block; width: 100%; }
   .playground-shell {
     display: grid;
     gap: 1rem;

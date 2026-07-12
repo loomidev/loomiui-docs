@@ -218,27 +218,27 @@ function paletteFor(preset: any) {
       <p>Select any preset to update the preview and implementation details below.</p>
     </div>
 
-    <div class="preset-carousel-controls" aria-label="Theme preset carousel controls">
+    <div class="preset-carousel" aria-label="Theme preset carousel">
       <button type="button" class="carousel-button" id="preset-prev" aria-label="Show previous presets"><loomi-icon name="chevron-left"></loomi-icon></button>
+      <div class="preset-grid" id="preset-grid" aria-label="Theme presets">
+        {presets.map((preset: any, index: number) => (
+          <button
+            type="button"
+            class:list={["preset-card", index === 0 && "is-active"]}
+            data-preset={preset.name}
+            aria-pressed={index === 0 ? "true" : "false"}
+          >
+            <span class="preset-palette" aria-hidden="true">
+              {paletteFor(preset).map((color: string) => <span style={`background:${color}`}></span>)}
+            </span>
+            <span class="preset-card-copy">
+              <strong>{preset.label}</strong>
+              <small>{preset.description}</small>
+            </span>
+          </button>
+        ))}
+      </div>
       <button type="button" class="carousel-button" id="preset-next" aria-label="Show next presets"><loomi-icon name="chevron-right"></loomi-icon></button>
-    </div>
-    <div class="preset-grid" id="preset-grid" aria-label="Theme presets">
-      {presets.map((preset: any, index: number) => (
-        <button
-          type="button"
-          class:list={["preset-card", index === 0 && "is-active"]}
-          data-preset={preset.name}
-          aria-pressed={index === 0 ? "true" : "false"}
-        >
-          <span class="preset-palette" aria-hidden="true">
-            {paletteFor(preset).map((color: string) => <span style={`background:${color}`}></span>)}
-          </span>
-          <span class="preset-card-copy">
-            <strong>{preset.label}</strong>
-            <small>{preset.description}</small>
-          </span>
-        </button>
-      ))}
     </div>
   </section>
 
@@ -967,12 +967,12 @@ function paletteFor(preset: any) {
   .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 2rem; }
   .section-heading h2, .delivery-section h2, .purchase-panel h2 { margin: .3rem 0 0; font-size: 1.75rem; line-height: 1.2; font-weight: 750; letter-spacing: -.025em; }
   .section-heading > p { max-width: 30rem; margin: 0; color: rgb(75 85 99); line-height: 1.6; }
-  .preset-carousel-controls { display: flex; justify-content: flex-end; gap: .5rem; margin-top: 1.25rem; }
+  .preset-carousel { display: grid; grid-template-columns: 2.5rem minmax(0, 1fr) 2.5rem; align-items: center; gap: .75rem; margin-top: 1.5rem; }
   .carousel-button { display: grid; width: 2.5rem; height: 2.5rem; place-items: center; border: 1px solid rgb(203 213 225); border-radius: 999px; background: white; color: rgb(30 41 59); cursor: pointer; }
   .carousel-button:hover { border-color: rgb(96 165 250); color: rgb(37 99 235); }
   .carousel-button:disabled { opacity: .4; cursor: default; }
   .carousel-button loomi-icon { width: 1rem; height: 1rem; }
-  .preset-grid { display: flex; gap: .85rem; margin-top: .75rem; overflow-x: auto; padding: .25rem .2rem 1rem; scroll-behavior: smooth; scroll-snap-type: x mandatory; scrollbar-width: thin; }
+  .preset-grid { display: flex; min-width: 0; gap: .85rem; overflow-x: auto; padding: .25rem .2rem 1rem; scroll-behavior: smooth; scroll-snap-type: x mandatory; scrollbar-width: thin; }
   .preset-card { position: relative; display: grid; flex: 0 0 clamp(15rem, 24vw, 18rem); align-content: start; min-height: 12.5rem; overflow: hidden; scroll-snap-align: start; border: 1px solid rgb(226 232 240); border-radius: 1rem; background: white; padding: 0; color: rgb(15 23 42); text-align: left; cursor: pointer; transition: border-color .15s, box-shadow .15s, transform .15s; }
   .preset-card:hover { transform: translateY(-2px); border-color: rgb(147 197 253); box-shadow: 0 12px 28px rgb(15 23 42 / .07); }
   .preset-card.is-active { border-color: rgb(37 99 235); box-shadow: 0 0 0 3px rgb(219 234 254); }

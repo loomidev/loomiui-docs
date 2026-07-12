@@ -20,18 +20,30 @@ function loadThemeBundle() {
     return {
       manifest: { presets: [{ name: "default", label: "Loomi Default", primary500: "#3b82f6", css: "css/default.css" }] },
       assetsBase: null,
+      tokens: {},
     };
   }
 
+  const manifest = JSON.parse(readFileSync(manifestFile, "utf8"));
+  const tokens = Object.fromEntries(manifest.presets.map((preset: any) => {
+    const tokenFile = resolve(publicRoot, preset.json);
+    return [preset.name, existsSync(tokenFile) ? JSON.parse(readFileSync(tokenFile, "utf8")) : null];
+  }));
   return {
-    manifest: JSON.parse(readFileSync(manifestFile, "utf8")),
+    manifest,
     assetsBase: "/pro/themes",
+    tokens,
   };
 }
 
 const themeBundle = loadThemeBundle();
 const initialPreset = themeBundle.manifest.presets[0];
 const initialStylesheet = themeBundle.assetsBase ? `${themeBundle.assetsBase}/${initialPreset.css}` : null;
+const presetOptions = themeBundle.manifest.presets.map((preset: any) => ({ label: preset.label, value: preset.name }));
+const radiusOptions = [{ label: "Sharp · 4–8px", value: "sharp" }, { label: "Balanced · 6–12px", value: "default" }, { label: "Rounded · 8–16px", value: "rounded" }];
+const densityOptions = [{ label: "Compact", value: "compact" }, { label: "Comfortable", value: "default" }, { label: "Spacious", value: "spacious" }];
+const fontSizeOptions = [{ label: "Compact · 13px", value: "13px" }, { label: "Default · 14px", value: "14px" }, { label: "Comfortable · 16px", value: "16px" }];
+const lineHeightOptions = [{ label: "Tight · 1.4", value: "1.4" }, { label: "Default · 1.5", value: "1.5" }, { label: "Relaxed · 1.7", value: "1.7" }];
 ---
 
 <html lang="en">
@@ -66,41 +78,29 @@ const initialStylesheet = themeBundle.assetsBase ? `${themeBundle.assetsBase}/${
 
         <div class="builder-layout">
           <aside class="builder-panel" aria-label="Theme builder controls">
-            <h2 class="builder-panel-title">Controls</h2>
+            <div class="builder-panel-heading"><div><span>Theme controls</span><h2 class="builder-panel-title">Build your foundation</h2></div><button type="button" class="builder-reset" id="reset-theme"><loomi-icon name="arrow-path"></loomi-icon>Reset</button></div>
 
-            <label class="builder-field">
+            <h3 class="builder-subtitle">Foundation</h3>
+
+            <div class="builder-field">
               <span>Base preset</span>
-              <select id="base-preset">
-                {themeBundle.manifest.presets.map((preset: any) => (
-                  <option value={preset.name} data-css={themeBundle.assetsBase ? `${themeBundle.assetsBase}/${preset.css}` : ""} data-primary={preset.primary500}>
-                    {preset.label}
-                  </option>
-                ))}
-              </select>
-            </label>
+              <loomi-select id="base-preset" selected-value={initialPreset.name} data={JSON.stringify(presetOptions)} searchable no-clearing></loomi-select>
+            </div>
 
             <label class="builder-field">
               <span>Primary accent</span>
               <input id="primary-color" type="color" value={initialPreset.primary500 ?? "#3b82f6"} />
             </label>
 
-            <label class="builder-field">
+            <div class="builder-field">
               <span>Corner radius</span>
-              <select id="radius-profile">
-                <option value="sharp">Sharp (4–6px)</option>
-                <option value="default" selected>Default (6–12px)</option>
-                <option value="rounded">Rounded (8–16px)</option>
-              </select>
-            </label>
+              <loomi-select id="radius-profile" selected-value="default" data={JSON.stringify(radiusOptions)} no-clearing></loomi-select>
+            </div>
 
-            <label class="builder-field">
+            <div class="builder-field">
               <span>Density</span>
-              <select id="density-profile">
-                <option value="compact">Compact</option>
-                <option value="default" selected>Default</option>
-                <option value="spacious">Spacious</option>
-              </select>
-            </label>
+              <loomi-select id="density-profile" selected-value="default" data={JSON.stringify(densityOptions)} no-clearing></loomi-select>
+            </div>
 
             <div class="builder-field">
               <span>Color mode</span>
@@ -122,23 +122,15 @@ const initialStylesheet = themeBundle.assetsBase ? `${themeBundle.assetsBase}/${
               <input id="font-family-mono" type="text" value="'JetBrains Mono', ui-monospace, SFMono-Regular, monospace" />
             </label>
 
-            <label class="builder-field">
+            <div class="builder-field">
               <span>Base font size</span>
-              <select id="font-size-base">
-                <option value="13px">Compact (13px)</option>
-                <option value="14px" selected>Default (14px)</option>
-                <option value="16px">Comfortable (16px)</option>
-              </select>
-            </label>
+              <loomi-select id="font-size-base" selected-value="14px" data={JSON.stringify(fontSizeOptions)} no-clearing></loomi-select>
+            </div>
 
-            <label class="builder-field">
+            <div class="builder-field">
               <span>Line height</span>
-              <select id="line-height-base">
-                <option value="1.4">Tight (1.4)</option>
-                <option value="1.5" selected>Default (1.5)</option>
-                <option value="1.7">Relaxed (1.7)</option>
-              </select>
-            </label>
+              <loomi-select id="line-height-base" selected-value="1.5" data={JSON.stringify(lineHeightOptions)} no-clearing></loomi-select>
+            </div>
 
             <h3 class="builder-subtitle">Import & validation</h3>
 
@@ -160,7 +152,13 @@ const initialStylesheet = themeBundle.assetsBase ? `${themeBundle.assetsBase}/${
           </aside>
 
           <section class="builder-preview-wrap" aria-label="Live theme preview">
-            <h2 class="builder-panel-title">Live preview</h2>
+            <div class="preview-heading">
+              <div><span>Live canvas</span><h2 class="builder-panel-title">Preview your theme</h2></div>
+              <div class="preview-actions">
+                <button type="button" class="builder-action" id="copy-css"><loomi-icon name="clipboard"></loomi-icon>Copy CSS</button>
+                <button type="button" class="builder-action builder-action-primary" id="download-theme"><loomi-icon name="arrow-down-tray"></loomi-icon>Download JSON</button>
+              </div>
+            </div>
             <div class="component-showcase">
               <div class="component-group">
                 <div class="component-group-label">Buttons</div>
@@ -172,7 +170,7 @@ const initialStylesheet = themeBundle.assetsBase ? `${themeBundle.assetsBase}/${
               </div>
               <div class="component-group">
                 <div class="component-group-label">Form</div>
-                <loomi-input placeholder="Work email" size="small"></loomi-input>
+                <div class="component-form-grid"><loomi-input label="Work email" placeholder="you@company.com" size="small"></loomi-input><loomi-select label="Team" selected-value="product" size="small" data='[{"label":"Product","value":"product"},{"label":"Design","value":"design"},{"label":"Engineering","value":"engineering"}]' no-clearing></loomi-select></div>
               </div>
               <div class="component-group">
                 <div class="component-group-label">Tags & alerts</div>
@@ -197,13 +195,14 @@ const initialStylesheet = themeBundle.assetsBase ? `${themeBundle.assetsBase}/${
                     <span class="shell-muted">Overview</span>
                     <strong>Weekly summary</strong>
                   </div>
-                  <button type="button" class="shell-button">Export</button>
+                  <loomi-button color="primary" size="small">New report</loomi-button>
                 </header>
                 <div class="shell-cards">
                   <div class="shell-card"><span class="shell-muted">Active users</span><strong>1,284</strong></div>
                   <div class="shell-card"><span class="shell-muted">Conversion</span><strong>4.8%</strong></div>
                   <div class="shell-card"><span class="shell-muted">MRR</span><strong>$12.8k</strong></div>
                 </div>
+                <div class="shell-chart" aria-hidden="true"><span style="height:38%"></span><span style="height:62%"></span><span style="height:48%"></span><span style="height:76%"></span><span style="height:68%"></span><span style="height:88%"></span><span style="height:72%"></span></div>
               </section>
             </div>
           </section>
@@ -225,20 +224,23 @@ const initialStylesheet = themeBundle.assetsBase ? `${themeBundle.assetsBase}/${
       import "@loomidev/input";
       import "@loomidev/tag";
       import "@loomidev/alert";
+      import "@loomidev/select";
     </script>
 
     <script>
       const bundle = JSON.parse(document.getElementById("theme-builder-data")!.textContent || "{}");
       const presets = bundle.manifest?.presets ?? [];
+      const presetTokens = bundle.tokens ?? {};
       const stylesheet = document.getElementById("pro-theme-stylesheet") as HTMLLinkElement | null;
-      const presetSelect = document.getElementById("base-preset") as HTMLSelectElement;
+      type BuilderSelect = HTMLElement & { selectedValue: string };
+      const presetSelect = document.getElementById("base-preset") as BuilderSelect;
       const primaryInput = document.getElementById("primary-color") as HTMLInputElement;
-      const radiusSelect = document.getElementById("radius-profile") as HTMLSelectElement;
-      const densitySelect = document.getElementById("density-profile") as HTMLSelectElement;
+      const radiusSelect = document.getElementById("radius-profile") as BuilderSelect;
+      const densitySelect = document.getElementById("density-profile") as BuilderSelect;
       const fontFamilyInput = document.getElementById("font-family") as HTMLInputElement;
       const fontFamilyMonoInput = document.getElementById("font-family-mono") as HTMLInputElement;
-      const fontSizeSelect = document.getElementById("font-size-base") as HTMLSelectElement;
-      const lineHeightSelect = document.getElementById("line-height-base") as HTMLSelectElement;
+      const fontSizeSelect = document.getElementById("font-size-base") as BuilderSelect;
+      const lineHeightSelect = document.getElementById("line-height-base") as BuilderSelect;
       const importJson = document.getElementById("import-json") as HTMLTextAreaElement;
       const validationResults = document.getElementById("validation-results") as HTMLUListElement;
       const validateButton = document.getElementById("validate-theme") as HTMLButtonElement;
@@ -247,6 +249,10 @@ const initialStylesheet = themeBundle.assetsBase ? `${themeBundle.assetsBase}/${
       const cssImportCode = document.getElementById("css-import-code") as HTMLElement;
       const shellBrand = document.getElementById("shell-brand") as HTMLElement;
       const modeButtons = Array.from(document.querySelectorAll<HTMLButtonElement>(".mode-btn"));
+      const resetButton = document.getElementById("reset-theme") as HTMLButtonElement;
+      const copyCssButton = document.getElementById("copy-css") as HTMLButtonElement;
+      const downloadButton = document.getElementById("download-theme") as HTMLButtonElement;
+      const previewRoot = document.querySelector<HTMLElement>(".builder-preview-wrap")!;
 
       const radiusProfiles = {
         sharp: { sm: "4px", md: "6px", lg: "8px", panel: "6px" },
@@ -261,15 +267,15 @@ const initialStylesheet = themeBundle.assetsBase ? `${themeBundle.assetsBase}/${
       } as const;
 
       const state = {
-        preset: presetSelect.value,
+        preset: presetSelect.selectedValue,
         primary: primaryInput.value,
-        radius: radiusSelect.value as keyof typeof radiusProfiles,
-        density: densitySelect.value as keyof typeof densityProfiles,
+        radius: radiusSelect.selectedValue as keyof typeof radiusProfiles,
+        density: densitySelect.selectedValue as keyof typeof densityProfiles,
         mode: "light" as "light" | "dark",
         fontFamily: fontFamilyInput.value,
         fontFamilyMono: fontFamilyMonoInput.value,
-        fontSizeBase: fontSizeSelect.value,
-        lineHeightBase: lineHeightSelect.value,
+        fontSizeBase: fontSizeSelect.selectedValue,
+        lineHeightBase: lineHeightSelect.selectedValue,
       };
 
       type ValidationIssue = { path: string; message: string; severity: "error" | "warning" };
@@ -334,8 +340,8 @@ const initialStylesheet = themeBundle.assetsBase ? `${themeBundle.assetsBase}/${
 
       function applyTheme() {
         const preset = selectedPreset();
-        const root = document.documentElement;
-        root.dataset.loomMode = state.mode === "dark" ? "dark" : "";
+        const root = previewRoot;
+        root.dataset.loomiMode = state.mode;
 
         root.style.setProperty("--loomi-primary-500", state.primary);
         root.style.setProperty("--loomi-primary-600", state.primary);
@@ -355,11 +361,10 @@ const initialStylesheet = themeBundle.assetsBase ? `${themeBundle.assetsBase}/${
         root.style.setProperty("--loomi-font-font-family-mono", state.fontFamilyMono);
         root.style.setProperty("--loomi-font-font-size-md", state.fontSizeBase);
         root.style.setProperty("--loomi-font-line-height-normal", state.lineHeightBase);
-        document.body.style.fontFamily = state.fontFamily;
+        previewRoot.style.fontFamily = state.fontFamily;
 
         if (stylesheet) {
-          const option = presetSelect.selectedOptions[0];
-          const cssHref = option?.dataset.css;
+          const cssHref = bundle.assetsBase && preset?.css ? `${bundle.assetsBase}/${preset.css}` : "";
           if (cssHref) stylesheet.href = cssHref;
         }
 
@@ -397,14 +402,21 @@ if (!result.preset) {
 }
 
 import "@loomdev-pro/themes/css/${state.preset}.css";`;
+
+        const url = new URL(window.location.href);
+        url.searchParams.set("preset", state.preset);
+        if (state.mode === "dark") url.searchParams.set("mode", "dark");
+        else url.searchParams.delete("mode");
+        history.replaceState(null, "", url);
       }
 
-      presetSelect.addEventListener("change", () => {
-        state.preset = presetSelect.value;
-        const option = presetSelect.selectedOptions[0];
-        if (option?.dataset.primary) {
-          state.primary = option.dataset.primary;
-          primaryInput.value = option.dataset.primary;
+      presetSelect.addEventListener("loomi-select", (event: any) => {
+        state.preset = event.detail.value;
+        presetSelect.selectedValue = state.preset;
+        const preset = selectedPreset();
+        if (preset?.primary500) {
+          state.primary = preset.primary500;
+          primaryInput.value = preset.primary500;
         }
         applyTheme();
       });
@@ -414,13 +426,15 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
         applyTheme();
       });
 
-      radiusSelect.addEventListener("change", () => {
-        state.radius = radiusSelect.value as keyof typeof radiusProfiles;
+      radiusSelect.addEventListener("loomi-select", (event: any) => {
+        state.radius = event.detail.value as keyof typeof radiusProfiles;
+        radiusSelect.selectedValue = event.detail.value;
         applyTheme();
       });
 
-      densitySelect.addEventListener("change", () => {
-        state.density = densitySelect.value as keyof typeof densityProfiles;
+      densitySelect.addEventListener("loomi-select", (event: any) => {
+        state.density = event.detail.value as keyof typeof densityProfiles;
+        densitySelect.selectedValue = event.detail.value;
         applyTheme();
       });
 
@@ -442,13 +456,15 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
         applyTheme();
       });
 
-      fontSizeSelect.addEventListener("change", () => {
-        state.fontSizeBase = fontSizeSelect.value;
+      fontSizeSelect.addEventListener("loomi-select", (event: any) => {
+        state.fontSizeBase = event.detail.value;
+        fontSizeSelect.selectedValue = event.detail.value;
         applyTheme();
       });
 
-      lineHeightSelect.addEventListener("change", () => {
-        state.lineHeightBase = lineHeightSelect.value;
+      lineHeightSelect.addEventListener("loomi-select", (event: any) => {
+        state.lineHeightBase = event.detail.value;
+        lineHeightSelect.selectedValue = event.detail.value;
         applyTheme();
       });
 
@@ -478,7 +494,7 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
             const matchingPreset = presets.find((entry: any) => entry.name === parsed.name);
             if (matchingPreset) {
               state.preset = parsed.name;
-              presetSelect.value = parsed.name;
+              presetSelect.selectedValue = parsed.name;
             }
           }
 
@@ -493,11 +509,11 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
           }
           if (typography?.fontSizeMd) {
             state.fontSizeBase = typography.fontSizeMd;
-            fontSizeSelect.value = typography.fontSizeMd;
+            fontSizeSelect.selectedValue = typography.fontSizeMd;
           }
           if (typography?.lineHeightNormal) {
             state.lineHeightBase = typography.lineHeightNormal;
-            lineHeightSelect.value = typography.lineHeightNormal;
+            lineHeightSelect.selectedValue = typography.lineHeightNormal;
           }
 
           applyTheme();
@@ -512,6 +528,105 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
         }
       });
 
+      function exportedTheme() {
+        const preset = selectedPreset();
+        const radius = radiusProfiles[state.radius];
+        const density = densityProfiles[state.density];
+        const source = structuredClone(presetTokens[state.preset] ?? { modes: {} });
+        return {
+          ...source,
+          name: "brand-theme",
+          label: "Brand theme",
+          description: `Customized from ${preset?.label ?? "Loomi Default"}.`,
+          builder: {
+            basePreset: state.preset,
+            primary: state.primary,
+            radius,
+            density,
+            typography: {
+              fontFamily: state.fontFamily,
+              fontFamilyMono: state.fontFamilyMono,
+              fontSizeMd: state.fontSizeBase,
+              lineHeightNormal: state.lineHeightBase,
+            },
+          },
+        };
+      }
+
+      function runtimeCss() {
+        const radius = radiusProfiles[state.radius];
+        const density = densityProfiles[state.density];
+        return `:root {
+  --loomi-primary-500: ${state.primary};
+  --loomi-primary-600: ${state.primary};
+  --loomi-primary-700: ${state.primary};
+  --loomi-radius-sm: ${radius.sm};
+  --loomi-radius-md: ${radius.md};
+  --loomi-radius-lg: ${radius.lg};
+  --loomi-component-panel-radius: ${radius.panel};
+  --loomi-density-control-height: ${density.controlHeight};
+  --loomi-density-table-row-height: ${density.tableRowHeight};
+  --loomi-density-gap-inline: ${density.gapInline};
+  --loomi-font-font-family: ${state.fontFamily};
+  --loomi-font-font-family-mono: ${state.fontFamilyMono};
+  --loomi-font-font-size-md: ${state.fontSizeBase};
+  --loomi-font-line-height-normal: ${state.lineHeightBase};
+}`;
+      }
+
+      resetButton.addEventListener("click", () => {
+        const first = presets[0];
+        state.preset = first?.name ?? "default";
+        state.primary = first?.primary500 ?? "#3b82f6";
+        state.radius = "default";
+        state.density = "default";
+        state.mode = "light";
+        state.fontFamily = "Inter, ui-sans-serif, system-ui, sans-serif";
+        state.fontFamilyMono = "'JetBrains Mono', ui-monospace, SFMono-Regular, monospace";
+        state.fontSizeBase = "14px";
+        state.lineHeightBase = "1.5";
+        presetSelect.selectedValue = state.preset;
+        primaryInput.value = state.primary;
+        radiusSelect.selectedValue = state.radius;
+        densitySelect.selectedValue = state.density;
+        fontFamilyInput.value = state.fontFamily;
+        fontFamilyMonoInput.value = state.fontFamilyMono;
+        fontSizeSelect.selectedValue = state.fontSizeBase;
+        lineHeightSelect.selectedValue = state.lineHeightBase;
+        modeButtons.forEach((button) => button.classList.toggle("is-active", button.dataset.mode === "light"));
+        renderValidation([]);
+        applyTheme();
+      });
+
+      copyCssButton.addEventListener("click", async () => {
+        await navigator.clipboard.writeText(runtimeCss());
+        const original = copyCssButton.textContent;
+        copyCssButton.textContent = "Copied";
+        window.setTimeout(() => { copyCssButton.textContent = original; }, 1400);
+      });
+
+      downloadButton.addEventListener("click", () => {
+        const blob = new Blob([JSON.stringify(exportedTheme(), null, 2)], { type: "application/json" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "loomi-brand-theme.json";
+        link.click();
+        URL.revokeObjectURL(link.href);
+      });
+
+      const params = new URL(window.location.href).searchParams;
+      const requestedPreset = params.get("preset");
+      if (requestedPreset && presets.some((preset: any) => preset.name === requestedPreset)) {
+        state.preset = requestedPreset;
+        presetSelect.selectedValue = requestedPreset;
+        state.primary = selectedPreset()?.primary500 ?? state.primary;
+        primaryInput.value = state.primary;
+      }
+      if (params.get("mode") === "dark") {
+        state.mode = "dark";
+        modeButtons.forEach((button) => button.classList.toggle("is-active", button.dataset.mode === "dark"));
+      }
+
       applyTheme();
     </script>
   </body>
@@ -519,21 +634,24 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
 
 <style is:global>
   .builder-layout {
-    margin-top: 2rem;
+    margin-top: 2.5rem;
     display: grid;
-    gap: 1.25rem;
+    gap: 1.5rem;
   }
   @media (min-width: 1024px) {
     .builder-layout {
-      grid-template-columns: 18rem 1fr;
+      grid-template-columns: 22rem minmax(0, 1fr);
+      align-items: start;
     }
+    .builder-panel { position: sticky; top: 5.5rem; max-height: calc(100vh - 7rem); overflow-y: auto; }
   }
   .builder-panel,
   .builder-preview-wrap {
     border: 1px solid rgb(226 232 240);
-    border-radius: 1rem;
-    padding: 1.1rem 1.25rem;
-    background: rgb(248 250 252 / 0.65);
+    border-radius: 1.25rem;
+    padding: 1.35rem;
+    background: white;
+    box-shadow: 0 18px 45px rgb(15 23 42 / .06);
   }
   .dark .builder-panel,
   .dark .builder-preview-wrap {
@@ -541,12 +659,18 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
     background: rgb(15 23 42 / 0.45);
   }
   .builder-panel-title {
-    margin: 0 0 1rem;
-    font-size: 1rem;
+    margin: .15rem 0 0;
+    font-size: 1.05rem;
     font-weight: 700;
   }
+  .builder-panel-heading, .preview-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  .builder-panel-heading > div > span, .preview-heading > div > span { color: rgb(100 116 139); font-size: .68rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
+  .builder-reset { display: inline-flex; align-items: center; gap: .35rem; border: 0; background: transparent; color: rgb(71 85 105); font-size: .75rem; font-weight: 700; cursor: pointer; }
+  .builder-reset loomi-icon { width: .9rem; height: .9rem; }
   .builder-subtitle {
-    margin: 1.25rem 0 0.65rem;
+    margin: 1.4rem 0 0.75rem;
+    padding-top: 1.1rem;
+    border-top: 1px solid rgb(226 232 240);
     font-size: 0.82rem;
     font-weight: 700;
     color: rgb(100 116 139);
@@ -563,6 +687,7 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
     color: rgb(203 213 225);
   }
   .builder-field select,
+  .builder-field loomi-select,
   .builder-field input[type="color"],
   .builder-field input[type="text"],
   .builder-field textarea {
@@ -574,6 +699,8 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
     padding: 0.35rem 0.55rem;
     font: inherit;
   }
+  .builder-field loomi-select { display: block; padding: 0; border: 0; }
+  .builder-field input[type="color"] { height: 3rem; padding: .3rem; cursor: pointer; }
   .builder-field textarea {
     min-height: 8rem;
     resize: vertical;
@@ -592,6 +719,9 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
     margin-bottom: 0.75rem;
   }
   .builder-action {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
     border: 1px solid rgb(226 232 240);
     background: white;
     color: rgb(51 65 85);
@@ -600,6 +730,7 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
     font-size: 0.82rem;
     cursor: pointer;
   }
+  .builder-action loomi-icon { width: .9rem; height: .9rem; }
   .builder-action-primary {
     border-color: rgb(191 219 254);
     background: rgb(239 246 255);
@@ -670,8 +801,12 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
   }
   .component-showcase {
     display: grid;
-    gap: 0.85rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-top: 1.25rem;
   }
+  .component-form-grid { display: grid; gap: .45rem; }
+  .preview-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .5rem; }
   .component-group {
     border: 1px solid rgb(226 232 240);
     border-radius: 0.85rem;
@@ -700,7 +835,7 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
     margin-top: 1rem;
     display: grid;
     grid-template-columns: 9rem 1fr;
-    min-height: 12rem;
+    min-height: 25rem;
     border-radius: var(--loomi-component-panel-radius, 0.75rem);
     overflow: hidden;
     border: 1px solid var(--loomi-surface-border, rgb(226 232 240));
@@ -735,10 +870,12 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
     color: var(--loomi-primary-700, rgb(29 78 216));
   }
   .shell-main {
-    padding: 0.85rem;
+    padding: 1.25rem;
     display: grid;
     gap: 0.75rem;
   }
+  .shell-chart { display: flex; align-items: end; gap: .65rem; min-height: 10rem; border: 1px solid var(--loomi-surface-border, rgb(226 232 240)); border-radius: var(--loomi-component-panel-radius, .75rem); background: var(--loomi-surface, white); padding: 1rem; }
+  .shell-chart span { flex: 1; min-width: .5rem; border-radius: .35rem .35rem .12rem .12rem; background: var(--loomi-primary-500, #3b82f6); opacity: .85; }
   .shell-header {
     display: flex;
     justify-content: space-between;
@@ -775,5 +912,12 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
   .shell-card strong {
     color: var(--loomi-text, rgb(15 23 42));
     font-size: 0.95rem;
+  }
+  @media (max-width: 760px) {
+    .component-showcase { grid-template-columns: 1fr; }
+    .preview-heading { align-items: flex-start; flex-direction: column; }
+    .shell-preview { grid-template-columns: 1fr; }
+    .shell-sidebar { display: none; }
+    .shell-cards { grid-template-columns: 1fr; }
   }
 </style>
