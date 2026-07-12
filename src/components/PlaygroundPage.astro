@@ -1086,10 +1086,6 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
             Pick a LoomiUI component, adjust its properties, then copy production-ready HTML.
           </p>
         </div>
-        <div class="playground-hero-stat" aria-label={`${playgroundComponents.length} components available`}>
-          <strong>{playgroundComponents.length}</strong>
-          <span>components to explore</span>
-        </div>
       </header>
 
       <section class="playground-shell mt-8">
@@ -1400,26 +1396,6 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
     justify-content: space-between;
     gap: 2rem;
     padding: 1.5rem 0 2rem;
-  }
-  .playground-hero-stat {
-    display: grid;
-    flex: none;
-    min-width: 10rem;
-    border-left: 1px solid rgb(226 232 240);
-    padding-left: 1.5rem;
-    color: rgb(100 116 139);
-    font-size: 0.78rem;
-  }
-  .dark .playground-hero-stat { border-color: rgb(51 65 85); color: rgb(148 163 184); }
-  .playground-hero-stat strong {
-    color: rgb(15 23 42);
-    font-size: 2rem;
-    line-height: 1;
-  }
-  .dark .playground-hero-stat strong { color: white; }
-  @media (max-width: 40rem) {
-    .playground-hero { display: block; }
-    .playground-hero-stat { display: none; }
   }
   .playground-field {
     display: grid;
