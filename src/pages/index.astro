@@ -5,7 +5,6 @@ import ProductProofDemos from "../components/home-demos/ProductProofDemos.astro"
 import ThemeProvider from "../components/ThemeProvider.astro";
 import icon from "../assets/icon.png";
 import { buildImportMap } from "../lib/import-map.mjs";
-import { DISPLAY_CATEGORIES } from "../lib/component-categories.mjs";
 import "../styles/home.css";
 
 const importMap = buildImportMap();
@@ -22,11 +21,6 @@ const heroFeatures = [
   { icon: "bolt", title: "Modular", desc: "Install per component" },
 ];
 
-const homeCategoryKeys = new Set(["data-entry", "feedback", "navigation", "overlay", "data-display", "layout"]);
-const componentCategories = [
-  { label: "All", key: "all" },
-  ...DISPLAY_CATEGORIES.filter((category) => homeCategoryKeys.has(category.key)).map((category) => ({ label: category.label, key: category.key })),
-];
 ---
 
 <html lang="en">
@@ -191,24 +185,14 @@ const componentCategories = [
     <section id="home-component-showcase" class="border-t border-gray-100 bg-gray-50/60 dark:border-gray-900 dark:bg-gray-900/20">
       <div class="mx-auto max-w-6xl px-6 py-20">
         <div class="text-center">
-          <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Everything you need to build</h2>
+          <div class="feature-kicker">Core building blocks</div>
+          <h2 class="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">From a single control to a complete workflow</h2>
           <p class="mt-3 text-gray-600 dark:text-gray-400">
-            Start with a focused package or combine components into complete application workflows.
+            A representative set of LoomiUI primitives. Browse the gallery when you need the full catalog.
           </p>
         </div>
 
-        <div class="mt-8 flex flex-wrap justify-center gap-2" id="component-filters">
-          {componentCategories.map((cat, i) => (
-            <button
-              type="button"
-              class="filter-pill"
-              data-filter={cat.key}
-              aria-pressed={i === 0 ? "true" : "false"}
-            >{cat.label}</button>
-          ))}
-        </div>
-
-        <div class="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+        <div class="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
           <div class="component-tile" data-cat="layout" data-href="/components/button/">
             <div class="component-tile-preview">
               <loomi-button color="primary">Button</loomi-button>
@@ -230,52 +214,11 @@ const componentCategories = [
             <div class="component-tile-label">Select</div>
           </div>
 
-          <div class="component-tile" data-cat="data-entry" data-href="/components/checkbox/">
-            <div class="component-tile-preview">
-              <loomi-checkbox checked>Remember me</loomi-checkbox>
-            </div>
-            <div class="component-tile-label">Checkbox</div>
-          </div>
 
-          <div class="component-tile" data-cat="data-entry" data-href="/components/radio/">
-            <div class="component-tile-preview">
-              <loomi-radio label="Option one" name="grid-radio-demo" checked></loomi-radio>
-            </div>
-            <div class="component-tile-label">Radio</div>
-          </div>
 
-          <div class="component-tile" data-cat="data-entry" data-href="/components/toggle/">
-            <div class="component-tile-preview">
-              <loomi-toggle checked></loomi-toggle>
-            </div>
-            <div class="component-tile-label">Switch</div>
-          </div>
 
-          <div class="component-tile" data-cat="data-entry" data-href="/components/textarea/">
-            <div class="component-tile-preview">
-              <loomi-textarea placeholder="Write a message..." rows="2"></loomi-textarea>
-            </div>
-            <div class="component-tile-label">Textarea</div>
-          </div>
 
-          <div class="component-tile" data-cat="data-entry" data-href="/components/datepicker/">
-            <div class="component-tile-preview">
-              <loomi-datepicker placeholder="Select date" size="small"></loomi-datepicker>
-            </div>
-            <div class="component-tile-label">Date Picker</div>
-          </div>
 
-          <div class="component-tile" data-cat="navigation" data-href="/components/dropmenu/">
-            <div class="component-tile-preview">
-              <loomi-dropmenu position="auto">
-                <loomi-button slot="trigger" type="secondary" size="small" icon="chevron-down" icon-right>Open menu</loomi-button>
-                <loomi-dropmenu-item>Edit</loomi-dropmenu-item>
-                <loomi-dropmenu-item>Duplicate</loomi-dropmenu-item>
-                <loomi-dropmenu-item>Delete</loomi-dropmenu-item>
-              </loomi-dropmenu>
-            </div>
-            <div class="component-tile-label">Dropdown</div>
-          </div>
 
           <div class="component-tile" data-cat="overlay" data-href="/components/modal/">
             <div class="component-tile-preview">
@@ -294,18 +237,6 @@ const componentCategories = [
             <div class="component-tile-label">Table</div>
           </div>
 
-          <div class="component-tile" data-cat="layout" data-href="/components/card/">
-            <div class="component-tile-preview w-full">
-              <loomi-card class="w-full text-left">
-                <loomi-card-header>
-                  <div class="mb-2 h-6 w-6 rounded bg-gray-200 dark:bg-gray-700"></div>
-                  <loomi-card-title>Card title</loomi-card-title>
-                  <loomi-card-description>This is a card component.</loomi-card-description>
-                </loomi-card-header>
-              </loomi-card>
-            </div>
-            <div class="component-tile-label">Card</div>
-          </div>
 
           <div class="component-tile" data-cat="feedback" data-href="/components/alert/">
             <div class="component-tile-preview w-full">
@@ -314,53 +245,18 @@ const componentCategories = [
             <div class="component-tile-label">Alert</div>
           </div>
 
-          <div class="component-tile" data-cat="navigation" data-href="/components/tab/">
+          <div class="component-tile" data-cat="data-display" data-href="/components/chart/">
             <div class="component-tile-preview w-full">
-              <loomi-tabs class="w-full">
-                <loomi-tab label="Tab 1" active></loomi-tab>
-                <loomi-tab label="Tab 2"></loomi-tab>
-              </loomi-tabs>
+              <loomi-chart type="line" color="primary" show-y-axis="false" data='[{"label":"Mon","value":18},{"label":"Tue","value":26},{"label":"Wed","value":22},{"label":"Thu","value":34},{"label":"Fri","value":31}]' style="height:4.5rem;width:100%;display:block"></loomi-chart>
             </div>
-            <div class="component-tile-label">Tabs</div>
+            <div class="component-tile-label">Chart</div>
           </div>
 
-          <div class="component-tile" data-cat="data-display" data-href="/components/tag/">
-            <div class="component-tile-preview">
-              <loomi-tag label="New" color="primary"></loomi-tag>
-            </div>
-            <div class="component-tile-label">Badge</div>
-          </div>
 
-          <div class="component-tile" data-cat="data-entry" data-href="/components/autocomplete/">
-            <div class="component-tile-preview">
-              <loomi-autocomplete placeholder="Search teammates" size="small"></loomi-autocomplete>
-            </div>
-            <div class="component-tile-label">Autocomplete</div>
-          </div>
 
-          <div class="component-tile" data-cat="feedback" data-href="/components/notification/">
-            <div class="component-tile-preview">
-              <loomi-button size="small" type="secondary" onclick="showLoomiNotification('Saved', 'Your changes were saved.')">Notify me</loomi-button>
-            </div>
-            <div class="component-tile-label">Notification</div>
-          </div>
 
-          <div class="component-tile" data-cat="overlay" data-href="/components/drawer/">
-            <div class="component-tile-preview">
-              <loomi-button size="small" type="secondary" onclick="showLoomiDrawer('grid-drawer-demo')">Open drawer</loomi-button>
-              <loomi-drawer name="grid-drawer-demo" title="Filters">
-                A real sliding panel from the <code>@loomidev/drawer</code> package.
-              </loomi-drawer>
-            </div>
-            <div class="component-tile-label">Drawer</div>
-          </div>
 
-          <div class="component-tile" data-cat="layout" data-href="/components/sortable/">
-            <div class="component-tile-preview w-full">
-              <loomi-sortable items='[{"id":"a","label":"Tomatoes"},{"id":"b","label":"Lettuce"}]'></loomi-sortable>
-            </div>
-            <div class="component-tile-label">Sortable</div>
-          </div>
+
 
           <div class="component-tile" data-cat="data-display" data-href="/components/calendar/">
             <div class="component-tile-preview w-full">
@@ -371,31 +267,12 @@ const componentCategories = [
             <div class="component-tile-label">Calendar</div>
           </div>
 
-          <div class="component-tile" data-cat="data-display" data-href="/components/chat/">
-            <div class="component-tile-preview w-full">
-              <div style="height:5.5rem;width:100%;overflow:hidden;display:flex;flex-direction:column;justify-content:center;gap:.3rem;padding:0 .5rem;transform:scale(.9)">
-                <loomi-chat-message text="Can we ship this today?" sender="Sara" sender-id="sara" bubble-color="success" show-avatar></loomi-chat-message>
-                <loomi-chat-message text="Yes — pushing now." sender="You" sender-id="you" bubble-color="primary" outgoing show-avatar></loomi-chat-message>
-              </div>
-            </div>
-            <div class="component-tile-label">Chat</div>
-          </div>
 
-          <div class="component-tile" data-cat="overlay" data-href="/components/floating-panel/">
-            <div class="component-tile-preview w-full">
-              <div style="height:5.5rem;width:100%;overflow:hidden;position:relative">
-                <loomi-floating-panel name="grid-floating-panel-demo" title="Notes" open top="6%" left="6%" width="88%" height="82%" no-drag resizable="false" show-close-icon="false" style="position:absolute"></loomi-floating-panel>
-              </div>
-            </div>
-            <div class="component-tile-label">Floating Panel</div>
-          </div>
         </div>
 
-        <div class="mt-10 text-center">
-          <a href="/components/" class="inline-flex items-center gap-1 text-sm font-semibold text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300">
-            View free components
-            <loomi-icon name="arrow-right" style="width:0.9rem;height:0.9rem"></loomi-icon>
-          </a>
+        <div class="mt-10 flex flex-wrap justify-center gap-3">
+          <loomi-button color="primary" tag="a" href="/components/">Explore all components</loomi-button>
+          <loomi-button type="secondary" tag="a" href="/playground/">Try the Playground</loomi-button>
         </div>
       </div>
     </section>
@@ -602,7 +479,7 @@ const componentCategories = [
         await Promise.all(pending.map((name) => import("@loomidev/" + name)));
       };
       const groups = new Map([
-        [document.getElementById("home-component-showcase"), ["card", "tag", "select", "checkbox", "radio", "textarea", "datepicker", "modal", "table", "alert", "tab", "sortable", "autocomplete", "notification", "drawer", "calendar", "chat", "floating-panel"]],
+        [document.getElementById("home-component-showcase"), ["select", "modal", "table", "alert", "calendar"]],
         [document.getElementById("home-theme-showcase"), ["select"]],
         [document.querySelector(".proof-band"), ["card", "tag", "password", "select", "checkbox", "radio", "textarea", "datepicker", "date-range-picker", "timepicker", "timezonepicker", "filepicker", "modal", "tooltip", "floating-panel", "table", "alert", "bell", "button-group", "tab", "listview", "statistic", "horizontal-line-graph", "sortable", "progress", "timeline", "empty-state", "tag-input", "creditcard", "slider", "colorpicker", "countries", "notification", "drawer", "autocomplete", "calendar", "chat"]],
       ]);
@@ -621,10 +498,6 @@ const componentCategories = [
     </script>
 
     <script>
-      // "Everything you need to build" filter pills: pure client-side show/hide, no
-      // routing — data-cat on each tile is a curated grouping for this showcase, not
-      // tied to the docs site's own category taxonomy.
-      const filterBar = document.getElementById("component-filters");
       const tiles = document.querySelectorAll<HTMLElement>(".component-tile");
       tiles.forEach((tile) => {
         const link = document.createElement("a");
@@ -636,19 +509,6 @@ const componentCategories = [
       document.querySelectorAll<HTMLElement>(".component-tile-preview").forEach((preview) => {
         preview.setAttribute("inert", "");
         preview.setAttribute("aria-hidden", "true");
-      });
-      filterBar?.addEventListener("click", (e) => {
-        const target = e.target;
-        if (!(target instanceof Element)) return;
-        const button = target.closest("button[data-filter]");
-        if (!(button instanceof HTMLElement)) return;
-        const filter = button.dataset.filter ?? "all";
-        for (const b of filterBar.querySelectorAll("button[data-filter]")) {
-          b.setAttribute("aria-pressed", String(b === button));
-        }
-        for (const tile of tiles) {
-          tile.classList.toggle("hidden", filter !== "all" && tile.dataset.cat !== filter);
-        }
       });
     </script>
 

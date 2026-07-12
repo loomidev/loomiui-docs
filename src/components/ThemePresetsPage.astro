@@ -968,13 +968,14 @@ function paletteFor(preset: any) {
   .section-heading h2, .delivery-section h2, .purchase-panel h2 { margin: .3rem 0 0; font-size: 1.75rem; line-height: 1.2; font-weight: 750; letter-spacing: -.025em; }
   .section-heading > p { max-width: 30rem; margin: 0; color: rgb(75 85 99); line-height: 1.6; }
   .preset-carousel { position: relative; margin-top: 1.5rem; }
-  .carousel-button { position: absolute; top: 50%; z-index: 3; display: grid; width: 2.5rem; height: 2.5rem; place-items: center; border: 1px solid rgb(203 213 225); border-radius: 999px; background: white; color: rgb(30 41 59); cursor: pointer; }
+  .carousel-button { position: absolute; top: 50%; z-index: 3; display: grid; width: 2.75rem; height: 2.75rem; place-items: center; border: 3px solid rgb(148 163 184); border-radius: 999px; background: white; color: rgb(15 23 42); box-shadow: 0 4px 14px rgb(15 23 42 / .16); cursor: pointer; }
   #preset-prev { left: 0; transform: translate(-50%, -50%); }
   #preset-next { right: 0; transform: translate(50%, -50%); }
-  .carousel-button:hover { border-color: rgb(96 165 250); color: rgb(37 99 235); }
+  .carousel-button:hover { border-color: rgb(37 99 235); color: rgb(37 99 235); }
   .carousel-button:disabled { opacity: .4; cursor: default; }
   .carousel-button loomi-icon { width: 1rem; height: 1rem; }
-  .preset-grid { display: flex; min-width: 0; gap: .85rem; overflow-x: auto; border: 1px solid rgb(226 232 240); border-radius: 1.15rem; padding: .75rem 1rem 1.25rem; scroll-behavior: smooth; scroll-snap-type: x mandatory; scrollbar-width: thin; }
+  .preset-grid { display: flex; min-width: 0; gap: .85rem; overflow-x: auto; padding: .75rem 1rem 1.25rem; -ms-overflow-style: none; scroll-behavior: smooth; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .preset-grid::-webkit-scrollbar { display: none; width: 0; height: 0; }
   .preset-card { position: relative; display: grid; flex: 0 0 clamp(15rem, 24vw, 18rem); align-content: start; min-height: 12.5rem; overflow: hidden; scroll-snap-align: start; border: 1px solid rgb(226 232 240); border-radius: 1rem; background: white; padding: 0; color: rgb(15 23 42); text-align: left; cursor: pointer; transition: border-color .15s, box-shadow .15s, transform .15s; }
   .preset-card:hover { transform: translateY(-2px); border-color: rgb(147 197 253); box-shadow: 0 12px 28px rgb(15 23 42 / .07); }
   .preset-card.is-active { border-color: rgb(37 99 235); box-shadow: 0 0 0 3px rgb(219 234 254); }
@@ -1107,8 +1108,7 @@ function paletteFor(preset: any) {
   :global(.dark) .section-eyebrow { color: rgb(148 163 184); }
   :global(.dark) .workbench .section-eyebrow { color: var(--preview-text-muted); }
   :global(.dark) .preset-card, :global(.dark) .delivery-grid article { border-color: rgb(55 65 81); background: rgb(17 24 39); color: rgb(243 244 246); }
-  :global(.dark) .carousel-button { border-color: rgb(55 65 81); background: rgb(17 24 39); color: rgb(226 232 240); }
-  :global(.dark) .preset-grid { border-color: rgb(55 65 81); }
+  :global(.dark) .carousel-button { border-color: rgb(100 116 139); background: rgb(17 24 39); color: rgb(241 245 249); }
   :global(.dark) .preset-card-copy small { color: rgb(156 163 175); }
   :global(.dark) .preset-card.is-active { border-color: rgb(96 165 250); box-shadow: 0 0 0 3px rgb(30 58 138 / .65); }
   :global(.dark) .purchase-panel { background: rgb(30 58 138 / .3); }
