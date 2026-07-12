@@ -334,7 +334,7 @@ const templateFamilies = [
   .preview-panel { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); overflow: hidden; border: 1px solid rgb(229 231 235); border-radius: 1.25rem; background: rgb(249 250 251); }
   .preview-copy { padding: 2rem; }
   .preview-copy > p { color: rgb(75 85 99); line-height: 1.65; }
-  .preview-copy > .section-eyebrow { color: rgb(37 99 235); }
+  .section-heading .section-eyebrow, .preview-copy > .section-eyebrow, .selector-label { color: rgb(100 116 139); }
   .framework-tag { border: 1px solid rgb(209 213 219); border-radius: 999px; background: white; padding: .45rem .75rem; color: rgb(55 65 81); font-size: .8rem; font-weight: 650; }
   .included-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .65rem 1.75rem; margin: .85rem 0 0; padding: 0; list-style: none; color: rgb(75 85 99); font-size: .875rem; }
   :global(#included-pages > li) { position: relative; padding-left: 1rem; }
@@ -357,6 +357,7 @@ const templateFamilies = [
   .purchase-panel p:last-child { margin: .65rem 0 0; color: rgb(75 85 99); }
   @keyframes spin { to { transform: rotate(360deg); } }
   :global(.dark) .section-heading > p, :global(.dark) .preview-copy > p, :global(.dark) .included-list, :global(.dark) .purchase-panel p:last-child, :global(.dark) .fullscreen-templates-link { color: rgb(156 163 175); }
+  :global(.dark) .section-heading .section-eyebrow, :global(.dark) .preview-copy > .section-eyebrow, :global(.dark) .selector-label { color: rgb(148 163 184); }
   :global(.dark) .family-card { border-color: rgb(55 65 81); background: rgb(17 24 39); color: rgb(243 244 246); }
   :global(.dark) .family-card.is-active { border-color: rgb(96 165 250); box-shadow: 0 0 0 3px rgb(30 58 138 / .6); }
   :global(.dark) .family-card > span:last-child { color: rgb(156 163 175); }

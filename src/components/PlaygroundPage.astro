@@ -1077,14 +1077,20 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
   <body class="bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
     <MarketingHeader />
 
-    <main class="mx-auto max-w-7xl px-6 py-10">
-      <div class="feature-kicker">Playground</div>
-      <div>
-        <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">Playground</h1>
-        <p class="mt-3 max-w-2xl text-lg leading-7 text-gray-600 dark:text-gray-400">
-          Select a component, tune its props, and inspect the markup as it changes.
-        </p>
-      </div>
+    <main class="playground-page mx-auto max-w-7xl px-6 py-10">
+      <header class="playground-hero">
+        <div>
+          <div class="feature-kicker">Component lab</div>
+          <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">Build it your way.</h1>
+          <p class="mt-3 max-w-2xl text-lg leading-7 text-gray-600 dark:text-gray-400">
+            Pick a LoomiUI component, adjust its properties, then copy production-ready HTML.
+          </p>
+        </div>
+        <div class="playground-hero-stat" aria-label={`${playgroundComponents.length} components available`}>
+          <strong>{playgroundComponents.length}</strong>
+          <span>components to explore</span>
+        </div>
+      </header>
 
       <section class="playground-shell mt-8">
         <div class="playground-preview-panel">
@@ -1106,8 +1112,9 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
           <div class="playground-code-block">
             <div class="playground-code-header">
               <span>HTML</span>
-              <button type="button" id="copy-code" class="playground-icon-button" aria-label="Copy HTML">
+              <button type="button" id="copy-code" class="playground-copy-button" aria-label="Copy HTML">
                 <loomi-icon name="clipboard-document" style="width:1rem;height:1rem"></loomi-icon>
+                <span id="copy-label">Copy</span>
               </button>
             </div>
             <pre><code id="markup-code"></code></pre>
@@ -1119,17 +1126,14 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
             <div class="playground-controls-heading">
               <h2>Component</h2>
             </div>
-            <loomi-alert type="info" shade="faint" show-close-icon="false" class="playground-picker-note">
-              Only components whose props map to plain attributes are listed.
-            </loomi-alert>
-            <loomi-select
+            <p class="playground-picker-note">Choose from components with editable HTML attributes.</p>
+            <select
               id="component-select"
-              searchable
-              no-clearing
-              placeholder="Select a component"
-              selected-value={playgroundComponents[0].key}
-              data={JSON.stringify(componentOptions)}
-            ></loomi-select>
+              class="playground-native-select"
+              aria-label="Select a component"
+            >
+              {componentOptions.map((option) => <option value={option.value}>{option.label}</option>)}
+            </select>
           </section>
 
           <aside class="playground-controls-panel" aria-label="Component props">
@@ -1187,16 +1191,9 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
         slot?: string;
         controls: Control[];
       };
-      type SelectDetail = { value: string; label: string; values: string[] };
-
-      // loomi-select options can't carry an empty-string value (an empty
-      // `selected-value` reads as "nothing selected"), so "Default" options travel
-      // under this sentinel and are translated back to "" before rendering markup.
-      const DEFAULT_OPTION = "__default__";
-
       const components = JSON.parse(document.getElementById("playground-data")!.textContent || "[]") as PlaygroundComponent[];
       const byKey = new Map(components.map((component) => [component.key, component]));
-      const select = document.getElementById("component-select") as HTMLElement;
+      const select = document.getElementById("component-select") as HTMLSelectElement;
       const titleEl = document.getElementById("component-title") as HTMLElement;
       const descriptionEl = document.getElementById("component-description") as HTMLElement;
       const docsLink = document.getElementById("docs-link") as HTMLAnchorElement;
@@ -1205,6 +1202,7 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
       const codeEl = document.getElementById("markup-code") as HTMLElement;
       const resetButton = document.getElementById("reset-props") as HTMLButtonElement;
       const copyButton = document.getElementById("copy-code") as HTMLButtonElement;
+      const copyLabel = document.getElementById("copy-label") as HTMLElement;
 
       let active = components[0];
       let values: Record<string, string | number | boolean> = { ...active.defaults };
@@ -1298,18 +1296,17 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
         wrapper.append(text);
 
         if (control.type === "select") {
-          const input = document.createElement("loomi-select");
-          const options = (control.options ?? []).map((option) => ({
-            label: option || "Default",
-            value: option || DEFAULT_OPTION,
-          }));
-          input.setAttribute("size", "small");
-          input.setAttribute("no-clearing", "");
-          input.setAttribute("data", JSON.stringify(options));
-          input.setAttribute("selected-value", String(values[control.key] ?? "") || DEFAULT_OPTION);
-          input.addEventListener("select", (event) => {
-            const picked = (event as CustomEvent<SelectDetail>).detail.value;
-            values[control.key] = picked === DEFAULT_OPTION ? "" : picked;
+          const input = document.createElement("select");
+          input.className = "playground-native-select";
+          for (const option of control.options ?? []) {
+            const optionEl = document.createElement("option");
+            optionEl.value = option;
+            optionEl.textContent = option || "Default";
+            input.append(optionEl);
+          }
+          input.value = String(values[control.key] ?? "");
+          input.addEventListener("change", () => {
+            values[control.key] = input.value;
             renderPreview();
           });
           wrapper.append(input);
@@ -1367,12 +1364,16 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
         renderPreview();
       }
 
-      select.addEventListener("select", (event) => activate((event as CustomEvent<SelectDetail>).detail.value));
+      select.addEventListener("change", () => activate(select.value));
       resetButton.addEventListener("click", () => activate(active.key));
       copyButton.addEventListener("click", async () => {
         await navigator.clipboard?.writeText(codeEl.textContent ?? "");
         copyButton.classList.add("is-copied");
-        window.setTimeout(() => copyButton.classList.remove("is-copied"), 900);
+        copyLabel.textContent = "Copied";
+        window.setTimeout(() => {
+          copyButton.classList.remove("is-copied");
+          copyLabel.textContent = "Copy";
+        }, 1200);
       });
 
       activate(active.key);
@@ -1384,6 +1385,36 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
      the client script at runtime, so they never receive Astro's scope class — scoped
      selectors would silently miss them. Every selector is .playground-* prefixed. -->
 <style is:global>
+  .playground-page {
+    min-height: calc(100vh - 4rem);
+  }
+  .playground-hero {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: 1.5rem 0 2rem;
+  }
+  .playground-hero-stat {
+    display: grid;
+    flex: none;
+    min-width: 10rem;
+    border-left: 1px solid rgb(226 232 240);
+    padding-left: 1.5rem;
+    color: rgb(100 116 139);
+    font-size: 0.78rem;
+  }
+  .dark .playground-hero-stat { border-color: rgb(51 65 85); color: rgb(148 163 184); }
+  .playground-hero-stat strong {
+    color: rgb(15 23 42);
+    font-size: 2rem;
+    line-height: 1;
+  }
+  .dark .playground-hero-stat strong { color: white; }
+  @media (max-width: 40rem) {
+    .playground-hero { display: block; }
+    .playground-hero-stat { display: none; }
+  }
   .playground-field {
     display: grid;
     gap: 0.45rem;
@@ -1398,7 +1429,8 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
   .playground-field > span {
     font-weight: 700;
   }
-  .playground-field input {
+  .playground-field input,
+  .playground-native-select {
     width: 100%;
     border-radius: 0.6rem;
     border: 1px solid rgb(226 232 240);
@@ -1408,25 +1440,20 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
     font: inherit;
     font-weight: 500;
   }
-  .dark .playground-field input {
+  .dark .playground-field input,
+  .dark .playground-native-select {
     border-color: rgb(51 65 85);
     background: rgb(15 23 42 / 0.72);
     color: white;
   }
   .playground-picker-note {
-    display: block;
-    margin-bottom: 0.85rem;
-    font-size: 0.82rem;
+    margin: -0.35rem 0 0.85rem;
+    color: rgb(100 116 139);
+    font-size: 0.78rem;
     line-height: 1.5;
   }
-  /* loomi-select ships a 1rem bottom margin for form flow (`no-clearing` is also set
-     on each instance); the picker card and control grids space themselves. */
-  .playground-picker-panel loomi-select,
-  .playground-field loomi-select {
-    margin-bottom: 0;
-    width: 100%;
-    font-weight: 500;
-  }
+  .dark .playground-picker-note { color: rgb(148 163 184); }
+  .playground-native-select { appearance: auto; cursor: pointer; }
   .playground-shell {
     display: grid;
     gap: 1rem;
@@ -1446,9 +1473,9 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
   .playground-picker-panel,
   .playground-controls-panel {
     border: 1px solid rgb(226 232 240);
-    border-radius: 0.8rem;
+    border-radius: 1rem;
     background: white;
-    box-shadow: 0 12px 30px -24px rgb(15 23 42 / 0.36);
+    box-shadow: 0 18px 45px -32px rgb(15 23 42 / 0.4);
   }
   .dark .playground-preview-panel,
   .dark .playground-picker-panel,
@@ -1496,7 +1523,7 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
   }
   .playground-docs-link,
   .playground-reset,
-  .playground-icon-button {
+  .playground-copy-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1511,19 +1538,19 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
   }
   .dark .playground-docs-link,
   .dark .playground-reset,
-  .dark .playground-icon-button {
+  .dark .playground-copy-button {
     color: rgb(96 165 250);
   }
   .playground-preview-stage {
     display: grid;
-    min-height: 22rem;
+    min-height: 25rem;
     place-items: center;
     padding: 2rem;
     background:
       linear-gradient(90deg, rgb(226 232 240 / 0.55) 1px, transparent 1px),
       linear-gradient(rgb(226 232 240 / 0.55) 1px, transparent 1px),
       rgb(248 250 252);
-    background-size: 24px 24px;
+    background-size: 28px 28px;
   }
   .dark .playground-preview-stage {
     background:
@@ -1538,7 +1565,7 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
     align-items: center;
     justify-content: center;
     border: 1px solid rgb(226 232 240);
-    border-radius: 0.7rem;
+    border-radius: 1rem;
     background: white;
     padding: 2rem;
   }
@@ -1576,22 +1603,22 @@ const packagesToImport = [...new Set(playgroundComponents.map((component) => com
     border-color: rgb(51 65 85);
     color: rgb(148 163 184);
   }
-  .playground-icon-button {
-    height: 2rem;
-    width: 2rem;
+  .playground-copy-button {
+    min-height: 2rem;
     border-radius: 0.5rem;
+    padding: 0 0.65rem;
     color: rgb(100 116 139);
   }
-  .playground-icon-button:hover,
-  .playground-icon-button.is-copied {
+  .playground-copy-button:hover,
+  .playground-copy-button.is-copied {
     background: rgb(226 232 240);
     color: rgb(15 23 42);
   }
-  .dark .playground-icon-button {
+  .dark .playground-copy-button {
     color: rgb(148 163 184);
   }
-  .dark .playground-icon-button:hover,
-  .dark .playground-icon-button.is-copied {
+  .dark .playground-copy-button:hover,
+  .dark .playground-copy-button.is-copied {
     background: rgb(51 65 85);
     color: white;
   }
