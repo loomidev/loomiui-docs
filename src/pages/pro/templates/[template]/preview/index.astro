@@ -1,5 +1,5 @@
 ---
-import ProTemplatePreviewPage from "../../../../../components/ProTemplatePreviewPage.astro";
+import ProTemplatesLandingPage from "../../../../../components/ProTemplatesLandingPage.astro";
 
 export function getStaticPaths() {
   return ["admin", "saas", "crm", "analytics"].map((template) => ({ params: { template } }));
@@ -8,4 +8,4 @@ export function getStaticPaths() {
 const { template } = Astro.params;
 ---
 
-<ProTemplatePreviewPage template={template!} />
+<ProTemplatesLandingPage initialPreview={template} />

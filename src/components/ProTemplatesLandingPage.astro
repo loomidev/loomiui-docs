@@ -2,6 +2,11 @@
 import ProLandingShell from "./ProLandingShell.astro";
 import { PRO_LICENSING_URL } from "../lib/pro-licensing.mjs";
 
+interface Props {
+  initialPreview?: string;
+}
+
+const { initialPreview = "" } = Astro.props;
 const title = "Templates - LoomiUI Pro";
 const description = "Production-ready application templates for Lit, Next.js, Nuxt, and Laravel Inertia.";
 
@@ -108,13 +113,13 @@ const templateFamilies = [
         </ul>
       </div>
 
-      <a class="preview-link" id="preview-link" href="/pro/templates/admin/preview/">
+      <a class="preview-link" id="preview-link" href="/pro/templates/?preview=admin" data-open-preview>
         View Live Preview
         <loomi-icon name="arrow-right"></loomi-icon>
       </a>
     </div>
 
-    <a class="preview-image-wrap" id="preview-image-link" href="/pro/templates/admin/preview/" tabindex="-1">
+    <a class="preview-image-wrap" id="preview-image-link" href="/pro/templates/?preview=admin" data-open-preview tabindex="-1">
       <img
         id="preview-image"
         src="/pro/templates/admin/vite-lit/dashboard-desktop.png"
@@ -122,6 +127,36 @@ const templateFamilies = [
       />
     </a>
   </section>
+
+  <loomi-modal
+    id="template-preview-modal"
+    name="template-live-preview"
+    size="omg"
+    show-action-buttons="false"
+    show-close-icon
+    aria-label="Template full screen live preview"
+  >
+    <div class="fullscreen-preview">
+      <a href="/pro/templates/" class="fullscreen-templates-link" id="close-preview-to-templates">
+        <loomi-icon name="arrow-left"></loomi-icon>
+        View other templates
+      </a>
+
+      <div class="fullscreen-iframe-wrap">
+        <div class="frame-loading" id="fullscreen-frame-loading">
+          <loomi-icon name="arrow-path"></loomi-icon>
+          <strong id="fullscreen-loading-title">Loading Admin Pro</strong>
+          <span>The real Lit template app runs in this frame.</span>
+        </div>
+        <iframe
+          id="fullscreen-template-preview-frame"
+          title="Admin Pro HTML and Lit full screen live preview"
+          allow="clipboard-write; fullscreen"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads"
+        ></iframe>
+      </div>
+    </div>
+  </loomi-modal>
 
   <section class="purchase-panel">
     <div>
@@ -132,7 +167,7 @@ const templateFamilies = [
     <loomi-button color="primary" tag="a" href={PRO_LICENSING_URL}>View Pro licenses</loomi-button>
   </section>
 
-  <script is:inline define:vars={{ templateFamilies }}>
+  <script is:inline define:vars={{ templateFamilies, initialPreview }}>
     const familyButtons = Array.from(document.querySelectorAll("[data-template]"));
     const title = document.getElementById("preview-title");
     const description = document.getElementById("preview-description");
@@ -140,7 +175,13 @@ const templateFamilies = [
     const previewLink = document.getElementById("preview-link");
     const imageLink = document.getElementById("preview-image-link");
     const image = document.getElementById("preview-image");
+    const previewModal = document.getElementById("template-preview-modal");
+    const previewFrame = document.getElementById("fullscreen-template-preview-frame");
+    const previewLoading = document.getElementById("fullscreen-frame-loading");
+    const previewLoadingTitle = document.getElementById("fullscreen-loading-title");
+    const otherTemplatesLink = document.getElementById("close-preview-to-templates");
     let selectedTemplate = templateFamilies[0].key;
+    let closeTriggeredByHistory = false;
 
     function selectedFamily() {
       return templateFamilies.find((family) => family.key === selectedTemplate);
@@ -163,17 +204,116 @@ const templateFamilies = [
         return item;
       }));
 
-      const previewHref = `/pro/templates/${family.key}/preview/`;
+      const previewHref = `/pro/templates/?preview=${family.key}`;
       previewLink.href = previewHref;
       imageLink.href = previewHref;
       image.src = `/pro/templates/${family.key}/vite-lit/dashboard-desktop.png`;
       image.alt = `${family.name} dashboard preview`;
     }
 
+    function familyForKey(key) {
+      return templateFamilies.find((family) => family.key === key);
+    }
+
+    async function openPreview(template, pushHistory) {
+      const family = familyForKey(template);
+      if (!family) return;
+
+      selectedTemplate = family.key;
+      render();
+
+      const previewSrc = `/pro/live/${family.key}/`;
+      if (previewFrame.getAttribute("src") !== previewSrc) {
+        previewLoading.classList.remove("is-hidden");
+        previewLoadingTitle.textContent = `Loading ${family.name}`;
+        previewFrame.title = `${family.name} HTML and Lit full screen live preview`;
+        previewFrame.src = previewSrc;
+      }
+
+      if (pushHistory) {
+        const url = new URL(window.location.href);
+        url.searchParams.set("preview", family.key);
+        history.pushState({ loomiTemplatePreview: family.key }, "", url);
+      }
+
+      await customElements.whenDefined("loomi-modal");
+      await previewModal.updateComplete;
+      previewModal.show?.();
+    }
+
+    function removePreviewFromUrl() {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("preview");
+      history.replaceState(null, "", url);
+    }
+
     familyButtons.forEach((button) => button.addEventListener("click", () => {
       selectedTemplate = button.dataset.template;
       render();
     }));
+
+    document.querySelectorAll("[data-open-preview]").forEach((link) => {
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+        openPreview(selectedTemplate, true);
+      });
+    });
+
+    previewFrame.addEventListener("load", () => previewLoading.classList.add("is-hidden"));
+
+    otherTemplatesLink.addEventListener("click", (event) => {
+      event.preventDefault();
+      previewModal.hide?.();
+    });
+
+    previewModal.addEventListener("close", () => {
+      if (closeTriggeredByHistory) {
+        closeTriggeredByHistory = false;
+        return;
+      }
+
+      if (history.state?.loomiTemplatePreview) {
+        history.back();
+      } else {
+        removePreviewFromUrl();
+      }
+    });
+
+    window.addEventListener("popstate", () => {
+      const template = new URL(window.location.href).searchParams.get("preview");
+      if (familyForKey(template)) {
+        openPreview(template, false);
+      } else if (previewModal.hasAttribute("open")) {
+        closeTriggeredByHistory = true;
+        previewModal.hide?.();
+      }
+    });
+
+    function openRequestedPreview() {
+      const urlPreview = new URL(window.location.href).searchParams.get("preview");
+      const requestedPreview = familyForKey(urlPreview)
+        ? urlPreview
+        : familyForKey(initialPreview)
+          ? initialPreview
+          : null;
+
+      if (!requestedPreview) return;
+
+      const shouldCanonicalize = urlPreview !== requestedPreview;
+      openPreview(requestedPreview, false).then(() => {
+        if (!shouldCanonicalize) return;
+        const canonicalUrl = new URL(window.location.href);
+        canonicalUrl.pathname = "/pro/templates/";
+        canonicalUrl.searchParams.set("preview", requestedPreview);
+        history.replaceState(null, "", canonicalUrl);
+      });
+    }
+
+    if (document.readyState === "complete") {
+      openRequestedPreview();
+    } else {
+      window.addEventListener("load", openRequestedPreview, { once: true });
+    }
 
   </script>
 </ProLandingShell>
@@ -203,9 +343,20 @@ const templateFamilies = [
   .preview-link loomi-icon { width: 1rem; height: 1rem; }
   .preview-image-wrap { display: flex; min-height: 30rem; align-items: center; padding: 2rem 0 2rem 2rem; background: linear-gradient(145deg, rgb(219 234 254), rgb(238 242 255)); }
   .preview-image-wrap img { width: 100%; border: 1px solid rgb(203 213 225); border-right: 0; border-radius: .85rem 0 0 .85rem; box-shadow: 0 24px 50px rgb(30 64 175 / .18); }
+  .fullscreen-preview { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 1rem; height: calc(90vh - 3rem); min-height: 30rem; }
+  .fullscreen-templates-link { display: inline-flex; align-items: center; justify-self: start; gap: .45rem; color: rgb(75 85 99); font-size: .875rem; font-weight: 650; text-decoration: none; }
+  .fullscreen-templates-link:hover { color: rgb(37 99 235); }
+  .fullscreen-templates-link loomi-icon { width: 1rem; height: 1rem; }
+  .fullscreen-iframe-wrap { position: relative; min-height: 0; overflow: hidden; border: 1px solid rgb(203 213 225); border-radius: .8rem; background: white; }
+  .fullscreen-iframe-wrap iframe { display: block; width: 100%; height: 100%; border: 0; background: white; }
+  .frame-loading { position: absolute; inset: 0; z-index: 1; display: grid; align-content: center; justify-items: center; gap: .5rem; background: rgb(248 250 252); color: rgb(30 41 59); text-align: center; transition: opacity .2s, visibility .2s; }
+  .frame-loading.is-hidden { visibility: hidden; opacity: 0; pointer-events: none; }
+  .frame-loading loomi-icon { width: 1.75rem; height: 1.75rem; margin-bottom: .35rem; color: rgb(37 99 235); animation: spin 1s linear infinite; }
+  .frame-loading span { color: rgb(100 116 139); font-size: .875rem; }
   .purchase-panel { display: flex; align-items: center; justify-content: space-between; gap: 2rem; margin-top: 4rem; border-radius: 1.25rem; background: rgb(239 246 255); padding: 2rem; }
   .purchase-panel p:last-child { margin: .65rem 0 0; color: rgb(75 85 99); }
-  :global(.dark) .section-heading > p, :global(.dark) .preview-copy > p, :global(.dark) .included-list, :global(.dark) .purchase-panel p:last-child { color: rgb(156 163 175); }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  :global(.dark) .section-heading > p, :global(.dark) .preview-copy > p, :global(.dark) .included-list, :global(.dark) .purchase-panel p:last-child, :global(.dark) .fullscreen-templates-link { color: rgb(156 163 175); }
   :global(.dark) .family-card { border-color: rgb(55 65 81); background: rgb(17 24 39); color: rgb(243 244 246); }
   :global(.dark) .family-card.is-active { border-color: rgb(96 165 250); box-shadow: 0 0 0 3px rgb(30 58 138 / .6); }
   :global(.dark) .family-card > span:last-child { color: rgb(156 163 175); }
@@ -218,5 +369,6 @@ const templateFamilies = [
     .section-heading, .purchase-panel { align-items: flex-start; flex-direction: column; }
     .preview-panel { grid-template-columns: 1fr; }
     .preview-image-wrap { min-height: 0; padding: 0 0 1.5rem 1.5rem; }
+    .fullscreen-preview { height: calc(90vh - 2.5rem); min-height: 24rem; }
   }
 </style>
