@@ -38,7 +38,6 @@ function loadThemeBundle() {
 
 const themeBundle = loadThemeBundle();
 const initialPreset = themeBundle.manifest.presets[0];
-const initialStylesheet = themeBundle.assetsBase ? `${themeBundle.assetsBase}/${initialPreset.css}` : null;
 const presetOptions = themeBundle.manifest.presets.map((preset: any) => ({ label: preset.label, value: preset.name }));
 const radiusOptions = [{ label: "Sharp · 4–8px", value: "sharp" }, { label: "Balanced · 6–12px", value: "default" }, { label: "Rounded · 8–16px", value: "rounded" }];
 const densityOptions = [{ label: "Compact", value: "compact" }, { label: "Comfortable", value: "default" }, { label: "Spacious", value: "spacious" }];
@@ -53,32 +52,32 @@ const lineHeightOptions = [{ label: "Tight · 1.4", value: "1.4" }, { label: "De
     <title>{title}</title>
     <meta name="description" content={feature.description} />
     <link rel="icon" href="/favicon.png" />
-    {initialStylesheet && <link id="pro-theme-stylesheet" rel="stylesheet" href={initialStylesheet} />}
     <script type="importmap" is:inline set:html={JSON.stringify(importMap)} />
   </head>
   <body class="bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
     <MarketingHeader />
 
-    <div class="mx-auto max-w-7xl px-6 py-10 lg:grid lg:grid-cols-[15rem_1fr] lg:items-start lg:gap-10">
+    <div class="mx-auto max-w-[90rem] px-6 py-10 lg:grid lg:grid-cols-[14rem_1fr] lg:items-start lg:gap-10">
       <ProSidebar currentPath="/pro/themes/theme-builder/" activeCategory="theme-builder" />
 
       <div class="mt-10 min-w-0 lg:mt-0">
-        <div class="feature-kicker">{feature.kicker}</div>
-        <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">{feature.title}</h1>
-        <p class="mt-3 max-w-3xl text-lg leading-7 text-gray-600 dark:text-gray-400">{feature.description}</p>
-
-        <ul class="mt-6 grid gap-3 sm:grid-cols-2">
-          {feature.highlights.map((line: string) => (
-            <li class="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-300">
-              <loomi-icon name="check-circle" style="width:1rem;height:1rem;color:rgb(37 99 235);flex-shrink:0;margin-top:0.1rem"></loomi-icon>
-              <span>{line}</span>
-            </li>
-          ))}
-        </ul>
+        <section class="builder-hero">
+          <div class="builder-hero-copy">
+            <div class="feature-kicker">{feature.kicker}</div>
+            <h1>{feature.title}</h1>
+            <p>{feature.description}</p>
+          </div>
+          <div class="builder-hero-meta" aria-label="Theme builder capabilities">
+            <div><loomi-icon name="swatch"></loomi-icon><span><strong>Live tokens</strong>See every change instantly</span></div>
+            <div><loomi-icon name="code-bracket"></loomi-icon><span><strong>Production output</strong>Copy CSS or export JSON</span></div>
+            <div><loomi-icon name="check-circle"></loomi-icon><span><strong>Validated</strong>Import themes with confidence</span></div>
+          </div>
+        </section>
 
         <div class="builder-layout">
           <aside class="builder-panel" aria-label="Theme builder controls">
-            <div class="builder-panel-heading"><div><span>Theme controls</span><h2 class="builder-panel-title">Build your foundation</h2></div><button type="button" class="builder-reset" id="reset-theme"><loomi-icon name="arrow-path"></loomi-icon>Reset</button></div>
+            <div class="builder-panel-heading"><div><span>Configuration</span><h2 class="builder-panel-title">Theme settings</h2></div><button type="button" class="builder-reset" id="reset-theme"><loomi-icon name="arrow-path"></loomi-icon>Reset</button></div>
+            <p class="builder-panel-copy">Start from a preset, then tune the brand foundation used by every component.</p>
 
             <h3 class="builder-subtitle">Foundation</h3>
 
@@ -153,13 +152,18 @@ const lineHeightOptions = [{ label: "Tight · 1.4", value: "1.4" }, { label: "De
 
           <section class="builder-preview-wrap" aria-label="Live theme preview">
             <div class="preview-heading">
-              <div><span>Live canvas</span><h2 class="builder-panel-title">Preview your theme</h2></div>
+              <div><span>Live preview</span><h2 class="builder-panel-title">Product workspace</h2><p>Changes are scoped to this canvas.</p></div>
               <div class="preview-actions">
                 <button type="button" class="builder-action" id="copy-css"><loomi-icon name="clipboard"></loomi-icon>Copy CSS</button>
                 <button type="button" class="builder-action builder-action-primary" id="download-theme"><loomi-icon name="arrow-down-tray"></loomi-icon>Download JSON</button>
               </div>
             </div>
-            <div class="component-showcase">
+            <div class="preview-canvas">
+              <div class="preview-browser-bar" aria-hidden="true">
+                <span></span><span></span><span></span>
+                <div>app.yourcompany.com</div>
+              </div>
+              <div class="component-showcase">
               <div class="component-group">
                 <div class="component-group-label">Buttons</div>
                 <div class="component-group-row">
@@ -180,9 +184,9 @@ const lineHeightOptions = [{ label: "Tight · 1.4", value: "1.4" }, { label: "De
                 </div>
                 <loomi-alert type="success" class="text-xs">Theme tokens applied to LoomiUI components.</loomi-alert>
               </div>
-            </div>
+              </div>
 
-            <div class="shell-preview">
+              <div class="shell-preview">
               <aside class="shell-sidebar">
                 <strong id="shell-brand">{initialPreset.label}</strong>
                 <span class="shell-muted">Preview workspace</span>
@@ -204,6 +208,7 @@ const lineHeightOptions = [{ label: "Tight · 1.4", value: "1.4" }, { label: "De
                 </div>
                 <div class="shell-chart" aria-hidden="true"><span style="height:38%"></span><span style="height:62%"></span><span style="height:48%"></span><span style="height:76%"></span><span style="height:68%"></span><span style="height:88%"></span><span style="height:72%"></span></div>
               </section>
+              </div>
             </div>
           </section>
         </div>
@@ -231,7 +236,6 @@ const lineHeightOptions = [{ label: "Tight · 1.4", value: "1.4" }, { label: "De
       const bundle = JSON.parse(document.getElementById("theme-builder-data")!.textContent || "{}");
       const presets = bundle.manifest?.presets ?? [];
       const presetTokens = bundle.tokens ?? {};
-      const stylesheet = document.getElementById("pro-theme-stylesheet") as HTMLLinkElement | null;
       type BuilderSelect = HTMLElement & { selectedValue: string };
       const presetSelect = document.getElementById("base-preset") as BuilderSelect;
       const primaryInput = document.getElementById("primary-color") as HTMLInputElement;
@@ -338,14 +342,55 @@ const lineHeightOptions = [{ label: "Tight · 1.4", value: "1.4" }, { label: "De
         return presets.find((entry: any) => entry.name === state.preset) ?? presets[0];
       }
 
+      function applyPresetTokens(root: HTMLElement) {
+        const mode = presetTokens[state.preset]?.modes?.[state.mode];
+        if (!mode) return;
+
+        const tokenGroups = [
+          ["primary", mode.color?.primary],
+          ["gray", mode.color?.neutral],
+          ["success", mode.color?.success],
+          ["warning", mode.color?.warning],
+          ["error", mode.color?.error],
+        ] as const;
+        tokenGroups.forEach(([name, values]) => {
+          Object.entries(values ?? {}).forEach(([step, value]) => root.style.setProperty(`--loomi-${name}-${step}`, String(value)));
+        });
+
+        const surface = mode.color?.surface ?? {};
+        const text = mode.color?.text ?? {};
+        const semanticTokens = {
+          "--loomi-surface": surface.base,
+          "--loomi-surface-muted": surface.muted,
+          "--loomi-surface-hover": surface.hover,
+          "--loomi-surface-raised": surface.raised,
+          "--loomi-surface-border": surface.border,
+          "--loomi-surface-border-subtle": surface.borderSubtle,
+          "--loomi-text": text.base,
+          "--loomi-text-secondary": text.secondary,
+          "--loomi-text-muted": text.muted,
+          "--loomi-text-faint": text.faint,
+          "--loomi-text-on-primary": text.onPrimary,
+          "--loomi-focus-ring": mode.color?.focusRing,
+        };
+        Object.entries(semanticTokens).forEach(([name, value]) => {
+          if (value) root.style.setProperty(name, String(value));
+        });
+      }
+
       function applyTheme() {
         const preset = selectedPreset();
         const root = previewRoot;
         root.dataset.loomiMode = state.mode;
 
+        applyPresetTokens(root);
+
         root.style.setProperty("--loomi-primary-500", state.primary);
-        root.style.setProperty("--loomi-primary-600", state.primary);
-        root.style.setProperty("--loomi-primary-700", state.primary);
+        root.style.setProperty("--loomi-primary-50", `color-mix(in srgb, ${state.primary} 10%, white)`);
+        root.style.setProperty("--loomi-primary-100", `color-mix(in srgb, ${state.primary} 20%, white)`);
+        root.style.setProperty("--loomi-primary-300", `color-mix(in srgb, ${state.primary} 55%, white)`);
+        root.style.setProperty("--loomi-primary-600", `color-mix(in srgb, ${state.primary} 85%, black)`);
+        root.style.setProperty("--loomi-primary-700", `color-mix(in srgb, ${state.primary} 70%, black)`);
 
         const radius = radiusProfiles[state.radius];
         root.style.setProperty("--loomi-radius-sm", radius.sm);
@@ -357,16 +402,14 @@ const lineHeightOptions = [{ label: "Tight · 1.4", value: "1.4" }, { label: "De
         root.style.setProperty("--loomi-density-control-height", density.controlHeight);
         root.style.setProperty("--loomi-density-table-row-height", density.tableRowHeight);
         root.style.setProperty("--loomi-density-gap-inline", density.gapInline);
+        root.style.setProperty("--builder-density-space", density.gapInline);
         root.style.setProperty("--loomi-font-font-family", state.fontFamily);
         root.style.setProperty("--loomi-font-font-family-mono", state.fontFamilyMono);
         root.style.setProperty("--loomi-font-font-size-md", state.fontSizeBase);
         root.style.setProperty("--loomi-font-line-height-normal", state.lineHeightBase);
         previewRoot.style.fontFamily = state.fontFamily;
-
-        if (stylesheet) {
-          const cssHref = bundle.assetsBase && preset?.css ? `${bundle.assetsBase}/${preset.css}` : "";
-          if (cssHref) stylesheet.href = cssHref;
-        }
+        previewRoot.style.fontSize = state.fontSizeBase;
+        previewRoot.style.lineHeight = state.lineHeightBase;
 
         shellBrand.textContent = preset?.label ?? "Brand theme";
         exportCode.textContent = `import { createTheme, palettes } from "@loomdev-pro/themes";
@@ -633,14 +676,39 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
 </html>
 
 <style is:global>
+  .builder-hero {
+    display: grid;
+    gap: 2rem;
+    overflow: hidden;
+    border: 1px solid rgb(219 234 254);
+    border-radius: 1.5rem;
+    background:
+      radial-gradient(circle at 92% 0%, rgb(191 219 254 / .7), transparent 30rem),
+      linear-gradient(135deg, rgb(248 250 252), rgb(239 246 255));
+    padding: clamp(1.5rem, 4vw, 3rem);
+  }
+  .builder-hero-copy h1 { margin: .65rem 0 0; max-width: 45rem; font-size: clamp(2.25rem, 5vw, 4.25rem); line-height: .98; letter-spacing: -.05em; }
+  .builder-hero-copy > p { max-width: 45rem; margin: 1rem 0 0; color: rgb(71 85 105); font-size: 1.05rem; line-height: 1.7; }
+  .builder-hero-meta { display: grid; gap: .75rem; }
+  .builder-hero-meta > div { display: grid; grid-template-columns: 2.25rem 1fr; align-items: center; gap: .75rem; border: 1px solid rgb(255 255 255 / .8); border-radius: .85rem; background: rgb(255 255 255 / .72); padding: .75rem; box-shadow: 0 8px 24px rgb(30 64 175 / .06); }
+  .builder-hero-meta loomi-icon { width: 1.1rem; height: 1.1rem; margin: auto; color: rgb(37 99 235); }
+  .builder-hero-meta span { color: rgb(100 116 139); font-size: .76rem; }
+  .builder-hero-meta strong { display: block; color: rgb(30 41 59); font-size: .82rem; }
+  .dark .builder-hero { border-color: rgb(30 58 138); background: radial-gradient(circle at 92% 0%, rgb(30 64 175 / .45), transparent 30rem), rgb(15 23 42); }
+  .dark .builder-hero-copy > p { color: rgb(148 163 184); }
+  .dark .builder-hero-meta > div { border-color: rgb(51 65 85); background: rgb(15 23 42 / .75); }
+  .dark .builder-hero-meta strong { color: rgb(226 232 240); }
+  @media (min-width: 1180px) {
+    .builder-hero { grid-template-columns: minmax(0, 1fr) 18rem; align-items: end; }
+  }
   .builder-layout {
-    margin-top: 2.5rem;
+    margin-top: 1.5rem;
     display: grid;
     gap: 1.5rem;
   }
   @media (min-width: 1024px) {
     .builder-layout {
-      grid-template-columns: 22rem minmax(0, 1fr);
+      grid-template-columns: 20rem minmax(0, 1fr);
       align-items: start;
     }
     .builder-panel { position: sticky; top: 5.5rem; max-height: calc(100vh - 7rem); overflow-y: auto; }
@@ -648,10 +716,10 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
   .builder-panel,
   .builder-preview-wrap {
     border: 1px solid rgb(226 232 240);
-    border-radius: 1.25rem;
+    border-radius: 1.35rem;
     padding: 1.35rem;
     background: white;
-    box-shadow: 0 18px 45px rgb(15 23 42 / .06);
+    box-shadow: 0 16px 40px rgb(15 23 42 / .05);
   }
   .dark .builder-panel,
   .dark .builder-preview-wrap {
@@ -663,6 +731,7 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
     font-size: 1.05rem;
     font-weight: 700;
   }
+  .builder-panel-copy, .preview-heading p { margin: .55rem 0 0; color: rgb(100 116 139); font-size: .78rem; line-height: 1.5; }
   .builder-panel-heading, .preview-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
   .builder-panel-heading > div > span, .preview-heading > div > span { color: rgb(100 116 139); font-size: .68rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
   .builder-reset { display: inline-flex; align-items: center; gap: .35rem; border: 0; background: transparent; color: rgb(71 85 105); font-size: .75rem; font-weight: 700; cursor: pointer; }
@@ -736,6 +805,16 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
     background: rgb(239 246 255);
     color: rgb(29 78 216);
   }
+  .preview-canvas { overflow: hidden; margin-top: 1.25rem; border: 1px solid var(--loomi-surface-border, rgb(203 213 225)); border-radius: var(--loomi-radius-lg, 1rem); background: var(--loomi-surface-muted, rgb(241 245 249)); color: var(--loomi-text, rgb(15 23 42)); box-shadow: 0 24px 55px rgb(15 23 42 / .12); transition: background-color .18s, border-color .18s, color .18s, border-radius .18s; }
+  .preview-browser-bar { display: grid; grid-template-columns: .55rem .55rem .55rem minmax(0, 1fr); align-items: center; gap: .4rem; border-bottom: 1px solid rgb(226 232 240); background: white; padding: .65rem .8rem; }
+  .preview-browser-bar > span { width: .55rem; height: .55rem; border-radius: 999px; background: rgb(203 213 225); }
+  .preview-browser-bar > span:first-child { background: rgb(248 113 113); }
+  .preview-browser-bar > span:nth-child(2) { background: rgb(251 191 36); }
+  .preview-browser-bar > span:nth-child(3) { background: rgb(74 222 128); }
+  .preview-browser-bar > div { justify-self: center; width: min(18rem, 70%); border-radius: 999px; background: rgb(241 245 249); padding: .3rem .75rem; color: rgb(100 116 139); font-size: .68rem; text-align: center; }
+  .dark .preview-canvas { border-color: rgb(51 65 85); background: rgb(2 6 23); }
+  .dark .preview-browser-bar { border-color: rgb(51 65 85); background: rgb(15 23 42); }
+  .dark .preview-browser-bar > div { background: rgb(30 41 59); color: rgb(148 163 184); }
   .validation-results {
     list-style: none;
     margin: 0 0 0.75rem;
@@ -802,16 +881,18 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
   .component-showcase {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.75rem;
-    margin-top: 1.25rem;
+    gap: var(--builder-density-space, .75rem);
+    padding: var(--builder-density-space, 1rem);
   }
   .component-form-grid { display: grid; gap: .45rem; }
   .preview-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .5rem; }
   .component-group {
     border: 1px solid rgb(226 232 240);
-    border-radius: 0.85rem;
+    border-color: var(--loomi-surface-border, rgb(226 232 240));
+    border-radius: var(--loomi-radius-lg, 0.85rem);
     background: var(--loomi-surface, white);
-    padding: 0.85rem 0.95rem;
+    padding: var(--builder-density-space, .85rem);
+    transition: background-color .18s, border-color .18s, border-radius .18s, padding .18s;
   }
   .dark .component-group {
     border-color: rgb(51 65 85);
@@ -832,7 +913,7 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
     gap: 0.55rem;
   }
   .shell-preview {
-    margin-top: 1rem;
+    margin: 0 1rem 1rem;
     display: grid;
     grid-template-columns: 9rem 1fr;
     min-height: 25rem;
@@ -870,9 +951,11 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
     color: var(--loomi-primary-700, rgb(29 78 216));
   }
   .shell-main {
-    padding: 1.25rem;
+    padding: calc(var(--builder-density-space, .75rem) + .5rem);
     display: grid;
-    gap: 0.75rem;
+    gap: var(--builder-density-space, .75rem);
+    background: var(--loomi-surface-muted, rgb(248 250 252));
+    transition: background-color .18s, padding .18s;
   }
   .shell-chart { display: flex; align-items: end; gap: .65rem; min-height: 10rem; border: 1px solid var(--loomi-surface-border, rgb(226 232 240)); border-radius: var(--loomi-component-panel-radius, .75rem); background: var(--loomi-surface, white); padding: 1rem; }
   .shell-chart span { flex: 1; min-width: .5rem; border-radius: .35rem .35rem .12rem .12rem; background: var(--loomi-primary-500, #3b82f6); opacity: .85; }

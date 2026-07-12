@@ -349,7 +349,7 @@ const templateFamilies = [
   .fullscreen-templates-link { display: inline-flex; align-items: center; justify-self: start; gap: .45rem; color: rgb(75 85 99); font-size: .875rem; font-weight: 650; text-decoration: none; }
   .fullscreen-templates-link:hover { color: rgb(37 99 235); }
   .fullscreen-templates-link loomi-icon { width: 1rem; height: 1rem; }
-  .fullscreen-iframe-wrap { position: relative; min-height: 0; overflow: hidden; border: 1px solid rgb(203 213 225); border-radius: .8rem; background: white; }
+  .fullscreen-iframe-wrap { position: relative; justify-self: center; width: min(calc(100% - 4rem), 72rem); min-height: 0; overflow: hidden; border: 1px solid rgb(203 213 225); border-radius: .8rem; background: white; }
   .fullscreen-iframe-wrap iframe { display: block; width: 100%; height: 100%; border: 0; background: white; }
   .frame-loading { position: absolute; inset: 0; z-index: 1; display: grid; align-content: center; justify-items: center; gap: .5rem; background: rgb(248 250 252); color: rgb(30 41 59); text-align: center; transition: opacity .2s, visibility .2s; }
   .frame-loading.is-hidden { visibility: hidden; opacity: 0; pointer-events: none; }
@@ -373,5 +373,6 @@ const templateFamilies = [
     .preview-panel { grid-template-columns: 1fr; }
     .preview-image-wrap { min-height: 0; padding: 0 0 1.5rem 1.5rem; }
     .fullscreen-preview { height: calc(90vh - 2.5rem); min-height: 24rem; }
+    .fullscreen-iframe-wrap { width: calc(100% - 1rem); }
   }
 </style>
