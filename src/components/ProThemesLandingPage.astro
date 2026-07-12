@@ -1,18 +1,34 @@
 ---
 import ProLandingShell from "./ProLandingShell.astro";
 import { PRO_LICENSING_URL } from "../lib/pro-licensing.mjs";
+import { readFileSync, existsSync } from "node:fs";
+import { resolve } from "node:path";
 
 const title = "Themes - LoomiUI Pro";
 const description = "Theme presets, design tokens, visual tooling, and matching Figma resources for LoomiUI.";
 
-const presets = [
-  { slug: "default", name: "Default Loomi", description: "Balanced blue surfaces for general product interfaces.", colors: ["#2563eb", "#60a5fa", "#eff6ff", "#111827"] },
-  { slug: "saas-admin", name: "SaaS Admin", description: "Clean, compact styling for dashboards and settings.", colors: ["#4f46e5", "#818cf8", "#eef2ff", "#1e1b4b"] },
-  { slug: "fintech", name: "Fintech", description: "Confident green and slate for financial products.", colors: ["#059669", "#34d399", "#ecfdf5", "#064e3b"] },
-  { slug: "healthcare", name: "Healthcare", description: "Calm teal surfaces with clear semantic states.", colors: ["#0d9488", "#5eead4", "#f0fdfa", "#134e4a"] },
-  { slug: "developer-tools", name: "Developer Tools", description: "Focused violet styling for technical interfaces.", colors: ["#7c3aed", "#a78bfa", "#f5f3ff", "#2e1065"] },
-  { slug: "high-contrast", name: "High Contrast", description: "Stronger boundaries and contrast for accessible UI.", colors: ["#1d4ed8", "#facc15", "#ffffff", "#000000"] },
-];
+const themeRoot = [resolve(process.cwd(), "public/pro/themes"), resolve(process.cwd(), "../pro/packages/themes/dist")]
+  .find((root) => existsSync(resolve(root, "json/manifest.json")));
+const themeManifest = themeRoot
+  ? JSON.parse(readFileSync(resolve(themeRoot, "json/manifest.json"), "utf8"))
+  : { presets: [] };
+const presets: Array<{ slug: string; name: string; description: string; colors: string[] }> = themeManifest.presets.slice(0, 6).map((preset: any) => {
+  const tokenPath = themeRoot && resolve(themeRoot, preset.json);
+  const mode = tokenPath && existsSync(tokenPath)
+    ? JSON.parse(readFileSync(tokenPath, "utf8")).modes?.light
+    : null;
+  return {
+    slug: preset.name,
+    name: preset.label,
+    description: preset.description,
+    colors: [
+      mode?.color?.primary?.[500] ?? preset.primary500,
+      mode?.color?.primary?.[200] ?? preset.primary500,
+      mode?.color?.surface?.muted ?? "#f8fafc",
+      mode?.color?.text?.base ?? "#0f172a",
+    ],
+  };
+});
 
 const workflow = [
   { number: "01", title: "Choose a preset", description: "Start with a visual direction designed for a real product category." },

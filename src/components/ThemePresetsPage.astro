@@ -140,7 +140,6 @@ const analyticsMetrics = [
   { label: "Total users", value: "24.8K", delta: "18.6%", spark: sparkline([44, 50, 47, 58, 54, 63, 60, 70, 66, 76]) },
   { label: "New users", value: "12.4K", delta: "16.3%", spark: sparkline([30, 44, 36, 50, 42, 56, 48, 62, 54, 66]) },
 ];
-const stripSpark = sparkline([30, 45, 38, 52, 46, 60, 54, 68, 60, 74]);
 
 const channelChartData = JSON.stringify([
   { label: "Organic search", value: 4300 },
@@ -219,7 +218,11 @@ function paletteFor(preset: any) {
       <p>Select any preset to update the preview and implementation details below.</p>
     </div>
 
-    <div class="preset-grid" id="preset-grid">
+    <div class="preset-carousel-controls" aria-label="Theme preset carousel controls">
+      <button type="button" class="carousel-button" id="preset-prev" aria-label="Show previous presets"><loomi-icon name="chevron-left"></loomi-icon></button>
+      <button type="button" class="carousel-button" id="preset-next" aria-label="Show next presets"><loomi-icon name="chevron-right"></loomi-icon></button>
+    </div>
+    <div class="preset-grid" id="preset-grid" aria-label="Theme presets">
       {presets.map((preset: any, index: number) => (
         <button
           type="button"
@@ -650,58 +653,6 @@ function paletteFor(preset: any) {
       </aside>
     </div>
 
-    <div class="components-strip">
-      <div class="components-strip-header">
-        <strong>See how this theme styles core components</strong>
-        <a href="/components/">View all components <loomi-icon name="arrow-right"></loomi-icon></a>
-      </div>
-      <div class="strip-grid">
-        <div class="strip-card">
-          <small>Button</small>
-          <div class="strip-demo">
-            <loomi-button color="primary" size="small">Primary</loomi-button>
-            <loomi-button type="secondary" size="small">Secondary</loomi-button>
-          </div>
-        </div>
-        <div class="strip-card">
-          <small>Input</small>
-          <loomi-input placeholder="Type something…" size="small"></loomi-input>
-        </div>
-        <div class="strip-card">
-          <small>Select</small>
-          <loomi-select size="small" aria-label="Example select" data='[{"label":"Select an option","value":""},{"label":"Option A","value":"a"},{"label":"Option B","value":"b"}]'></loomi-select>
-        </div>
-        <div class="strip-card">
-          <small>Table</small>
-          <table class="mini-table">
-            <thead><tr><th>Name</th><th>Status</th></tr></thead>
-            <tbody><tr><td>Campaign A</td><td><loomi-tag label="Active" color="success" rounded></loomi-tag></td></tr></tbody>
-          </table>
-        </div>
-        <div class="strip-card">
-          <small>Badge</small>
-          <div class="strip-demo">
-            <loomi-tag label="Active" color="success" rounded></loomi-tag>
-            <loomi-tag label="Pending" color="warning" rounded></loomi-tag>
-          </div>
-        </div>
-        <div class="strip-card">
-          <small>Alert</small>
-          <div class="mini-alert">
-            <loomi-icon name="check-circle"></loomi-icon>
-            <span>Changes saved</span>
-            <button type="button" data-dismiss-alert aria-label="Dismiss alert"><loomi-icon name="x-mark"></loomi-icon></button>
-          </div>
-        </div>
-        <div class="strip-card">
-          <small>Chart</small>
-          <svg class="metric-spark strip-spark" viewBox="0 0 120 36" preserveAspectRatio="none" aria-hidden="true">
-            <path d={stripSpark.area}></path>
-            <polyline points={stripSpark.line}></polyline>
-          </svg>
-        </div>
-      </div>
-    </div>
   </section>
 
   <section class="delivery-section">
@@ -750,6 +701,9 @@ function paletteFor(preset: any) {
     const manifest = themeData.manifest?.presets ?? [];
     const tokens = themeData.tokens ?? {};
     const presetButtons = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-preset]"));
+    const presetGrid = document.getElementById("preset-grid") as HTMLElement;
+    const presetPrev = document.getElementById("preset-prev") as HTMLButtonElement;
+    const presetNext = document.getElementById("preset-next") as HTMLButtonElement;
     const modeButtons = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-mode]"));
     const viewportButtons = Array.from(document.querySelectorAll<HTMLButtonElement>(".viewport-button[data-viewport]"));
     const pmButtons = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-pm]"));
@@ -909,6 +863,23 @@ function paletteFor(preset: any) {
       });
     }
 
+    function updateCarouselControls() {
+      const maxScroll = presetGrid.scrollWidth - presetGrid.clientWidth;
+      presetPrev.disabled = presetGrid.scrollLeft <= 2;
+      presetNext.disabled = presetGrid.scrollLeft >= maxScroll - 2;
+    }
+
+    function scrollPresetCarousel(direction: number) {
+      const card = presetGrid.querySelector<HTMLElement>(".preset-card");
+      const gap = Number.parseFloat(getComputedStyle(presetGrid).gap) || 0;
+      presetGrid.scrollBy({ left: direction * ((card?.offsetWidth ?? presetGrid.clientWidth) + gap), behavior: "smooth" });
+    }
+
+    presetPrev.addEventListener("click", () => scrollPresetCarousel(-1));
+    presetNext.addEventListener("click", () => scrollPresetCarousel(1));
+    presetGrid.addEventListener("scroll", updateCarouselControls, { passive: true });
+    window.addEventListener("resize", updateCarouselControls);
+
     presetButtons.forEach((button) => button.addEventListener("click", () => {
       activePreset = button.dataset.preset!;
       render();
@@ -963,7 +934,7 @@ function paletteFor(preset: any) {
     });
     document.querySelectorAll<HTMLButtonElement>("[data-dismiss-alert]").forEach((button) => {
       button.addEventListener("click", () => {
-        const alert = button.closest<HTMLElement>(".demo-alert, .mini-alert");
+        const alert = button.closest<HTMLElement>(".demo-alert");
         if (alert) alert.hidden = true;
       });
     });
@@ -975,6 +946,11 @@ function paletteFor(preset: any) {
     if (requestedPreset && getPreset(requestedPreset)) activePreset = requestedPreset;
     if (params.get("mode") === "dark") activeMode = "dark";
     render();
+    window.requestAnimationFrame(() => {
+      const activeCard = presetGrid.querySelector<HTMLElement>(`.preset-card[data-preset="${activePreset}"]`);
+      if (activeCard) presetGrid.scrollLeft = Math.max(0, activeCard.offsetLeft - presetGrid.offsetLeft);
+      updateCarouselControls();
+    });
   </script>
 </ProLandingShell>
 
@@ -987,12 +963,17 @@ function paletteFor(preset: any) {
   .preset-hero h1 { max-width: 52rem; margin: .65rem 0 0; font-size: clamp(2.65rem, 5vw, 4.75rem); line-height: .98; letter-spacing: -.05em; }
   .preset-hero > div:first-child > p:last-child { max-width: 46rem; margin: 1.25rem 0 0; color: rgb(75 85 99); font-size: 1.05rem; line-height: 1.75; }
   .hero-actions { display: flex; flex: none; flex-wrap: wrap; gap: .65rem; }
-  .catalog-section { margin-top: 5rem; }
+  .catalog-section { position: relative; margin-top: 5rem; }
   .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 2rem; }
   .section-heading h2, .delivery-section h2, .purchase-panel h2 { margin: .3rem 0 0; font-size: 1.75rem; line-height: 1.2; font-weight: 750; letter-spacing: -.025em; }
   .section-heading > p { max-width: 30rem; margin: 0; color: rgb(75 85 99); line-height: 1.6; }
-  .preset-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .85rem; margin-top: 1.75rem; }
-  .preset-card { position: relative; display: grid; align-content: start; min-height: 12.5rem; overflow: hidden; border: 1px solid rgb(226 232 240); border-radius: 1rem; background: white; padding: 0; color: rgb(15 23 42); text-align: left; cursor: pointer; transition: border-color .15s, box-shadow .15s, transform .15s; }
+  .preset-carousel-controls { display: flex; justify-content: flex-end; gap: .5rem; margin-top: 1.25rem; }
+  .carousel-button { display: grid; width: 2.5rem; height: 2.5rem; place-items: center; border: 1px solid rgb(203 213 225); border-radius: 999px; background: white; color: rgb(30 41 59); cursor: pointer; }
+  .carousel-button:hover { border-color: rgb(96 165 250); color: rgb(37 99 235); }
+  .carousel-button:disabled { opacity: .4; cursor: default; }
+  .carousel-button loomi-icon { width: 1rem; height: 1rem; }
+  .preset-grid { display: flex; gap: .85rem; margin-top: .75rem; overflow-x: auto; padding: .25rem .2rem 1rem; scroll-behavior: smooth; scroll-snap-type: x mandatory; scrollbar-width: thin; }
+  .preset-card { position: relative; display: grid; flex: 0 0 clamp(15rem, 24vw, 18rem); align-content: start; min-height: 12.5rem; overflow: hidden; scroll-snap-align: start; border: 1px solid rgb(226 232 240); border-radius: 1rem; background: white; padding: 0; color: rgb(15 23 42); text-align: left; cursor: pointer; transition: border-color .15s, box-shadow .15s, transform .15s; }
   .preset-card:hover { transform: translateY(-2px); border-color: rgb(147 197 253); box-shadow: 0 12px 28px rgb(15 23 42 / .07); }
   .preset-card.is-active { border-color: rgb(37 99 235); box-shadow: 0 0 0 3px rgb(219 234 254); }
   .preset-palette { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; height: 4.25rem; }
@@ -1108,23 +1089,6 @@ function paletteFor(preset: any) {
   .import-note { margin: 0; color: var(--preview-text-muted); font-size: .72rem; }
   .copy-feedback { display: block; min-height: .9rem; color: var(--preview-primary-strong); font-size: .68rem; }
 
-  .components-strip { border-top: 1px solid var(--preview-border); padding: 1.25rem 1.75rem 1.5rem; }
-  .components-strip-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: .85rem; }
-  .components-strip-header strong { font-size: .85rem; }
-  .components-strip-header a { display: inline-flex; align-items: center; gap: .3rem; color: var(--preview-primary-strong); font-size: .75rem; font-weight: 700; text-decoration: none; }
-  .components-strip-header loomi-icon { width: .85rem; height: .85rem; }
-  .strip-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr)); gap: .6rem; }
-  .strip-card { display: grid; align-content: start; gap: .6rem; min-width: 0; overflow: hidden; border: 1px solid var(--preview-border); border-radius: .8rem; background: var(--preview-surface-muted); padding: .75rem; }
-  .strip-card > small { color: var(--preview-text-muted); font-size: .65rem; font-weight: 700; }
-  .strip-demo { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; }
-  .mini-table { width: 100%; border-collapse: collapse; font-size: .62rem; }
-  .mini-table th { border-bottom: 1px solid var(--preview-border); padding: .25rem 0; color: var(--preview-text-muted); font-weight: 650; text-align: left; }
-  .mini-table td { padding: .4rem 0; }
-  .mini-alert { display: flex; align-items: center; gap: .35rem; border-radius: .5rem; background: var(--preview-primary-soft); padding: .45rem .55rem; color: var(--preview-primary-strong); font-size: .62rem; font-weight: 650; }
-  .mini-alert loomi-icon { width: .85rem; height: .85rem; flex: none; }
-  .mini-alert span { flex: 1; min-width: 0; }
-  .mini-alert button { display: grid; place-items: center; border: 0; background: none; padding: .1rem; color: var(--preview-primary-strong); cursor: pointer; }
-  .strip-spark { height: 2.6rem; margin-top: 0; }
 
   .delivery-section { display: grid; grid-template-columns: .75fr 1.25fr; gap: 4rem; margin-top: 5rem; }
   .delivery-section > div:first-child > p:last-child { margin: .85rem 0 0; color: rgb(75 85 99); line-height: 1.7; }
@@ -1139,6 +1103,7 @@ function paletteFor(preset: any) {
   :global(.dark) .section-eyebrow { color: rgb(148 163 184); }
   :global(.dark) .workbench .section-eyebrow { color: var(--preview-text-muted); }
   :global(.dark) .preset-card, :global(.dark) .delivery-grid article { border-color: rgb(55 65 81); background: rgb(17 24 39); color: rgb(243 244 246); }
+  :global(.dark) .carousel-button { border-color: rgb(55 65 81); background: rgb(17 24 39); color: rgb(226 232 240); }
   :global(.dark) .preset-card-copy small { color: rgb(156 163 175); }
   :global(.dark) .preset-card.is-active { border-color: rgb(96 165 250); box-shadow: 0 0 0 3px rgb(30 58 138 / .65); }
   :global(.dark) .purchase-panel { background: rgb(30 58 138 / .3); }
@@ -1160,20 +1125,17 @@ function paletteFor(preset: any) {
   }
 
   @media (max-width: 1050px) {
-    .preset-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .workbench-body { grid-template-columns: 1fr; }
     .delivery-section { grid-template-columns: 1fr; gap: 2rem; }
   }
   @media (max-width: 760px) {
     .preset-hero, .section-heading, .workbench-header, .purchase-panel { align-items: flex-start; flex-direction: column; }
-    .preset-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .workbench-header, .workbench-body, .components-strip { padding-left: 1rem; padding-right: 1rem; }
+    .workbench-header, .workbench-body { padding-left: 1rem; padding-right: 1rem; }
     .workbench-controls { flex-wrap: wrap; }
     .delivery-grid { grid-template-columns: 1fr; }
   }
   @media (max-width: 480px) {
-    .preset-grid { grid-template-columns: 1fr; }
-    .preset-card { min-height: 0; }
+    .preset-card { flex-basis: min(82vw, 18rem); min-height: 0; }
     .workbench-title { flex-wrap: wrap; }
   }
 </style>
