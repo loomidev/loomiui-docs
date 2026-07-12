@@ -10,12 +10,14 @@ import { Image } from "astro:assets";
 import icon from "../assets/icon.png";
 import logoLight from "../assets/logo-light.png";
 import logoDark from "../assets/logo-dark.png";
+import ThemeProvider from "./ThemeProvider.astro";
 
 import { PRO_LICENSING_URL } from "../lib/pro-licensing.mjs";
 
 const GITHUB_URL = "https://github.com/loomidev/loomiui-docs";
 ---
 
+<ThemeProvider />
 <header class="sticky top-0 z-50 border-b border-gray-200 bg-white/80 backdrop-blur dark:border-gray-800 dark:bg-gray-950/80">
   <div class="mx-auto flex max-w-7xl items-center px-4 py-3">
     <a href="/" class="flex min-w-0 shrink-0 items-center">

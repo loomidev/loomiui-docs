@@ -82,6 +82,14 @@ import Icon from "../../node_modules/@astrojs/starlight/user-components/Icon.ast
       },
     };
   })();
+
+  if (!document.documentElement.hasAttribute("data-loomi-theme-bridge")) {
+    document.documentElement.setAttribute("data-loomi-theme-bridge", "");
+    document.addEventListener("loomi-theme-change", (event) => {
+      const theme = event instanceof CustomEvent ? event.detail?.theme : undefined;
+      window.StarlightThemeProvider.applyTheme(theme);
+    });
+  }
 </script>
 
 <template id="theme-icons">

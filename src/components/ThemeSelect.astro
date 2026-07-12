@@ -42,10 +42,12 @@ const t = Astro.locals.t;
     connectedCallback() {
       if (this.hasAttribute("data-theme-listening")) return;
       this.setAttribute("data-theme-listening", "");
-      this.addEventListener("theme-change", (event) => {
+      const applySelectedTheme = (event) => {
         const theme = event instanceof CustomEvent ? event.detail?.theme : undefined;
         window.StarlightThemeProvider.applyTheme(parseTheme(theme));
-      });
+      };
+      this.addEventListener("theme-change", applySelectedTheme);
+      this.addEventListener("loomi-theme-change", applySelectedTheme);
       window.StarlightThemeProvider.updatePickers();
     }
   }

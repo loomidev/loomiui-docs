@@ -607,24 +607,8 @@ function paletteFor(preset: any) {
           </loomi-tabs>
         </div>
       </div>
-    </div>
 
-  </section>
-
-  <aside
-    class="theme-inspector"
-    aria-label="Theme inspector"
-    style={`
-      --preview-primary:${initialTokens?.color?.primary?.[500] ?? initialPreset.primary500};
-      --preview-primary-soft:${initialTokens?.color?.primary?.[50] ?? "#eff6ff"};
-      --preview-primary-strong:${initialTokens?.color?.primary?.[700] ?? initialPreset.primary500};
-      --preview-surface:${initialTokens?.color?.surface?.base ?? "#ffffff"};
-      --preview-surface-muted:${initialTokens?.color?.surface?.muted ?? "#f8fafc"};
-      --preview-border:${initialTokens?.color?.surface?.border ?? "#e2e8f0"};
-      --preview-text:${initialTokens?.color?.text?.base ?? "#0f172a"};
-      --preview-text-muted:${initialTokens?.color?.text?.muted ?? "#64748b"};
-    `}
-  >
+      <aside class="theme-inspector" aria-label="Theme inspector">
         <div class="inspector-label">Theme inspector</div>
 
         <div class="inspector-block">
@@ -665,8 +649,11 @@ function paletteFor(preset: any) {
           <span class="copy-feedback" id="copy-feedback" aria-live="polite"></span>
         </div>
 
-        <loomi-button type="secondary" tag="a" href="/pro/themes/theme-builder/" icon="arrow-top-right-on-square" block>Open in Theme Builder</loomi-button>
-  </aside>
+        <loomi-button id="open-theme-builder" type="secondary" tag="a" href={`/pro/themes/theme-builder/?preset=${initialPreset.name}`} icon="arrow-top-right-on-square" block>Open in Theme Builder</loomi-button>
+      </aside>
+    </div>
+
+  </section>
 
   <section class="delivery-section">
     <div>
@@ -728,6 +715,7 @@ function paletteFor(preset: any) {
     const installCode = document.getElementById("install-code") as HTMLElement;
     const importCode = document.getElementById("import-code") as HTMLElement;
     const copyFeedback = document.getElementById("copy-feedback") as HTMLElement;
+    const themeBuilderLink = document.getElementById("open-theme-builder") as HTMLElement;
     const tokenRows = Array.from(document.querySelectorAll<HTMLElement>(".token-row"));
     let activePreset = manifest[0]?.name;
     let activeMode = "light";
@@ -868,6 +856,11 @@ function paletteFor(preset: any) {
       if (activeMode === "dark") url.searchParams.set("mode", "dark");
       else url.searchParams.delete("mode");
       history.replaceState(null, "", url);
+
+      const builderUrl = new URL("/pro/themes/theme-builder/", window.location.origin);
+      builderUrl.searchParams.set("preset", activePreset);
+      if (activeMode === "dark") builderUrl.searchParams.set("mode", "dark");
+      themeBuilderLink.setAttribute("href", `${builderUrl.pathname}${builderUrl.search}`);
     }
 
     function wireCopy(buttonId: string, code: HTMLElement) {
@@ -985,12 +978,12 @@ function paletteFor(preset: any) {
   .section-heading h2, .delivery-section h2, .purchase-panel h2 { margin: .3rem 0 0; font-size: 1.75rem; line-height: 1.2; font-weight: 750; letter-spacing: -.025em; }
   .section-heading > p { max-width: 30rem; margin: 0; color: rgb(75 85 99); line-height: 1.6; }
   .preset-carousel { position: relative; margin-top: 1.5rem; }
-  .carousel-button { position: absolute; top: 50%; z-index: 3; display: grid; width: 2.75rem; height: 2.75rem; place-items: center; border: 3px solid rgb(148 163 184); border-radius: 999px; background: white; color: rgb(15 23 42); box-shadow: 0 4px 14px rgb(15 23 42 / .16); cursor: pointer; }
+  .carousel-button { position: absolute; top: 50%; z-index: 3; display: grid; width: 2.75rem; height: 2.75rem; place-items: center; border: 1px solid rgb(148 163 184); border-radius: 999px; background: white; color: rgb(15 23 42); box-shadow: 0 4px 14px rgb(15 23 42 / .16); cursor: pointer; }
   #preset-prev { left: 0; transform: translate(-50%, -50%); }
   #preset-next { right: 0; transform: translate(50%, -50%); }
   .carousel-button:hover { border-color: rgb(37 99 235); color: rgb(37 99 235); }
   .carousel-button:disabled { opacity: .4; cursor: default; }
-  .carousel-button loomi-icon { width: 1rem; height: 1rem; }
+  .carousel-button loomi-icon { width: 1.45rem; height: 1.45rem; }
   .preset-grid { display: flex; min-width: 0; gap: .85rem; overflow-x: auto; padding: .75rem 1rem 1.25rem; -ms-overflow-style: none; scroll-behavior: smooth; scroll-snap-type: x mandatory; scrollbar-width: none; }
   .preset-grid::-webkit-scrollbar { display: none; width: 0; height: 0; }
   .preset-card { position: relative; display: grid; flex: 0 0 clamp(15rem, 24vw, 18rem); align-content: start; min-height: 12.5rem; overflow: hidden; scroll-snap-align: start; border: 1px solid rgb(226 232 240); border-radius: 1rem; background: white; padding: 0; color: rgb(15 23 42); text-align: left; cursor: pointer; transition: border-color .15s, box-shadow .15s, transform .15s; }
@@ -1023,7 +1016,7 @@ function paletteFor(preset: any) {
   .viewport-button loomi-icon { width: 1.05rem; height: 1.05rem; }
   .viewport-button.is-active { border-color: var(--preview-primary); color: var(--preview-primary); box-shadow: 0 0 0 3px var(--preview-primary-soft); }
 
-  .workbench-body { padding: 0 1.75rem 1.75rem; }
+  .workbench-body { display: grid; grid-template-columns: minmax(0, 1fr) 21rem; gap: 1.5rem; padding: 0 1.75rem 1.75rem; }
   .workbench-main { min-width: 0; }
 
   .preview-frame { margin-top: .5rem; }
@@ -1085,31 +1078,30 @@ function paletteFor(preset: any) {
   .auth-card { width: min(22rem, 100%); }
   .auth-link { justify-self: center; color: var(--preview-primary-strong); font-size: .72rem; font-weight: 650; }
 
-  .theme-inspector { display: grid; min-width: 0; grid-template-columns: minmax(0, 1.4fr) minmax(12rem, .7fr) minmax(15rem, 1fr); gap: 1.1rem 1.5rem; align-items: start; margin-top: 1.25rem; border: 1px solid var(--preview-border); border-radius: 1rem; background: var(--preview-surface); padding: 1.15rem; }
-  .theme-inspector > .inspector-label { grid-column: 1 / -1; }
-  .theme-inspector > loomi-button { align-self: end; }
-  .inspector-label { color: var(--preview-text); font-size: .72rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+  .theme-inspector { display: flex; min-width: 0; flex-direction: column; gap: 1.1rem; align-self: start; margin-top: 5.6rem; border: 1px solid var(--preview-border); border-radius: 1rem; background: var(--preview-surface); padding: 1.15rem; }
+  .theme-inspector > loomi-button { align-self: stretch; width: 100%; }
+  .inspector-label { color: var(--preview-text); font-size: .86rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
   .inspector-block { display: grid; gap: .65rem; }
-  .inspector-sublabel { color: var(--preview-text-muted); font-size: .68rem; font-weight: 700; }
+  .inspector-sublabel { color: var(--preview-text-muted); font-size: .8rem; font-weight: 750; }
   .token-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem .75rem; }
   .token-row { display: grid; grid-template-columns: auto 1fr; column-gap: .5rem; align-items: center; min-width: 0; }
-  .token-swatch { width: 1rem; height: 1rem; grid-row: 1 / 3; border: 1px solid var(--preview-border); border-radius: .3rem; }
-  .token-row small { color: var(--preview-text-muted); font-size: .62rem; }
-  .token-row strong { overflow: hidden; font-size: .66rem; font-family: ui-monospace, SFMono-Regular, monospace; text-overflow: ellipsis; white-space: nowrap; }
+  .token-swatch { width: 1.4rem; height: 1.4rem; grid-row: 1 / 3; border: 1px solid var(--preview-border); border-radius: .38rem; }
+  .token-row small { color: var(--preview-text-muted); font-size: .72rem; }
+  .token-row strong { overflow: hidden; font-size: .76rem; font-family: ui-monospace, SFMono-Regular, monospace; text-overflow: ellipsis; white-space: nowrap; }
   .inspector-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; border-top: 1px solid var(--preview-border); border-bottom: 1px solid var(--preview-border); padding: .9rem 0; }
   .inspector-meta > div { display: grid; gap: .25rem; min-width: 0; }
-  .inspector-meta small { color: var(--preview-text-muted); font-size: .62rem; }
-  .inspector-meta strong { overflow: hidden; font-size: .75rem; text-overflow: ellipsis; white-space: nowrap; }
+  .inspector-meta small { color: var(--preview-text-muted); font-size: .72rem; }
+  .inspector-meta strong { overflow: hidden; font-size: .86rem; text-overflow: ellipsis; white-space: nowrap; }
   .pm-tabs { display: flex; gap: .3rem; }
-  .pm-tab { border: 1px solid var(--preview-border); border-radius: .45rem; background: var(--preview-surface-muted); padding: .28rem .6rem; color: var(--preview-text-muted); font-size: .68rem; font-weight: 700; cursor: pointer; }
+  .pm-tab { border: 1px solid var(--preview-border); border-radius: .45rem; background: var(--preview-surface-muted); padding: .38rem .7rem; color: var(--preview-text-muted); font-size: .78rem; font-weight: 700; cursor: pointer; }
   .pm-tab.is-active { border-color: var(--preview-primary); background: var(--preview-primary); color: var(--loomi-text-on-primary, #fff); }
   .code-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; overflow: hidden; border: 1px solid var(--preview-border); border-radius: .6rem; background: var(--preview-surface-muted); }
-  .code-row code { overflow-x: auto; padding: .65rem .7rem; color: var(--preview-text); font-size: .68rem; line-height: 1.5; white-space: nowrap; }
+  .code-row code { overflow-x: auto; padding: .72rem .75rem; color: var(--preview-text); font-size: .76rem; line-height: 1.5; white-space: nowrap; }
   .code-row button { display: grid; width: 2.3rem; border: 0; border-left: 1px solid var(--preview-border); background: transparent; place-items: center; color: var(--preview-text-muted); cursor: pointer; }
   .code-row button:hover { color: var(--preview-text); }
   .code-row loomi-icon { width: .95rem; height: .95rem; }
-  .import-note { margin: 0; color: var(--preview-text-muted); font-size: .72rem; }
-  .copy-feedback { display: block; min-height: .9rem; color: var(--preview-primary-strong); font-size: .68rem; }
+  .import-note { margin: 0; color: var(--preview-text-muted); font-size: .78rem; }
+  .copy-feedback { display: block; min-height: 1rem; color: var(--preview-primary-strong); font-size: .76rem; }
 
 
   .delivery-section { display: grid; grid-template-columns: .75fr 1.25fr; gap: 4rem; margin-top: 5rem; }
@@ -1147,8 +1139,8 @@ function paletteFor(preset: any) {
   }
 
   @media (max-width: 1050px) {
-    .theme-inspector { grid-template-columns: 1fr 1fr; }
-    .theme-inspector > .inspector-block:last-of-type { grid-column: 1 / -1; }
+    .workbench-body { grid-template-columns: 1fr; }
+    .theme-inspector { margin-top: 0; }
     .delivery-section { grid-template-columns: 1fr; gap: 2rem; }
   }
   @media (max-width: 760px) {
@@ -1156,8 +1148,6 @@ function paletteFor(preset: any) {
     .workbench-header, .workbench-body { padding-left: 1rem; padding-right: 1rem; }
     .workbench-controls { flex-wrap: wrap; }
     .delivery-grid { grid-template-columns: 1fr; }
-    .theme-inspector { grid-template-columns: 1fr; }
-    .theme-inspector > .inspector-block:last-of-type { grid-column: auto; }
   }
   @media (max-width: 480px) {
     #preset-prev { left: .35rem; }
