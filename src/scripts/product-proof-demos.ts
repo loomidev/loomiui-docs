@@ -1024,8 +1024,8 @@ function initProductProofDemos(): void {
   initSettings();
 }
 
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initProductProofDemos, { once: true });
-} else {
+if ((window as Window & { __loomiComponentsLoaded?: boolean }).__loomiComponentsLoaded) {
   initProductProofDemos();
+} else {
+  window.addEventListener("loomi-components-loaded", initProductProofDemos, { once: true });
 }

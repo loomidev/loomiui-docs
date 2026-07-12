@@ -306,6 +306,7 @@
 }
 
 .component-tile {
+  position: relative;
   display: flex;
   min-height: 8.5rem;
   flex-direction: column;
@@ -317,6 +318,17 @@
   background: white;
   padding: 1.1rem 0.9rem;
   text-align: center;
+  text-decoration: none;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.component-tile-link { position: absolute; inset: 0; z-index: 2; border-radius: inherit; }
+.component-tile-link:focus-visible { outline: 3px solid rgb(59 130 246 / .45); outline-offset: 3px; }
+
+.component-tile:hover {
+  transform: translateY(-2px);
+  border-color: rgb(147 197 253);
+  box-shadow: 0 12px 28px rgb(15 23 42 / 0.08);
 }
 
 .dark .component-tile {
@@ -338,6 +350,33 @@
   align-items: center;
   justify-content: center;
 }
+
+.mobile-hero-proof {
+  display: grid;
+  gap: 0.8rem;
+  border: 1px solid rgb(226 232 240);
+  border-radius: 1rem;
+  background: white;
+  padding: 1rem;
+  box-shadow: 0 18px 38px rgb(15 23 42 / 0.08);
+}
+
+.mobile-hero-proof > div { display: grid; gap: 0.1rem; }
+.mobile-hero-proof span { color: rgb(100 116 139); font-size: 0.72rem; }
+.mobile-hero-proof strong { font-size: 0.95rem; }
+.dark .mobile-hero-proof { border-color: rgb(51 65 85); background: rgb(15 23 42); }
+@media (min-width: 64rem) { .mobile-hero-proof { display: none; } }
+
+.home-path-grid { display: grid; gap: 1rem; }
+@media (min-width: 48rem) { .home-path-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.home-path-card { display: flex; flex-direction: column; align-items: flex-start; border: 1px solid rgb(226 232 240); border-radius: 1.25rem; background: white; padding: 1.5rem; }
+.home-path-card > span { color: rgb(100 116 139); font-size: .7rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
+.home-path-card h3 { margin: .6rem 0 0; font-size: 1.25rem; font-weight: 750; }
+.home-path-card p { flex: 1; margin: .65rem 0 1.25rem; color: rgb(75 85 99); line-height: 1.65; }
+.home-path-card.is-pro { border-color: rgb(191 219 254); background: linear-gradient(145deg, rgb(239 246 255), white 60%); }
+.dark .home-path-card { border-color: rgb(51 65 85); background: rgb(15 23 42 / .55); }
+.dark .home-path-card.is-pro { border-color: rgb(30 64 175); background: linear-gradient(145deg, rgb(30 58 138 / .4), rgb(15 23 42 / .65)); }
+.dark .home-path-card p { color: rgb(156 163 175); }
 
 .component-tile-label {
   color: rgb(100 116 139);

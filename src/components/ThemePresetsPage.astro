@@ -606,7 +606,6 @@ function paletteFor(preset: any) {
             </loomi-tab>
           </loomi-tabs>
         </div>
-      </div>
 
       <aside class="theme-inspector" aria-label="Theme inspector">
         <div class="inspector-label">Theme inspector</div>
@@ -651,6 +650,7 @@ function paletteFor(preset: any) {
 
         <loomi-button type="secondary" tag="a" href="/pro/themes/theme-builder/" icon="arrow-top-right-on-square" block>Open in Theme Builder</loomi-button>
       </aside>
+      </div>
     </div>
 
   </section>
@@ -967,12 +967,14 @@ function paletteFor(preset: any) {
   .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 2rem; }
   .section-heading h2, .delivery-section h2, .purchase-panel h2 { margin: .3rem 0 0; font-size: 1.75rem; line-height: 1.2; font-weight: 750; letter-spacing: -.025em; }
   .section-heading > p { max-width: 30rem; margin: 0; color: rgb(75 85 99); line-height: 1.6; }
-  .preset-carousel { display: grid; grid-template-columns: 2.5rem minmax(0, 1fr) 2.5rem; align-items: center; gap: .75rem; margin-top: 1.5rem; }
-  .carousel-button { display: grid; width: 2.5rem; height: 2.5rem; place-items: center; border: 1px solid rgb(203 213 225); border-radius: 999px; background: white; color: rgb(30 41 59); cursor: pointer; }
+  .preset-carousel { position: relative; margin-top: 1.5rem; }
+  .carousel-button { position: absolute; top: 50%; z-index: 3; display: grid; width: 2.5rem; height: 2.5rem; place-items: center; border: 1px solid rgb(203 213 225); border-radius: 999px; background: white; color: rgb(30 41 59); cursor: pointer; }
+  #preset-prev { left: 0; transform: translate(-50%, -50%); }
+  #preset-next { right: 0; transform: translate(50%, -50%); }
   .carousel-button:hover { border-color: rgb(96 165 250); color: rgb(37 99 235); }
   .carousel-button:disabled { opacity: .4; cursor: default; }
   .carousel-button loomi-icon { width: 1rem; height: 1rem; }
-  .preset-grid { display: flex; min-width: 0; gap: .85rem; overflow-x: auto; padding: .25rem .2rem 1rem; scroll-behavior: smooth; scroll-snap-type: x mandatory; scrollbar-width: thin; }
+  .preset-grid { display: flex; min-width: 0; gap: .85rem; overflow-x: auto; border: 1px solid rgb(226 232 240); border-radius: 1.15rem; padding: .75rem 1rem 1.25rem; scroll-behavior: smooth; scroll-snap-type: x mandatory; scrollbar-width: thin; }
   .preset-card { position: relative; display: grid; flex: 0 0 clamp(15rem, 24vw, 18rem); align-content: start; min-height: 12.5rem; overflow: hidden; scroll-snap-align: start; border: 1px solid rgb(226 232 240); border-radius: 1rem; background: white; padding: 0; color: rgb(15 23 42); text-align: left; cursor: pointer; transition: border-color .15s, box-shadow .15s, transform .15s; }
   .preset-card:hover { transform: translateY(-2px); border-color: rgb(147 197 253); box-shadow: 0 12px 28px rgb(15 23 42 / .07); }
   .preset-card.is-active { border-color: rgb(37 99 235); box-shadow: 0 0 0 3px rgb(219 234 254); }
@@ -1003,7 +1005,7 @@ function paletteFor(preset: any) {
   .viewport-button loomi-icon { width: 1.05rem; height: 1.05rem; }
   .viewport-button.is-active { border-color: var(--preview-primary); color: var(--preview-primary); box-shadow: 0 0 0 3px var(--preview-primary-soft); }
 
-  .workbench-body { display: grid; grid-template-columns: minmax(0, 1fr) 21rem; gap: 1.5rem; padding: 0 1.75rem 1.75rem; }
+  .workbench-body { padding: 0 1.75rem 1.75rem; }
   .workbench-main { min-width: 0; }
 
   .preview-frame { margin-top: .5rem; }
@@ -1065,7 +1067,9 @@ function paletteFor(preset: any) {
   .auth-card { width: min(22rem, 100%); }
   .auth-link { justify-self: center; color: var(--preview-primary-strong); font-size: .72rem; font-weight: 650; }
 
-  .theme-inspector { display: flex; min-width: 0; flex-direction: column; gap: 1.1rem; align-self: start; border: 1px solid var(--preview-border); border-radius: 1rem; background: var(--preview-surface); padding: 1.15rem; }
+  .theme-inspector { display: grid; min-width: 0; grid-template-columns: minmax(0, 1.4fr) minmax(12rem, .7fr) minmax(15rem, 1fr); gap: 1.1rem 1.5rem; align-items: start; margin-top: 1.25rem; border: 1px solid var(--preview-border); border-radius: 1rem; background: var(--preview-surface); padding: 1.15rem; }
+  .theme-inspector > .inspector-label { grid-column: 1 / -1; }
+  .theme-inspector > loomi-button { align-self: end; }
   .inspector-label { color: var(--preview-text); font-size: .72rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
   .inspector-block { display: grid; gap: .65rem; }
   .inspector-sublabel { color: var(--preview-text-muted); font-size: .68rem; font-weight: 700; }
@@ -1104,6 +1108,7 @@ function paletteFor(preset: any) {
   :global(.dark) .workbench .section-eyebrow { color: var(--preview-text-muted); }
   :global(.dark) .preset-card, :global(.dark) .delivery-grid article { border-color: rgb(55 65 81); background: rgb(17 24 39); color: rgb(243 244 246); }
   :global(.dark) .carousel-button { border-color: rgb(55 65 81); background: rgb(17 24 39); color: rgb(226 232 240); }
+  :global(.dark) .preset-grid { border-color: rgb(55 65 81); }
   :global(.dark) .preset-card-copy small { color: rgb(156 163 175); }
   :global(.dark) .preset-card.is-active { border-color: rgb(96 165 250); box-shadow: 0 0 0 3px rgb(30 58 138 / .65); }
   :global(.dark) .purchase-panel { background: rgb(30 58 138 / .3); }
@@ -1125,7 +1130,8 @@ function paletteFor(preset: any) {
   }
 
   @media (max-width: 1050px) {
-    .workbench-body { grid-template-columns: 1fr; }
+    .theme-inspector { grid-template-columns: 1fr 1fr; }
+    .theme-inspector > .inspector-block:last-of-type { grid-column: 1 / -1; }
     .delivery-section { grid-template-columns: 1fr; gap: 2rem; }
   }
   @media (max-width: 760px) {
@@ -1133,8 +1139,12 @@ function paletteFor(preset: any) {
     .workbench-header, .workbench-body { padding-left: 1rem; padding-right: 1rem; }
     .workbench-controls { flex-wrap: wrap; }
     .delivery-grid { grid-template-columns: 1fr; }
+    .theme-inspector { grid-template-columns: 1fr; }
+    .theme-inspector > .inspector-block:last-of-type { grid-column: auto; }
   }
   @media (max-width: 480px) {
+    #preset-prev { left: .35rem; }
+    #preset-next { right: .35rem; }
     .preset-card { flex-basis: min(82vw, 18rem); min-height: 0; }
     .workbench-title { flex-wrap: wrap; }
   }

@@ -5,7 +5,7 @@ import ProductProofDemos from "../components/home-demos/ProductProofDemos.astro"
 import ThemeProvider from "../components/ThemeProvider.astro";
 import icon from "../assets/icon.png";
 import { buildImportMap } from "../lib/import-map.mjs";
-import { COMPONENT_NAMES } from "../../scripts/loomiui-packages.mjs";
+import { DISPLAY_CATEGORIES } from "../lib/component-categories.mjs";
 import "../styles/home.css";
 
 const importMap = buildImportMap();
@@ -15,14 +15,18 @@ const description =
 
 const heroFeatures = [
   { icon: "cube", title: "Framework agnostic", desc: "Works with any stack" },
-  { icon: "shield-check", title: "Accessible", desc: "Built-in a11y" },
+  { icon: "shield-check", title: "Accessible foundation", desc: "Keyboard-ready patterns" },
   { icon: "adjustments-horizontal", title: "Customizable", desc: "CSS variables" },
   { icon: "sparkles", title: "Light & Dark", desc: "Theme ready" },
   { icon: "code-bracket", title: "TypeScript", desc: "Fully typed" },
-  { icon: "bolt", title: "Lightweight", desc: "Tree-shakeable" },
+  { icon: "bolt", title: "Modular", desc: "Install per component" },
 ];
 
-const componentCategories = ["All", "Data Entry", "Feedback", "Navigation", "Overlay", "Data Display", "Layout"];
+const homeCategoryKeys = new Set(["data-entry", "feedback", "navigation", "overlay", "data-display", "layout"]);
+const componentCategories = [
+  { label: "All", key: "all" },
+  ...DISPLAY_CATEGORIES.filter((category) => homeCategoryKeys.has(category.key)).map((category) => ({ label: category.label, key: category.key })),
+];
 ---
 
 <html lang="en">
@@ -56,6 +60,11 @@ const componentCategories = ["All", "Data Entry", "Feedback", "Navigation", "Ove
             <div class="mt-8 flex flex-wrap items-center gap-3">
               <loomi-button color="primary" tag="a" href="/installation/" icon="arrow-right" icon-right>Get Started</loomi-button>
               <loomi-button type="secondary" outline tag="a" href="/components/">Explore Components</loomi-button>
+            </div>
+            <div class="mobile-hero-proof mt-10 lg:hidden" aria-label="LoomiUI component preview">
+              <div><span>Workspace access</span><strong>Invite your team</strong></div>
+              <loomi-input label="Work email" placeholder="you@company.com" size="small"></loomi-input>
+              <loomi-button color="primary" size="small" block>Send invitation</loomi-button>
             </div>
           </div>
 
@@ -104,7 +113,7 @@ const componentCategories = ["All", "Data Entry", "Feedback", "Navigation", "Ove
                   <loomi-avatar image="/avatars/female.jpg" size="small"></loomi-avatar>
                   <div class="min-w-0 grow">
                     <div class="truncate text-sm font-semibold text-gray-900 dark:text-white">Alice Wonderland</div>
-                    <div class="truncate text-xs text-gray-500 dark:text-gray-400">alice@loomiaui.com</div>
+                    <div class="truncate text-xs text-gray-500 dark:text-gray-400">alice@loomiui.com</div>
                   </div>
                   <loomi-icon name="chevron-down" style="width:1rem;height:1rem;color:#9ca3af"></loomi-icon>
                 </div>
@@ -179,12 +188,12 @@ const componentCategories = ["All", "Data Entry", "Feedback", "Navigation", "Ove
     </section>
 
     <!-- Everything you need to build -->
-    <section class="border-t border-gray-100 bg-gray-50/60 dark:border-gray-900 dark:bg-gray-900/20">
+    <section id="home-component-showcase" class="border-t border-gray-100 bg-gray-50/60 dark:border-gray-900 dark:bg-gray-900/20">
       <div class="mx-auto max-w-6xl px-6 py-20">
         <div class="text-center">
           <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Everything you need to build</h2>
           <p class="mt-3 text-gray-600 dark:text-gray-400">
-            {COMPONENT_NAMES.length}+ carefully crafted components to build modern, accessible interfaces.
+            Start with a focused package or combine components into complete application workflows.
           </p>
         </div>
 
@@ -193,70 +202,70 @@ const componentCategories = ["All", "Data Entry", "Feedback", "Navigation", "Ove
             <button
               type="button"
               class="filter-pill"
-              data-filter={cat === "All" ? "all" : cat.toLowerCase().replace(/ /g, "-")}
+              data-filter={cat.key}
               aria-pressed={i === 0 ? "true" : "false"}
-            >{cat}</button>
+            >{cat.label}</button>
           ))}
         </div>
 
         <div class="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-          <div class="component-tile" data-cat="layout">
+          <div class="component-tile" data-cat="layout" data-href="/components/button/">
             <div class="component-tile-preview">
               <loomi-button color="primary">Button</loomi-button>
             </div>
             <div class="component-tile-label">Button</div>
           </div>
 
-          <div class="component-tile" data-cat="data-entry">
+          <div class="component-tile" data-cat="data-entry" data-href="/components/input/">
             <div class="component-tile-preview">
               <loomi-input placeholder="Type something..." size="small"></loomi-input>
             </div>
             <div class="component-tile-label">Input</div>
           </div>
 
-          <div class="component-tile" data-cat="data-entry">
+          <div class="component-tile" data-cat="data-entry" data-href="/components/select/">
             <div class="component-tile-preview">
               <loomi-select placeholder="Select an option" size="small"></loomi-select>
             </div>
             <div class="component-tile-label">Select</div>
           </div>
 
-          <div class="component-tile" data-cat="data-entry">
+          <div class="component-tile" data-cat="data-entry" data-href="/components/checkbox/">
             <div class="component-tile-preview">
               <loomi-checkbox checked>Remember me</loomi-checkbox>
             </div>
             <div class="component-tile-label">Checkbox</div>
           </div>
 
-          <div class="component-tile" data-cat="data-entry">
+          <div class="component-tile" data-cat="data-entry" data-href="/components/radio/">
             <div class="component-tile-preview">
               <loomi-radio label="Option one" name="grid-radio-demo" checked></loomi-radio>
             </div>
             <div class="component-tile-label">Radio</div>
           </div>
 
-          <div class="component-tile" data-cat="data-entry">
+          <div class="component-tile" data-cat="data-entry" data-href="/components/toggle/">
             <div class="component-tile-preview">
               <loomi-toggle checked></loomi-toggle>
             </div>
             <div class="component-tile-label">Switch</div>
           </div>
 
-          <div class="component-tile" data-cat="data-entry">
+          <div class="component-tile" data-cat="data-entry" data-href="/components/textarea/">
             <div class="component-tile-preview">
               <loomi-textarea placeholder="Write a message..." rows="2"></loomi-textarea>
             </div>
             <div class="component-tile-label">Textarea</div>
           </div>
 
-          <div class="component-tile" data-cat="data-entry">
+          <div class="component-tile" data-cat="data-entry" data-href="/components/datepicker/">
             <div class="component-tile-preview">
               <loomi-datepicker placeholder="Select date" size="small"></loomi-datepicker>
             </div>
             <div class="component-tile-label">Date Picker</div>
           </div>
 
-          <div class="component-tile" data-cat="navigation">
+          <div class="component-tile" data-cat="navigation" data-href="/components/dropmenu/">
             <div class="component-tile-preview">
               <loomi-dropmenu position="auto">
                 <loomi-button slot="trigger" type="secondary" size="small" icon="chevron-down" icon-right>Open menu</loomi-button>
@@ -268,7 +277,7 @@ const componentCategories = ["All", "Data Entry", "Feedback", "Navigation", "Ove
             <div class="component-tile-label">Dropdown</div>
           </div>
 
-          <div class="component-tile" data-cat="overlay">
+          <div class="component-tile" data-cat="overlay" data-href="/components/modal/">
             <div class="component-tile-preview">
               <loomi-button size="small" color="primary" onclick="showLoomiModal('grid-modal-demo')">Open Modal</loomi-button>
               <loomi-modal name="grid-modal-demo" title="A real modal">
@@ -278,14 +287,14 @@ const componentCategories = ["All", "Data Entry", "Feedback", "Navigation", "Ove
             <div class="component-tile-label">Modal</div>
           </div>
 
-          <div class="component-tile" data-cat="data-display">
+          <div class="component-tile" data-cat="data-display" data-href="/components/table/">
             <div class="component-tile-preview w-full">
               <loomi-table compact data='[{"Name":"Olivia Rhye","Status":"Active"},{"Name":"Liam Carter","Status":"Invited"}]'></loomi-table>
             </div>
             <div class="component-tile-label">Table</div>
           </div>
 
-          <div class="component-tile" data-cat="layout">
+          <div class="component-tile" data-cat="layout" data-href="/components/card/">
             <div class="component-tile-preview w-full">
               <loomi-card class="w-full text-left">
                 <loomi-card-header>
@@ -298,14 +307,14 @@ const componentCategories = ["All", "Data Entry", "Feedback", "Navigation", "Ove
             <div class="component-tile-label">Card</div>
           </div>
 
-          <div class="component-tile" data-cat="feedback">
+          <div class="component-tile" data-cat="feedback" data-href="/components/alert/">
             <div class="component-tile-preview w-full">
               <loomi-alert type="success" class="w-full text-xs">Success! Your changes were saved.</loomi-alert>
             </div>
             <div class="component-tile-label">Alert</div>
           </div>
 
-          <div class="component-tile" data-cat="navigation">
+          <div class="component-tile" data-cat="navigation" data-href="/components/tab/">
             <div class="component-tile-preview w-full">
               <loomi-tabs class="w-full">
                 <loomi-tab label="Tab 1" active></loomi-tab>
@@ -315,28 +324,28 @@ const componentCategories = ["All", "Data Entry", "Feedback", "Navigation", "Ove
             <div class="component-tile-label">Tabs</div>
           </div>
 
-          <div class="component-tile" data-cat="data-display">
+          <div class="component-tile" data-cat="data-display" data-href="/components/tag/">
             <div class="component-tile-preview">
               <loomi-tag label="New" color="primary"></loomi-tag>
             </div>
             <div class="component-tile-label">Badge</div>
           </div>
 
-          <div class="component-tile" data-cat="data-entry">
+          <div class="component-tile" data-cat="data-entry" data-href="/components/autocomplete/">
             <div class="component-tile-preview">
               <loomi-autocomplete placeholder="Search teammates" size="small"></loomi-autocomplete>
             </div>
             <div class="component-tile-label">Autocomplete</div>
           </div>
 
-          <div class="component-tile" data-cat="feedback">
+          <div class="component-tile" data-cat="feedback" data-href="/components/notification/">
             <div class="component-tile-preview">
               <loomi-button size="small" type="secondary" onclick="showLoomiNotification('Saved', 'Your changes were saved.')">Notify me</loomi-button>
             </div>
             <div class="component-tile-label">Notification</div>
           </div>
 
-          <div class="component-tile" data-cat="overlay">
+          <div class="component-tile" data-cat="overlay" data-href="/components/drawer/">
             <div class="component-tile-preview">
               <loomi-button size="small" type="secondary" onclick="showLoomiDrawer('grid-drawer-demo')">Open drawer</loomi-button>
               <loomi-drawer name="grid-drawer-demo" title="Filters">
@@ -346,14 +355,14 @@ const componentCategories = ["All", "Data Entry", "Feedback", "Navigation", "Ove
             <div class="component-tile-label">Drawer</div>
           </div>
 
-          <div class="component-tile" data-cat="layout">
+          <div class="component-tile" data-cat="layout" data-href="/components/sortable/">
             <div class="component-tile-preview w-full">
               <loomi-sortable items='[{"id":"a","label":"Tomatoes"},{"id":"b","label":"Lettuce"}]'></loomi-sortable>
             </div>
             <div class="component-tile-label">Sortable</div>
           </div>
 
-          <div class="component-tile" data-cat="data-display">
+          <div class="component-tile" data-cat="data-display" data-href="/components/calendar/">
             <div class="component-tile-preview w-full">
               <div style="height:5.5rem;width:100%;overflow:hidden">
                 <loomi-calendar view="week" week-starts="monday" style="display:block;width:140%;transform:scale(.58);transform-origin:top left"></loomi-calendar>
@@ -362,7 +371,7 @@ const componentCategories = ["All", "Data Entry", "Feedback", "Navigation", "Ove
             <div class="component-tile-label">Calendar</div>
           </div>
 
-          <div class="component-tile" data-cat="data-display">
+          <div class="component-tile" data-cat="data-display" data-href="/components/chat/">
             <div class="component-tile-preview w-full">
               <div style="height:5.5rem;width:100%;overflow:hidden;display:flex;flex-direction:column;justify-content:center;gap:.3rem;padding:0 .5rem;transform:scale(.9)">
                 <loomi-chat-message text="Can we ship this today?" sender="Sara" sender-id="sara" bubble-color="success" show-avatar></loomi-chat-message>
@@ -372,7 +381,7 @@ const componentCategories = ["All", "Data Entry", "Feedback", "Navigation", "Ove
             <div class="component-tile-label">Chat</div>
           </div>
 
-          <div class="component-tile" data-cat="overlay">
+          <div class="component-tile" data-cat="overlay" data-href="/components/floating-panel/">
             <div class="component-tile-preview w-full">
               <div style="height:5.5rem;width:100%;overflow:hidden;position:relative">
                 <loomi-floating-panel name="grid-floating-panel-demo" title="Notes" open top="6%" left="6%" width="88%" height="82%" no-drag resizable="false" show-close-icon="false" style="position:absolute"></loomi-floating-panel>
@@ -392,7 +401,7 @@ const componentCategories = ["All", "Data Entry", "Feedback", "Navigation", "Ove
     </section>
 
     <!-- Themed with CSS variables -->
-    <section class="border-t border-gray-100 dark:border-gray-900">
+    <section id="home-theme-showcase" class="border-t border-gray-100 dark:border-gray-900">
       <div class="mx-auto max-w-6xl px-6 py-20 text-center">
         <h2 class="text-3xl font-bold tracking-tight sm:text-4xl">Themed with CSS variables</h2>
         <p class="mt-3 text-gray-600 dark:text-gray-400">Fully customizable. Works with your design system.</p>
@@ -455,36 +464,38 @@ const componentCategories = ["All", "Data Entry", "Feedback", "Navigation", "Ove
       </div>
     </section>
 
-    <!-- Stats -->
-    <section class="stats-banner">
-      <div class="mx-auto grid max-w-6xl grid-cols-2 gap-8 px-6 py-12 text-center sm:grid-cols-4">
-        <div>
-          <div class="text-4xl font-bold text-white">{COMPONENT_NAMES.length}+</div>
-          <div class="mt-1 text-sm font-medium text-white/80">Components</div>
+    <ProductProofDemos />
+
+    <section class="border-t border-gray-100 dark:border-gray-900">
+      <div class="mx-auto max-w-6xl px-6 py-20">
+        <div class="mx-auto max-w-2xl text-center">
+          <div class="feature-kicker">Choose your starting point</div>
+          <h2 class="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Use the open library. Add Pro when the product needs more.</h2>
+          <p class="mt-4 text-gray-600 dark:text-gray-400">The same LoomiUI component foundation supports both paths, so you can start small without rebuilding later.</p>
         </div>
-        <div>
-          <div class="text-4xl font-bold text-white">0kb</div>
-          <div class="mt-1 text-sm font-medium text-white/80">Global CSS shipped</div>
-        </div>
-        <div>
-          <div class="text-4xl font-bold text-white">100%</div>
-          <div class="mt-1 text-sm font-medium text-white/80">Framework agnostic</div>
-        </div>
-        <div>
-          <div class="text-4xl font-bold text-white">100%</div>
-          <div class="mt-1 text-sm font-medium text-white/80">Open source</div>
+        <div class="home-path-grid mt-10">
+          <article class="home-path-card">
+            <span>Open source</span>
+            <h3>Build with individual components</h3>
+            <p>Install only what you need, customize it with CSS variables, and use it in any frontend stack.</p>
+            <loomi-button type="secondary" tag="a" href="/components/">Explore components</loomi-button>
+          </article>
+          <article class="home-path-card is-pro">
+            <span>LoomiUI Pro</span>
+            <h3>Start from complete product foundations</h3>
+            <p>Add application templates, production theme presets, design resources, and private tooling.</p>
+            <loomi-button color="primary" tag="a" href="/pro/">Explore LoomiUI Pro</loomi-button>
+          </article>
         </div>
       </div>
     </section>
-
-    <ProductProofDemos />
 
     <!-- Install CTA -->
     <section class="cta-band">
       <div class="mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 lg:grid-cols-2">
         <div>
-          <h2 class="text-3xl font-bold text-white sm:text-4xl">Ready to build something amazing?</h2>
-          <p class="mt-4 max-w-md text-gray-300">Install LoomiUI and start building better interfaces, faster.</p>
+          <h2 class="text-3xl font-bold text-white sm:text-4xl">Install LoomiUI and ship your first component.</h2>
+          <p class="mt-4 max-w-md text-gray-300">Choose your package manager, add the library, and follow the installation guide for your stack.</p>
           <a href="/installation/" class="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-primary-300 hover:text-primary-200">
             Read the installation guide
             <loomi-icon name="arrow-right" style="width:1rem;height:1rem"></loomi-icon>
@@ -577,51 +588,36 @@ const componentCategories = ["All", "Data Entry", "Feedback", "Navigation", "Ove
     <script type="module" is:inline>
       import "@loomidev/button";
       import "@loomidev/icon";
-      import "@loomidev/card";
-      import "@loomidev/tag";
       import "@loomidev/avatar";
       import "@loomidev/chart";
       import "@loomidev/rating";
       import "@loomidev/input";
-      import "@loomidev/password";
-      import "@loomidev/select";
-      import "@loomidev/checkbox";
-      import "@loomidev/radio";
       import "@loomidev/toggle";
-      import "@loomidev/textarea";
-      import "@loomidev/datepicker";
-      import "@loomidev/date-range-picker";
-      import "@loomidev/timepicker";
-      import "@loomidev/timezonepicker";
-      import "@loomidev/filepicker";
       import "@loomidev/dropmenu";
-      import "@loomidev/modal";
-      import "@loomidev/tooltip";
-      import "@loomidev/floating-panel";
-      import "@loomidev/table";
-      import "@loomidev/alert";
-      import "@loomidev/bell";
-      import "@loomidev/button-group";
-      import "@loomidev/tab";
-      import "@loomidev/listview";
-      import "@loomidev/statistic";
-      import "@loomidev/horizontal-line-graph";
-      import "@loomidev/sortable";
-      import "@loomidev/progress";
-      import "@loomidev/timeline";
-      import "@loomidev/empty-state";
-      import "@loomidev/tag-input";
-      import "@loomidev/creditcard";
-      import "@loomidev/slider";
-      import "@loomidev/colorpicker";
-      import "@loomidev/countries";
-      import "@loomidev/notification";
-      import "@loomidev/drawer";
-      import "@loomidev/autocomplete";
-      import "@loomidev/calendar";
-      import "@loomidev/chat";
-      window.__loomiComponentsLoaded = true;
-      window.dispatchEvent(new Event("loomi-components-loaded"));
+
+      const loadedPackages = new Set(["button", "icon", "avatar", "chart", "rating", "input", "toggle", "dropmenu"]);
+      const loadPackages = async (names) => {
+        const pending = names.filter((name) => !loadedPackages.has(name));
+        pending.forEach((name) => loadedPackages.add(name));
+        await Promise.all(pending.map((name) => import("@loomidev/" + name)));
+      };
+      const groups = new Map([
+        [document.getElementById("home-component-showcase"), ["card", "tag", "select", "checkbox", "radio", "textarea", "datepicker", "modal", "table", "alert", "tab", "sortable", "autocomplete", "notification", "drawer", "calendar", "chat", "floating-panel"]],
+        [document.getElementById("home-theme-showcase"), ["select"]],
+        [document.querySelector(".proof-band"), ["card", "tag", "password", "select", "checkbox", "radio", "textarea", "datepicker", "date-range-picker", "timepicker", "timezonepicker", "filepicker", "modal", "tooltip", "floating-panel", "table", "alert", "bell", "button-group", "tab", "listview", "statistic", "horizontal-line-graph", "sortable", "progress", "timeline", "empty-state", "tag-input", "creditcard", "slider", "colorpicker", "countries", "notification", "drawer", "autocomplete", "calendar", "chat"]],
+      ]);
+      const sectionObserver = new IntersectionObserver((entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          sectionObserver.unobserve(entry.target);
+          void loadPackages(groups.get(entry.target) || []).then(() => {
+            if (!entry.target.matches(".proof-band")) return;
+            window.__loomiComponentsLoaded = true;
+            window.dispatchEvent(new Event("loomi-components-loaded"));
+          });
+        }
+      }, { rootMargin: "700px 0px" });
+      groups.forEach((_, section) => { if (section) sectionObserver.observe(section); });
     </script>
 
     <script>
@@ -630,6 +626,17 @@ const componentCategories = ["All", "Data Entry", "Feedback", "Navigation", "Ove
       // tied to the docs site's own category taxonomy.
       const filterBar = document.getElementById("component-filters");
       const tiles = document.querySelectorAll<HTMLElement>(".component-tile");
+      tiles.forEach((tile) => {
+        const link = document.createElement("a");
+        link.className = "component-tile-link";
+        link.href = tile.dataset.href ?? "/components/";
+        link.setAttribute("aria-label", `View ${tile.querySelector(".component-tile-label")?.textContent?.trim() ?? "component"} documentation`);
+        tile.append(link);
+      });
+      document.querySelectorAll<HTMLElement>(".component-tile-preview").forEach((preview) => {
+        preview.setAttribute("inert", "");
+        preview.setAttribute("aria-hidden", "true");
+      });
       filterBar?.addEventListener("click", (e) => {
         const target = e.target;
         if (!(target instanceof Element)) return;
