@@ -15,11 +15,12 @@ const templateLabels: Record<string, string> = {
 };
 const templateLabel = templateLabels[template] ?? template;
 const previewUrl = `/pro/live/${template}/`;
+const fullscreenModalName = `${template}-template-fullscreen-preview`;
 const title = `${templateLabel} Live Preview - LoomiUI Pro`;
 const description = `Run through the actual Lit application for the ${templateLabel} template.`;
 ---
 
-<ProLandingShell title={title} description={description}>
+<ProLandingShell title={title} description={description} wide>
   <a href="/pro/templates/" class="back-link">
     <loomi-icon name="arrow-left"></loomi-icon>
     Back to templates
@@ -35,11 +36,7 @@ const description = `Run through the actual Lit application for the ${templateLa
       <p>This is the actual template application. Use its navigation, forms, filters, and product workflows as you would in the delivered Lit project.</p>
     </div>
     <div class="preview-actions">
-      {previewUrl && (
-        <loomi-button type="secondary" tag="a" href={previewUrl} target="_blank" rel="noopener noreferrer">
-          Open full screen
-        </loomi-button>
-      )}
+      <loomi-button type="secondary" id="open-fullscreen-preview">Open full screen</loomi-button>
       <loomi-button color="primary" tag="a" href={PRO_LICENSING_URL}>Get Pro</loomi-button>
     </div>
   </section>
@@ -68,6 +65,37 @@ const description = `Run through the actual Lit application for the ${templateLa
     </div>
   </section>
 
+  <loomi-modal
+    id="fullscreen-preview-modal"
+    name={fullscreenModalName}
+    size="omg"
+    show-action-buttons="false"
+    show-close-icon
+    aria-label={`${templateLabel} full screen live preview`}
+  >
+    <div class="fullscreen-preview">
+      <a href="/pro/templates/" class="fullscreen-templates-link">
+        <loomi-icon name="arrow-left"></loomi-icon>
+        View other templates
+      </a>
+
+      <div class="fullscreen-iframe-wrap">
+        <div class="frame-loading" id="fullscreen-frame-loading">
+          <loomi-icon name="arrow-path"></loomi-icon>
+          <strong>Loading {templateLabel}</strong>
+          <span>The real template app runs in this frame.</span>
+        </div>
+        <iframe
+          id="fullscreen-template-preview-frame"
+          data-src={previewUrl}
+          title={`${templateLabel} HTML and Lit full screen live preview`}
+          allow="clipboard-write; fullscreen"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads"
+        ></iframe>
+      </div>
+    </div>
+  </loomi-modal>
+
   <p class="local-preview-note">
     Working locally? Run <code>pnpm previews:build</code> after changing a Lit template, then reload this page.
   </p>
@@ -85,6 +113,20 @@ const description = `Run through the actual Lit application for the ${templateLa
     const frame = document.getElementById("template-preview-frame");
     const loading = document.getElementById("frame-loading");
     frame?.addEventListener("load", () => loading?.classList.add("is-hidden"));
+
+    const fullscreenTrigger = document.getElementById("open-fullscreen-preview");
+    const fullscreenModal = document.getElementById("fullscreen-preview-modal");
+    const fullscreenFrame = document.getElementById("fullscreen-template-preview-frame");
+    const fullscreenLoading = document.getElementById("fullscreen-frame-loading");
+
+    fullscreenFrame?.addEventListener("load", () => fullscreenLoading?.classList.add("is-hidden"));
+    fullscreenTrigger?.addEventListener("click", async () => {
+      if (fullscreenFrame && !fullscreenFrame.getAttribute("src")) {
+        fullscreenFrame.setAttribute("src", fullscreenFrame.dataset.src ?? "");
+      }
+      await customElements.whenDefined("loomi-modal");
+      fullscreenModal?.show?.();
+    });
   </script>
 </ProLandingShell>
 
@@ -112,6 +154,12 @@ const description = `Run through the actual Lit application for the ${templateLa
   .frame-loading.is-hidden { visibility: hidden; opacity: 0; pointer-events: none; }
   .frame-loading loomi-icon { width: 1.75rem; height: 1.75rem; margin-bottom: .35rem; color: rgb(37 99 235); animation: spin 1s linear infinite; }
   .frame-loading span { color: rgb(100 116 139); font-size: .875rem; }
+  .fullscreen-preview { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 1rem; height: calc(90vh - 3rem); min-height: 30rem; }
+  .fullscreen-templates-link { display: inline-flex; align-items: center; justify-self: start; gap: .45rem; color: rgb(75 85 99); font-size: .875rem; font-weight: 650; text-decoration: none; }
+  .fullscreen-templates-link:hover { color: rgb(37 99 235); }
+  .fullscreen-templates-link loomi-icon { width: 1rem; height: 1rem; }
+  .fullscreen-iframe-wrap { position: relative; min-height: 0; overflow: hidden; border: 1px solid rgb(203 213 225); border-radius: .8rem; background: white; }
+  .fullscreen-iframe-wrap iframe { display: block; width: 100%; height: 100%; border: 0; background: white; }
   .local-preview-note { margin: 1rem 0 0; color: rgb(100 116 139); font-size: .8rem; }
   .local-preview-note code { border-radius: .3rem; background: rgb(241 245 249); padding: .15rem .35rem; color: rgb(51 65 85); }
   .section-eyebrow { margin: 0; color: rgb(37 99 235); font-size: .72rem; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
@@ -119,7 +167,7 @@ const description = `Run through the actual Lit application for the ${templateLa
   .purchase-panel h2 { margin: .3rem 0 0; font-size: 1.6rem; line-height: 1.2; font-weight: 750; letter-spacing: -.025em; }
   .purchase-panel p:last-child { margin: .65rem 0 0; color: rgb(75 85 99); }
   @keyframes spin { to { transform: rotate(360deg); } }
-  :global(.dark) .back-link, :global(.dark) .preview-heading p, :global(.dark) .purchase-panel p:last-child, :global(.dark) .local-preview-note { color: rgb(156 163 175); }
+  :global(.dark) .back-link, :global(.dark) .preview-heading p, :global(.dark) .purchase-panel p:last-child, :global(.dark) .local-preview-note, :global(.dark) .fullscreen-templates-link { color: rgb(156 163 175); }
   :global(.dark) .preview-meta span { background: rgb(30 58 138 / .45); color: rgb(147 197 253); }
   :global(.dark) .preview-frame, :global(.dark) .preview-browser-bar { border-color: rgb(55 65 81); background: rgb(17 24 39); }
   :global(.dark) .browser-address, :global(.dark) .local-preview-note code { background: rgb(30 41 59); color: rgb(203 213 225); }
@@ -129,5 +177,6 @@ const description = `Run through the actual Lit application for the ${templateLa
     .preview-browser-bar { grid-template-columns: auto 1fr; }
     .browser-stack { display: none; }
     .iframe-wrap, .iframe-wrap iframe { min-height: 680px; height: 680px; }
+    .fullscreen-preview { height: calc(90vh - 2.5rem); min-height: 24rem; }
   }
 </style>
