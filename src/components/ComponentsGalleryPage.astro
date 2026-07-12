@@ -150,7 +150,6 @@ const components = COMPONENT_NAMES.slice()
   });
 
 const counts = categoryCounts();
-const packagesToImport = COMPONENT_NAMES;
 ---
 
 <html lang="en">
@@ -167,19 +166,7 @@ const packagesToImport = COMPONENT_NAMES;
 
     <div class="mx-auto max-w-7xl px-6 py-10 lg:grid lg:grid-cols-[15rem_1fr] lg:items-start lg:gap-10">
       <!-- Sidebar -->
-      <aside class="lg:sticky lg:top-20 lg:self-start">
-        <div class="relative">
-          <loomi-icon name="magnifying-glass" class="search-icon" style="width:1rem;height:1rem"></loomi-icon>
-          <input
-            type="text"
-            data-role="search-input"
-            placeholder="Search components..."
-            class="sidebar-search"
-            aria-label="Search components"
-          />
-          <kbd class="search-kbd">⌘K</kbd>
-        </div>
-
+      <aside class="hidden lg:sticky lg:top-20 lg:block lg:self-start">
         <nav class="mt-4 space-y-0.5">
           <a href="/icons/" class="category-link">
             <span class="category-link-icon"><loomi-icon name="squares-plus" style="width:1.05rem;height:1.05rem"></loomi-icon></span>
@@ -235,7 +222,7 @@ const packagesToImport = COMPONENT_NAMES;
         <div class="feature-kicker">Components</div>
         <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">Components</h1>
         <p class="mt-3 max-w-2xl text-lg leading-7 text-gray-600 dark:text-gray-400">
-          Explore our collection of {components.length}+ carefully crafted components. Click on any component to view documentation and examples.
+          Explore reusable, framework-agnostic components for forms, navigation, feedback, content, and application layouts.
         </p>
 
         <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -249,23 +236,25 @@ const packagesToImport = COMPONENT_NAMES;
               aria-label="Search components"
             />
           </div>
-          <div class="relative shrink-0">
-            <select id="sort-select" class="sort-select" aria-label="Sort components">
-              <option value="name">Sort by: Name</option>
-              <option value="category">Sort by: Category</option>
-            </select>
-            <loomi-icon name="chevron-down" class="sort-select-chevron" style="width:0.85rem;height:0.85rem"></loomi-icon>
-          </div>
+          <loomi-select id="sort-select" class="gallery-sort" aria-label="Sort components" selected-value="name" no-clearing data='[{"label":"Sort by: Name","value":"name"},{"label":"Sort by: Category","value":"category"}]'></loomi-select>
         </div>
 
-        <div class="mt-5 flex flex-wrap gap-2" id="category-pills">
+        <div class="mt-5 flex flex-wrap gap-2 lg:hidden" id="category-pills">
           <button type="button" class="filter-pill" aria-pressed="true" data-category="all">All</button>
           {DISPLAY_CATEGORIES.map((cat) => (
             <button type="button" class="filter-pill" aria-pressed="false" data-category={cat.key}>{cat.label}</button>
           ))}
         </div>
 
-        <p id="no-results" class="no-results hidden">No components match your search.</p>
+        <div class="gallery-results-bar">
+          <p id="results-summary" aria-live="polite">Showing all components</p>
+          <button type="button" id="clear-filters" class="gallery-clear hidden">Clear filters</button>
+        </div>
+        <div id="no-results" class="no-results hidden" role="status" aria-live="polite">
+          <strong>No matching components</strong>
+          <span>Try a different search or clear the active category.</span>
+          <button type="button" class="gallery-clear">Clear filters</button>
+        </div>
 
         <div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" id="component-grid">
           {components.map((c) => (
@@ -275,6 +264,7 @@ const packagesToImport = COMPONENT_NAMES;
               data-category={c.category}
               data-name={c.name.toLowerCase()}
               data-search={`${c.title} ${c.description}`.toLowerCase()}
+              data-package={c.name}
             >
               <div class="component-card-preview" set:html={c.preview} />
               <div class="component-card-title">{c.title}</div>
@@ -309,8 +299,26 @@ const packagesToImport = COMPONENT_NAMES;
     </footer>
 
     <script type="module" is:inline set:html={`
-      const names = ${JSON.stringify(packagesToImport)};
-      for (const name of names) { import("@loomidev/" + name); }
+      import("@loomidev/icon");
+      import("@loomidev/button");
+      import("@loomidev/select");
+
+      const loaded = new Set(["icon", "button", "select"]);
+      const previewDependencies = { listview: ["card", "avatar"], "contact-card": ["avatar"], notification: ["button"] };
+      const loadPackage = (name) => {
+        if (!name || loaded.has(name)) return;
+        loaded.add(name);
+        import("@loomidev/" + name);
+        (previewDependencies[name] || []).forEach(loadPackage);
+      };
+      const previewObserver = new IntersectionObserver((entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          loadPackage(entry.target.dataset.package);
+          previewObserver.unobserve(entry.target);
+        }
+      }, { rootMargin: "500px 0px" });
+      document.querySelectorAll(".component-card[data-package]").forEach((card) => previewObserver.observe(card));
 
       document.querySelectorAll("loomi-data-grid").forEach((grid) => {
         grid.columns = [
@@ -345,11 +353,30 @@ const packagesToImport = COMPONENT_NAMES;
       const grid = document.getElementById("component-grid") as HTMLElement;
       const cards = Array.from(grid.querySelectorAll<HTMLElement>(".component-card"));
       const searchInputs = document.querySelectorAll<HTMLInputElement>("[data-role='search-input']");
-      const categoryButtons = document.querySelectorAll<HTMLElement>("[data-category]");
-      const sortSelect = document.getElementById("sort-select") as HTMLSelectElement | null;
+      const categoryButtons = document.querySelectorAll<HTMLElement>("button[data-category]");
+      const sortSelect = document.getElementById("sort-select") as (HTMLElement & { selectedValue: string }) | null;
       const noResults = document.getElementById("no-results") as HTMLElement;
+      const resultsSummary = document.getElementById("results-summary") as HTMLElement;
+      const clearButtons = document.querySelectorAll<HTMLButtonElement>(".gallery-clear");
+      const toolbarClear = document.getElementById("clear-filters") as HTMLButtonElement;
 
       const state = { query: "", category: "all", sort: "name" };
+
+      function categoryLabel() {
+        const active = Array.from(categoryButtons).find((button) => button.dataset.category === state.category);
+        return active?.querySelector(".grow")?.textContent?.trim() || active?.textContent?.trim() || "components";
+      }
+
+      function syncUrl() {
+        const url = new URL(window.location.href);
+        if (state.query) url.searchParams.set("q", state.query);
+        else url.searchParams.delete("q");
+        if (state.category !== "all") url.searchParams.set("category", state.category);
+        else url.searchParams.delete("category");
+        if (state.sort !== "name") url.searchParams.set("sort", state.sort);
+        else url.searchParams.delete("sort");
+        history.replaceState(null, "", url);
+      }
 
       function applyFilters() {
         const q = state.query.trim().toLowerCase();
@@ -362,6 +389,11 @@ const packagesToImport = COMPONENT_NAMES;
           if (show) visible++;
         }
         noResults.classList.toggle("hidden", visible !== 0);
+        resultsSummary.textContent = state.category === "all"
+          ? (state.query ? `Showing results for “${state.query}”` : "Showing all components")
+          : `Showing ${categoryLabel()}${state.query ? ` matching “${state.query}”` : ""}`;
+        toolbarClear.classList.toggle("hidden", !state.query && state.category === "all");
+        syncUrl();
       }
 
       function applySort() {
@@ -397,10 +429,24 @@ const packagesToImport = COMPONENT_NAMES;
         });
       });
 
-      sortSelect?.addEventListener("change", () => {
-        state.sort = sortSelect.value;
+      sortSelect?.addEventListener("loomi-select", (event: any) => {
+        state.sort = event.detail.value;
+        sortSelect.selectedValue = state.sort;
         applySort();
+        syncUrl();
       });
+
+      clearButtons.forEach((button) => button.addEventListener("click", () => {
+        state.query = "";
+        state.category = "all";
+        searchInputs.forEach((input) => { input.value = ""; });
+        categoryButtons.forEach((categoryButton) => {
+          const active = categoryButton.dataset.category === "all";
+          categoryButton.classList.toggle("is-active", active);
+          if (categoryButton.hasAttribute("aria-pressed")) categoryButton.setAttribute("aria-pressed", String(active));
+        });
+        applyFilters();
+      }));
 
       document.addEventListener("keydown", (e) => {
         if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
@@ -409,6 +455,19 @@ const packagesToImport = COMPONENT_NAMES;
         }
       });
 
+      const params = new URL(window.location.href).searchParams;
+      state.query = params.get("q") ?? "";
+      const requestedCategory = params.get("category");
+      if (requestedCategory && Array.from(categoryButtons).some((button) => button.dataset.category === requestedCategory)) state.category = requestedCategory;
+      const requestedSort = params.get("sort");
+      if (requestedSort === "category") state.sort = requestedSort;
+      searchInputs.forEach((input) => { input.value = state.query; });
+      categoryButtons.forEach((button) => {
+        const active = button.dataset.category === state.category;
+        button.classList.toggle("is-active", active);
+        if (button.hasAttribute("aria-pressed")) button.setAttribute("aria-pressed", String(active));
+      });
+      if (sortSelect) sortSelect.selectedValue = state.sort;
       applySort();
       applyFilters();
     </script>
@@ -416,29 +475,18 @@ const packagesToImport = COMPONENT_NAMES;
 </html>
 
 <style>
-  .sort-select {
-    appearance: none;
-    border-radius: 0.6rem;
-    border: 1px solid rgb(226 232 240);
-    background: white;
-    padding: 0.55rem 2rem 0.55rem 0.9rem;
-    color: rgb(15 23 42);
-    font-size: 0.85rem;
-    font-weight: 500;
-  }
-  .dark .sort-select {
-    border-color: rgb(51 65 85);
-    background: rgb(15 23 42 / 0.6);
-    color: white;
-  }
-  .sort-select-chevron {
-    position: absolute;
-    right: 0.75rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: rgb(148 163 184);
-    pointer-events: none;
-  }
+  .gallery-sort { display: block; width: 12rem; }
+  .gallery-results-bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 2rem; margin-top: 1.25rem; color: rgb(100 116 139); font-size: .8rem; }
+  .gallery-results-bar p { margin: 0; }
+  .gallery-clear { border: 0; background: transparent; padding: .25rem; color: rgb(37 99 235); font-size: .78rem; font-weight: 700; cursor: pointer; }
+  .no-results { margin-top: 2rem; border: 1px dashed rgb(203 213 225); border-radius: 1rem; padding: 3rem 1.5rem; text-align: center; }
+  .no-results strong, .no-results span { display: block; }
+  .no-results strong { color: rgb(15 23 42); font-size: .95rem; }
+  .no-results span { margin-top: .35rem; color: rgb(100 116 139); font-size: .82rem; }
+  .no-results .gallery-clear { margin-top: .75rem; }
+  .dark .no-results { border-color: rgb(51 65 85); }
+  .dark .no-results strong { color: white; }
+  .dark .no-results span, .dark .gallery-results-bar { color: rgb(148 163 184); }
 
   .component-card {
     position: relative;
