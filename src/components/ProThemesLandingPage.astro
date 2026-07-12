@@ -6,12 +6,12 @@ const title = "Themes - LoomiUI Pro";
 const description = "Theme presets, design tokens, visual tooling, and matching Figma resources for LoomiUI.";
 
 const presets = [
-  { name: "Default Loomi", description: "Balanced blue surfaces for general product interfaces.", colors: ["#2563eb", "#60a5fa", "#eff6ff", "#111827"] },
-  { name: "SaaS Admin", description: "Clean, compact styling for dashboards and settings.", colors: ["#4f46e5", "#818cf8", "#eef2ff", "#1e1b4b"] },
-  { name: "Fintech", description: "Confident green and slate for financial products.", colors: ["#059669", "#34d399", "#ecfdf5", "#064e3b"] },
-  { name: "Healthcare", description: "Calm teal surfaces with clear semantic states.", colors: ["#0d9488", "#5eead4", "#f0fdfa", "#134e4a"] },
-  { name: "Developer Tools", description: "Focused violet styling for technical interfaces.", colors: ["#7c3aed", "#a78bfa", "#f5f3ff", "#2e1065"] },
-  { name: "High Contrast", description: "Stronger boundaries and contrast for accessible UI.", colors: ["#1d4ed8", "#facc15", "#ffffff", "#000000"] },
+  { slug: "default", name: "Default Loomi", description: "Balanced blue surfaces for general product interfaces.", colors: ["#2563eb", "#60a5fa", "#eff6ff", "#111827"] },
+  { slug: "saas-admin", name: "SaaS Admin", description: "Clean, compact styling for dashboards and settings.", colors: ["#4f46e5", "#818cf8", "#eef2ff", "#1e1b4b"] },
+  { slug: "fintech", name: "Fintech", description: "Confident green and slate for financial products.", colors: ["#059669", "#34d399", "#ecfdf5", "#064e3b"] },
+  { slug: "healthcare", name: "Healthcare", description: "Calm teal surfaces with clear semantic states.", colors: ["#0d9488", "#5eead4", "#f0fdfa", "#134e4a"] },
+  { slug: "developer-tools", name: "Developer Tools", description: "Focused violet styling for technical interfaces.", colors: ["#7c3aed", "#a78bfa", "#f5f3ff", "#2e1065"] },
+  { slug: "high-contrast", name: "High Contrast", description: "Stronger boundaries and contrast for accessible UI.", colors: ["#1d4ed8", "#facc15", "#ffffff", "#000000"] },
 ];
 
 const workflow = [
@@ -66,7 +66,7 @@ const resources = [
 
     <div class="preset-grid">
       {presets.map((preset) => (
-        <a class="preset-card" href="/pro/themes/theme-presets/">
+        <a class="preset-card" href={`/pro/themes/theme-presets/?preset=${preset.slug}`}>
           <div class="preset-colors" aria-hidden="true">
             {preset.colors.map((color, index) => <span style={`--swatch:${color};--size:${index === 0 ? "3" : "1"}`}></span>)}
           </div>

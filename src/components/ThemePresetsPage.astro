@@ -1,39 +1,34 @@
 ---
-import MarketingHeader from "./MarketingHeader.astro";
-import ProSidebar from "./ProSidebar.astro";
+import ProLandingShell from "./ProLandingShell.astro";
 import { readFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
-import { buildImportMap } from "../lib/import-map.mjs";
-import { getProFeaturePage } from "../lib/pro-catalog.mjs";
 import { PRO_LICENSING_URL } from "../lib/pro-licensing.mjs";
-import "../styles/home.css";
 
-const feature = getProFeaturePage("theme-presets")!;
-const importMap = buildImportMap();
-const title = `${feature.title} - LoomiUI Pro`;
+const title = "Theme Presets - LoomiUI Pro";
+const description = "Compare all twelve LoomiUI Pro presets in light and dark mode, inspect their design direction, and choose a foundation for your product.";
 
-const THEME_PRESETS_HIGHLIGHTS = [
-  {
-    step: "01",
-    icon: "paint-brush",
-    text: "Interactive preset switcher with real generated CSS variables",
-  },
-  {
-    step: "02",
-    icon: "swatch",
-    text: "Primary, semantic, surface, typography, radius, and shadow previews",
-  },
-  {
-    step: "03",
-    icon: "rectangle-stack",
-    text: "Mini app shell showing sidebar, header, and panel surfaces",
-  },
-  {
-    step: "04",
-    icon: "code-bracket",
-    text: "Copy-ready CSS import lines and starter kit mapping",
-  },
-];
+const fallbackPresets = [
+  ["default", "Loomi Default", "Confident blue with cool slate neutrals.", "#3b82f6", "Admin Pro", "admin"],
+  ["saas-admin", "SaaS Admin", "Indigo for dense control surfaces.", "#6366f1", "SaaS Starter", "saas"],
+  ["fintech", "Fintech", "Deep teal for numbers-first products.", "#14b8a6", "CRM", "crm"],
+  ["healthcare", "Healthcare", "Calm sky blue for patient-facing clarity.", "#0ea5e9", "", ""],
+  ["education", "Education", "Friendly violet for learning tools.", "#8b5cf6", "", ""],
+  ["creator-tools", "Creator Tools", "Expressive rose for creative workflows.", "#f43f5e", "", ""],
+  ["developer-tools", "Developer Tools", "Cyan and deep neutrals for technical UI.", "#06b6d4", "Analytics Dashboard", "analytics"],
+  ["ecommerce-admin", "E-commerce Admin", "Energetic orange for catalog operations.", "#f97316", "", ""],
+  ["enterprise-neutral", "Enterprise Neutral", "Restrained slate for long work sessions.", "#64748b", "", ""],
+  ["high-contrast", "High Contrast", "Strong boundaries and visible focus states.", "#3b82f6", "", ""],
+  ["marketing-growth", "Marketing Growth", "Vibrant emerald for campaign analytics.", "#10b981", "", ""],
+  ["legal-compliance", "Legal & Compliance", "Structured amber for audit workflows.", "#f59e0b", "", ""],
+].map(([name, label, presetDescription, primary500, starterName, starterSlug]) => ({
+  name,
+  label,
+  description: presetDescription,
+  primary500,
+  starterKit: starterName ? { name: starterName, slug: starterSlug } : null,
+  css: `css/${name}.css`,
+  json: `json/${name}.json`,
+}));
 
 function loadThemeBundle() {
   const docsRoot = process.cwd();
@@ -46,752 +41,670 @@ function loadThemeBundle() {
     const manifestFile = resolve(root, "json/manifest.json");
     if (!existsSync(manifestFile)) continue;
 
-    const parsedManifest = JSON.parse(readFileSync(manifestFile, "utf8"));
-    const tokens: Record<string, unknown> = {};
-
-    for (const preset of parsedManifest.presets) {
+    const manifest = JSON.parse(readFileSync(manifestFile, "utf8"));
+    const tokens: Record<string, any> = {};
+    for (const preset of manifest.presets) {
       const tokenFile = resolve(root, preset.json);
-      if (existsSync(tokenFile)) {
-        tokens[preset.name] = JSON.parse(readFileSync(tokenFile, "utf8"));
-      }
+      if (existsSync(tokenFile)) tokens[preset.name] = JSON.parse(readFileSync(tokenFile, "utf8"));
     }
-
-    return {
-      manifest: parsedManifest,
-      tokens,
-      assetsBase: root.includes("/public/") ? "/pro/themes" : null,
-    };
+    return { manifest, tokens };
   }
 
-  return {
-    manifest: {
-      presets: [
-        { name: "default", label: "Loomi Default", description: "Baseline blue Pro theme.", primary500: "#2563eb", starterKit: { name: "Admin Pro", slug: "admin" }, css: "css/default.css", json: "json/default.json" },
-        { name: "saas-admin", label: "SaaS Admin", description: "Indigo SaaS control surface.", primary500: "#4f46e5", starterKit: { name: "SaaS Starter", slug: "saas" }, css: "css/saas-admin.css", json: "json/saas-admin.json" },
-        { name: "fintech", label: "Fintech", description: "Teal numbers-first theme.", primary500: "#14b8a6", starterKit: { name: "CRM", slug: "crm" }, css: "css/fintech.css", json: "json/fintech.json" },
-        { name: "developer-tools", label: "Developer Tools", description: "Cyan console theme.", primary500: "#06b6d4", starterKit: { name: "Analytics Dashboard", slug: "analytics" }, css: "css/developer-tools.css", json: "json/developer-tools.json" },
-      ],
-    },
-    tokens: {},
-    assetsBase: null,
-  };
+  return { manifest: { presets: fallbackPresets }, tokens: {} };
 }
 
 const themeBundle = loadThemeBundle();
-const manifest = themeBundle.manifest;
-const hasThemeTokens = Object.keys(themeBundle.tokens).length > 0;
-const initialPreset = manifest.presets[0];
-const initialStylesheet = themeBundle.assetsBase ? `${themeBundle.assetsBase}/${initialPreset.css}` : null;
+const presets = themeBundle.manifest.presets;
+const initialPreset = presets[0];
+const initialTokens = themeBundle.tokens[initialPreset.name]?.modes?.light;
+const overviewChartData = JSON.stringify([
+  { label: "Mon", value: 64, value2: 58 },
+  { label: "Tue", value: 78, value2: 67 },
+  { label: "Wed", value: 71, value2: 69 },
+  { label: "Thu", value: 92, value2: 76 },
+  { label: "Fri", value: 86, value2: 79 },
+  { label: "Sat", value: 104, value2: 88 },
+  { label: "Sun", value: 96, value2: 91 },
+]);
+const acquisitionChartData = JSON.stringify([
+  { label: "Direct", value: 42 },
+  { label: "Search", value: 31 },
+  { label: "Social", value: 17 },
+  { label: "Email", value: 10 },
+]);
+const customerRows = JSON.stringify([
+  { name: "Northstar Labs", plan: "Business", seats: 42, status: "Active", mrr: "$4,200" },
+  { name: "Aster Health", plan: "Enterprise", seats: 118, status: "Active", mrr: "$11,800" },
+  { name: "Kite Commerce", plan: "Growth", seats: 24, status: "Trial", mrr: "$1,640" },
+  { name: "Clarity Legal", plan: "Business", seats: 36, status: "Active", mrr: "$3,600" },
+]);
+
+function paletteFor(preset: any) {
+  const mode = themeBundle.tokens[preset.name]?.modes?.light;
+  return [
+    mode?.color?.primary?.[500] ?? preset.primary500,
+    mode?.color?.primary?.[200] ?? preset.primary500,
+    mode?.color?.surface?.muted ?? "#f8fafc",
+    mode?.color?.text?.base ?? "#0f172a",
+  ];
+}
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
-    <meta name="description" content={feature.description} />
-    <link rel="icon" href="/favicon.png" />
-    {initialStylesheet && <link id="pro-theme-stylesheet" rel="stylesheet" href={initialStylesheet} />}
-    <script type="importmap" is:inline set:html={JSON.stringify(importMap)} />
-  </head>
-  <body class="bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
-    <MarketingHeader />
+<ProLandingShell title={title} description={description} wide>
+  <a class="back-link" href="/pro/themes/">
+    <loomi-icon name="arrow-left"></loomi-icon>
+    Back to themes
+  </a>
 
-    <div class="mx-auto max-w-7xl px-6 py-10 lg:grid lg:grid-cols-[15rem_1fr] lg:items-start lg:gap-10">
-      <ProSidebar currentPath="/pro/themes/theme-presets/" activeCategory="theme-presets" />
+  <section class="preset-hero">
+    <div>
+      <p class="section-eyebrow">Theme presets</p>
+      <h1>Choose a visual direction. Keep one token contract.</h1>
+      <p>Compare every Pro preset in the same product shell, switch between light and dark mode, then take the closest direction into the Theme Builder.</p>
+    </div>
+    <div class="hero-actions">
+      <loomi-button color="primary" tag="a" href="/pro/themes/theme-builder/">Customize a preset</loomi-button>
+      <loomi-button type="secondary" tag="a" href={PRO_LICENSING_URL}>Get Pro</loomi-button>
+    </div>
+  </section>
 
-      <div class="mt-10 min-w-0 lg:mt-0">
-        <div class="feature-kicker">{feature.kicker}</div>
-        <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">{feature.title}</h1>
-        <p class="mt-3 max-w-3xl text-lg leading-7 text-gray-600 dark:text-gray-400">{feature.description}</p>
+  <section class="catalog-section" aria-labelledby="preset-catalog-heading">
+    <div class="section-heading">
+      <div>
+        <p class="section-eyebrow">All included presets</p>
+        <h2 id="preset-catalog-heading">12 foundations for different product moods</h2>
+      </div>
+      <p>Select any preset to update the preview and implementation details below.</p>
+    </div>
 
-        <div class="mt-10 builder-highlights">
-          <div class="builder-highlights-label">Live preview</div>
-          <div class="builder-highlights-grid">
-            {THEME_PRESETS_HIGHLIGHTS.map((item) => (
-              <div class="builder-highlight-card">
-                <div class="builder-highlight-top">
-                  <span class="builder-highlight-step">{item.step}</span>
-                  <span class="builder-highlight-icon">
-                    <loomi-icon name={item.icon} style="width:1.1rem;height:1.1rem"></loomi-icon>
-                  </span>
-                </div>
-                <p class="builder-highlight-text">{item.text}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+    <div class="preset-grid" id="preset-grid">
+      {presets.map((preset: any, index: number) => (
+        <button
+          type="button"
+          class:list={["preset-card", index === 0 && "is-active"]}
+          data-preset={preset.name}
+          aria-pressed={index === 0 ? "true" : "false"}
+        >
+          <span class="preset-palette" aria-hidden="true">
+            {paletteFor(preset).map((color: string) => <span style={`background:${color}`}></span>)}
+          </span>
+          <span class="preset-card-copy">
+            <strong>{preset.label}</strong>
+            <small>{preset.description}</small>
+          </span>
+          {preset.starterKit && <span class="starter-badge">Pairs with {preset.starterKit.name}</span>}
+        </button>
+      ))}
+    </div>
+  </section>
 
-        <section class="theme-preview-toolbar">
-          <div>
-            <div class="text-sm font-semibold text-gray-900 dark:text-white">Color mode</div>
-            <div class="mode-toggle" role="group" aria-label="Theme color mode">
-              <button type="button" class="mode-btn is-active" data-mode="light">Light</button>
-              <button type="button" class="mode-btn" data-mode="dark">Dark</button>
-            </div>
-          </div>
-          <div class="grow">
-            <div class="text-sm font-semibold text-gray-900 dark:text-white">Import preset</div>
-            <pre class="import-snippet"><code id="import-snippet-code">{`import "@loomdev-pro/themes/css/${initialPreset.name}.css";`}</code></pre>
-          </div>
-        </section>
-
-        <section class="preset-grid" id="preset-grid" aria-label="Theme presets">
-          {manifest.presets.map((preset: any) => (
-            <button
-              type="button"
-              class:list={["preset-card", preset.name === initialPreset.name && "is-active"]}
-              data-preset={preset.name}
-              data-css={themeBundle.assetsBase ? `${themeBundle.assetsBase}/${preset.css}` : ""}
-              data-label={preset.label}
-              data-description={preset.description}
-              data-starter={preset.starterKit?.name ?? ""}
-            >
-              <span class="preset-card-swatch" style={`background:${preset.primary500}`}></span>
-              <span class="preset-card-body">
-                <strong>{preset.label}</strong>
-                <span>{preset.description}</span>
-                {preset.starterKit && <em>{preset.starterKit.name} starter kit</em>}
-              </span>
-            </button>
-          ))}
-        </section>
-
-        <section class="preview-layout">
-          <article class="preview-panel">
-            <h2 class="preview-heading">Token scales</h2>
-            {!hasThemeTokens && (
-              <p class="token-empty-note">Run <code>pnpm prepare:content</code> in the docs repo after building <code>@loomdev-pro/themes</code> to load live token previews.</p>
-            )}
-            <div id="token-primary" class="token-scale"></div>
-            <h3 class="preview-subheading">Semantic colors</h3>
-            <div id="token-semantic" class="semantic-grid"></div>
-            <h3 class="preview-subheading">Surfaces & typography</h3>
-            <div id="token-surfaces" class="surface-grid"></div>
-            <div id="token-typography" class="type-samples"></div>
-            <h3 class="preview-subheading">Radius & shadow</h3>
-            <div id="token-shape" class="shape-grid"></div>
-          </article>
-
-          <article class="preview-panel">
-            <h2 class="preview-heading">Components</h2>
-            <div class="component-showcase">
-              <div class="component-group">
-                <div class="component-group-label">Buttons</div>
-                <div class="component-group-row">
-                  <loomi-button color="primary" size="small">Primary</loomi-button>
-                  <loomi-button type="secondary" size="small">Secondary</loomi-button>
-                  <loomi-button type="danger" size="small">Danger</loomi-button>
-                </div>
-              </div>
-              <div class="component-group">
-                <div class="component-group-label">Form</div>
-                <div class="component-group-row component-group-row-single">
-                  <loomi-input placeholder="Email address" size="small"></loomi-input>
-                </div>
-              </div>
-              <div class="component-group">
-                <div class="component-group-label">Tags</div>
-                <div class="component-group-row">
-                  <loomi-tag label="Active" color="success"></loomi-tag>
-                  <loomi-tag label="Draft" color="warning"></loomi-tag>
-                  <loomi-tag label="Archived" color="neutral"></loomi-tag>
-                </div>
-              </div>
-              <div class="component-group">
-                <div class="component-group-label">Alerts</div>
-                <div class="component-group-stack">
-                  <loomi-alert type="success" class="text-xs">Deployment succeeded on production.</loomi-alert>
-                  <loomi-alert type="warning" class="text-xs">Usage is approaching the plan limit.</loomi-alert>
-                </div>
-              </div>
-            </div>
-
-            <h2 class="preview-heading">App shell sample</h2>
-            <div class="shell-preview" id="shell-preview">
-              <aside class="shell-sidebar">
-                <strong id="shell-brand">Loomi Pro</strong>
-                <span class="shell-muted">Operations workspace</span>
-                <nav>
-                  <span class="shell-nav-item is-active">Dashboard</span>
-                  <span class="shell-nav-item">Records</span>
-                  <span class="shell-nav-item">Settings</span>
-                </nav>
-              </aside>
-              <section class="shell-main">
-                <header class="shell-header">
-                  <div>
-                    <span class="shell-muted">Overview</span>
-                    <strong>Weekly summary</strong>
-                  </div>
-                  <button type="button" class="shell-button">Export</button>
-                </header>
-                <div class="shell-cards">
-                  <div class="shell-card"><span class="shell-muted">Active users</span><strong>1,284</strong></div>
-                  <div class="shell-card"><span class="shell-muted">Conversion</span><strong>4.8%</strong></div>
-                  <div class="shell-card"><span class="shell-muted">MRR</span><strong>$12.8k</strong></div>
-                </div>
-              </section>
-            </div>
-          </article>
-        </section>
-
-        <div class="mt-12 flex flex-wrap gap-3">
-          <loomi-button color="primary" size="small" tag="a" href={PRO_LICENSING_URL}>Buy Pro</loomi-button>
-          <loomi-button type="secondary" size="small" tag="a" href="/pro/themes/token-system/">Token system</loomi-button>
-          <loomi-button type="secondary" size="small" tag="a" href="/pro/">Back to all Pro</loomi-button>
-        </div>
+  <section class="workbench" aria-labelledby="selected-preset-name">
+    <div class="workbench-header">
+      <div>
+        <p class="section-eyebrow">Selected preset</p>
+        <h2 id="selected-preset-name">{initialPreset.label}</h2>
+        <p id="selected-preset-description">{initialPreset.description}</p>
+      </div>
+      <div class="mode-toggle" role="group" aria-label="Preview color mode">
+        <button type="button" class="mode-button is-active" data-mode="light" aria-pressed="true">
+          <loomi-icon name="sun"></loomi-icon> Light
+        </button>
+        <button type="button" class="mode-button" data-mode="dark" aria-pressed="false">
+          <loomi-icon name="moon"></loomi-icon> Dark
+        </button>
       </div>
     </div>
 
-    <script type="application/json" id="theme-data" is:inline set:html={JSON.stringify(themeBundle)}></script>
+    <div class="workbench-layout">
+      <div class="preview-canvas" id="preview-canvas" style={`
+        --preview-primary:${initialTokens?.color?.primary?.[500] ?? initialPreset.primary500};
+        --preview-primary-soft:${initialTokens?.color?.primary?.[50] ?? "#eff6ff"};
+        --preview-primary-strong:${initialTokens?.color?.primary?.[700] ?? initialPreset.primary500};
+        --preview-surface:${initialTokens?.color?.surface?.base ?? "#ffffff"};
+        --preview-surface-muted:${initialTokens?.color?.surface?.muted ?? "#f8fafc"};
+        --preview-surface-raised:${initialTokens?.color?.surface?.raised ?? "#ffffff"};
+        --preview-border:${initialTokens?.color?.surface?.border ?? "#e2e8f0"};
+        --preview-text:${initialTokens?.color?.text?.base ?? "#0f172a"};
+        --preview-text-muted:${initialTokens?.color?.text?.muted ?? "#64748b"};
+        --preview-radius:${initialTokens?.component?.panelRadius ?? "12px"};
+        --preview-shadow:${initialTokens?.component?.cardShadow ?? "0 1px 3px rgba(15,23,42,.1)"};
+      `}>
+        <aside class="demo-sidebar">
+          <div class="demo-brand"><span></span><strong id="demo-brand-name">{initialPreset.label}</strong></div>
+          <nav aria-label="Preview pages">
+            <button type="button" class="is-current" data-demo-view="overview" aria-current="page"><loomi-icon name="squares-2x2"></loomi-icon>Overview</button>
+            <button type="button" data-demo-view="customers"><loomi-icon name="users"></loomi-icon>Customers</button>
+            <button type="button" data-demo-view="analytics"><loomi-icon name="chart-bar"></loomi-icon>Analytics</button>
+            <button type="button" data-demo-view="settings"><loomi-icon name="cog-6-tooth"></loomi-icon>Settings</button>
+          </nav>
+          <loomi-profile-menu
+            class="demo-profile-menu"
+            name="Ama Mensah"
+            description="Product lead"
+            avatar-label="AM"
+            avatar-size="small"
+            dotted
+            transparent
+            placement="left"
+          >
+            <loomi-dropmenu-item icon="user-circle">Profile</loomi-dropmenu-item>
+            <loomi-dropmenu-item icon="cog-6-tooth">Account settings</loomi-dropmenu-item>
+            <loomi-dropmenu-item divider></loomi-dropmenu-item>
+            <loomi-dropmenu-item icon="arrow-right-start-on-rectangle" variant="destructive">Sign out</loomi-dropmenu-item>
+          </loomi-profile-menu>
+        </aside>
+        <div class="demo-main">
+          <header class="demo-topbar">
+            <div><small id="demo-page-kicker">Workspace</small><strong id="demo-page-title">Performance overview</strong></div>
+            <div class="demo-topbar-actions">
+              <loomi-button type="secondary" size="small" icon="magnifying-glass" aria-label="Search workspace"></loomi-button>
+              <loomi-button color="primary" size="small" icon="arrow-down-tray">Export</loomi-button>
+            </div>
+          </header>
+          <main>
+            <section class="demo-view is-active" data-demo-panel="overview">
+              <div class="demo-welcome">
+                <div><small>Last 30 days</small><h3>Good morning, Ama</h3><p>Here is what changed across your workspace.</p></div>
+                <loomi-tag label="Workspace growth +12.4% vs previous period" color="success" rounded></loomi-tag>
+              </div>
+              <div class="demo-view-toolbar">
+                <loomi-select
+                  size="small"
+                  selected-value="30"
+                  aria-label="Reporting period"
+                  data='[{"label":"Last 7 days","value":"7"},{"label":"Last 30 days","value":"30"},{"label":"Last quarter","value":"90"}]'
+                ></loomi-select>
+                <loomi-button type="secondary" size="small" icon="funnel">Filter</loomi-button>
+              </div>
+              <div class="demo-metrics">
+                <loomi-statistic label="Active users" number="8,429" icon-position="right" radius="large">
+                  <loomi-icon slot="icon" name="users"></loomi-icon>
+                </loomi-statistic>
+                <loomi-statistic label="Conversion" number="4.82%" icon-position="right" radius="large">
+                  <loomi-icon slot="icon" name="arrow-trending-up"></loomi-icon>
+                </loomi-statistic>
+                <loomi-statistic label="Revenue" number="84.2k" currency="$" icon-position="right" radius="large">
+                  <loomi-icon slot="icon" name="banknotes"></loomi-icon>
+                </loomi-statistic>
+              </div>
+              <div class="demo-lower">
+                <loomi-card size="sm" class="demo-chart-card">
+                  <loomi-card-header>
+                    <loomi-card-title>Weekly activity</loomi-card-title>
+                    <loomi-card-description>Current period compared with the previous period</loomi-card-description>
+                  </loomi-card-header>
+                  <loomi-card-content>
+                    <loomi-chart
+                      id="overview-theme-chart"
+                      type="line"
+                      color="primary"
+                      color2="gray"
+                      series-label="Current"
+                      series2-label="Previous"
+                      show-y-axis="false"
+                      data={overviewChartData}
+                    ></loomi-chart>
+                  </loomi-card-content>
+                </loomi-card>
+                <loomi-card size="sm" class="demo-activity-card">
+                  <loomi-card-header>
+                    <loomi-card-title>Recent activity</loomi-card-title>
+                    <loomi-card-description>Latest workspace changes</loomi-card-description>
+                  </loomi-card-header>
+                  <loomi-card-content>
+                    <loomi-timeline stacked>
+                      <loomi-timeline-item date="2 min ago" content="Ama exported a revenue report" completed></loomi-timeline-item>
+                      <loomi-timeline-item date="18 min ago" content="Kojo invited a workspace member" completed></loomi-timeline-item>
+                      <loomi-timeline-item date="1 hr ago" content="Esi updated the billing profile"></loomi-timeline-item>
+                    </loomi-timeline>
+                  </loomi-card-content>
+                </loomi-card>
+              </div>
+              <loomi-card size="sm" class="goal-card">
+                <loomi-card-header>
+                  <loomi-card-title>Quarterly activation goal</loomi-card-title>
+                  <loomi-card-description>1,842 of 2,400 new workspaces activated</loomi-card-description>
+                </loomi-card-header>
+                <loomi-card-content><loomi-progress-bar percentage="77" color="success" show-percentage-label></loomi-progress-bar></loomi-card-content>
+              </loomi-card>
+            </section>
 
-    <script type="module" is:inline>
-      import "@loomidev/button";
-      import "@loomidev/icon";
-      import "@loomidev/input";
-      import "@loomidev/tag";
-      import "@loomidev/alert";
-    </script>
+            <section class="demo-view" data-demo-panel="customers" hidden>
+              <div class="demo-section-heading"><div><small>Customer directory</small><h3>Customers</h3><p>Search accounts, review plans, and monitor workspace health.</p></div><loomi-button color="primary" size="small" icon="plus">Add customer</loomi-button></div>
+              <div class="customer-summary">
+                <loomi-statistic label="Total customers" number="1,284" radius="large"></loomi-statistic>
+                <loomi-statistic label="Active trials" number="86" radius="large"></loomi-statistic>
+                <loomi-statistic label="Expansion MRR" number="12.6k" currency="$" radius="large"></loomi-statistic>
+              </div>
+              <loomi-card size="sm">
+                <loomi-card-header><loomi-card-title>Customer accounts</loomi-card-title><loomi-card-description>Latest plan and revenue status</loomi-card-description></loomi-card-header>
+                <loomi-card-content>
+                  <loomi-table compact has-border has-hover searchable sortable search-placeholder="Search customer accounts…" data={customerRows}></loomi-table>
+                </loomi-card-content>
+              </loomi-card>
+            </section>
 
-    <script>
-      const themeData = JSON.parse(document.getElementById("theme-data")!.textContent || "{}");
-      const manifest = themeData.manifest ?? { presets: [] };
-      const embeddedTokens: Record<string, any> = themeData.tokens ?? {};
-      const stylesheet = document.getElementById("pro-theme-stylesheet") as HTMLLinkElement | null;
-      const importSnippet = document.getElementById("import-snippet-code") as HTMLElement;
-      const presetButtons = Array.from(document.querySelectorAll<HTMLButtonElement>(".preset-card"));
-      const modeButtons = Array.from(document.querySelectorAll<HTMLButtonElement>(".mode-btn"));
-      const shellBrand = document.getElementById("shell-brand") as HTMLElement;
+            <section class="demo-view" data-demo-panel="analytics" hidden>
+              <div class="demo-section-heading"><div><small>Product intelligence</small><h3>Analytics</h3><p>Understand acquisition, retention, and feature adoption.</p></div><loomi-tag label="Live data" color="success" rounded></loomi-tag></div>
+              <div class="analytics-grid">
+                <loomi-card size="sm">
+                  <loomi-card-header><loomi-card-title>Acquisition mix</loomi-card-title><loomi-card-description>New workspaces by source</loomi-card-description></loomi-card-header>
+                  <loomi-card-content><loomi-chart type="donut" color="primary" show-legend data={acquisitionChartData}></loomi-chart></loomi-card-content>
+                </loomi-card>
+                <loomi-card size="sm">
+                  <loomi-card-header><loomi-card-title>Activation health</loomi-card-title><loomi-card-description>Key onboarding milestones</loomi-card-description></loomi-card-header>
+                  <loomi-card-content class="progress-stack">
+                    <div><span>Created first project</span><loomi-progress-bar percentage="84" show-percentage-label></loomi-progress-bar></div>
+                    <div><span>Invited a teammate</span><loomi-progress-bar percentage="68" color="success" show-percentage-label></loomi-progress-bar></div>
+                    <div><span>Connected billing</span><loomi-progress-bar percentage="51" color="warning" show-percentage-label></loomi-progress-bar></div>
+                  </loomi-card-content>
+                </loomi-card>
+              </div>
+              <loomi-alert type="info" show-icon>Retention is 6.8% above the trailing 90-day baseline.</loomi-alert>
+            </section>
 
-      let activePreset = presetButtons.find((button) => button.classList.contains("is-active"))?.dataset.preset ?? manifest.presets[0]?.name;
-      let activeMode: "light" | "dark" = "light";
+            <section class="demo-view" data-demo-panel="settings" hidden>
+              <div class="demo-section-heading"><div><small>Workspace controls</small><h3>Settings</h3><p>See how inputs, selects, toggles, cards, and alerts inherit the preset.</p></div><loomi-button color="primary" size="small">Save changes</loomi-button></div>
+              <div class="settings-grid">
+                <loomi-card size="sm">
+                  <loomi-card-header><loomi-card-title>Workspace profile</loomi-card-title><loomi-card-description>General identity and regional defaults</loomi-card-description></loomi-card-header>
+                  <loomi-card-content class="settings-fields">
+                    <loomi-input label="Workspace name" value="Loomi Cloud" size="small"></loomi-input>
+                    <loomi-input label="Workspace URL" prefix="app.loomi.dev/" value="loomi-cloud" size="small"></loomi-input>
+                    <loomi-select label="Time zone" selected-value="accra" data='[{"label":"Accra (GMT)","value":"accra"},{"label":"London (GMT)","value":"london"},{"label":"New York (EST)","value":"new-york"}]'></loomi-select>
+                  </loomi-card-content>
+                </loomi-card>
+                <loomi-card size="sm">
+                  <loomi-card-header><loomi-card-title>Notifications</loomi-card-title><loomi-card-description>Choose the events your team receives</loomi-card-description></loomi-card-header>
+                  <loomi-card-content class="toggle-stack">
+                    <loomi-toggle justified checked>Weekly performance summary</loomi-toggle>
+                    <loomi-toggle justified checked>Billing and usage alerts</loomi-toggle>
+                    <loomi-toggle justified>Product announcements</loomi-toggle>
+                  </loomi-card-content>
+                </loomi-card>
+              </div>
+              <loomi-alert type="success" show-icon>Your workspace uses the selected preset’s focus, status, and surface tokens.</loomi-alert>
+            </section>
+          </main>
+        </div>
+      </div>
 
-      function setMode(mode: "light" | "dark") {
-        activeMode = mode;
-        document.documentElement.dataset.loomMode = mode === "dark" ? "dark" : "";
-        modeButtons.forEach((button) => button.classList.toggle("is-active", button.dataset.mode === mode));
-        void renderTokens(activePreset);
-      }
+      <aside class="preset-details">
+        <div class="detail-block">
+          <div class="detail-label">Use this preset</div>
+          <div class="import-row">
+            <code id="import-code">import &quot;@loomdev-pro/themes/css/{initialPreset.name}.css&quot;;</code>
+            <button type="button" id="copy-import" aria-label="Copy preset import"><loomi-icon name="clipboard"></loomi-icon></button>
+          </div>
+          <span class="copy-feedback" id="copy-feedback" aria-live="polite"></span>
+        </div>
 
-      function loadTokens(presetName: string) {
-        return embeddedTokens[presetName] ?? null;
-      }
+        <div class="detail-block">
+          <div class="detail-label">Core decisions</div>
+          <div class="token-summary">
+            <div><span class="token-dot" id="primary-token-dot" style={`background:${initialTokens?.color?.primary?.[500] ?? initialPreset.primary500}`}></span><small>Primary</small><strong id="primary-token-value">{initialTokens?.color?.primary?.[500] ?? initialPreset.primary500}</strong></div>
+            <div><loomi-icon name="square-3-stack-3d"></loomi-icon><small>Panel radius</small><strong id="radius-token-value">{initialTokens?.component?.panelRadius ?? "12px"}</strong></div>
+            <div><loomi-icon name="arrows-pointing-in"></loomi-icon><small>Control height</small><strong id="density-token-value">{initialTokens?.density?.controlHeight ?? "36px"}</strong></div>
+            <div><loomi-icon name="language"></loomi-icon><small>Body size</small><strong id="type-token-value">{initialTokens?.typography?.fontSizeMd ?? "14px"}</strong></div>
+          </div>
+        </div>
 
-      function renderScale(container: HTMLElement, scale: Record<string, string>, label: string) {
-        const entries = Object.entries(scale).sort(([a], [b]) => Number(a) - Number(b));
-        container.innerHTML =
-          `<div class="token-scale-label">${label}</div>` +
-          entries
-            .map(([shade, color]) => `<div class="token-chip" style="background:${color}"><span>${shade}</span></div>`)
-            .join("");
-      }
+        <div class="detail-block starter-detail" id="starter-detail" hidden={!initialPreset.starterKit}>
+          <div class="detail-label">Recommended starting point</div>
+          <strong id="starter-name">{initialPreset.starterKit?.name}</strong>
+          <p>The preset is already paired with this template family.</p>
+          <a id="starter-link" href={`/pro/templates/?preview=${initialPreset.starterKit?.slug ?? "admin"}`}>View template preview <loomi-icon name="arrow-right"></loomi-icon></a>
+        </div>
 
-      function renderTokens(presetName: string) {
-        const payload = loadTokens(presetName);
-        const primaryEl = document.getElementById("token-primary");
-        if (!payload || !primaryEl) {
-          if (primaryEl) primaryEl.innerHTML = "";
-          return;
-        }
+        <loomi-button color="primary" tag="a" href="/pro/themes/theme-builder/" block>Customize in Theme Builder</loomi-button>
+      </aside>
+    </div>
+  </section>
 
-        const mode = payload.modes[activeMode];
-        if (!mode) return;
+  <section class="delivery-section">
+    <div>
+      <p class="section-eyebrow">What ships</p>
+      <h2>A complete theme, not a color swatch</h2>
+      <p>Every preset uses the same semantic contract, so changing direction does not require rewriting your components.</p>
+    </div>
+    <div class="delivery-grid">
+      <article><loomi-icon name="swatch"></loomi-icon><strong>Light and dark modes</strong><p>Complete surface, text, border, semantic, and focus tokens.</p></article>
+      <article><loomi-icon name="adjustments-horizontal"></loomi-icon><strong>Product-level decisions</strong><p>Typography, radius, density, shadow, motion, and component sizing.</p></article>
+      <article><loomi-icon name="code-bracket"></loomi-icon><strong>Multiple export formats</strong><p>Use generated CSS directly or take the JSON tokens into your tooling.</p></article>
+    </div>
+  </section>
 
-        renderScale(primaryEl, mode.color.primary, "Primary scale");
-        document.getElementById("token-semantic")!.innerHTML = ["success", "warning", "error"].map((name) => {
-          const color = mode.color[name]["500"];
-          return `<div class="semantic-chip" style="background:${color}"><span>${name}</span><code>${color}</code></div>`;
-        }).join("");
+  <section class="purchase-panel">
+    <div>
+      <p class="section-eyebrow">Included with LoomiUI Pro</p>
+      <h2>Start polished, then make it unmistakably yours</h2>
+      <p>Get all twelve presets, Theme Builder exports, matching templates, Figma resources, and updates.</p>
+    </div>
+    <loomi-button color="primary" tag="a" href={PRO_LICENSING_URL}>View Pro licenses</loomi-button>
+  </section>
 
-        document.getElementById("token-surfaces")!.innerHTML = [
-          ["Surface", mode.color.surface.base],
-          ["Muted", mode.color.surface.muted],
-          ["Border", mode.color.surface.border],
-          ["Text", mode.color.text.base],
-        ]
-          .map(([label, color]) => `<div class="surface-chip" style="background:${color};color:${mode.color.text.base}"><span>${label}</span></div>`)
-          .join("");
+  <script type="module" is:inline>
+    import "@loomidev/alert";
+    import "@loomidev/card";
+    import "@loomidev/chart";
+    import "@loomidev/input";
+    import "@loomidev/profile-menu";
+    import "@loomidev/progress";
+    import "@loomidev/select";
+    import "@loomidev/statistic";
+    import "@loomidev/table";
+    import "@loomidev/tag";
+    import "@loomidev/timeline";
+    import "@loomidev/toggle";
+  </script>
+  <script type="application/json" id="theme-preset-data" is:inline set:html={JSON.stringify(themeBundle)}></script>
+  <script>
+    const themeData = JSON.parse(document.getElementById("theme-preset-data")!.textContent || "{}");
+    const manifest = themeData.manifest?.presets ?? [];
+    const tokens = themeData.tokens ?? {};
+    const presetButtons = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-preset]"));
+    const modeButtons = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-mode]"));
+    const canvas = document.getElementById("preview-canvas") as HTMLElement;
+    const presetName = document.getElementById("selected-preset-name") as HTMLElement;
+    const presetDescription = document.getElementById("selected-preset-description") as HTMLElement;
+    const brandName = document.getElementById("demo-brand-name") as HTMLElement;
+    const importCode = document.getElementById("import-code") as HTMLElement;
+    const copyButton = document.getElementById("copy-import") as HTMLButtonElement;
+    const copyFeedback = document.getElementById("copy-feedback") as HTMLElement;
+    const starterDetail = document.getElementById("starter-detail") as HTMLElement;
+    const starterName = document.getElementById("starter-name") as HTMLElement;
+    const starterLink = document.getElementById("starter-link") as HTMLAnchorElement;
+    const demoViewButtons = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-demo-view]"));
+    const demoPanels = Array.from(document.querySelectorAll<HTMLElement>("[data-demo-panel]"));
+    const demoPageKicker = document.getElementById("demo-page-kicker") as HTMLElement;
+    const demoPageTitle = document.getElementById("demo-page-title") as HTMLElement;
+    let activePreset = manifest[0]?.name;
+    let activeMode = "light";
 
-        document.getElementById("token-typography")!.innerHTML = `
-          <p class="type-display" style="font-family:${mode.typography.fontFamily};font-size:${mode.typography.fontSize2xl};font-weight:${mode.typography.fontWeightBold};line-height:${mode.typography.lineHeightTight};color:${mode.color.text.base}">Product heading</p>
-          <p class="type-body" style="font-family:${mode.typography.fontFamily};font-size:${mode.typography.fontSizeMd};line-height:${mode.typography.lineHeightNormal};color:${mode.color.text.secondary}">Body copy uses semantic text tokens for comfortable reading in long settings screens.</p>
-          <p class="type-mono" style="font-family:${mode.typography.fontFamilyMono};font-size:${mode.typography.fontSizeSm};color:${mode.color.text.muted}">api_key_live_01H8…</p>`;
+    function getPreset(name: string) {
+      return manifest.find((preset: any) => preset.name === name);
+    }
 
-        document.getElementById("token-shape")!.innerHTML = `
-          <div class="shape-card" style="border-radius:${mode.radius.sm};box-shadow:${mode.shadow.sm};background:${mode.color.surface.base};border:1px solid ${mode.color.surface.border}">Radius sm</div>
-          <div class="shape-card" style="border-radius:${mode.radius.lg};box-shadow:${mode.shadow.md};background:${mode.color.surface.base};border:1px solid ${mode.color.surface.border}">Radius lg</div>
-          <div class="shape-card" style="border-radius:${mode.component.panelRadius};box-shadow:${mode.component.cardShadow};background:${mode.color.surface.raised};border:1px solid ${mode.color.surface.border}">Panel</div>`;
-      }
+    function toKebabCase(value: string) {
+      return value.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
+    }
 
-      function selectPreset(button: HTMLButtonElement) {
-        activePreset = button.dataset.preset!;
-        presetButtons.forEach((entry) => entry.classList.toggle("is-active", entry === button));
-        if (stylesheet && button.dataset.css) {
-          stylesheet.href = button.dataset.css;
-        }
-        importSnippet.textContent = `import "@loomdev-pro/themes/css/${activePreset}.css";`;
-        shellBrand.textContent = button.dataset.label ?? "Loomi Pro";
-        renderTokens(activePreset);
-      }
+    function setTokenGroup(prefix: string, group: Record<string, unknown> = {}) {
+      Object.entries(group).forEach(([name, value]) => {
+        canvas.style.setProperty(`${prefix}-${toKebabCase(name)}`, String(value));
+      });
+    }
+
+    function setCanvasTokens(mode: any, preset: any) {
+      const primary = mode?.color?.primary ?? {};
+      const surface = mode?.color?.surface ?? {};
+      const text = mode?.color?.text ?? {};
+      const values = {
+        "--preview-primary": primary[500] ?? preset.primary500,
+        "--preview-primary-soft": primary[activeMode === "dark" ? 950 : 50] ?? surface.muted,
+        "--preview-primary-strong": primary[activeMode === "dark" ? 300 : 700] ?? preset.primary500,
+        "--preview-surface": surface.base ?? (activeMode === "dark" ? "#0f172a" : "#ffffff"),
+        "--preview-surface-muted": surface.muted ?? (activeMode === "dark" ? "#020617" : "#f8fafc"),
+        "--preview-surface-raised": surface.raised ?? surface.base,
+        "--preview-border": surface.border ?? (activeMode === "dark" ? "#334155" : "#e2e8f0"),
+        "--preview-text": text.base ?? (activeMode === "dark" ? "#f8fafc" : "#0f172a"),
+        "--preview-text-muted": text.muted ?? (activeMode === "dark" ? "#94a3b8" : "#64748b"),
+        "--preview-radius": mode?.component?.panelRadius ?? "12px",
+        "--preview-shadow": mode?.component?.cardShadow ?? "0 1px 3px rgba(15,23,42,.1)",
+      };
+      Object.entries(values).forEach(([property, value]) => canvas.style.setProperty(property, String(value)));
+      canvas.dataset.loomiMode = activeMode;
+
+      setTokenGroup("--loomi-primary", primary);
+      setTokenGroup("--loomi-gray", mode?.color?.neutral);
+      setTokenGroup("--loomi-success", mode?.color?.success);
+      setTokenGroup("--loomi-warning", mode?.color?.warning);
+      setTokenGroup("--loomi-error", mode?.color?.error);
+      canvas.style.setProperty("--loomi-surface", surface.base ?? values["--preview-surface"]);
+      canvas.style.setProperty("--loomi-surface-muted", surface.muted ?? values["--preview-surface-muted"]);
+      canvas.style.setProperty("--loomi-surface-hover", surface.hover ?? values["--preview-surface-muted"]);
+      canvas.style.setProperty("--loomi-surface-raised", surface.raised ?? values["--preview-surface-raised"]);
+      canvas.style.setProperty("--loomi-surface-border", surface.border ?? values["--preview-border"]);
+      canvas.style.setProperty("--loomi-surface-border-subtle", surface.borderSubtle ?? values["--preview-border"]);
+      canvas.style.setProperty("--loomi-text", text.base ?? values["--preview-text"]);
+      canvas.style.setProperty("--loomi-text-secondary", text.secondary ?? values["--preview-text"]);
+      canvas.style.setProperty("--loomi-text-muted", text.muted ?? values["--preview-text-muted"]);
+      canvas.style.setProperty("--loomi-text-faint", text.faint ?? values["--preview-text-muted"]);
+      canvas.style.setProperty("--loomi-text-on-primary", text.onPrimary ?? "#ffffff");
+      canvas.style.setProperty("--loomi-focus-ring", mode?.color?.focusRing ?? primary[500] ?? preset.primary500);
+      setTokenGroup("--loomi-font", mode?.typography);
+      setTokenGroup("--loomi-space", mode?.spacing);
+      setTokenGroup("--loomi-radius", mode?.radius);
+      setTokenGroup("--loomi-shadow", mode?.shadow);
+      setTokenGroup("--loomi-border", mode?.border);
+      setTokenGroup("--loomi-motion", mode?.motion);
+      setTokenGroup("--loomi-density", mode?.density);
+      setTokenGroup("--loomi-component", mode?.component);
+
+      const primaryValue = primary[500] ?? preset.primary500;
+      (document.getElementById("primary-token-dot") as HTMLElement).style.background = primaryValue;
+      document.getElementById("primary-token-value")!.textContent = primaryValue;
+      document.getElementById("radius-token-value")!.textContent = mode?.component?.panelRadius ?? "12px";
+      document.getElementById("density-token-value")!.textContent = mode?.density?.controlHeight ?? "36px";
+      document.getElementById("type-token-value")!.textContent = mode?.typography?.fontSizeMd ?? "14px";
+
+      canvas.querySelectorAll<any>("loomi-chart").forEach((chart) => chart.requestUpdate?.());
+    }
+
+    function setDemoView(view: string) {
+      const pageLabels: Record<string, { kicker: string; title: string }> = {
+        overview: { kicker: "Workspace", title: "Performance overview" },
+        customers: { kicker: "Directory", title: "Customer accounts" },
+        analytics: { kicker: "Insights", title: "Product analytics" },
+        settings: { kicker: "Configuration", title: "Workspace settings" },
+      };
+      demoViewButtons.forEach((button) => {
+        const active = button.dataset.demoView === view;
+        button.classList.toggle("is-current", active);
+        if (active) button.setAttribute("aria-current", "page");
+        else button.removeAttribute("aria-current");
+      });
+      demoPanels.forEach((panel) => {
+        const active = panel.dataset.demoPanel === view;
+        panel.hidden = !active;
+        panel.classList.toggle("is-active", active);
+      });
+      demoPageKicker.textContent = pageLabels[view]?.kicker ?? "Workspace";
+      demoPageTitle.textContent = pageLabels[view]?.title ?? "Performance overview";
+    }
+
+    function render() {
+      const preset = getPreset(activePreset);
+      if (!preset) return;
+      const mode = tokens[activePreset]?.modes?.[activeMode];
 
       presetButtons.forEach((button) => {
-        button.addEventListener("click", () => {
-          selectPreset(button);
-        });
+        const active = button.dataset.preset === activePreset;
+        button.classList.toggle("is-active", active);
+        button.setAttribute("aria-pressed", String(active));
       });
-
       modeButtons.forEach((button) => {
-        button.addEventListener("click", () => {
-          setMode(button.dataset.mode as "light" | "dark");
-        });
+        const active = button.dataset.mode === activeMode;
+        button.classList.toggle("is-active", active);
+        button.setAttribute("aria-pressed", String(active));
       });
 
-      renderTokens(activePreset);
-    </script>
-  </body>
-</html>
+      presetName.textContent = preset.label;
+      presetDescription.textContent = preset.description;
+      brandName.textContent = preset.label;
+      importCode.textContent = `import "@loomdev-pro/themes/css/${preset.name}.css";`;
+      setCanvasTokens(mode, preset);
 
-<style is:global>
-  .builder-highlights {
-    border-radius: 1rem;
-    border: 1px solid rgb(191 219 254);
-    background:
-      linear-gradient(135deg, rgb(239 246 255), rgb(248 250 252)),
-      radial-gradient(circle at 100% 0%, rgb(37 99 235 / 0.12), transparent 42%);
-    padding: 1.25rem;
-  }
-  .dark .builder-highlights {
-    border-color: rgb(30 58 138 / 0.45);
-    background:
-      linear-gradient(135deg, rgb(15 23 42 / 0.92), rgb(30 41 59 / 0.72)),
-      radial-gradient(circle at 100% 0%, rgb(59 130 246 / 0.18), transparent 42%);
-  }
-  .builder-highlights-label {
-    margin-bottom: 1rem;
-    color: rgb(29 78 216);
-    font-size: 0.72rem;
-    font-weight: 800;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-  }
-  .dark .builder-highlights-label {
-    color: rgb(147 197 253);
-  }
-  .builder-highlights-grid {
-    display: grid;
-    gap: 0.85rem;
-  }
-  @media (min-width: 640px) {
-    .builder-highlights-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      starterDetail.hidden = !preset.starterKit;
+      if (preset.starterKit) {
+        starterName.textContent = preset.starterKit.name;
+        starterLink.href = `/pro/templates/?preview=${preset.starterKit.slug}`;
+      }
+
+      const url = new URL(window.location.href);
+      url.searchParams.set("preset", activePreset);
+      if (activeMode === "dark") url.searchParams.set("mode", "dark");
+      else url.searchParams.delete("mode");
+      history.replaceState(null, "", url);
     }
-  }
-  .builder-highlight-card {
-    border-radius: 0.85rem;
-    border: 1px solid rgb(255 255 255 / 0.85);
-    background: rgb(255 255 255 / 0.88);
-    box-shadow: 0 10px 24px -18px rgb(37 99 235 / 0.45);
-    padding: 1rem 1rem 1.05rem;
-  }
-  .dark .builder-highlight-card {
-    border-color: rgb(51 65 85);
-    background: rgb(15 23 42 / 0.78);
-    box-shadow: 0 12px 28px -20px rgb(0 0 0 / 0.55);
-  }
-  .builder-highlight-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 0.75rem;
-  }
-  .builder-highlight-step {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 2rem;
-    border-radius: 999px;
-    background: rgb(37 99 235);
-    padding: 0.2rem 0.55rem;
-    color: white;
-    font-size: 0.68rem;
-    font-weight: 800;
-    letter-spacing: 0.08em;
-  }
-  .dark .builder-highlight-step {
-    background: rgb(59 130 246);
-  }
-  .builder-highlight-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 2rem;
-    height: 2rem;
-    border-radius: 0.65rem;
-    background: rgb(37 99 235 / 0.1);
-    color: rgb(37 99 235);
-  }
-  .dark .builder-highlight-icon {
-    background: rgb(96 165 250 / 0.14);
-    color: rgb(147 197 253);
-  }
-  .builder-highlight-text {
-    margin: 0;
-    color: rgb(15 23 42);
-    font-size: 0.92rem;
-    font-weight: 600;
-    line-height: 1.55;
-  }
-  .dark .builder-highlight-text {
-    color: rgb(241 245 249);
-  }
-  .theme-preview-toolbar {
-    margin-top: 1.5rem;
-    display: grid;
-    gap: 1rem;
-    border: 1px solid rgb(226 232 240);
-    border-radius: 1rem;
-    padding: 1rem 1.25rem;
-  }
-  .dark .theme-preview-toolbar {
-    border-color: rgb(51 65 85);
-  }
-  @media (min-width: 768px) {
-    .theme-preview-toolbar {
-      grid-template-columns: 12rem 1fr;
-      align-items: end;
-    }
-  }
-  .mode-toggle {
-    margin-top: 0.5rem;
-    display: inline-flex;
-    border: 1px solid rgb(226 232 240);
-    border-radius: 999px;
-    padding: 0.15rem;
-    background: rgb(248 250 252);
-  }
-  .dark .mode-toggle {
-    border-color: rgb(51 65 85);
-    background: rgb(15 23 42);
-  }
-  .mode-btn {
-    border: 0;
-    background: transparent;
-    color: rgb(71 85 105);
-    border-radius: 999px;
-    padding: 0.35rem 0.85rem;
-    font-size: 0.85rem;
-    cursor: pointer;
-  }
-  .mode-btn.is-active {
-    background: white;
-    color: rgb(15 23 42);
-    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
-  }
-  .dark .mode-btn.is-active {
-    background: rgb(30 41 59);
-    color: white;
-  }
-  .import-snippet {
-    margin-top: 0.5rem;
-    overflow-x: auto;
-    border-radius: 0.75rem;
-    background: rgb(15 23 42);
-    color: rgb(226 232 240);
-    padding: 0.85rem 1rem;
-    font-size: 0.82rem;
-  }
-  .preset-grid {
-    margin-top: 1.5rem;
-    display: grid;
-    gap: 0.75rem;
-    grid-template-columns: 1fr;
-  }
-  @media (min-width: 640px) {
-    .preset-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-  @media (min-width: 1024px) {
-    .preset-grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-  }
-  .preset-card {
-    display: grid;
-    grid-template-columns: 4rem 1fr;
-    gap: 0.75rem;
-    text-align: left;
-    border: 1px solid rgb(226 232 240);
-    border-radius: 0.95rem;
-    background: white;
-    padding: 0.75rem;
-    cursor: pointer;
-  }
-  .dark .preset-card {
-    border-color: rgb(51 65 85);
-    background: rgb(15 23 42 / 0.55);
-  }
-  .preset-card.is-active {
-    border-color: rgb(37 99 235);
-    box-shadow: 0 0 0 1px rgb(37 99 235);
-  }
-  .preset-card-swatch {
-    border-radius: 0.75rem;
-    min-height: 4rem;
-  }
-  .preset-card-body {
-    display: grid;
-    gap: 0.25rem;
-    font-size: 0.82rem;
-    color: rgb(71 85 105);
-  }
-  .preset-card-body strong {
-    color: rgb(15 23 42);
-    font-size: 0.95rem;
-  }
-  .dark .preset-card-body strong {
-    color: white;
-  }
-  .preset-card-body em {
-    font-style: normal;
-    color: rgb(37 99 235);
-    font-size: 0.75rem;
-  }
-  .preview-layout {
-    margin-top: 1.5rem;
-    display: grid;
-    gap: 1rem;
-  }
-  @media (min-width: 1024px) {
-    .preview-layout {
-      grid-template-columns: 1fr 1fr;
-    }
-  }
-  .preview-panel {
-    border: 1px solid rgb(226 232 240);
-    border-radius: 1rem;
-    padding: 1rem 1.1rem;
-    background: rgb(248 250 252 / 0.65);
-  }
-  .dark .preview-panel {
-    border-color: rgb(51 65 85);
-    background: rgb(15 23 42 / 0.45);
-  }
-  .preview-heading {
-    font-size: 1rem;
-    font-weight: 700;
-    margin-bottom: 0.75rem;
-  }
-  .preview-subheading {
-    margin-top: 1rem;
-    margin-bottom: 0.5rem;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: rgb(71 85 105);
-  }
-  .token-scale-label,
-  .preview-subheading {
-    color: rgb(100 116 139);
-  }
-  .token-scale,
-  .semantic-grid,
-  .surface-grid,
-  .shape-grid {
-    display: grid;
-    gap: 0.45rem;
-  }
-  .token-scale {
-    grid-template-columns: repeat(11, minmax(0, 1fr));
-  }
-  .token-empty-note {
-    margin-bottom: 0.75rem;
-    border-radius: 0.75rem;
-    border: 1px dashed rgb(203 213 225);
-    background: rgb(248 250 252);
-    padding: 0.75rem 0.9rem;
-    color: rgb(100 116 139);
-    font-size: 0.78rem;
-    line-height: 1.5;
-  }
-  .dark .token-empty-note {
-    border-color: rgb(51 65 85);
-    background: rgb(15 23 42 / 0.45);
-    color: rgb(148 163 184);
-  }
-  .token-empty-note code {
-    font-size: 0.74rem;
-  }
-  .token-scale-label {
-    grid-column: 1 / -1;
-    font-size: 0.75rem;
-    font-weight: 600;
-    margin-bottom: 0.15rem;
-  }
-  .token-chip {
-    min-height: 2.75rem;
-    border-radius: 0.55rem;
-    display: grid;
-    align-items: end;
-    padding: 0.35rem;
-    font-size: 0.62rem;
-    color: rgba(255, 255, 255, 0.92);
-    border: 1px solid rgba(15, 23, 42, 0.08);
-  }
-  .semantic-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-  .semantic-chip,
-  .surface-chip {
-    border-radius: 0.75rem;
-    padding: 0.75rem;
-    color: white;
-    display: grid;
-    gap: 0.35rem;
-    font-size: 0.78rem;
-    border: 1px solid rgba(15, 23, 42, 0.08);
-  }
-  .semantic-chip code,
-  .surface-chip span {
-    font-size: 0.72rem;
-  }
-  .surface-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .type-samples {
-    margin-top: 0.75rem;
-    display: grid;
-    gap: 0.45rem;
-  }
-  .shape-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-  .shape-card {
-    padding: 1rem 0.75rem;
-    text-align: center;
-    font-size: 0.78rem;
-    color: var(--loomi-text-secondary, rgb(71 85 105));
-  }
-  .component-showcase {
-    display: grid;
-    gap: 0.85rem;
-  }
-  .component-group {
-    border: 1px solid rgb(226 232 240);
-    border-radius: 0.85rem;
-    background: var(--loomi-surface, white);
-    padding: 0.85rem 0.95rem;
-  }
-  .dark .component-group {
-    border-color: rgb(51 65 85);
-    background: rgb(15 23 42 / 0.35);
-  }
-  .component-group-label {
-    margin-bottom: 0.65rem;
-    color: rgb(100 116 139);
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-  .dark .component-group-label {
-    color: rgb(148 163 184);
-  }
-  .component-group-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.55rem;
-  }
-  .component-group-row-single {
-    display: block;
-  }
-  .component-group-row-single loomi-input {
-    display: block;
-    width: 100%;
-  }
-  .component-group-stack {
-    display: grid;
-    gap: 0.55rem;
-  }
-  .shell-preview {
-    margin-top: 0.75rem;
-    display: grid;
-    grid-template-columns: 9rem 1fr;
-    min-height: 14rem;
-    border-radius: var(--loomi-component-panel-radius, 0.75rem);
-    overflow: hidden;
-    border: 1px solid var(--loomi-surface-border, rgb(226 232 240));
-    background: var(--loomi-surface-muted, rgb(248 250 252));
-  }
-  .shell-sidebar {
-    padding: 0.85rem;
-    background: var(--loomi-surface, white);
-    border-right: 1px solid var(--loomi-surface-border, rgb(226 232 240));
-    display: grid;
-    gap: 0.35rem;
-    align-content: start;
-  }
-  .shell-sidebar strong {
-    font-size: 0.82rem;
-    color: var(--loomi-text, rgb(15 23 42));
-  }
-  .shell-muted {
-    color: var(--loomi-text-muted, rgb(100 116 139));
-    font-size: 0.72rem;
-  }
-  .shell-nav-item {
-    display: block;
-    margin-top: 0.35rem;
-    padding: 0.35rem 0.45rem;
-    border-radius: var(--loomi-radius-sm, 0.45rem);
-    font-size: 0.72rem;
-    color: var(--loomi-text-secondary, rgb(71 85 105));
-  }
-  .shell-nav-item.is-active {
-    background: var(--loomi-primary-50, rgb(239 246 255));
-    color: var(--loomi-primary-700, rgb(29 78 216));
-  }
-  .shell-main {
-    padding: 0.85rem;
-    display: grid;
-    gap: 0.75rem;
-  }
-  .shell-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.75rem;
-  }
-  .shell-header strong {
-    display: block;
-    color: var(--loomi-text, rgb(15 23 42));
-    font-size: 0.88rem;
-  }
-  .shell-button {
-    border: 1px solid var(--loomi-surface-border, rgb(226 232 240));
-    background: var(--loomi-surface, white);
-    color: var(--loomi-text, rgb(15 23 42));
-    border-radius: var(--loomi-radius-sm, 0.45rem);
-    padding: 0.35rem 0.65rem;
-    font-size: 0.72rem;
-  }
-  .shell-cards {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.55rem;
-  }
-  .shell-card {
-    background: var(--loomi-surface, white);
-    border: 1px solid var(--loomi-surface-border, rgb(226 232 240));
-    border-radius: var(--loomi-component-panel-radius, 0.75rem);
-    padding: 0.65rem;
-    box-shadow: var(--loomi-component-card-shadow, none);
-    display: grid;
-    gap: 0.2rem;
-  }
-  .shell-card strong {
-    color: var(--loomi-text, rgb(15 23 42));
-    font-size: 0.95rem;
+
+    presetButtons.forEach((button) => button.addEventListener("click", () => {
+      activePreset = button.dataset.preset!;
+      render();
+      document.querySelector(".workbench")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }));
+    modeButtons.forEach((button) => button.addEventListener("click", () => {
+      activeMode = button.dataset.mode ?? "light";
+      render();
+    }));
+    demoViewButtons.forEach((button) => button.addEventListener("click", () => {
+      setDemoView(button.dataset.demoView ?? "overview");
+    }));
+    copyButton.addEventListener("click", () => {
+      copyFeedback.textContent = "Copied";
+      window.setTimeout(() => { copyFeedback.textContent = ""; }, 1600);
+      void navigator.clipboard.writeText(importCode.textContent ?? "").catch(() => {
+        copyFeedback.textContent = "Copy unavailable";
+      });
+    });
+
+    const params = new URL(window.location.href).searchParams;
+    const requestedPreset = params.get("preset");
+    if (requestedPreset && getPreset(requestedPreset)) activePreset = requestedPreset;
+    if (params.get("mode") === "dark") activeMode = "dark";
+    render();
+  </script>
+</ProLandingShell>
+
+<style>
+  .back-link { display: inline-flex; align-items: center; gap: .45rem; color: rgb(75 85 99); font-size: .875rem; font-weight: 650; text-decoration: none; }
+  .back-link:hover { color: rgb(37 99 235); }
+  .back-link loomi-icon { width: 1rem; height: 1rem; }
+  .section-eyebrow { margin: 0; color: rgb(37 99 235); font-size: .72rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+  .preset-hero { display: flex; align-items: end; justify-content: space-between; gap: 3rem; margin-top: 2rem; }
+  .preset-hero h1 { max-width: 52rem; margin: .65rem 0 0; font-size: clamp(2.65rem, 5vw, 4.75rem); line-height: .98; letter-spacing: -.05em; }
+  .preset-hero > div:first-child > p:last-child { max-width: 46rem; margin: 1.25rem 0 0; color: rgb(75 85 99); font-size: 1.05rem; line-height: 1.75; }
+  .hero-actions { display: flex; flex: none; flex-wrap: wrap; gap: .65rem; }
+  .catalog-section { margin-top: 5rem; }
+  .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 2rem; }
+  .section-heading h2, .delivery-section h2, .purchase-panel h2 { margin: .3rem 0 0; font-size: 1.75rem; line-height: 1.2; font-weight: 750; letter-spacing: -.025em; }
+  .section-heading > p { max-width: 30rem; margin: 0; color: rgb(75 85 99); line-height: 1.6; }
+  .preset-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .85rem; margin-top: 1.75rem; }
+  .preset-card { position: relative; display: grid; align-content: start; min-height: 12.5rem; overflow: hidden; border: 1px solid rgb(226 232 240); border-radius: 1rem; background: white; padding: 0; color: rgb(15 23 42); text-align: left; cursor: pointer; transition: border-color .15s, box-shadow .15s, transform .15s; }
+  .preset-card:hover { transform: translateY(-2px); border-color: rgb(147 197 253); box-shadow: 0 12px 28px rgb(15 23 42 / .07); }
+  .preset-card.is-active { border-color: rgb(37 99 235); box-shadow: 0 0 0 3px rgb(219 234 254); }
+  .preset-palette { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; height: 4.25rem; }
+  .preset-card-copy { display: grid; gap: .4rem; padding: 1rem; }
+  .preset-card-copy strong { font-size: .95rem; }
+  .preset-card-copy small { color: rgb(100 116 139); font-size: .78rem; line-height: 1.45; }
+  .starter-badge { align-self: end; justify-self: start; margin: 0 1rem 1rem; border-radius: 999px; background: rgb(239 246 255); padding: .3rem .55rem; color: rgb(37 99 235); font-size: .65rem; font-weight: 750; }
+  .workbench { scroll-margin-top: 1.5rem; margin-top: 4rem; overflow: hidden; border: 1px solid rgb(203 213 225); border-radius: 1.35rem; background: rgb(248 250 252); box-shadow: 0 24px 60px rgb(15 23 42 / .08); }
+  .workbench-header { display: flex; align-items: center; justify-content: space-between; gap: 2rem; border-bottom: 1px solid rgb(226 232 240); background: white; padding: 1.5rem; }
+  .workbench-header h2 { margin: .25rem 0 0; font-size: 1.65rem; letter-spacing: -.025em; }
+  .workbench-header > div:first-child > p:last-child { margin: .4rem 0 0; color: rgb(100 116 139); font-size: .875rem; }
+  .mode-toggle { display: flex; gap: .25rem; border: 1px solid rgb(226 232 240); border-radius: 999px; background: rgb(248 250 252); padding: .2rem; }
+  .mode-button { display: inline-flex; align-items: center; gap: .35rem; border: 0; border-radius: 999px; background: transparent; padding: .45rem .75rem; color: rgb(100 116 139); font-size: .8rem; font-weight: 700; cursor: pointer; }
+  .mode-button.is-active { background: white; color: rgb(15 23 42); box-shadow: 0 1px 3px rgb(15 23 42 / .12); }
+  .mode-button loomi-icon { width: .9rem; height: .9rem; }
+  .workbench-layout { display: grid; grid-template-columns: minmax(0, 1fr) 19rem; gap: 1rem; padding: 1rem; }
+  .preview-canvas { display: grid; grid-template-columns: 11rem 1fr; min-height: 40rem; overflow: hidden; border: 1px solid var(--preview-border); border-radius: var(--preview-radius); background: var(--preview-surface-muted); color: var(--preview-text); box-shadow: var(--preview-shadow); transition: background .2s, color .2s, border-color .2s; }
+  .demo-sidebar { display: flex; flex-direction: column; border-right: 1px solid var(--preview-border); background: var(--preview-surface); padding: 1.15rem .85rem; }
+  .demo-brand { display: flex; align-items: center; gap: .55rem; font-size: .78rem; }
+  .demo-brand > span { width: 1.65rem; height: 1.65rem; border-radius: calc(var(--preview-radius) * .55); background: var(--preview-primary); }
+  .demo-sidebar nav { display: grid; gap: .25rem; margin-top: 2rem; }
+  .demo-sidebar nav button { display: flex; align-items: center; gap: .5rem; width: 100%; border: 0; border-radius: calc(var(--preview-radius) * .6); background: transparent; padding: .55rem .6rem; color: var(--preview-text-muted); font: inherit; font-size: .7rem; text-align: left; cursor: pointer; }
+  .demo-sidebar nav button:hover { background: var(--loomi-surface-hover); color: var(--preview-text); }
+  .demo-sidebar nav button.is-current { background: var(--preview-primary-soft); color: var(--preview-primary-strong); font-weight: 750; }
+  .demo-sidebar nav loomi-icon { width: .9rem; height: .9rem; }
+  .demo-profile-menu { width: 100%; margin-top: auto; }
+  .demo-main { min-width: 0; }
+  .demo-topbar { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--preview-border); background: var(--preview-surface); padding: .9rem 1rem; }
+  .demo-topbar div { display: grid; gap: .1rem; }
+  .demo-topbar small, .demo-main small { color: var(--preview-text-muted); font-size: .65rem; }
+  .demo-topbar strong { font-size: .8rem; }
+  .demo-topbar .demo-topbar-actions { display: flex; grid-auto-flow: column; gap: .4rem; }
+  .demo-main main { min-height: 38rem; padding: 1rem; }
+  .demo-view[hidden] { display: none; }
+  .demo-welcome { display: flex; align-items: end; justify-content: space-between; gap: 1rem; }
+  .demo-welcome h3 { margin: .2rem 0 0; font-size: 1.25rem; letter-spacing: -.03em; }
+  .demo-welcome p { margin: .25rem 0 0; color: var(--preview-text-muted); font-size: .7rem; }
+  .demo-view-toolbar { display: flex; justify-content: flex-end; gap: .4rem; margin-top: .75rem; }
+  .demo-view-toolbar loomi-select { width: 9.5rem; }
+  .demo-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: .65rem; margin-top: 1rem; }
+  .demo-metrics loomi-statistic, .customer-summary loomi-statistic { min-width: 0; }
+  .demo-metrics loomi-icon { color: var(--loomi-primary-500); }
+  .demo-lower { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(10rem, .75fr); gap: .65rem; margin-top: .65rem; }
+  .demo-lower loomi-card, .goal-card, .demo-view > loomi-card { min-width: 0; }
+  .demo-chart-card loomi-chart { display: block; width: 100%; min-height: 12rem; }
+  .demo-activity-card loomi-timeline { display: block; font-size: .72rem; }
+  .goal-card { display: block; margin-top: .65rem; }
+  .demo-section-heading { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+  .demo-section-heading h3 { margin: .15rem 0 0; font-size: 1.2rem; letter-spacing: -.025em; }
+  .demo-section-heading p { margin: .25rem 0 0; color: var(--preview-text-muted); font-size: .7rem; }
+  .customer-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: .65rem; margin-bottom: .65rem; }
+  .analytics-grid, .settings-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .65rem; margin-bottom: .65rem; }
+  .analytics-grid loomi-chart { display: block; min-height: 13rem; }
+  .progress-stack, .settings-fields, .toggle-stack { display: grid; gap: .75rem; }
+  .progress-stack > div { display: grid; gap: .35rem; color: var(--loomi-text-secondary); font-size: .7rem; }
+  .preset-details { display: flex; min-width: 0; flex-direction: column; gap: .75rem; }
+  .detail-block { border: 1px solid rgb(226 232 240); border-radius: .9rem; background: white; padding: 1rem; }
+  .detail-label { margin-bottom: .65rem; color: rgb(100 116 139); font-size: .68rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+  .import-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; overflow: hidden; border-radius: .65rem; background: rgb(15 23 42); }
+  .import-row code { overflow: hidden; padding: .75rem; color: rgb(226 232 240); font-size: .68rem; line-height: 1.45; text-overflow: ellipsis; }
+  .import-row button { display: grid; width: 2.5rem; border: 0; border-left: 1px solid rgb(51 65 85); background: transparent; place-items: center; color: rgb(148 163 184); cursor: pointer; }
+  .import-row button:hover { color: white; }
+  .import-row loomi-icon { width: 1rem; height: 1rem; }
+  .copy-feedback { display: block; min-height: 1rem; margin-top: .25rem; color: rgb(37 99 235); font-size: .68rem; }
+  .token-summary { display: grid; grid-template-columns: repeat(2, 1fr); gap: .55rem; }
+  .token-summary > div { display: grid; min-width: 0; grid-template-columns: auto 1fr; column-gap: .4rem; align-items: center; border-radius: .65rem; background: rgb(248 250 252); padding: .6rem; }
+  .token-summary loomi-icon, .token-dot { width: 1rem; height: 1rem; grid-row: 1 / 3; border-radius: .3rem; color: rgb(37 99 235); }
+  .token-summary small { color: rgb(100 116 139); font-size: .62rem; }
+  .token-summary strong { overflow: hidden; font-size: .7rem; text-overflow: ellipsis; }
+  .starter-detail strong { font-size: .95rem; }
+  .starter-detail p { margin: .35rem 0 .65rem; color: rgb(100 116 139); font-size: .75rem; line-height: 1.5; }
+  .starter-detail a { display: inline-flex; align-items: center; gap: .3rem; color: rgb(37 99 235); font-size: .75rem; font-weight: 750; text-decoration: none; }
+  .starter-detail loomi-icon { width: .85rem; height: .85rem; }
+  .delivery-section { display: grid; grid-template-columns: .75fr 1.25fr; gap: 4rem; margin-top: 5rem; }
+  .delivery-section > div:first-child > p:last-child { margin: .85rem 0 0; color: rgb(75 85 99); line-height: 1.7; }
+  .delivery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; }
+  .delivery-grid article { border: 1px solid rgb(226 232 240); border-radius: 1rem; padding: 1.15rem; }
+  .delivery-grid loomi-icon { width: 1.25rem; height: 1.25rem; color: rgb(37 99 235); }
+  .delivery-grid strong { display: block; margin-top: 1.2rem; font-size: .9rem; }
+  .delivery-grid p { margin: .45rem 0 0; color: rgb(100 116 139); font-size: .78rem; line-height: 1.55; }
+  .purchase-panel { display: flex; align-items: center; justify-content: space-between; gap: 2rem; margin-top: 5rem; border-radius: 1.25rem; background: rgb(239 246 255); padding: 2rem; }
+  .purchase-panel p:last-child { margin: .65rem 0 0; color: rgb(75 85 99); }
+  :global(.dark) .back-link, :global(.dark) .preset-hero > div:first-child > p:last-child, :global(.dark) .section-heading > p, :global(.dark) .delivery-section > div:first-child > p:last-child, :global(.dark) .purchase-panel p:last-child { color: rgb(156 163 175); }
+  :global(.dark) .preset-card, :global(.dark) .workbench-header, :global(.dark) .detail-block, :global(.dark) .delivery-grid article { border-color: rgb(55 65 81); background: rgb(17 24 39); color: rgb(243 244 246); }
+  :global(.dark) .preset-card-copy small, :global(.dark) .workbench-header > div:first-child > p:last-child { color: rgb(156 163 175); }
+  :global(.dark) .preset-card.is-active { border-color: rgb(96 165 250); box-shadow: 0 0 0 3px rgb(30 58 138 / .65); }
+  :global(.dark) .starter-badge { background: rgb(30 58 138 / .45); color: rgb(147 197 253); }
+  :global(.dark) .workbench { border-color: rgb(55 65 81); background: rgb(15 23 42); }
+  :global(.dark) .workbench-header { border-color: rgb(55 65 81); }
+  :global(.dark) .mode-toggle, :global(.dark) .token-summary > div { border-color: rgb(55 65 81); background: rgb(30 41 59); }
+  :global(.dark) .mode-button.is-active { background: rgb(51 65 85); color: white; }
+  :global(.dark) .purchase-panel { background: rgb(30 58 138 / .3); }
+  @media (max-width: 1050px) {
+    .preset-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .workbench-layout { grid-template-columns: 1fr; }
+    .preset-details { display: grid; grid-template-columns: repeat(2, 1fr); }
+    .preset-details > loomi-button { align-self: end; }
+    .delivery-section { grid-template-columns: 1fr; gap: 2rem; }
+  }
+  @media (max-width: 760px) {
+    .preset-hero, .section-heading, .workbench-header, .purchase-panel { align-items: flex-start; flex-direction: column; }
+    .preset-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .preview-canvas { grid-template-columns: 1fr; min-height: 0; }
+    .demo-sidebar { display: block; border-right: 0; border-bottom: 1px solid var(--preview-border); padding: .75rem; }
+    .demo-brand, .demo-profile-menu { display: none; }
+    .demo-sidebar nav { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 0; }
+    .demo-sidebar nav button { justify-content: center; padding: .5rem .25rem; }
+    .demo-lower, .analytics-grid, .settings-grid { grid-template-columns: 1fr; }
+    .preset-details, .delivery-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 480px) {
+    .preset-grid, .demo-metrics, .customer-summary { grid-template-columns: 1fr; }
+    .preset-card { min-height: 0; }
+    .demo-sidebar nav button { font-size: .62rem; }
+    .demo-welcome, .demo-section-heading { align-items: flex-start; flex-direction: column; }
   }
 </style>
