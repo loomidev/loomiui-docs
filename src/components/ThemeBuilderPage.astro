@@ -116,11 +116,6 @@ const lineHeightOptions = [{ label: "Tight · 1.4", value: "1.4" }, { label: "De
               <input id="font-family" type="text" value="Inter, ui-sans-serif, system-ui, sans-serif" />
             </label>
 
-            <label class="builder-field">
-              <span>Monospace font stack</span>
-              <input id="font-family-mono" type="text" value="'JetBrains Mono', ui-monospace, SFMono-Regular, monospace" />
-            </label>
-
             <div class="builder-field">
               <span>Base font size</span>
               <loomi-select id="font-size-base" selected-value="14px" data={JSON.stringify(fontSizeOptions)} no-clearing></loomi-select>
@@ -131,23 +126,8 @@ const lineHeightOptions = [{ label: "Tight · 1.4", value: "1.4" }, { label: "De
               <loomi-select id="line-height-base" selected-value="1.5" data={JSON.stringify(lineHeightOptions)} no-clearing></loomi-select>
             </div>
 
-            <h3 class="builder-subtitle">Import & validation</h3>
-
-            <label class="builder-field">
-              <span>Paste theme JSON</span>
-              <textarea id="import-json" rows="8" placeholder='{"name":"brand","label":"Brand","description":"Imported preset","modes":{...}}'></textarea>
-            </label>
-
-            <div class="builder-actions">
-              <button type="button" class="builder-action" id="validate-theme">Validate JSON</button>
-              <button type="button" class="builder-action builder-action-primary" id="apply-import">Apply import</button>
-            </div>
-
-            <ul id="validation-results" class="validation-results" aria-live="polite"></ul>
-
             <h3 class="builder-subtitle">Export</h3>
             <pre class="export-snippet"><code id="export-code"></code></pre>
-            <pre class="export-snippet export-snippet-secondary"><code id="css-import-code"></code></pre>
           </aside>
 
           <section class="builder-preview-wrap" aria-label="Live theme preview">
@@ -163,51 +143,78 @@ const lineHeightOptions = [{ label: "Tight · 1.4", value: "1.4" }, { label: "De
                 <span></span><span></span><span></span>
                 <div>app.yourcompany.com</div>
               </div>
+              <div class="specimen-stack">
+                <div class="component-group specimen-typography">
+                  <div class="component-group-label">Typography</div>
+                  <h3 class="specimen-heading">Ship a consistent brand in minutes</h3>
+                  <p class="specimen-lead">Your body font, base size, and line height apply to every text style below — headings, paragraphs, and inline code all inherit the same foundation.</p>
+                  <p class="specimen-body">Line height controls the vertical rhythm between wrapped lines, so it only shows up in multi-line copy like this paragraph. Raise it for airier, more readable long-form text; tighten it for dense dashboards where vertical space is at a premium. Adjust the base font size to scale the whole specimen together.</p>
+                  <code class="specimen-code">import &quot;@loomdev-pro/themes/css/brand.css&quot;;</code>
+                  <div class="specimen-readout">
+                    <span>Font<strong id="readout-font">Inter</strong></span>
+                    <span>Base size<strong id="readout-size">14px</strong></span>
+                    <span>Line height<strong id="readout-line">1.5</strong></span>
+                  </div>
+                </div>
+
+                <div class="component-group specimen-radius">
+                  <div class="component-group-label">Corner radius</div>
+                  <p class="specimen-note">Radius tokens flow into every surface — cards, panels, and buttons round together as you change the profile.</p>
+                  <div class="radius-swatches">
+                    <div><span class="radius-box" style="border-radius:var(--loomi-radius-sm)"></span><small>Small</small><strong id="radius-sm-val">6px</strong></div>
+                    <div><span class="radius-box" style="border-radius:var(--loomi-radius-md)"></span><small>Medium</small><strong id="radius-md-val">8px</strong></div>
+                    <div><span class="radius-box" style="border-radius:var(--loomi-radius-lg)"></span><small>Large</small><strong id="radius-lg-val">12px</strong></div>
+                  </div>
+                </div>
+              </div>
+
               <div class="component-showcase">
               <div class="component-group">
                 <div class="component-group-label">Buttons</div>
                 <div class="component-group-row">
-                  <loomi-button color="primary" size="small">Primary</loomi-button>
-                  <loomi-button type="secondary" size="small">Secondary</loomi-button>
-                  <loomi-button type="danger" size="small">Danger</loomi-button>
+                  <loomi-button color="primary">Primary</loomi-button>
+                  <loomi-button type="secondary">Secondary</loomi-button>
+                  <loomi-button type="danger">Danger</loomi-button>
+                  <loomi-button color="primary" icon="plus">New report</loomi-button>
+                  <loomi-button type="secondary" icon="arrow-down-tray">Export</loomi-button>
+                  <loomi-button color="primary" icon="arrow-right" icon-right>Continue</loomi-button>
+                  <loomi-button type="secondary" icon="chevron-down" icon-right>Options</loomi-button>
+                </div>
+              </div>
+              <div class="component-group">
+                <div class="component-group-label">Tags & alerts</div>
+                <div class="component-group-row tag-row">
+                  <loomi-tag label="Active" color="success" icon="check-circle"></loomi-tag>
+                  <loomi-tag label="Pending" color="warning" icon="clock"></loomi-tag>
+                  <loomi-tag label="Failed" color="error" icon="x-circle"></loomi-tag>
+                  <loomi-tag label="Beta" color="primary" outline></loomi-tag>
+                  <loomi-tag label="Archived" color="gray" outline rounded></loomi-tag>
+                  <loomi-tag label="Design" color="primary" can-close></loomi-tag>
+                  <loomi-tag label="Engineering" color="success" can-close rounded></loomi-tag>
+                </div>
+                <div class="alert-stack">
+                  <loomi-alert type="success" show-icon>Theme tokens applied to every LoomiUI component.</loomi-alert>
+                  <loomi-alert type="info" show-icon>Changes are scoped to this preview canvas.</loomi-alert>
+                  <loomi-alert type="warning" show-icon>Unsaved edits will reset when you reload.</loomi-alert>
+                  <loomi-alert type="error" show-icon>This color pair fails the contrast target.</loomi-alert>
                 </div>
               </div>
               <div class="component-group">
                 <div class="component-group-label">Form</div>
-                <div class="component-form-grid"><loomi-input label="Work email" placeholder="you@company.com" size="small"></loomi-input><loomi-select label="Team" selected-value="product" size="small" data='[{"label":"Product","value":"product"},{"label":"Design","value":"design"},{"label":"Engineering","value":"engineering"}]' no-clearing></loomi-select></div>
-              </div>
-              <div class="component-group">
-                <div class="component-group-label">Tags & alerts</div>
-                <div class="component-group-row">
-                  <loomi-tag label="Active" color="success"></loomi-tag>
-                  <loomi-tag label="Draft" color="warning"></loomi-tag>
-                </div>
-                <loomi-alert type="success" class="text-xs">Theme tokens applied to LoomiUI components.</loomi-alert>
-              </div>
-              </div>
-
-              <div class="shell-preview">
-              <aside class="shell-sidebar">
-                <strong id="shell-brand">{initialPreset.label}</strong>
-                <span class="shell-muted">Preview workspace</span>
-                <span class="shell-nav-item is-active">Dashboard</span>
-                <span class="shell-nav-item">Settings</span>
-              </aside>
-              <section class="shell-main">
-                <header class="shell-header">
-                  <div>
-                    <span class="shell-muted">Overview</span>
-                    <strong>Weekly summary</strong>
+                <div class="component-form-grid">
+                  <loomi-input label="Work email" placeholder="you@company.com" no-clearing></loomi-input>
+                  <loomi-select label="Team" selected-value="product" data='[{"label":"Product","value":"product"},{"label":"Design","value":"design"},{"label":"Engineering","value":"engineering"}]' no-clearing></loomi-select>
+                  <loomi-autocomplete id="builder-autocomplete" label="Assignee" placeholder="Search teammates" no-clearing></loomi-autocomplete>
+                  <loomi-countries label="Country" no-clearing></loomi-countries>
+                  <loomi-number label="Seats" value="12" min="1" max="500" step="1" no-clearing></loomi-number>
+                  <loomi-timezonepicker label="Timezone" no-clearing></loomi-timezonepicker>
+                  <loomi-pin label="Access code" total-digits="6"></loomi-pin>
+                  <div class="form-span slider-field">
+                    <span class="field-label">Monthly budget</span>
+                    <loomi-slider selected="65" min="0" max="100" step="5" color="primary"></loomi-slider>
                   </div>
-                  <loomi-button color="primary" size="small">New report</loomi-button>
-                </header>
-                <div class="shell-cards">
-                  <div class="shell-card"><span class="shell-muted">Active users</span><strong>1,284</strong></div>
-                  <div class="shell-card"><span class="shell-muted">Conversion</span><strong>4.8%</strong></div>
-                  <div class="shell-card"><span class="shell-muted">MRR</span><strong>$12.8k</strong></div>
                 </div>
-                <div class="shell-chart" aria-hidden="true"><span style="height:38%"></span><span style="height:62%"></span><span style="height:48%"></span><span style="height:76%"></span><span style="height:68%"></span><span style="height:88%"></span><span style="height:72%"></span></div>
-              </section>
+              </div>
               </div>
             </div>
           </section>
@@ -230,6 +237,12 @@ const lineHeightOptions = [{ label: "Tight · 1.4", value: "1.4" }, { label: "De
       import "@loomidev/tag";
       import "@loomidev/alert";
       import "@loomidev/select";
+      import "@loomidev/autocomplete";
+      import "@loomidev/countries";
+      import "@loomidev/number";
+      import "@loomidev/pin";
+      import "@loomidev/slider";
+      import "@loomidev/timezonepicker";
     </script>
 
     <script>
@@ -242,32 +255,31 @@ const lineHeightOptions = [{ label: "Tight · 1.4", value: "1.4" }, { label: "De
       const radiusSelect = document.getElementById("radius-profile") as BuilderSelect;
       const densitySelect = document.getElementById("density-profile") as BuilderSelect;
       const fontFamilyInput = document.getElementById("font-family") as HTMLInputElement;
-      const fontFamilyMonoInput = document.getElementById("font-family-mono") as HTMLInputElement;
       const fontSizeSelect = document.getElementById("font-size-base") as BuilderSelect;
       const lineHeightSelect = document.getElementById("line-height-base") as BuilderSelect;
-      const importJson = document.getElementById("import-json") as HTMLTextAreaElement;
-      const validationResults = document.getElementById("validation-results") as HTMLUListElement;
-      const validateButton = document.getElementById("validate-theme") as HTMLButtonElement;
-      const applyImportButton = document.getElementById("apply-import") as HTMLButtonElement;
       const exportCode = document.getElementById("export-code") as HTMLElement;
-      const cssImportCode = document.getElementById("css-import-code") as HTMLElement;
-      const shellBrand = document.getElementById("shell-brand") as HTMLElement;
       const modeButtons = Array.from(document.querySelectorAll<HTMLButtonElement>(".mode-btn"));
       const resetButton = document.getElementById("reset-theme") as HTMLButtonElement;
       const copyCssButton = document.getElementById("copy-css") as HTMLButtonElement;
       const downloadButton = document.getElementById("download-theme") as HTMLButtonElement;
       const previewRoot = document.querySelector<HTMLElement>(".builder-preview-wrap")!;
+      const previewCanvas = previewRoot.querySelector<HTMLElement>(".preview-canvas")!;
 
       const radiusProfiles = {
-        sharp: { sm: "4px", md: "6px", lg: "8px", panel: "6px" },
-        default: { sm: "6px", md: "8px", lg: "12px", panel: "8px" },
-        rounded: { sm: "8px", md: "12px", lg: "16px", panel: "12px" },
+        // `buttonRadius` maps the profile onto loomi-button's own `radius` attribute
+        // (none|small|medium|full), since the components round via that attribute rather
+        // than the --loomi-radius-* CSS vars used by the surrounding surfaces.
+        sharp: { sm: "4px", md: "6px", lg: "8px", panel: "6px", buttonRadius: "none" },
+        default: { sm: "6px", md: "8px", lg: "12px", panel: "8px", buttonRadius: "small" },
+        rounded: { sm: "8px", md: "12px", lg: "16px", panel: "12px", buttonRadius: "medium" },
       } as const;
 
       const densityProfiles = {
-        compact: { controlHeight: "30px", tableRowHeight: "36px", gapInline: "8px" },
-        default: { controlHeight: "36px", tableRowHeight: "44px", gapInline: "12px" },
-        spacious: { controlHeight: "44px", tableRowHeight: "52px", gapInline: "16px" },
+        // `controlSize` maps the profile onto the size attribute of loomi controls
+        // (button/input/select), which is how those components set their own height.
+        compact: { controlHeight: "30px", tableRowHeight: "36px", gapInline: "8px", controlSize: "small" },
+        default: { controlHeight: "36px", tableRowHeight: "44px", gapInline: "12px", controlSize: "regular" },
+        spacious: { controlHeight: "44px", tableRowHeight: "52px", gapInline: "16px", controlSize: "big" },
       } as const;
 
       const state = {
@@ -277,66 +289,9 @@ const lineHeightOptions = [{ label: "Tight · 1.4", value: "1.4" }, { label: "De
         density: densitySelect.selectedValue as keyof typeof densityProfiles,
         mode: "light" as "light" | "dark",
         fontFamily: fontFamilyInput.value,
-        fontFamilyMono: fontFamilyMonoInput.value,
         fontSizeBase: fontSizeSelect.selectedValue,
         lineHeightBase: lineHeightSelect.selectedValue,
       };
-
-      type ValidationIssue = { path: string; message: string; severity: "error" | "warning" };
-
-      function validateThemePreset(input: unknown): ValidationIssue[] {
-        const issues: ValidationIssue[] = [];
-        if (!input || typeof input !== "object" || Array.isArray(input)) {
-          return [{ path: "", message: "Theme must be a JSON object.", severity: "error" }];
-        }
-
-        const theme = input as Record<string, unknown>;
-        if (typeof theme.name !== "string" || !/^[a-z0-9-]+$/.test(theme.name)) {
-          issues.push({ path: "name", message: "Use a lowercase slug with hyphens.", severity: "error" });
-        }
-        if (typeof theme.label !== "string" || !theme.label.trim()) {
-          issues.push({ path: "label", message: "Label is required.", severity: "error" });
-        }
-        if (typeof theme.description !== "string" || !theme.description.trim()) {
-          issues.push({ path: "description", message: "Description is required.", severity: "error" });
-        }
-        if (!theme.modes || typeof theme.modes !== "object") {
-          issues.push({ path: "modes", message: "Expected light and dark mode token sets.", severity: "error" });
-          return issues;
-        }
-
-        for (const mode of ["light", "dark"] as const) {
-          const modeTokens = (theme.modes as Record<string, unknown>)[mode];
-          if (!modeTokens || typeof modeTokens !== "object") {
-            issues.push({ path: `modes.${mode}`, message: `Missing "${mode}" mode tokens.`, severity: "error" });
-            continue;
-          }
-          const typography = (modeTokens as Record<string, unknown>).typography;
-          if (!typography || typeof typography !== "object") {
-            issues.push({ path: `modes.${mode}.typography`, message: "Typography tokens are required.", severity: "error" });
-          }
-        }
-
-        return issues;
-      }
-
-      function renderValidation(issues: ValidationIssue[]) {
-        validationResults.innerHTML = "";
-        if (issues.length === 0) {
-          const item = document.createElement("li");
-          item.className = "validation-ok";
-          item.textContent = "Theme JSON passed validation.";
-          validationResults.append(item);
-          return;
-        }
-
-        for (const issue of issues) {
-          const item = document.createElement("li");
-          item.className = issue.severity === "error" ? "validation-error" : "validation-warning";
-          item.textContent = issue.path ? `${issue.path}: ${issue.message}` : issue.message;
-          validationResults.append(item);
-        }
-      }
 
       function selectedPreset() {
         return presets.find((entry: any) => entry.name === state.preset) ?? presets[0];
@@ -404,14 +359,33 @@ const lineHeightOptions = [{ label: "Tight · 1.4", value: "1.4" }, { label: "De
         root.style.setProperty("--loomi-density-gap-inline", density.gapInline);
         root.style.setProperty("--builder-density-space", density.gapInline);
         root.style.setProperty("--loomi-font-font-family", state.fontFamily);
-        root.style.setProperty("--loomi-font-font-family-mono", state.fontFamilyMono);
         root.style.setProperty("--loomi-font-font-size-md", state.fontSizeBase);
         root.style.setProperty("--loomi-font-line-height-normal", state.lineHeightBase);
-        previewRoot.style.fontFamily = state.fontFamily;
-        previewRoot.style.fontSize = state.fontSizeBase;
-        previewRoot.style.lineHeight = state.lineHeightBase;
 
-        shellBrand.textContent = preset?.label ?? "Brand theme";
+        // Typography is scoped to the preview canvas so the specimen text (and the
+        // components' light-DOM labels) visibly pick up family, size, and line height,
+        // while the surrounding "Live preview" chrome stays stable.
+        previewCanvas.style.fontFamily = state.fontFamily;
+        previewCanvas.style.fontSize = state.fontSizeBase;
+        previewCanvas.style.lineHeight = state.lineHeightBase;
+
+        // The loomi components round and size themselves through their own attributes,
+        // not the --loomi-radius-*/--loomi-density-* vars, so drive those directly.
+        previewCanvas.querySelectorAll("loomi-button").forEach((el) => {
+          el.setAttribute("radius", radius.buttonRadius);
+          el.setAttribute("size", density.controlSize);
+        });
+        previewCanvas.querySelectorAll("loomi-input, loomi-select, loomi-autocomplete, loomi-countries, loomi-number, loomi-timezonepicker, loomi-pin").forEach((el) => {
+          el.setAttribute("size", density.controlSize);
+        });
+
+        (document.getElementById("readout-font") as HTMLElement).textContent = state.fontFamily.split(",")[0].replace(/['"]/g, "").trim();
+        (document.getElementById("readout-size") as HTMLElement).textContent = state.fontSizeBase;
+        (document.getElementById("readout-line") as HTMLElement).textContent = state.lineHeightBase;
+        (document.getElementById("radius-sm-val") as HTMLElement).textContent = radius.sm;
+        (document.getElementById("radius-md-val") as HTMLElement).textContent = radius.md;
+        (document.getElementById("radius-lg-val") as HTMLElement).textContent = radius.lg;
+
         exportCode.textContent = `import { createTheme, palettes } from "@loomdev-pro/themes";
 
 const brand = createTheme({
@@ -430,21 +404,12 @@ const brand = createTheme({
       },
       typography: {
         fontFamily: "${state.fontFamily}",
-        fontFamilyMono: "${state.fontFamilyMono}",
         fontSizeMd: "${state.fontSizeBase}",
         lineHeightNormal: "${state.lineHeightBase}",
       },
     },
   },
 });`;
-        cssImportCode.textContent = `import { validateThemePreset, importThemeFromJson } from "@loomdev-pro/themes";
-
-const result = importThemeFromJson(themeJson);
-if (!result.preset) {
-  console.error(result.issues);
-}
-
-import "@loomdev-pro/themes/css/${state.preset}.css";`;
 
         const url = new URL(window.location.href);
         url.searchParams.set("preset", state.preset);
@@ -494,11 +459,6 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
         applyTheme();
       });
 
-      fontFamilyMonoInput.addEventListener("input", () => {
-        state.fontFamilyMono = fontFamilyMonoInput.value;
-        applyTheme();
-      });
-
       fontSizeSelect.addEventListener("loomi-select", (event: any) => {
         state.fontSizeBase = event.detail.value;
         fontSizeSelect.selectedValue = event.detail.value;
@@ -509,66 +469,6 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
         state.lineHeightBase = event.detail.value;
         lineHeightSelect.selectedValue = event.detail.value;
         applyTheme();
-      });
-
-      validateButton.addEventListener("click", () => {
-        try {
-          const parsed = JSON.parse(importJson.value || "{}");
-          renderValidation(validateThemePreset(parsed));
-        } catch (error) {
-          renderValidation([
-            {
-              path: "",
-              message: error instanceof Error ? `Invalid JSON: ${error.message}` : "Invalid JSON.",
-              severity: "error",
-            },
-          ]);
-        }
-      });
-
-      applyImportButton.addEventListener("click", () => {
-        try {
-          const parsed = JSON.parse(importJson.value || "{}");
-          const issues = validateThemePreset(parsed);
-          renderValidation(issues);
-          if (issues.some((issue) => issue.severity === "error")) return;
-
-          if (typeof parsed.name === "string") {
-            const matchingPreset = presets.find((entry: any) => entry.name === parsed.name);
-            if (matchingPreset) {
-              state.preset = parsed.name;
-              presetSelect.selectedValue = parsed.name;
-            }
-          }
-
-          const typography = parsed?.modes?.light?.typography ?? parsed?.modes?.dark?.typography;
-          if (typography?.fontFamily) {
-            state.fontFamily = typography.fontFamily;
-            fontFamilyInput.value = typography.fontFamily;
-          }
-          if (typography?.fontFamilyMono) {
-            state.fontFamilyMono = typography.fontFamilyMono;
-            fontFamilyMonoInput.value = typography.fontFamilyMono;
-          }
-          if (typography?.fontSizeMd) {
-            state.fontSizeBase = typography.fontSizeMd;
-            fontSizeSelect.selectedValue = typography.fontSizeMd;
-          }
-          if (typography?.lineHeightNormal) {
-            state.lineHeightBase = typography.lineHeightNormal;
-            lineHeightSelect.selectedValue = typography.lineHeightNormal;
-          }
-
-          applyTheme();
-        } catch (error) {
-          renderValidation([
-            {
-              path: "",
-              message: error instanceof Error ? `Invalid JSON: ${error.message}` : "Invalid JSON.",
-              severity: "error",
-            },
-          ]);
-        }
       });
 
       function exportedTheme() {
@@ -588,7 +488,6 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
             density,
             typography: {
               fontFamily: state.fontFamily,
-              fontFamilyMono: state.fontFamilyMono,
               fontSizeMd: state.fontSizeBase,
               lineHeightNormal: state.lineHeightBase,
             },
@@ -611,7 +510,6 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
   --loomi-density-table-row-height: ${density.tableRowHeight};
   --loomi-density-gap-inline: ${density.gapInline};
   --loomi-font-font-family: ${state.fontFamily};
-  --loomi-font-font-family-mono: ${state.fontFamilyMono};
   --loomi-font-font-size-md: ${state.fontSizeBase};
   --loomi-font-line-height-normal: ${state.lineHeightBase};
 }`;
@@ -625,7 +523,6 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
         state.density = "default";
         state.mode = "light";
         state.fontFamily = "Inter, ui-sans-serif, system-ui, sans-serif";
-        state.fontFamilyMono = "'JetBrains Mono', ui-monospace, SFMono-Regular, monospace";
         state.fontSizeBase = "14px";
         state.lineHeightBase = "1.5";
         presetSelect.selectedValue = state.preset;
@@ -633,11 +530,9 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
         radiusSelect.selectedValue = state.radius;
         densitySelect.selectedValue = state.density;
         fontFamilyInput.value = state.fontFamily;
-        fontFamilyMonoInput.value = state.fontFamilyMono;
         fontSizeSelect.selectedValue = state.fontSizeBase;
         lineHeightSelect.selectedValue = state.lineHeightBase;
         modeButtons.forEach((button) => button.classList.toggle("is-active", button.dataset.mode === "light"));
-        renderValidation([]);
         applyTheme();
       });
 
@@ -668,6 +563,16 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
       if (params.get("mode") === "dark") {
         state.mode = "dark";
         modeButtons.forEach((button) => button.classList.toggle("is-active", button.dataset.mode === "dark"));
+      }
+
+      const autocomplete = document.getElementById("builder-autocomplete") as (HTMLElement & { data?: unknown[] }) | null;
+      if (autocomplete) {
+        autocomplete.data = [
+          { label: "Ama Mensah", value: "ama", description: "Product" },
+          { label: "Kojo Asante", value: "kojo", description: "Engineering" },
+          { label: "Esi Owusu", value: "esi", description: "Design" },
+          { label: "Yaw Boateng", value: "yaw", description: "Analytics" },
+        ];
       }
 
       applyTheme();
@@ -758,8 +663,7 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
   .builder-field select,
   .builder-field loomi-select,
   .builder-field input[type="color"],
-  .builder-field input[type="text"],
-  .builder-field textarea {
+  .builder-field input[type="text"] {
     width: 100%;
     min-height: 2.35rem;
     border-radius: 0.6rem;
@@ -770,22 +674,11 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
   }
   .builder-field loomi-select { display: block; padding: 0; border: 0; }
   .builder-field input[type="color"] { height: 3rem; padding: .3rem; cursor: pointer; }
-  .builder-field textarea {
-    min-height: 8rem;
-    resize: vertical;
-  }
   .dark .builder-field select,
-  .dark .builder-field input[type="text"],
-  .dark .builder-field textarea {
+  .dark .builder-field input[type="text"] {
     border-color: rgb(51 65 85);
     background: rgb(15 23 42);
     color: white;
-  }
-  .builder-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 0.75rem;
   }
   .builder-action {
     display: inline-flex;
@@ -805,7 +698,7 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
     background: rgb(239 246 255);
     color: rgb(29 78 216);
   }
-  .preview-canvas { overflow: hidden; margin-top: 1.25rem; border: 1px solid var(--loomi-surface-border, rgb(203 213 225)); border-radius: var(--loomi-radius-lg, 1rem); background: var(--loomi-surface-muted, rgb(241 245 249)); color: var(--loomi-text, rgb(15 23 42)); box-shadow: 0 24px 55px rgb(15 23 42 / .12); transition: background-color .18s, border-color .18s, color .18s, border-radius .18s; }
+  .preview-canvas { overflow: hidden; margin-top: 1.25rem; border: 1px solid var(--loomi-surface-border, rgb(203 213 225)); border-radius: var(--loomi-radius-lg, 1rem); background: var(--loomi-surface-muted, rgb(241 245 249)); color: var(--loomi-text, rgb(15 23 42)); box-shadow: 0 24px 55px rgb(15 23 42 / .12); transition: background-color .18s, border-color .18s, color .18s; }
   .preview-browser-bar { display: grid; grid-template-columns: .55rem .55rem .55rem minmax(0, 1fr); align-items: center; gap: .4rem; border-bottom: 1px solid rgb(226 232 240); background: white; padding: .65rem .8rem; }
   .preview-browser-bar > span { width: .55rem; height: .55rem; border-radius: 999px; background: rgb(203 213 225); }
   .preview-browser-bar > span:first-child { background: rgb(248 113 113); }
@@ -815,23 +708,6 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
   .dark .preview-canvas { border-color: rgb(51 65 85); background: rgb(2 6 23); }
   .dark .preview-browser-bar { border-color: rgb(51 65 85); background: rgb(15 23 42); }
   .dark .preview-browser-bar > div { background: rgb(30 41 59); color: rgb(148 163 184); }
-  .validation-results {
-    list-style: none;
-    margin: 0 0 0.75rem;
-    padding: 0;
-    display: grid;
-    gap: 0.35rem;
-    font-size: 0.78rem;
-  }
-  .validation-ok {
-    color: rgb(21 128 61);
-  }
-  .validation-error {
-    color: rgb(185 28 28);
-  }
-  .validation-warning {
-    color: rgb(180 83 9);
-  }
   .dark .builder-field select {
     border-color: rgb(51 65 85);
     background: rgb(15 23 42);
@@ -875,31 +751,106 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
     line-height: 1.55;
     white-space: pre-wrap;
   }
-  .export-snippet-secondary {
-    margin-top: 0.65rem;
+  .specimen-stack {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    gap: var(--builder-density-space, .75rem);
+    padding: var(--builder-density-space, 1rem) var(--builder-density-space, 1rem) 0;
+  }
+  .specimen-heading {
+    margin: 0;
+    font-family: var(--loomi-font-font-family, inherit);
+    font-size: 1.45em;
+    font-weight: 700;
+    letter-spacing: -.02em;
+    color: var(--loomi-text, rgb(15 23 42));
+  }
+  .specimen-lead {
+    margin: .6rem 0 0;
+    color: var(--loomi-text-secondary, rgb(51 65 85));
+    font-size: 1em;
+  }
+  .specimen-body {
+    margin: .55rem 0 0;
+    color: var(--loomi-text-muted, rgb(71 85 105));
+    font-size: .92em;
+  }
+  .specimen-code {
+    display: block;
+    margin-top: .75rem;
+    padding: .5rem .65rem;
+    border-radius: var(--loomi-radius-sm, .4rem);
+    background: var(--loomi-surface-muted, rgb(241 245 249));
+    border: 1px solid var(--loomi-surface-border, rgb(226 232 240));
+    font-family: var(--loomi-font-font-family-mono, ui-monospace, monospace);
+    font-size: .82em;
+    color: var(--loomi-text-secondary, rgb(51 65 85));
+  }
+  .specimen-readout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem 1.25rem;
+    margin-top: .9rem;
+    padding-top: .75rem;
+    border-top: 1px dashed var(--loomi-surface-border, rgb(226 232 240));
+  }
+  .specimen-readout span {
+    display: grid;
+    gap: .1rem;
+    color: var(--loomi-text-muted, rgb(100 116 139));
+    font-size: .68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+  .specimen-readout strong { font-size: .82rem; letter-spacing: 0; text-transform: none; color: var(--loomi-text, rgb(15 23 42)); }
+  .specimen-note {
+    margin: 0 0 .85rem;
+    color: var(--loomi-text-muted, rgb(100 116 139));
+    font-size: .78rem;
+    line-height: 1.5;
+  }
+  .radius-swatches { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .65rem; }
+  .radius-swatches > div { display: grid; justify-items: center; gap: .3rem; }
+  .radius-box {
+    width: 100%;
+    height: 3.25rem;
+    border: 2px solid var(--loomi-primary-500, #3b82f6);
+    background: var(--loomi-primary-50, rgb(239 246 255));
+  }
+  .radius-swatches small { color: var(--loomi-text-muted, rgb(100 116 139)); font-size: .68rem; }
+  .radius-swatches strong { color: var(--loomi-text, rgb(15 23 42)); font-size: .74rem; }
+  .dark .specimen-code { background: rgb(15 23 42); border-color: rgb(51 65 85); }
+  @media (max-width: 760px) {
+    .specimen-stack { grid-template-columns: 1fr; }
   }
   .component-showcase {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: 1fr;
     gap: var(--builder-density-space, .75rem);
     padding: var(--builder-density-space, 1rem);
   }
-  .component-form-grid { display: grid; gap: .45rem; }
+  .component-form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: .9rem 1rem; align-items: start; }
+  .form-span { grid-column: 1 / -1; }
+  .slider-field { display: grid; gap: .5rem; }
+  .field-label { color: var(--loomi-text-secondary, rgb(71 85 105)); font-size: .78rem; font-weight: 600; }
+  .tag-row { gap: .5rem; }
+  .alert-stack { display: grid; gap: .5rem; margin-top: 1.1rem; }
   .preview-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .5rem; }
   .component-group {
     border: 1px solid rgb(226 232 240);
     border-color: var(--loomi-surface-border, rgb(226 232 240));
     border-radius: var(--loomi-radius-lg, 0.85rem);
     background: var(--loomi-surface, white);
-    padding: var(--builder-density-space, .85rem);
-    transition: background-color .18s, border-color .18s, border-radius .18s, padding .18s;
+    padding: calc(var(--builder-density-space, .85rem) + .25rem);
+    transition: background-color .18s, border-color .18s, padding .18s;
   }
   .dark .component-group {
     border-color: rgb(51 65 85);
     background: rgb(15 23 42 / 0.35);
   }
   .component-group-label {
-    margin-bottom: 0.65rem;
+    margin-bottom: 0.85rem;
     color: rgb(100 116 139);
     font-size: 0.72rem;
     font-weight: 700;
@@ -912,95 +863,8 @@ import "@loomdev-pro/themes/css/${state.preset}.css";`;
     align-items: center;
     gap: 0.55rem;
   }
-  .shell-preview {
-    margin: 0 1rem 1rem;
-    display: grid;
-    grid-template-columns: 9rem 1fr;
-    min-height: 25rem;
-    border-radius: var(--loomi-component-panel-radius, 0.75rem);
-    overflow: hidden;
-    border: 1px solid var(--loomi-surface-border, rgb(226 232 240));
-    background: var(--loomi-surface-muted, rgb(248 250 252));
-  }
-  .shell-sidebar {
-    padding: 0.85rem;
-    background: var(--loomi-surface, white);
-    border-right: 1px solid var(--loomi-surface-border, rgb(226 232 240));
-    display: grid;
-    gap: 0.35rem;
-    align-content: start;
-  }
-  .shell-sidebar strong {
-    font-size: 0.82rem;
-    color: var(--loomi-text, rgb(15 23 42));
-  }
-  .shell-muted {
-    color: var(--loomi-text-muted, rgb(100 116 139));
-    font-size: 0.72rem;
-  }
-  .shell-nav-item {
-    display: block;
-    margin-top: 0.35rem;
-    padding: 0.35rem 0.45rem;
-    border-radius: var(--loomi-radius-sm, 0.45rem);
-    font-size: 0.72rem;
-    color: var(--loomi-text-secondary, rgb(71 85 105));
-  }
-  .shell-nav-item.is-active {
-    background: var(--loomi-primary-50, rgb(239 246 255));
-    color: var(--loomi-primary-700, rgb(29 78 216));
-  }
-  .shell-main {
-    padding: calc(var(--builder-density-space, .75rem) + .5rem);
-    display: grid;
-    gap: var(--builder-density-space, .75rem);
-    background: var(--loomi-surface-muted, rgb(248 250 252));
-    transition: background-color .18s, padding .18s;
-  }
-  .shell-chart { display: flex; align-items: end; gap: .65rem; min-height: 10rem; border: 1px solid var(--loomi-surface-border, rgb(226 232 240)); border-radius: var(--loomi-component-panel-radius, .75rem); background: var(--loomi-surface, white); padding: 1rem; }
-  .shell-chart span { flex: 1; min-width: .5rem; border-radius: .35rem .35rem .12rem .12rem; background: var(--loomi-primary-500, #3b82f6); opacity: .85; }
-  .shell-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.75rem;
-  }
-  .shell-header strong {
-    display: block;
-    color: var(--loomi-text, rgb(15 23 42));
-    font-size: 0.88rem;
-  }
-  .shell-button {
-    border: 1px solid var(--loomi-surface-border, rgb(226 232 240));
-    background: var(--loomi-surface, white);
-    color: var(--loomi-text, rgb(15 23 42));
-    border-radius: var(--loomi-radius-sm, 0.45rem);
-    padding: 0.35rem 0.65rem;
-    font-size: 0.72rem;
-  }
-  .shell-cards {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.55rem;
-  }
-  .shell-card {
-    background: var(--loomi-surface, white);
-    border: 1px solid var(--loomi-surface-border, rgb(226 232 240));
-    border-radius: var(--loomi-component-panel-radius, 0.75rem);
-    padding: 0.65rem;
-    box-shadow: var(--loomi-component-card-shadow, none);
-    display: grid;
-    gap: 0.2rem;
-  }
-  .shell-card strong {
-    color: var(--loomi-text, rgb(15 23 42));
-    font-size: 0.95rem;
-  }
   @media (max-width: 760px) {
-    .component-showcase { grid-template-columns: 1fr; }
+    .component-form-grid { grid-template-columns: 1fr; }
     .preview-heading { align-items: flex-start; flex-direction: column; }
-    .shell-preview { grid-template-columns: 1fr; }
-    .shell-sidebar { display: none; }
-    .shell-cards { grid-template-columns: 1fr; }
   }
 </style>

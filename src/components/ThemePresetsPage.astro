@@ -57,15 +57,6 @@ const themeBundle = loadThemeBundle();
 const presets = themeBundle.manifest.presets;
 const initialPreset = presets[0];
 const initialTokens = themeBundle.tokens[initialPreset.name]?.modes?.light;
-const overviewChartData = JSON.stringify([
-  { label: "Mon", value: 64, value2: 58 },
-  { label: "Tue", value: 78, value2: 67 },
-  { label: "Wed", value: 71, value2: 69 },
-  { label: "Thu", value: 92, value2: 76 },
-  { label: "Fri", value: 86, value2: 79 },
-  { label: "Sat", value: 104, value2: 88 },
-  { label: "Sun", value: 96, value2: 91 },
-]);
 const acquisitionChartData = JSON.stringify([
   { label: "Direct", value: 42 },
   { label: "Search", value: 31 },
@@ -116,6 +107,80 @@ const orderActionIcons = JSON.stringify([
 // Row template for the campaigns table — `{key}` placeholders are loomi-table's own
 // substitution syntax, kept out of the markup so Astro doesn't parse them as expressions.
 const campaignRowTemplate = "<tr><td><strong>{campaign}</strong></td><td><loomi-tag label=\"{status}\" color=\"{statusColor}\" rounded></loomi-tag></td><td>{channel}</td><td>{budget}</td><td>{spend}</td><td>{roi}</td><td>{created}</td></tr>";
+
+// Charts-tab datasets.
+const sessionsLineData = JSON.stringify([
+  { label: "May 12", value: 1800, value2: 2600 },
+  { label: "May 19", value: 2400, value2: 3100 },
+  { label: "May 26", value: 2840, value2: 4120 },
+  { label: "Jun 2", value: 3200, value2: 3800 },
+  { label: "Jun 9", value: 3600, value2: 4300 },
+]);
+const usersAreaData = JSON.stringify([
+  { label: "May 12", value: 1200, value2: 900 },
+  { label: "May 19", value: 1800, value2: 1300 },
+  { label: "May 26", value: 2400, value2: 1600 },
+  { label: "Jun 2", value: 2900, value2: 2100 },
+  { label: "Jun 9", value: 3400, value2: 2500 },
+]);
+const usersDonutData = JSON.stringify([
+  { label: "Direct", value: 40.2 },
+  { label: "Organic search", value: 28.1 },
+  { label: "Social media", value: 16.3 },
+  { label: "Referral", value: 9.7 },
+  { label: "Email", value: 5.7 },
+]);
+const revenueColumnData = JSON.stringify([
+  { label: "Mon", value: 32 },
+  { label: "Tue", value: 28 },
+  { label: "Wed", value: 46 },
+  { label: "Thu", value: 22 },
+  { label: "Fri", value: 30 },
+  { label: "Sat", value: 26 },
+  { label: "Sun", value: 34 },
+]);
+const scatterChartData = JSON.stringify([
+  { label: "A", value: 6, value2: 900 },
+  { label: "B", value: 12, value2: 1400 },
+  { label: "C", value: 18, value2: 1200 },
+  { label: "D", value: 24, value2: 2600 },
+  { label: "E", value: 30, value2: 2200 },
+  { label: "F", value: 36, value2: 3400 },
+  { label: "G", value: 42, value2: 3100 },
+]);
+const devicemixPieData = JSON.stringify([
+  { label: "Desktop", value: 45.2 },
+  { label: "Mobile", value: 38.7 },
+  { label: "Tablet", value: 12.5 },
+  { label: "Other", value: 3.6 },
+]);
+const countryBars = [
+  { label: "Ghana", value: "9.2K", percentage: 92 },
+  { label: "Nigeria", value: "7.8K", percentage: 78 },
+  { label: "Kenya", value: "6.4K", percentage: 64 },
+  { label: "South Africa", value: "5.1K", percentage: 51 },
+  { label: "USA", value: "3.6K", percentage: 36 },
+];
+
+// Semicircle gauge — no gauge component exists, so this mirrors the sparkline helper
+// and builds an SVG arc the preset primary color fills via currentColor.
+function gauge(percentage: number) {
+  const cx = 100;
+  const cy = 100;
+  const r = 82;
+  const length = Math.PI * r;
+  const angle = Math.PI - (percentage / 100) * Math.PI;
+  const knobX = cx + r * Math.cos(angle);
+  const knobY = cy - r * Math.sin(angle);
+  return {
+    track: `M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`,
+    length: Number(length.toFixed(1)),
+    filled: Number((length * (percentage / 100)).toFixed(1)),
+    knobX: Number(knobX.toFixed(1)),
+    knobY: Number(knobY.toFixed(1)),
+  };
+}
+const goalGauge = gauge(72);
 
 function sparkline(values: number[]) {
   const width = 120;
@@ -563,23 +628,63 @@ function paletteFor(preset: any) {
 
             <loomi-tab label="Charts" icon="presentation-chart-line">
             <div class="preview-canvas">
-              <div class="demo-section-heading"><div><small>Visualization</small><h3>Charts</h3><p>Every chart type picks up the preset palette.</p></div><loomi-tag label="Preset palette" color="success" rounded></loomi-tag></div>
-              <div class="demo-grid">
+              <div class="demo-section-heading">
+                <div><small>Visualization</small><h3>Charts overview</h3><p>A collection of charts and visualizations built with the selected preset.</p></div>
+                <div class="demo-toolbar-group">
+                  <loomi-select size="small" selected-value="30" aria-label="Reporting period" no-clearing data='[{"label":"Last 7 days","value":"7"},{"label":"Last 30 days","value":"30"},{"label":"Last quarter","value":"90"}]'></loomi-select>
+                  <loomi-button color="primary" size="small" icon="arrow-down-tray">Export</loomi-button>
+                </div>
+              </div>
+              <div class="demo-grid-3">
                 <loomi-card size="sm">
-                  <loomi-card-header><loomi-card-title>Line</loomi-card-title><loomi-card-description>Weekly activity</loomi-card-description></loomi-card-header>
-                  <loomi-card-content><loomi-chart type="line" color="primary" color2="gray" series-label="Current" series2-label="Previous" show-y-axis="false" data={overviewChartData}></loomi-chart></loomi-card-content>
+                  <loomi-card-header><loomi-card-title>Line chart</loomi-card-title><loomi-card-description>Sessions vs page views</loomi-card-description></loomi-card-header>
+                  <loomi-card-content><loomi-chart type="line" color="primary" color2="success" series-label="Sessions" series2-label="Page views" show-y-axis="false" data={sessionsLineData}></loomi-chart></loomi-card-content>
                 </loomi-card>
                 <loomi-card size="sm">
-                  <loomi-card-header><loomi-card-title>Donut</loomi-card-title><loomi-card-description>Acquisition mix</loomi-card-description></loomi-card-header>
-                  <loomi-card-content><loomi-chart type="donut" color="primary" show-legend data={acquisitionChartData}></loomi-chart></loomi-card-content>
+                  <loomi-card-header><loomi-card-title>Area chart</loomi-card-title><loomi-card-description>New vs returning users</loomi-card-description></loomi-card-header>
+                  <loomi-card-content><loomi-chart type="area" color="primary" color2="success" series-label="New users" series2-label="Returning users" show-y-axis="false" data={usersAreaData}></loomi-chart></loomi-card-content>
                 </loomi-card>
                 <loomi-card size="sm">
-                  <loomi-card-header><loomi-card-title>Bar</loomi-card-title><loomi-card-description>Revenue by plan</loomi-card-description></loomi-card-header>
-                  <loomi-card-content><loomi-chart type="bar" color="primary" show-y-axis="false" data={planRevenueChartData}></loomi-chart></loomi-card-content>
+                  <loomi-card-header><loomi-card-title>Donut chart</loomi-card-title><loomi-card-description>Users by channel</loomi-card-description></loomi-card-header>
+                  <loomi-card-content><loomi-chart type="donut" color="primary" show-legend legend-position="right" data={usersDonutData}></loomi-chart></loomi-card-content>
                 </loomi-card>
                 <loomi-card size="sm">
-                  <loomi-card-header><loomi-card-title>Multi-series line</loomi-card-title><loomi-card-description>Six-week retention</loomi-card-description></loomi-card-header>
-                  <loomi-card-content><loomi-chart type="line" color="primary" color2="gray" series-label="Current" series2-label="Baseline" show-y-axis="false" data={retentionChartData}></loomi-chart></loomi-card-content>
+                  <loomi-card-header><loomi-card-title>Column chart</loomi-card-title><loomi-card-description>Revenue by day (in thousands)</loomi-card-description></loomi-card-header>
+                  <loomi-card-content><loomi-chart type="bar" color="primary" series-label="Revenue" show-y-axis="false" data={revenueColumnData}></loomi-chart></loomi-card-content>
+                </loomi-card>
+                <loomi-card size="sm">
+                  <loomi-card-header><loomi-card-title>Bar chart</loomi-card-title><loomi-card-description>Active users by country</loomi-card-description></loomi-card-header>
+                  <loomi-card-content class="hbar-stack">
+                    {countryBars.map((bar) => (
+                      <div class="hbar-row">
+                        <span class="hbar-label">{bar.label}</span>
+                        <loomi-progress-bar percentage={String(bar.percentage)}></loomi-progress-bar>
+                        <span class="hbar-value">{bar.value}</span>
+                      </div>
+                    ))}
+                  </loomi-card-content>
+                </loomi-card>
+                <loomi-card size="sm">
+                  <loomi-card-header><loomi-card-title>Scatter chart</loomi-card-title><loomi-card-description>Revenue vs conversion rate</loomi-card-description></loomi-card-header>
+                  <loomi-card-content><loomi-chart type="scatter" color="primary" series-label="Conversion" series2-label="Revenue" data={scatterChartData}></loomi-chart></loomi-card-content>
+                </loomi-card>
+                <loomi-card size="sm">
+                  <loomi-card-header><loomi-card-title>Pie chart</loomi-card-title><loomi-card-description>Sessions by device</loomi-card-description></loomi-card-header>
+                  <loomi-card-content><loomi-chart type="pie" color="primary" show-legend legend-position="right" data={devicemixPieData}></loomi-chart></loomi-card-content>
+                </loomi-card>
+                <loomi-card size="sm">
+                  <loomi-card-header><loomi-card-title>Gauge chart</loomi-card-title><loomi-card-description>Quarterly goal completion</loomi-card-description></loomi-card-header>
+                  <loomi-card-content>
+                    <div class="gauge-wrap">
+                      <svg class="gauge-svg" viewBox="0 0 200 118" aria-hidden="true">
+                        <path class="gauge-track" d={goalGauge.track}></path>
+                        <path class="gauge-value" d={goalGauge.track} style={`stroke-dasharray:${goalGauge.filled} ${goalGauge.length}`}></path>
+                        <circle class="gauge-knob" cx={String(goalGauge.knobX)} cy={String(goalGauge.knobY)} r="6"></circle>
+                      </svg>
+                      <div class="gauge-readout"><strong>72%</strong><small>Goal completion</small></div>
+                      <div class="gauge-scale"><span>0%</span><span>100%</span></div>
+                    </div>
+                  </loomi-card-content>
                 </loomi-card>
               </div>
             </div>
@@ -587,20 +692,75 @@ function paletteFor(preset: any) {
 
             <loomi-tab label="Authentication" icon="lock-closed">
             <div class="preview-canvas">
-              <div class="auth-wrap">
+              <div class="demo-section-heading">
+                <div><small>UI patterns</small><h3>Authentication flow</h3><p>Pre-built authentication UI patterns and states.</p></div>
+              </div>
+              <div class="demo-grid-3">
                 <loomi-card size="sm" class="auth-card">
-                  <loomi-card-header>
-                    <loomi-card-title>Sign in to Loomi Cloud</loomi-card-title>
-                    <loomi-card-description>Use your workspace credentials</loomi-card-description>
-                  </loomi-card-header>
-                  <loomi-card-content class="settings-fields">
-                    <loomi-input label="Email" type="email" value="ama@loomi.dev" size="small"></loomi-input>
-                    <loomi-input label="Password" type="password" value="correct-horse" size="small"></loomi-input>
-                    <loomi-toggle checked>Remember this device</loomi-toggle>
+                  <div class="auth-brand"><loomi-icon name="chart-bar"></loomi-icon><span>Loomi Cloud</span></div>
+                  <div class="auth-intro"><strong>Welcome back</strong><small>Sign in to your account to continue.</small></div>
+                  <div class="settings-fields">
+                    <loomi-input label="Email address" type="email" value="ama@loomidev.com" size="small" no-clearing></loomi-input>
+                    <loomi-input label="Password" type="password" value="supersecret" size="small" no-clearing></loomi-input>
+                    <div class="auth-row"><loomi-checkbox label="Remember me" checked></loomi-checkbox><span class="auth-link">Forgot password?</span></div>
                     <loomi-button color="primary" block>Sign in</loomi-button>
-                    <span class="auth-link">Forgot password?</span>
-                  </loomi-card-content>
+                  </div>
+                  <p class="auth-foot">Don't have an account? <span class="auth-link">Sign up</span></p>
                 </loomi-card>
+
+                <loomi-card size="sm" class="auth-card">
+                  <div class="auth-brand"><loomi-icon name="chart-bar"></loomi-icon><span>Loomi Cloud</span></div>
+                  <div class="auth-intro"><strong>Create your account</strong><small>Start your 14-day free trial.</small></div>
+                  <div class="settings-fields">
+                    <loomi-input label="Full name" value="Ama Mensah" size="small" no-clearing></loomi-input>
+                    <loomi-input label="Email address" type="email" value="ama@loomidev.com" size="small" no-clearing></loomi-input>
+                    <loomi-input label="Password" type="password" value="supersecret" size="small" no-clearing></loomi-input>
+                    <loomi-button color="primary" block>Create account</loomi-button>
+                  </div>
+                  <p class="auth-foot">Already have an account? <span class="auth-link">Sign in</span></p>
+                </loomi-card>
+
+                <loomi-card size="sm" class="auth-card">
+                  <div class="auth-brand"><loomi-icon name="chart-bar"></loomi-icon><span>Loomi Cloud</span></div>
+                  <div class="auth-intro"><strong>Reset your password</strong><small>Enter your email and we'll send you a link to reset it.</small></div>
+                  <div class="settings-fields">
+                    <loomi-input label="Email address" type="email" placeholder="Enter your email" size="small" no-clearing></loomi-input>
+                    <loomi-button color="primary" block>Send reset link</loomi-button>
+                  </div>
+                  <p class="auth-foot">Remember your password? <span class="auth-link">Sign in</span></p>
+                </loomi-card>
+
+                <loomi-card size="sm" class="auth-card">
+                  <div class="auth-icon-badge"><loomi-icon name="device-phone-mobile"></loomi-icon></div>
+                  <div class="auth-intro center"><strong>Two-factor authentication</strong><small>We sent a 6-digit code to your phone.</small></div>
+                  <loomi-pin total-digits="6" size="small"></loomi-pin>
+                  <loomi-checkbox label="Trust this device for 30 days"></loomi-checkbox>
+                  <loomi-button color="primary" block>Verify code</loomi-button>
+                  <p class="auth-foot center">Didn't receive code? <span class="auth-link">Resend</span></p>
+                </loomi-card>
+
+                <loomi-card size="sm" class="auth-card">
+                  <div class="auth-icon-badge"><loomi-icon name="envelope"></loomi-icon></div>
+                  <div class="auth-intro center"><strong>Verify your email</strong><small>We've sent a verification link to <b>ama@loomidev.com</b>. Click the link to verify your account.</small></div>
+                  <loomi-button color="primary" block>Open email app</loomi-button>
+                  <p class="auth-foot center"><span class="auth-link">Resend email</span></p>
+                </loomi-card>
+
+                <loomi-card size="sm" class="auth-card">
+                  <div class="auth-icon-badge"><loomi-icon name="lock-closed"></loomi-icon></div>
+                  <div class="auth-intro center"><strong>Session locked</strong><small>For your security, you've been logged out due to inactivity.</small></div>
+                  <loomi-button color="primary" block>Unlock session</loomi-button>
+                  <p class="auth-foot center"><span class="auth-link">Sign in as a different user</span></p>
+                </loomi-card>
+              </div>
+
+              <div class="auth-denied">
+                <div class="auth-denied-badge"><loomi-icon name="shield-exclamation"></loomi-icon></div>
+                <div class="auth-denied-copy"><strong>Access denied</strong><small>You don't have permission to access this page.</small></div>
+                <div class="auth-denied-actions">
+                  <loomi-button type="secondary" size="small">Go back</loomi-button>
+                  <loomi-button color="primary" size="small">Return to dashboard</loomi-button>
+                </div>
               </div>
             </div>
             </loomi-tab>
@@ -685,6 +845,7 @@ function paletteFor(preset: any) {
     import "@loomidev/datepicker";
     import "@loomidev/filepicker";
     import "@loomidev/input";
+    import "@loomidev/pin";
     import "@loomidev/progress";
     import "@loomidev/radio";
     import "@loomidev/rating";
@@ -1074,9 +1235,45 @@ function paletteFor(preset: any) {
   .progress-stack, .settings-fields, .toggle-stack { display: grid; gap: .75rem; }
   .progress-stack > div { display: grid; gap: .35rem; color: var(--loomi-text-secondary); font-size: .7rem; }
   .preview-canvas > loomi-alert { display: block; margin-top: .65rem; }
-  .auth-wrap { display: grid; place-items: center; padding: 2.5rem 0; }
-  .auth-card { width: min(22rem, 100%); }
-  .auth-link { justify-self: center; color: var(--preview-primary-strong); font-size: .72rem; font-weight: 650; }
+  /* Charts tab — horizontal bar list and semicircle gauge */
+  .hbar-stack { display: grid; gap: .7rem; }
+  .hbar-row { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr) auto; align-items: center; gap: .6rem; }
+  .hbar-label { color: var(--preview-text-muted); font-size: .72rem; }
+  .hbar-row loomi-progress-bar { --loomi-progress-height: .5rem; min-width: 0; }
+  .hbar-value { font-size: .72rem; font-weight: 700; }
+  .gauge-wrap { display: grid; justify-items: center; padding-top: .5rem; }
+  .gauge-svg { width: 100%; max-width: 13rem; height: auto; }
+  .gauge-track { fill: none; stroke: var(--preview-surface-muted); stroke-width: 14; stroke-linecap: round; }
+  .gauge-value { fill: none; stroke: var(--preview-primary); stroke-width: 14; stroke-linecap: round; transition: stroke-dasharray .3s; }
+  .gauge-knob { fill: var(--preview-surface); stroke: var(--preview-primary); stroke-width: 3; }
+  .gauge-readout { display: grid; justify-items: center; margin-top: -2.4rem; }
+  .gauge-readout strong { font-size: 1.5rem; letter-spacing: -.03em; }
+  .gauge-readout small { color: var(--preview-text-muted); font-size: .7rem; }
+  .gauge-scale { display: flex; justify-content: space-between; width: 100%; max-width: 13rem; margin-top: .4rem; color: var(--preview-text-muted); font-size: .62rem; }
+
+  /* Authentication tab */
+  .auth-card { display: grid; align-content: start; gap: .85rem; }
+  .auth-brand { display: flex; align-items: center; gap: .45rem; font-size: .85rem; font-weight: 750; }
+  .auth-brand loomi-icon { width: 1.05rem; height: 1.05rem; color: var(--preview-primary); }
+  .auth-icon-badge { display: grid; place-items: center; width: 3rem; height: 3rem; justify-self: center; border-radius: 999px; background: var(--preview-primary-soft); color: var(--preview-primary-strong); }
+  .auth-icon-badge loomi-icon { width: 1.4rem; height: 1.4rem; }
+  .auth-intro { display: grid; gap: .2rem; }
+  .auth-intro.center { justify-items: center; text-align: center; }
+  .auth-intro strong { font-size: .95rem; }
+  .auth-intro small { color: var(--preview-text-muted); font-size: .72rem; line-height: 1.5; }
+  .auth-intro b { color: var(--preview-text); font-weight: 700; }
+  .auth-row { display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
+  .auth-foot { margin: 0; color: var(--preview-text-muted); font-size: .72rem; }
+  .auth-foot.center { text-align: center; }
+  .auth-link { color: var(--preview-primary-strong); font-size: .72rem; font-weight: 650; cursor: pointer; }
+  .auth-card loomi-pin { justify-self: center; }
+  .auth-denied { display: flex; align-items: center; gap: 1rem; margin-top: .65rem; border: 1px solid var(--preview-border); border-radius: var(--preview-radius); background: var(--preview-surface); padding: 1.1rem 1.25rem; }
+  .auth-denied-badge { display: grid; place-items: center; width: 3rem; height: 3rem; flex: none; border-radius: 999px; background: color-mix(in srgb, var(--loomi-error-500, #ef4444) 14%, transparent); color: var(--loomi-error-600, #dc2626); }
+  .auth-denied-badge loomi-icon { width: 1.4rem; height: 1.4rem; }
+  .auth-denied-copy { flex: 1; min-width: 0; display: grid; gap: .2rem; }
+  .auth-denied-copy strong { font-size: .95rem; }
+  .auth-denied-copy small { color: var(--preview-text-muted); font-size: .72rem; }
+  .auth-denied-actions { display: flex; flex: none; gap: .5rem; }
 
   .theme-inspector { display: flex; min-width: 0; flex-direction: column; gap: 1.1rem; align-self: start; margin-top: 5.6rem; border: 1px solid var(--preview-border); border-radius: 1rem; background: var(--preview-surface); padding: 1.15rem; }
   .theme-inspector > loomi-button { align-self: stretch; width: 100%; }
@@ -1126,6 +1323,8 @@ function paletteFor(preset: any) {
      respond to the canvas width (container queries), not the page width. */
   @container (max-width: 54rem) {
     .demo-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @container (max-width: 46rem) {
     .demo-grid-3, .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
   @container (max-width: 40rem) {
