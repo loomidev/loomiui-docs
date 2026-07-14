@@ -733,7 +733,7 @@ function paletteFor(preset: any) {
                 <loomi-card size="sm" class="auth-card">
                   <div class="auth-icon-badge"><loomi-icon name="device-phone-mobile"></loomi-icon></div>
                   <div class="auth-intro center"><strong>Two-factor authentication</strong><small>We sent a 6-digit code to your phone.</small></div>
-                  <loomi-pin total-digits="6" size="small"></loomi-pin>
+                  <loomi-otp total-digits="6" size="small"></loomi-otp>
                   <loomi-checkbox label="Trust this device for 30 days"></loomi-checkbox>
                   <loomi-button color="primary" block>Verify code</loomi-button>
                   <p class="auth-foot center">Didn't receive code? <span class="auth-link">Resend</span></p>
@@ -845,7 +845,7 @@ function paletteFor(preset: any) {
     import "@loomidev/datepicker";
     import "@loomidev/filepicker";
     import "@loomidev/input";
-    import "@loomidev/pin";
+    import "@loomidev/otp";
     import "@loomidev/progress";
     import "@loomidev/radio";
     import "@loomidev/rating";
@@ -1266,7 +1266,7 @@ function paletteFor(preset: any) {
   .auth-foot { margin: 0; color: var(--preview-text-muted); font-size: .72rem; }
   .auth-foot.center { text-align: center; }
   .auth-link { color: var(--preview-primary-strong); font-size: .72rem; font-weight: 650; cursor: pointer; }
-  .auth-card loomi-pin { justify-self: center; }
+  .auth-card loomi-otp { justify-self: center; }
   .auth-denied { display: flex; align-items: center; gap: 1rem; margin-top: .65rem; border: 1px solid var(--preview-border); border-radius: var(--preview-radius); background: var(--preview-surface); padding: 1.1rem 1.25rem; }
   .auth-denied-badge { display: grid; place-items: center; width: 3rem; height: 3rem; flex: none; border-radius: 999px; background: color-mix(in srgb, var(--loomi-error-500, #ef4444) 14%, transparent); color: var(--loomi-error-600, #dc2626); }
   .auth-denied-badge loomi-icon { width: 1.4rem; height: 1.4rem; }

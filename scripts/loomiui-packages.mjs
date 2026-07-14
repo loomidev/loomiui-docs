@@ -11,7 +11,7 @@ export const CATEGORY = {
   forms: [
     "input", "textarea", "select", "countries", "checkbox", "radio", "toggle", "number", "slider",
     "checkcards", "datepicker", "timepicker", "timezonepicker", "colorpicker", "filepicker",
-    "creditcard", "text-editor", "tag-input", "emoji-picker", "password", "pin",
+    "creditcard", "text-editor", "tag-input", "emoji-picker", "password", "otp",
     "date-range-picker", "filter-builder", "autocomplete",
   ],
   content: [

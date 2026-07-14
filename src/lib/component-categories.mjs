@@ -21,7 +21,7 @@ const MEMBERS = {
   "data-entry": [
     "input", "textarea", "select", "checkbox", "radio", "toggle", "number", "slider",
     "datepicker", "timepicker", "timezonepicker", "colorpicker", "filepicker", "checkcards",
-    "countries", "creditcard", "text-editor", "tag-input", "emoji-picker", "password", "pin",
+    "countries", "creditcard", "text-editor", "tag-input", "emoji-picker", "password", "otp",
     "date-range-picker", "filter-builder", "autocomplete",
   ],
   feedback: ["alert", "notification", "bell", "spinner", "progress", "processing", "progress-steps"],

@@ -208,7 +208,7 @@ const lineHeightOptions = [{ label: "Tight · 1.4", value: "1.4" }, { label: "De
                   <loomi-countries label="Country" no-clearing></loomi-countries>
                   <loomi-number label="Seats" value="12" min="1" max="500" step="1" no-clearing></loomi-number>
                   <loomi-timezonepicker label="Timezone" no-clearing></loomi-timezonepicker>
-                  <loomi-pin label="Access code" total-digits="6"></loomi-pin>
+                  <loomi-otp label="Access code" total-digits="6"></loomi-otp>
                   <div class="form-span slider-field">
                     <span class="field-label">Monthly budget</span>
                     <loomi-slider selected="65" min="0" max="100" step="5" color="primary"></loomi-slider>
@@ -240,7 +240,7 @@ const lineHeightOptions = [{ label: "Tight · 1.4", value: "1.4" }, { label: "De
       import "@loomidev/autocomplete";
       import "@loomidev/countries";
       import "@loomidev/number";
-      import "@loomidev/pin";
+      import "@loomidev/otp";
       import "@loomidev/slider";
       import "@loomidev/timezonepicker";
     </script>
@@ -375,7 +375,7 @@ const lineHeightOptions = [{ label: "Tight · 1.4", value: "1.4" }, { label: "De
           el.setAttribute("radius", radius.buttonRadius);
           el.setAttribute("size", density.controlSize);
         });
-        previewCanvas.querySelectorAll("loomi-input, loomi-select, loomi-autocomplete, loomi-countries, loomi-number, loomi-timezonepicker, loomi-pin").forEach((el) => {
+        previewCanvas.querySelectorAll("loomi-input, loomi-select, loomi-autocomplete, loomi-countries, loomi-number, loomi-timezonepicker, loomi-otp").forEach((el) => {
           el.setAttribute("size", density.controlSize);
         });
 
