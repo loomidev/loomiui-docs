@@ -81,12 +81,29 @@ function cleanNumberedHeadings(markdown, headings) {
     .replace(/^(#{2,6})\s+\d+(?:\.\d+)*[a-z]?\.?\s+/gim, "$1 ");
 }
 
+// The source doc has numbered sections, so it refers to them as "§8", "§8a", "§9.7".
+// The generated docs strip those numbers, leaving "§8" dangling with nothing to point at.
+// Replace every remaining §-reference with the section's title instead (e.g. "§8a" →
+// "Automated smoke tests"), in link text and prose alike. Longest ids first so "§8"
+// can't partially match inside "§8a".
+function resolveSectionRefs(markdown, headings) {
+  let out = markdown;
+  const ids = [...headings.keys()].sort((a, b) => b.length - a.length);
+  for (const id of ids) {
+    const escaped = id.replaceAll(".", "\\.");
+    const pattern = new RegExp(`§${escaped}(?![0-9a-z.])`, "gi");
+    out = out.replace(pattern, headings.get(id).title);
+  }
+  return out;
+}
+
 const numberedHeadings = collectNumberedHeadings(body);
 body = cleanNumberedHeadings(body, numberedHeadings);
 body = cleanTableOfContents(body);
+body = resolveSectionRefs(body, numberedHeadings);
 body = body.replace(
-  "\n\n> **Status note:**",
-  "\n\n> **Junior-dev note:** If you're newer to monorepos, pnpm, or Lit, treat this as a guided map, not a memory test. The extra \"why\" details are here so you can trace what a command changes before you run it.\n\n> **Status note:**",
+  "\n\n> **Repo note:**",
+  "\n\n> **Junior-dev note:** If you're newer to monorepos, pnpm, or Lit, treat this as a guided map, not a memory test. The extra \"why\" details are here so you can trace what a command changes before you run it.\n\n> **Repo note:**",
 );
 
 let description = firstParagraph(body).replace(/"/g, "'").replace(/`/g, "");

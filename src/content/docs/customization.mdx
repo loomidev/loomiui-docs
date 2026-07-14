@@ -3,23 +3,35 @@ title: Customization
 description: Re-theme the entire LoomiUI library by overriding CSS custom properties — no build step, no Tailwind required.
 ---
 
-You customize LoomiUI with normal CSS variables, just like any other styles in your app.
-Add the variables in your own stylesheet, and every LoomiUI component on the page can
-pick them up automatically.
+LoomiUI theming works with standard CSS variables and requires no special setup.
+Define the variables in your app stylesheet, and every LoomiUI component on the page
+uses them automatically.
 
-That means you can start small: change one color, preview it, and adjust as needed. When
-you are happy with it, the same values apply across buttons, inputs, alerts, and more.
+You can iterate quickly: override one token, refresh, and fine-tune. Once it looks right,
+the same theme values flow across [buttons](/components/button), [inputs](/components/input), [alerts](/components/alert), and the rest of the library.
+
+## Which approach do I need?
+
+Most projects only need the first option below. Pick based on your setup:
+
+- **[Token overrides](#overriding-the-defaults)** — the default path. Works in any project, with or without Tailwind. Start here.
+- **[Tailwind color sync](#using-tailwind-css)** — add this only if you use Tailwind utility classes (like `bg-primary-600`) and want them to match your Loomi theme.
+- **[Forking](#forking-for-deeper-changes)** — only for framework-level changes (e.g. adding a brand-new palette color) that CSS variables can't express.
+
+Put your overrides in your **global CSS entry file** — the stylesheet imported once at your app's root (for example `src/index.css`, `src/main.css`, or `styles/global.css`). That's also the file that has `@import "tailwindcss"` if you use Tailwind.
 
 ## Overriding the defaults
 
 LoomiUI color tokens follow a predictable naming convention, making it easy to customize and override any palette color.
 
-```txt
+```css
 --loomi-<color>-<shade>
 ```
 
-`<color>` is one of the palette colors below. `<shade>` is the strength of the color:
-`50` is very light, `600` is the normal button color, and `950` is very dark.
+<p>&nbsp;</p>
+`<color>` is one of the six palette colors — `primary`, `secondary`, `success`, `warning`,
+`error`, or `gray` (see [The 6 palette colors](#the-6-palette-colors)). `<shade>` is the strength
+of the color: `50` is very light, `600` is the normal button color, and `950` is very dark.
 
 For example, this changes the main `primary` color to green:
 
@@ -29,18 +41,23 @@ For example, this changes the main `primary` color to green:
   --loomi-primary-700: #15803d;
 }
 ```
+<p>&nbsp;</p>
 
-Once these variables are defined, any LoomiUI component that uses `color="primary"` automatically adopts your custom palette.
+You only need to override the shades you actually use — any token you leave out keeps its default.
+`600` is the base color and `700` is the hover state; see [How components use shades](#how-components-use-shades)
+for the full mapping.
 
-The change is applied consistently across the library, including [buttons](/components/button), [inputs](/components/input), [tags](/components/tag), [alerts](/components/alert), and any other component that relies on the primary color tokens.
+Once you define these variables, every LoomiUI component using `color="primary"` picks them up automatically.
 
-Define your overrides on the `:root` selector to make them available throughout the document:
+That includes [buttons](/components/button), [inputs](/components/input), [tags](/components/tag), [alerts](/components/alert), and any other component mapped to the primary tokens.
 
-Variables declared in `:root` are globally accessible. LoomiUI components can resolve these values even when rendered inside Shadow DOM.
+Put your overrides in `:root` so they're available app-wide.
 
-This approach lets you manage your application’s theme from a single stylesheet, ensuring a consistent look and feel without styling individual component instances.
+Because `:root` variables are global, LoomiUI can resolve them even inside the Shadow DOM (the isolated DOM each web component renders into).
 
-<loomi-alert type="success" icon="check-circle">
+In practice, this gives you one central place to theme your app instead of styling components one by one.
+
+<loomi-alert type="info" icon="information-circle" show-close-icon="false">
   <strong>Tip:</strong> change the whole color ramp when you can. Components often use
   more than one shade: <code>600</code> for the main color, <code>700</code> for hover,
   and lighter shades for soft backgrounds.
@@ -48,26 +65,27 @@ This approach lets you manage your application’s theme from a single styleshee
 
 ## Using Tailwind CSS
 
-You don't need Tailwind to customize LoomiUI — the [token overrides above](#overriding-the-defaults)
-are plain CSS custom properties and work the same way in any project. If your app happens
-to use Tailwind, they don't need to go anywhere special: add the same `:root` block to
-the CSS file where you already `@import "tailwindcss"`.
+You can customize LoomiUI without Tailwind. The [token overrides above](#overriding-the-defaults)
+are standard CSS variables, so they work in any stack. If you are using Tailwind, put the same
+`:root` block in the stylesheet that already has `@import "tailwindcss"`, right after that import:
 
 ```css
 @import "tailwindcss";
 
 :root {
+  /* the same token overrides from above */
   --loomi-primary-600: #16a34a;
-  --loomi-primary-700: #15803d;
 }
 ```
 
 ### Matching Tailwind utility classes
 
-By default, Tailwind's `bg-primary-600` class and LoomiUI's `--loomi-primary-600` token
-are unrelated — Tailwind uses its own built-in blue for "primary," so overriding the
-LoomiUI token re-colors `<loomi-button>` but not a `<div class="bg-primary-600">` you
-wrote yourself.
+Out of the box, Tailwind utilities like `bg-primary-600` are **not** connected to
+LoomiUI tokens like `--loomi-primary-600`.
+
+That means if you override LoomiUI's primary color, components such as
+`<loomi-button>` update, but your Tailwind markup (for example,
+`<div class="bg-primary-600">`) still uses Tailwind's default color palette.
 
 To connect the two, import one extra file after Tailwind:
 
@@ -75,10 +93,12 @@ To connect the two, import one extra file after Tailwind:
 @import "tailwindcss";
 @import "@loomidev/theme/tailwind-colors.css";
 ```
+<p>&nbsp;</p>
 
-This tells Tailwind to build `bg-primary-600`, `text-error-500`, and every other
-`<color>-<shade>` utility out of LoomiUI's `--loomi-*` tokens instead of its own
-defaults. Now a single override re-colors both at once:
+With this import in place, Tailwind generates `bg-primary-600`, `text-error-500`,
+and all other `<color>-<shade>` utilities from LoomiUI's `--loomi-*` tokens
+instead of Tailwind's default palette. In practice, one token override updates
+both your Tailwind classes and Loomi components together:
 
 ```css
 :root {
@@ -88,18 +108,69 @@ defaults. Now a single override re-colors both at once:
 
 ```html
 <!-- Both turn green -->
-<div class="rounded-lg bg-primary-600 p-4 text-white">Tailwind markup</div>
+<div class="rounded-lg bg-primary-600 p-4 text-white">
+  Tailwind markup
+</div>
+
 <loomi-button color="primary">Loomi component</loomi-button>
 ```
+<p>&nbsp;</p>
 
-`@loomidev/theme` is already a dependency of every `@loomidev/*` component package, so if
-you have installed any Loomi component, importing this file doesn't require a separate install.
+`@loomidev/theme` ships with every `@loomidev/*` component package.
+If you already installed any Loomi component, you can import this file right away with no extra install needed.
 
+<p>&nbsp;</p>
 <loomi-alert type="warning" show-close-icon="false">
-  <code>@theme inline</code> is Tailwind v4 (CSS-first config) syntax. On Tailwind v3, skip this
-  file and reference the tokens directly in your <code>tailwind.config.js</code> instead — or
-  just use the plain <code>:root</code> overrides above, which work on any Tailwind version.
+  <strong>Tailwind v4 only.</strong> The <code>tailwind-colors.css</code> import above is built
+  with the <code>@theme inline</code> directive, which exists only in Tailwind v4 (the CSS-first
+  config). On <strong>Tailwind v3</strong>, importing it will break your build — skip it and use
+  the v3 setup below instead.
 </loomi-alert>
+<p>&nbsp;</p>
+
+#### Tailwind v3 setup
+
+On Tailwind v3, connect the utilities to Loomi tokens in `tailwind.config.js` instead of importing
+`tailwind-colors.css`. Point each color at the matching `--loomi-*` variable:
+
+```js
+// tailwind.config.js (Tailwind v3)
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: ["./src/**/*.{html,js,ts,jsx,tsx,vue}"],
+  theme: {
+    extend: {
+      colors: {
+        primary: shades("primary"),
+        secondary: shades("secondary"),
+        success: shades("success"),
+        warning: shades("warning"),
+        error: shades("error"),
+        gray: shades("gray"),
+      },
+    },
+  },
+};
+
+// Maps every shade of a color to its Loomi CSS variable
+function shades(name) {
+  const steps = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
+  return Object.fromEntries(steps.map((s) => [s, `var(--loomi-${name}-${s})`]));
+}
+```
+
+With this in place, a single `:root` override updates both your Tailwind classes and Loomi
+components — exactly like the v4 import does:
+
+```css
+:root {
+  --loomi-primary-600: #16a34a; /* updates bg-primary-600 AND <loomi-button color="primary"> */
+}
+```
+
+If you would rather not touch the Tailwind config at all, the [`:root` token overrides](#overriding-the-defaults)
+still theme every Loomi component on their own in any Tailwind version — you just won't get matching
+`bg-primary-600`-style utility classes without the mapping above.
 
 ## The 6 palette colors
 
@@ -184,9 +255,9 @@ The switcher supports three modes:
 | --- | --- |
 | `light` | Always uses the light theme |
 | `dark` | Always uses the dark theme |
-| `system` | Follows the user’s OS/browser color-scheme preference |
+| `system` | Follows the user's OS/browser color-scheme preference |
 
-## Install and render the switcher
+### Using the built-in switcher
 
 Import the component once, then render it where users can access theme controls
 (for example, your app header, profile menu, or settings page):
@@ -285,6 +356,10 @@ html.dark {
   /* …override whichever tokens your dark palette needs */
 }
 ```
+
+Note that dark mode **flips the neutral ramp**: the light end (`gray-50`) becomes dark and the
+dark end (`gray-900`) becomes light. That is why the values above look inverted — it keeps text
+readable against dark surfaces without changing any component markup.
 
 <loomi-alert type="warning" show-close-icon="false">To avoid a flash of the wrong theme on first paint, call <code>applyLoomiTheme(getLoomiTheme())</code> as early as possible during app startup.</loomi-alert>
 

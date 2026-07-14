@@ -3,26 +3,26 @@ title: Installation
 description: Install LoomiUI in a few simple steps.
 ---
 
-LoomiUI is installed with npm, following the same setup flow as most modern frontend libraries.
+LoomiUI is installed using npm and follows the same setup process as most modern frontend libraries.
 
-If you are new to LoomiUI, the recommended starting point is the main package.
-Installing this package registers all available LoomiUI components in one step, which
-lets you start building right away without deciding on individual component packages
-up front.
+If you're new to LoomiUI, start by installing the main package. It registers all components at once so you can begin building right away.
 
-This is the fastest path to a working setup. Once your project is running, you can
-switch to smaller, component-level installs to keep your bundle more focused.
+This is the fastest way to get started. Later, you can install only the components you frequently use to reduce bundle size.
+<p>&nbsp;</p>
 
 ```bash
 npm install @loomidev/components lit
 ```
 
-Then import LoomiUI once in your app entry file (for example, `main.js` or `index.ts`) so all registered components are available across your application:
+<p>&nbsp;</p>
+
+Once installation is complete, import LoomiUI in your app entry file (for example, `main.js` or `index.ts`) so all registered components are available across your application:
 
 ```js
 import "@loomidev/components";
 ```
 
+<p>&nbsp;</p>
 Now you can use LoomiUI components in your HTML:
 
 ```html
@@ -31,30 +31,31 @@ Now you can use LoomiUI components in your HTML:
 
 ## Why do I install `lit` too?
 
-LoomiUI is powered by [Lit](https://lit.dev/). Adding `lit` installs the runtime LoomiUI
-components rely on to render, react to state changes, and update in the browser.
-Because of this, LoomiUI packages require `lit` to be present at runtime.
+LoomiUI is built on [Lit](https://lit.dev/), a small library for building web components. Installing `lit` provides the runtime that LoomiUI components use to render, manage state, and update efficiently in the browser. As a result, `lit` is a required dependency for all LoomiUI packages.
 
-In most apps, you do not need to import `lit` yourself unless you are using Lit APIs directly.
-For typical LoomiUI usage, install `lit` with LoomiUI and import only the components you need.
+If you skip it, the components won't render and you'll see runtime errors in the browser console, so always install `lit` alongside LoomiUI.
 
-## Pick an install option
+For most projects, you won't need to import `lit` directly unless you're building your own Lit components or using its APIs. Simply install `lit` alongside LoomiUI and import the LoomiUI components you want to use.
 
-**Install everything** is the fastest way to get LoomiUI running, with every component available out of the box. 
-As you get a hang on the library, you can move to smaller installs and import only what you need.
+## Installation Options
+
+There are three paths to install LoomiUI. Install everything, install categories or install individual packages in the library. 
 
 ### Install everything
 
-This is the easiest way to get started fast, since everything is ready to use right away.
+This is the fastest way to get started because the full LoomiUI component library is installed at once. It is ideal for prototypes, internal tools, and teams that want immediate access to all components without deciding package-by-package up front. After installation, import `@loomidev/components` once in your app entry file to register all `loomi-*` elements globally and start building right away.
+
 
 ```bash
 npm install @loomidev/components lit
 ```
 
 ```js
-import "@loomidev/components"; // registers every <loomi-*> element
+// registers every <loomi-*> element
+import "@loomidev/components";
 ```
 
+<p>&nbsp;</p>
 You can also import only the components you use from the same package:
 
 ```js
@@ -64,8 +65,11 @@ import "@loomidev/components/datepicker";
 
 ### Install specific components
 
-Use this when you only need specific components. Each component package works on its own. 
-In the example below we install the [avatar](/components/avatar), [button](/components/button) and [chart](/components/chart) components.
+Use this approach when you only need a few components and want to keep your bundle smaller than installing the full library. Each component is published as its own package and can be installed independently.
+
+This is a good fit for production apps that only use a subset of LoomiUI, because it reduces unused code and makes dependencies more explicit.
+
+In the example below, we install the [avatar](/components/avatar), [button](/components/button), and [chart](/components/chart) components.
 
 ```bash
 npm install @loomidev/avatar @loomidev/button @loomidev/chart lit
@@ -86,28 +90,36 @@ import "@loomidev/chart";
 
 ### Install a category
 
-Use this when you need a group of related components.
+Use this when you need a group of related components instead of installing them one by one.
 
-LoomiUI's components are split into three categories. 
-Each category has one package for the full group. Every component also has its own
-standalone package if you only need that one component. 
+LoomiUI's components are split into three categories, each with a single package that
+registers all components in that group. This is useful when your project uses several
+components from the same area (for example, multiple form inputs), and you want a simpler
+setup with fewer import statements.
+
+If you only need one component, you can still install its standalone package. Category
+packages are mainly for convenience when you expect to use multiple related components.
 
 | Category | Description |
 | --- | --- |
 | [forms](#forms) | Input and form-related components. |
 | [content](#content) | Display and layout components for content presentation. |
 | [navigation](#navigation) | Components for movement, menus, tabs, and paging. |
-| standalone | This is not a 'category' per se. All other components that fall out of the three categories. |
 
 #### Forms
+
+Install the forms category package to register all form-related LoomiUI components at once.
 
 ```bash
 npm install @loomidev/forms lit
 ```
 
 ```js
-import "@loomidev/forms"; // registers every form component
+// registers every form component
+import "@loomidev/forms"; 
 ```
+
+<p>&nbsp;</p>
 
 | Component | Description | Standalone package |
 | --- | --- | --- |
@@ -133,15 +145,22 @@ import "@loomidev/forms"; // registers every form component
 | `<loomi-date-range-picker>` | Date range picker for dashboards and reports. | `@loomidev/date-range-picker` |
 | `<loomi-filter-builder>` | Structured filter editor for tables and queries. | `@loomidev/filter-builder` |
 
+<p>&nbsp;</p>
+
 #### Content
+
+The `@loomidev/content` package includes reusable display components like [cards](/components/card), [tooltips](/components/tooltip), [timelines](/components/timeline), and [progress](/components/progress) indicators for building rich interfaces.
 
 ```bash
 npm install @loomidev/content lit
 ```
 
 ```js
-import "@loomidev/content"; // registers every content component
+// registers every content component
+import "@loomidev/content"; 
 ```
+
+<p>&nbsp;</p>
 
 | Component | Description | Standalone package |
 | --- | --- | --- |
@@ -171,7 +190,11 @@ import "@loomidev/content"; // registers every content component
 | `<loomi-data-grid>` | Modular data grid with sorting, filtering, and more. | `@loomidev/data-grid` |
 | `<loomi-video>` | Themeable video player with custom controls. | `@loomidev/video` |
 
+<p>&nbsp;</p>
+
 #### Navigation
+
+Install the navigation bundle to register all navigation-related components in one package.
 
 ```bash
 npm install @loomidev/navigation lit
@@ -180,6 +203,7 @@ npm install @loomidev/navigation lit
 ```js
 import "@loomidev/navigation"; // registers every navigation component
 ```
+<p>&nbsp;</p>
 
 | Component | Description | Standalone package |
 | --- | --- | --- |
@@ -190,10 +214,11 @@ import "@loomidev/navigation"; // registers every navigation component
 | `<loomi-command-palette>` | Keyboard-first action launcher. | `@loomidev/command-palette` |
 | `<loomi-bottom-nav>` | Mobile bottom navigation bar with badges. | `@loomidev/bottom-nav` |
 | `<loomi-theme-switcher>` | Light, dark, and system theme toggle. | `@loomidev/theme-switcher` |
+<p>&nbsp;</p>
 
 #### Standalone Components
 
-These components are installed one at a time.
+These components do not fall within any of the three categories listed above.
 
 | Component | Description | Standalone package |
 | --- | --- | --- |
@@ -220,17 +245,23 @@ These components are installed one at a time.
 | `<loomi-table>` | Data table with sorting, search, and pagination. | `@loomidev/table` |
 | `<loomi-tag-input>` | Input content gets wrapped as tags on enter. | `@loomidev/tag-input` |
 | `<loomi-timer>` | Animated count up/down timer. | `@loomidev/timer` |
+<p>&nbsp;</p>
 
 ## TypeScript
 
-TypeScript support is included in every LoomiUI package, so it works out of the box.
+Every LoomiUI package ships with built-in TypeScript types.
 
-You do not need to install a separate `@types/*` package. Once you install a LoomiUI
-package, TypeScript picks up the types automatically.
+No extra `@types/*` install is required. As soon as you install a LoomiUI package,
+your editor and TypeScript compiler can resolve its types automatically.
 
-That means you get helpful autocomplete, safer code, and clearer errors while you work.
-It is especially useful when you import component classes, helper functions, or shared
-types in your app:
+This gives you better developer experience right away:
+
+- Autocomplete for component APIs
+- Type-safe usage in app code
+- Clearer compile-time errors while you build
+
+It is especially useful when importing component classes, helper functions, or shared
+types:
 
 ```ts
 import "@loomidev/button";
@@ -239,8 +270,10 @@ import type { LoomiButton, LoomiButtonSize } from "@loomidev/button";
 const size: LoomiButtonSize = "regular";
 const button = document.querySelector("loomi-button") as LoomiButton | null;
 
-button?.startSpinner();
+button?.startSpinner(); // typed method, autocompleted in your editor
 ```
+
+<p>&nbsp;</p>
 
 Some components also export helper functions:
 
@@ -249,13 +282,12 @@ import { showLoomiModal } from "@loomidev/modal";
 
 showLoomiModal("delete-user");
 ```
+<p>&nbsp;</p>
 
-If you use LoomiUI in plain HTML, you usually do not need to think about types at all.
-Just install the package, import the component, and use the element in your markup.
-
-Types become helpful when you are writing TypeScript and your code interacts with a
-component directly (for example, reading properties, calling methods, or handling typed
-events).
+Types are entirely optional. With plain HTML you just install the package, import the
+component, and drop the element into your markup — no types involved. You only touch them
+when you interact with a component from TypeScript code, such as reading properties,
+calling methods, or handling typed events.
 
 ## What's next
 
