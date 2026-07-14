@@ -109,22 +109,29 @@ npm install @loomidev/forms lit
 import "@loomidev/forms"; // registers every form component
 ```
 
-| Component | Description | Standalone package      |
-| --- | --- |-------------------------|
-| `<loomi-input>` | Text input with labels, icons, and validation. | `@loomidev/input`       |
-| `<loomi-textarea>` | Multi-line text input. | `@loomidev/textarea`    |
-| `<loomi-select>` | Custom select dropdown. | `@loomidev/select`      |
-| `<loomi-checkbox>` | Checkbox input. | `@loomidev/checkbox`    |
-| `<loomi-radio>` | Radio button input. | `@loomidev/radio`       |
-| `<loomi-toggle>` | On/off switch. | `@loomidev/toggle`      |
-| `<loomi-number>` | Number input with plus and minus controls. | `@loomidev/number`      |
-| `<loomi-slider>` | Range slider input. | `@loomidev/slider`      |
-| `<loomi-code>` | PIN or verification code input. | `@loomidev/code`        |
-| `<loomi-checkcards>` | Selectable card inputs. | `@loomidev/checkcards`  |
-| `<loomi-datepicker>` | Date picker. | `@loomidev/datepicker`  |
-| `<loomi-timepicker>` | Time picker. | `@loomidev/timepicker`  |
+| Component | Description | Standalone package |
+| --- | --- | --- |
+| `<loomi-input>` | Text input with labels, icons, and validation. | `@loomidev/input` |
+| `<loomi-password>` | Password field with reveal toggle and strength hints. | `@loomidev/password` |
+| `<loomi-textarea>` | Multi-line text input. | `@loomidev/textarea` |
+| `<loomi-text-editor>` | Rich-text editor with configurable tools. | `@loomidev/text-editor` |
+| `<loomi-select>` | Custom select dropdown (searchable, multiple). | `@loomidev/select` |
+| `<loomi-checkbox>` | Checkbox input. | `@loomidev/checkbox` |
+| `<loomi-radio>` | Radio button input. | `@loomidev/radio` |
+| `<loomi-toggle>` | On/off switch. | `@loomidev/toggle` |
+| `<loomi-number>` | Number input with plus and minus controls. | `@loomidev/number` |
+| `<loomi-slider>` | Range slider input. | `@loomidev/slider` |
+| `<loomi-otp>` | One-time passcode (OTP/PIN) input. | `@loomidev/otp` |
+| `<loomi-checkcards>` | Selectable card inputs. | `@loomidev/checkcards` |
+| `<loomi-datepicker>` | Date picker (single or range). | `@loomidev/datepicker` |
+| `<loomi-timepicker>` | Time picker. | `@loomidev/timepicker` |
+| `<loomi-timezonepicker>` | Searchable timezone dropdown with live UTC offsets. | `@loomidev/timezonepicker` |
 | `<loomi-colorpicker>` | Color picker. | `@loomidev/colorpicker` |
-| `<loomi-filepicker>` | File picker with drag and drop. | `@loomidev/filepicker`  |
+| `<loomi-filepicker>` | File picker with drag and drop. | `@loomidev/filepicker` |
+| `<loomi-countries>` | Searchable country dropdown with flags and phone mode. | `@loomidev/countries` |
+| `<loomi-creditcard>` | Flippable credit card input with network detection. | `@loomidev/creditcard` |
+| `<loomi-date-range-picker>` | Date range picker for dashboards and reports. | `@loomidev/date-range-picker` |
+| `<loomi-filter-builder>` | Structured filter editor for tables and queries. | `@loomidev/filter-builder` |
 
 #### Content
 
@@ -136,26 +143,33 @@ npm install @loomidev/content lit
 import "@loomidev/content"; // registers every content component
 ```
 
-| Component | Description | Standalone package                |
-| --- | --- |-----------------------------------|
-| `<loomi-card>` | Basic content card. | `@loomidev/card`                  |
-| `<loomi-avatar>` | User image, initials, or avatar stack. | `@loomidev/avatar`                |
-| `<loomi-accordion>` | Expand and collapse sections. | `@loomidev/accordion`             |
-| `<loomi-tag>` | Label, badge, or small status chip. | `@loomidev/tag`                   |
-| `<loomi-tooltip>` | Small message on hover or focus. | `@loomidev/tooltip`               |
-| `<loomi-popover>` | Floating panel for extra content. | `@loomidev/popover`               |
-| `<loomi-empty-state>` | Placeholder for an empty page or list. | `@loomidev/empty-state`           |
-| `<loomi-statistic>` | Dashboard number with a label. | `@loomidev/statistic`             |
-| `<loomi-rating>` | Star, heart, or thumbs-up rating. | `@loomidev/rating`                |
-| `<loomi-timeline>` | Chronological list of events. | `@loomidev/timeline`              |
-| `<loomi-progress>` | Progress bar or progress circle. | `@loomidev/progress`              |
-| `<loomi-listview>` | Divided list of items. | `@loomidev/listview`              |
-| `<loomi-contact-card>` | Ready-made contact details card. | `@loomidev/contact-card`          |
-| `<loomi-centered-content>` | Centers content vertically and horizontally. | `@loomidev/centered-content`      |
-| `<loomi-sortable>` | Drag-and-drop reorderable list. | `@loomidev/sortable`              |
-| `<loomi-processing>` | Shows working, success, or failed states. | `@loomidev/processing`            |
+| Component | Description | Standalone package |
+| --- | --- | --- |
+| `<loomi-card>` | Basic content card. | `@loomidev/card` |
+| `<loomi-divider>` | Horizontal or vertical content divider. | `@loomidev/divider` |
+| `<loomi-qrcode>` | QR code with corner brackets and scan effects. | `@loomidev/qrcode` |
+| `<loomi-avatar>` | User image, initials, or avatar stack. | `@loomidev/avatar` |
+| `<loomi-accordion>` | Expand and collapse sections. | `@loomidev/accordion` |
+| `<loomi-arc-meter>` | Semi-circle status meter with marker stops. | `@loomidev/arc-meter` |
+| `<loomi-tag>` | Label, badge, or small status chip. | `@loomidev/tag` |
+| `<loomi-tooltip>` | Small message on hover or focus. | `@loomidev/tooltip` |
+| `<loomi-popover>` | Floating panel for extra content. | `@loomidev/popover` |
+| `<loomi-empty-state>` | Placeholder for an empty page or list. | `@loomidev/empty-state` |
+| `<loomi-statistic>` | Dashboard number with a label. | `@loomidev/statistic` |
+| `<loomi-rating>` | Star, heart, or thumbs-up rating. | `@loomidev/rating` |
+| `<loomi-timeline>` | Chronological list of events. | `@loomidev/timeline` |
+| `<loomi-progress>` | Progress bar, circle, or steps. | `@loomidev/progress` |
+| `<loomi-listview>` | Divided list of items. | `@loomidev/listview` |
+| `<loomi-contact-card>` | Ready-made contact details card. | `@loomidev/contact-card` |
+| `<loomi-centered-content>` | Centers content vertically and horizontally. | `@loomidev/centered-content` |
+| `<loomi-sortable>` | Drag-and-drop reorderable list. | `@loomidev/sortable` |
+| `<loomi-processing>` | Shows working, success, or failed states. | `@loomidev/processing` |
 | `<loomi-horizontal-line-graph>` | Labeled proportion bar. | `@loomidev/horizontal-line-graph` |
-| `<loomi-chart>` | SVG charts like line, bar, pie, and donut. | `@loomidev/chart`                 |
+| `<loomi-chart>` | SVG charts like line, bar, pie, and donut. | `@loomidev/chart` |
+| `<loomi-chat>` | Chat window and message bubbles. | `@loomidev/chat` |
+| `<loomi-calendar>` | Calendar and resource scheduler. | `@loomidev/calendar` |
+| `<loomi-data-grid>` | Modular data grid with sorting, filtering, and more. | `@loomidev/data-grid` |
+| `<loomi-video>` | Themeable video player with custom controls. | `@loomidev/video` |
 
 #### Navigation
 
@@ -167,27 +181,45 @@ npm install @loomidev/navigation lit
 import "@loomidev/navigation"; // registers every navigation component
 ```
 
-| Component | Description | Standalone package         |
-| --- | --- |----------------------------|
-| `<loomi-tab>` | Tabbed content. | `@loomidev/tab`            |
-| `<loomi-pagination>` | Page controls. | `@loomidev/pagination`     |
-| `<loomi-dropmenu>` | Dropdown action menu. | `@loomidev/dropmenu`       |
+| Component | Description | Standalone package |
+| --- | --- | --- |
+| `<loomi-tab>` | Tabbed content. | `@loomidev/tab` |
+| `<loomi-pagination>` | Page controls. | `@loomidev/pagination` |
+| `<loomi-dropmenu>` | Dropdown action menu. | `@loomidev/dropmenu` |
+| `<loomi-context-menu>` | Right-click action menu. | `@loomidev/context-menu` |
+| `<loomi-command-palette>` | Keyboard-first action launcher. | `@loomidev/command-palette` |
+| `<loomi-bottom-nav>` | Mobile bottom navigation bar with badges. | `@loomidev/bottom-nav` |
 | `<loomi-theme-switcher>` | Light, dark, and system theme toggle. | `@loomidev/theme-switcher` |
 
 #### Standalone Components
 
 These components are installed one at a time.
 
-| Component | Description | Standalone package       |
-| --- | --- |--------------------------|
-| `<loomi-button>` | Button for actions and links. | `@loomidev/button`       |
-| `<loomi-icon>` | Icon renderer. | `@loomidev/icon`         |
-| `<loomi-spinner>` | Loading spinner. | `@loomidev/spinner`      |
-| `<loomi-alert>` | Inline message for info, warning, success, or error. | `@loomidev/alert`        |
-| `<loomi-bell>` | Notification bell with an optional status dot. | `@loomidev/bell`         |
-| `<loomi-modal>` | Dialog or popup window. | `@loomidev/modal`        |
+| Component | Description | Standalone package |
+| --- | --- | --- |
+| `<loomi-alert>` | Inline message for info, warning, success, or error. | `@loomidev/alert` |
+| `<loomi-autocomplete>` | Text input that suggests content as you type. | `@loomidev/autocomplete` |
+| `<loomi-bell>` | Notification bell with an optional status dot. | `@loomidev/bell` |
+| `<loomi-button>` | Button for actions and links. | `@loomidev/button` |
+| `<loomi-button-group>` | Segmented button group with selection. | `@loomidev/button-group` |
+| `<loomi-clipboard>` | Wraps content with a copy button. | `@loomidev/clipboard` |
+| `<loomi-drawer>` | Sliding edge panel with backdrop and focus trap. | `@loomidev/drawer` |
+| `<loomi-emoji-picker>` | Searchable emoji picker. | `@loomidev/emoji-picker` |
+| `<loomi-fab>` | Floating action button with optional speed-dial. | `@loomidev/fab` |
+| `<loomi-floating-panel>` | Draggable, resizable floating panel. | `@loomidev/floating-panel` |
+| `<loomi-icon>` | Icon renderer. | `@loomidev/icon` |
+| `<loomi-lightbox-image>` | Click an image to view it fullscreen. | `@loomidev/lightbox` |
+| `<loomi-modal>` | Dialog or popup window. | `@loomidev/modal` |
 | `<loomi-notification>` | Toast notification. | `@loomidev/notification` |
-| `<loomi-table>` | Data table with sorting, search, and pagination. | `@loomidev/table`        |
+| `<loomi-photo-gallery>` | Album grid with a lightbox viewer. | `@loomidev/photo-gallery` |
+| `<loomi-profile-menu>` | Profile trigger card with dropdown actions. | `@loomidev/profile-menu` |
+| `<loomi-progress-steps>` | Standalone progress stepper. | `@loomidev/progress-steps` |
+| `<loomi-resizable-panel-group>` | Resizable split-pane layouts. | `@loomidev/resizable` |
+| `<loomi-side-nav>` | Sliding in-container side navigation. | `@loomidev/side-nav` |
+| `<loomi-spinner>` | Loading spinner. | `@loomidev/spinner` |
+| `<loomi-table>` | Data table with sorting, search, and pagination. | `@loomidev/table` |
+| `<loomi-tag-input>` | Input content gets wrapped as tags on enter. | `@loomidev/tag-input` |
+| `<loomi-timer>` | Animated count up/down timer. | `@loomidev/timer` |
 
 ## TypeScript
 
