@@ -82,6 +82,11 @@ export default defineConfig({
             // works) — swap freely.
             { label: "Installation", slug: "installation", attrs: { "data-icon": "arrow-down-tray" } },
             { label: "Customization", slug: "customization", attrs: { "data-icon": "swatch" } },
+            {
+              label: "Component foundations",
+              slug: "customization/component-foundations",
+              attrs: { "data-icon": "building-library" },
+            },
             { label: "Contributing", slug: "contributing", attrs: { "data-icon": "code-bracket" } },
             { label: "Internationalization", slug: "i18n", attrs: { "data-icon": "globe-alt" } },
             { label: "RTL Support", slug: "rtl-support", attrs: { "data-icon": "language" } },

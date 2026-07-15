@@ -361,14 +361,20 @@ h2#starlight__on-this-page {
   @apply px-3 lg:px-6;
 }
 
+.sl-markdown-content ul, .sl-markdown-content ol {
+  @apply list-outside list-disc pl-4;
+}
+
+.sl-markdown-content ul li, .sl-markdown-content ol li {
+  @apply mb-4 leading-7 text-slate-600 text-lg;
+}
+
 .loomi-preview loomi-calendar {
-  width: 100%;
+  @apply w-full;
 }
 
 .loomi-preview loomi-chart {
-  display: block;
-  width: 100%;
-  max-width: 100%;
+  @apply block w-full max-w-full;
   --loomi-chart-max-height: 14rem;
 }
 

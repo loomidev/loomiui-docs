@@ -12,7 +12,18 @@ the same theme values flow across [buttons](/components/button), [inputs](/compo
 
 ## Which approach do I need?
 
-Most projects only need the first option below. Pick based on your setup:
+Most projects only need the first option below. If you're unsure, start with [**Token overrides**](#overriding-the-defaults) and stop there unless you have a specific reason to go further.
+<p>&nbsp;</p>
+Use this quick decision guide:<br />
+
+|||
+|:--|:--|
+|1|If you only want LoomiUI components (like `<loomi-button>`, `<loomi-input>`) to match your brand colors, choose [**Token overrides**](#overriding-the-defaults).|
+|2|If you also style non-Loomi elements with Tailwind utility classes and want those classes to use the same colors, add [**Tailwind color sync**](#using-tailwind-css).|
+|3|If you need to change framework internals (for example, introduce an entirely new palette family beyond the built-in six), choose [**Forking**](#forking-for-deeper-changes).|
+
+<p>&nbsp;</p>
+Pick based on your setup:
 
 - **[Token overrides](#overriding-the-defaults)** — the default path. Works in any project, with or without Tailwind. Start here.
 - **[Tailwind color sync](#using-tailwind-css)** — add this only if you use Tailwind utility classes (like `bg-primary-600`) and want them to match your Loomi theme.
@@ -43,7 +54,7 @@ For example, this changes the main `primary` color to green:
 ```
 <p>&nbsp;</p>
 
-You only need to override the shades you actually use — any token you leave out keeps its default.
+You only need to override the shades you actually use, and any token you leave out keeps its default.
 `600` is the base color and `700` is the hover state; see [How components use shades](#how-components-use-shades)
 for the full mapping.
 
@@ -158,24 +169,42 @@ function shades(name) {
   return Object.fromEntries(steps.map((s) => [s, `var(--loomi-${name}-${s})`]));
 }
 ```
-
+<p>&nbsp;</p>
 With this in place, a single `:root` override updates both your Tailwind classes and Loomi
 components — exactly like the v4 import does:
 
 ```css
 :root {
-  --loomi-primary-600: #16a34a; /* updates bg-primary-600 AND <loomi-button color="primary"> */
+  /* updates bg-primary-600 AND <loomi-button color="primary"> */
+  --loomi-primary-600: #16a34a; 
 }
 ```
 
+<p>&nbsp;</p>
 If you would rather not touch the Tailwind config at all, the [`:root` token overrides](#overriding-the-defaults)
-still theme every Loomi component on their own in any Tailwind version — you just won't get matching
+still theme every Loomi component on their own in any Tailwind version, but you won't get matching
 `bg-primary-600`-style utility classes without the mapping above.
 
-## The 6 palette colors
+## The 7 palette colors
 
 These are the built-in semantic palettes available out of the box.
 You can use any of these names with the `color` attribute across components.
+
+| Palette | Description |
+| --- | --- |
+| `primary` | your brand-first or default action color |
+| `secondary` | alternative emphasis for less prominent actions |
+| `success` | positive states (saved, completed, approved) |
+| `warning` | caution states (needs attention) |
+| `error` | destructive or failure states |
+| `info` | informational states and non-critical guidance |
+| `gray` | neutral UI surfaces, text-adjacent accents, and subtle actions |
+
+<p>&nbsp;</p>
+
+These semantic names are intentionally reusable, so the same token name can theme
+buttons, alerts, tags, badges, and other components consistently.
+
 For example:
 
 ```html
@@ -184,12 +213,15 @@ For example:
 <loomi-alert color="error">Action required</loomi-alert>
 ```
 
+<p>&nbsp;</p>
+
 <div class="loomi-palette-grid">
   <loomi-button color="primary" size="small">primary</loomi-button>
   <loomi-button color="secondary" size="small">secondary</loomi-button>
   <loomi-button color="success" size="small">success</loomi-button>
   <loomi-button color="warning" size="small">warning</loomi-button>
   <loomi-button color="error" size="small">error</loomi-button>
+  <loomi-button color="info" size="small">info</loomi-button>
   <loomi-button color="gray" size="small">gray</loomi-button>
 </div>
 
@@ -204,10 +236,10 @@ If you override tokens for one of these colors (such as `--loomi-secondary-600`)
 every component using that color updates automatically.
 
 This is a deliberately small, semantic set rather than a full Tailwind-style color
-grid — every color maps to a meaning (`success`, `warning`, `error`) or a brand role
+grid, where every color maps to a meaning (`success`, `warning`, `error`) or a brand role
 (`primary`, `secondary`), so component authors and consumers never have to guess
 which raw hue to reach for. Add more palettes by [forking the build](#forking-for-deeper-changes)
-if your product needs additional semantic colors (e.g. `info`).
+if your product needs additional semantic colors (e.g. `accent`).
 
 ### How components use shades
 

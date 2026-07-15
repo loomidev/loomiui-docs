@@ -347,6 +347,12 @@ const setupDocsPreview = () => {
 
 function fixLinks(md) {
   let out = md;
+  // Published package READMEs need an absolute docs URL, but generated docs should
+  // stay on the current host (local preview, staging, or production).
+  out = out.replaceAll(
+    "https://loomiui.com/customization/component-foundations/",
+    "/customization/component-foundations/",
+  );
   // root README anchors -> the customization page
   out = out.replace(/\]\(\.\.\/\.\.\/README\.md#[a-z0-9-]*theming[a-z0-9-]*\)/gi, "](/customization/)");
   out = out.replace(/\]\(\.\.\/\.\.\/README\.md\)/g, "](/installation/)");
