@@ -392,6 +392,15 @@ h2#starlight__on-this-page {
 .loomi-preview loomi-chart + loomi-chart {
   margin-top: 0.75rem;
 }
+
+@media (min-width: 50em) {
+    .header {
+        padding-inline-start: 15px !important;
+        padding-inline-end: 15px !important;
+        opacity: 0.8 !important;
+    }
+  }
+
 loomi-alert > p {
   @apply leading-none;
 }

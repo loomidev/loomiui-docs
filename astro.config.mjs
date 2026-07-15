@@ -81,10 +81,10 @@ export default defineConfig({
             // directly. Names are placeholders (any registered @loomidev/icons name
             // works) — swap freely.
             { label: "Installation", slug: "installation", attrs: { "data-icon": "arrow-down-tray" } },
-            { label: "Customization", slug: "customization", attrs: { "data-icon": "swatch" } },
+            { label: "Theming", slug: "theming", attrs: { "data-icon": "swatch" } },
             {
-              label: "Component foundations",
-              slug: "customization/component-foundations",
+              label: "Foundations",
+              slug: "foundations",
               attrs: { "data-icon": "building-library" },
             },
             { label: "Contributing", slug: "contributing", attrs: { "data-icon": "code-bracket" } },

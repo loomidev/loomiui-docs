@@ -350,11 +350,11 @@ function fixLinks(md) {
   // Published package READMEs need an absolute docs URL, but generated docs should
   // stay on the current host (local preview, staging, or production).
   out = out.replaceAll(
-    "https://loomiui.com/customization/component-foundations/",
-    "/customization/component-foundations/",
+    "https://loomiui.com/foundations/",
+    "/foundations/",
   );
-  // root README anchors -> the customization page
-  out = out.replace(/\]\(\.\.\/\.\.\/README\.md#[a-z0-9-]*theming[a-z0-9-]*\)/gi, "](/customization/)");
+  // root README anchors -> the theming page
+  out = out.replace(/\]\(\.\.\/\.\.\/README\.md#[a-z0-9-]*theming[a-z0-9-]*\)/gi, "](/theming/)");
   out = out.replace(/\]\(\.\.\/\.\.\/README\.md\)/g, "](/installation/)");
   // sibling package links: ../<name> or ../<name>/README.md -> /components/<cat>/<name>/, else unlink
   out = out.replace(/\[([^\]]+)\]\(\.\.\/([a-z0-9-]+)\/?(?:README\.md)?(#[a-z0-9-]+)?\)/gi, (_m, label, name) => {

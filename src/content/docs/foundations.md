@@ -1,5 +1,5 @@
 ---
-title: Component foundations
+title: Foundations
 description: Shared accessibility, responsive behavior, and dark-mode guarantees across LoomiUI components.
 ---
 
@@ -91,4 +91,4 @@ When reviewing a customized theme, check:
   their component page documents that exception.
 
 For palette values, token overrides, and Tailwind integration, continue with
-[Customization](/customization/).
+[Theming](/theming/).

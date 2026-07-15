@@ -201,14 +201,14 @@ does. So the only thing that actually forces a page to be `.mdx` here is using a
 | File | Extension | Why |
 | --- | --- | --- |
 | `architecture.mdx` (this page) | `.mdx` | Uses `FileTree` |
-| `customization.mdx`, `mcp-server.mdx` | `.mdx` | No Starlight components left after the dogfooding pass above — kept `.mdx` anyway since renaming buys nothing (the URL slug doesn't include the extension) |
+| `theming.mdx`, `mcp-server.mdx` | `.mdx` | No Starlight components left after the dogfooding pass above — kept `.mdx` anyway since renaming buys nothing (the URL slug doesn't include the extension) |
 | All generated `components/**/*.md` pages, `installation.md` | `.md` | Only ever needed raw `<script>` and custom-element tags |
 
 If you add a *Starlight* component (`FileTree`, `Card`, etc.) to a page that's currently
 `.md`, you must rename it to `.mdx` first — the import line will otherwise render as
 literal text and the component tags as plain unstyled HTML. (This exact mistake happened
 once while building this site, with `Tabs`/`Aside` before they were swapped out for
-LoomiUI's own components — see the early git history on `customization.mdx` for the
+LoomiUI's own components — see the early git history on `theming.mdx` for the
 cautionary tale.) Adding a **LoomiUI** component needs no such rename.
 
 ## What changes once LoomiUI is on npm

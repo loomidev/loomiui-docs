@@ -291,7 +291,7 @@ calling methods, or handling typed events.
 
 ## What's next
 
-- **[Customization →](/customization/)** — change colors and set up dark mode.
+- **[Theming →](/theming/)** — change colors and set up dark mode.
 - **[CLI →](/cli/)** — scaffold Pro starter kits with `loomi-pro` (requires a Pro license).
 - **[MCP Server →](/mcp-server/)** — connect AI tools to LoomiUI component docs.
 - **Browse components** — use the sidebar to see every component.
