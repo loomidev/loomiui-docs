@@ -31,7 +31,7 @@ const MEMBERS = {
   ],
   overlay: ["modal", "popover", "tooltip", "drawer", "floating-panel", "lightbox"],
   "data-display": [
-    "table", "tag", "arc-meter", "statistic", "rating", "timeline", "listview", "contact-card", "chart",
+    "table", "tag", "arc-meter", "statistic", "rating", "scroller", "timeline", "listview", "contact-card", "chart",
     "horizontal-line-graph", "clipboard", "timer", "data-grid", "calendar", "chat", "photo-gallery",
   ],
   layout: ["button", "button-group", "card", "accordion", "centered-content", "sortable", "divider", "resizable", "fab"],

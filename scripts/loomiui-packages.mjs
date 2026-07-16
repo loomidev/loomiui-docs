@@ -16,7 +16,7 @@ export const CATEGORY = {
   ],
   content: [
     "card", "avatar", "accordion", "arc-meter", "tag", "tooltip", "popover", "empty-state", "statistic",
-    "rating", "timeline", "progress", "listview", "contact-card", "centered-content",
+    "rating", "scroller", "timeline", "progress", "listview", "contact-card", "centered-content",
     "sortable", "processing", "horizontal-line-graph", "chart", "drawer", "clipboard",
     "divider", "qrcode", "timer", "data-grid", "calendar", "chat", "resizable",
     "progress-steps", "video", "floating-panel", "photo-gallery", "lightbox",
