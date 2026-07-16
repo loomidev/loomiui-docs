@@ -3,37 +3,41 @@ title: MCP Server
 description: Give Claude Code, Cursor, and other AI tools direct access to LoomiUI's component documentation via MCP.
 ---
 
-AI coding assistants are good at writing web components, but they can't see LoomiUI's
-actual attribute names, default values, or events — so they guess. `@loomidev/mcp-server`
-fixes that by exposing this entire documentation site as an [MCP](https://modelcontextprotocol.io)
-server your AI tool can query directly, the same way you'd ask a teammate "what
-attributes does `<loomi-datepicker>` take?"
+AI assistants can generate component code quickly, but they often guess on library-specific details like exact attribute names, 
+defaults, and events. `@loomidev/mcp-server` solves this by exposing LoomiUI docs through an
+[MCP](https://modelcontextprotocol.io) server your assistant can query directly.
 
-It ships every component's docs **bundled into the package** — no network calls, no
-access to your filesystem beyond the package itself.
+Think of it as a live docs lookup for your AI tool: instead of guessing, it can ask for
+the exact API for components like `<loomi-datepicker>`.
 
-You do not import this package into your app. Your AI editor or assistant starts it in
-the background when it needs LoomiUI documentation.
+All component docs are **bundled inside the package**. That means:
+
+- no network requests to fetch docs
+- no filesystem access beyond the package itself
+
+You do **not** import this package into your app code. Your editor/assistant launches
+it in the background only when needed.
 
 ## What it exposes
 
 | Tool | What it does |
 | --- | --- |
-| `list_components` | Lists every component, optionally filtered by category (`standalone`, `forms`, `content`, `navigation`). |
-| `search_components` | Finds components by keyword — matches name, description, and category. |
-| `get_component_docs` | Returns the full docs (usage examples, attribute table, events) for one component by name or tag. |
+| `list_components` | Returns all components, with optional category filtering (`standalone`, `forms`, `content`, `navigation`). |
+| `search_components` | Searches components by keyword across name, description, and category. |
+| `get_component_docs` | Returns full docs for a single component (usage, attributes, events) by name or tag. |
 
-Plus a readable **resource** per component at `loomi://docs/<name>` (e.g.
-`loomi://docs/button`), for clients that prefer direct resource reads over tool calls.
+There is also a readable **resource** per component at `loomi://docs/<name>` (for
+example, `loomi://docs/button`) for clients that prefer resource reads over tool calls.
 
 ## Setup
 
-Before you start, make sure Node.js is installed. The examples below use `npx`, which
-comes with npm when you install Node.js.
+Before starting, install `Node.js`. The examples below use `npx`, which comes with `npm`.
 
-Add this server config to your AI tool:
+Add this server entry to your AI tool config:
 
 ```json
+// add this config to Claude Code/Desktop and Cursor
+
 {
   "mcpServers": {
     "loomiui": {
@@ -44,29 +48,40 @@ Add this server config to your AI tool:
 }
 ```
 
-The `"command": "npx"` line tells your tool to download and run the package for you.
-The `-y` flag lets `npx` run it without stopping to ask for confirmation.
+`"command": "npx"` tells the client to download and run the package.
+`-y` skips the install confirmation prompt.
 
 ### Where to put the config
 
-Choose the tool you use, then add the matching JSON to that tool's MCP config file.
-If the file does not exist yet, create it. After saving the file, restart the tool so it
-can start the `loomiui` server. VS Code uses a slightly different JSON shape, shown
-below.
+Choose your editor below and paste in the matching config (above).
+
+- If the config file does not exist, create it.
+- Save the file, then fully restart the editor/assistant.
+- After restart, it should launch the `loomiui` MCP server automatically.
+
+<loomi-alert type="info">
+Note: VS Code uses `servers` instead of `mcpServers`.
+</loomi-alert>
 
 #### Claude Code
 
-Add the config to your MCP settings. You can use `.claude/settings.json` in a project,
-or run `/mcp` inside an interactive Claude Code session.
+Add the server configuration to your Claude Code MCP settings.
+
+* Project-level: `.claude/settings.json`
+* Interactive setup: Run `/mcp` from within a Claude Code session.
 
 #### Cursor
 
-Add this to `~/.cursor/mcp.json` for all Cursor projects, or to your project's
-`.cursor/mcp.json` for just one project.
+Add the configuration to one of the following files:
+
+* Global (all projects): `~/.cursor/mcp.json`
+* Project-only: `.cursor/mcp.json`
 
 #### VS Code
 
-VS Code nests servers under `servers` instead of `mcpServers`. For one project, create
+VS Code uses `servers` (not `mcpServers`).
+
+For one project, create:
 `.vscode/mcp.json`:
 
 ```json
@@ -80,46 +95,52 @@ VS Code nests servers under `servers` instead of `mcpServers`. For one project, 
 }
 ```
 
-For every project instead, run `MCP: Open User Configuration` from the Command Palette
-(`Cmd+Shift+P` / `Ctrl+Shift+P`) and add the same JSON to the file it opens.
 
-Either way, VS Code prompts you to trust the server the first time it starts — approve
-it, then find `loomiui`'s tools in the Chat view's tool picker.
+For all projects, open the Command Palette (`Cmd+Shift+P` on macOS or `Ctrl+Shift+P` on Windows and Linux), run `MCP`: Open `User Configuration`, and add the same JSON configuration.
+
+The first time Visual Studio Code starts the server, it will prompt you to trust it. Click `Approve`, then select `LoomiUI Tools` from the Chat tool picker.
 
 #### Claude Desktop
 
-Add the config to your `claude_desktop_config.json` file.
+Add the config to `claude_desktop_config.json`.
 
-## Trying it without an editor
+#### Verify the server from the terminal
 
-Open a regular terminal on your computer, such as Terminal, iTerm, or your editor's
-integrated terminal. You can run this from any folder; it does not need to be inside a
-LoomiUI project or the app where you plan to use LoomiUI.
+Before configuring Claude Code, Cursor, or Visual Studio Code, you can verify that the MCP server starts correctly by running it directly from a terminal.
+
+Use any terminal application, such as Terminal, iTerm, or your editor’s integrated terminal. The command can be run from any directory.
 
 ```bash
 npx -y @loomidev/mcp-server
 ```
 
-If it starts successfully, it may look like nothing happened. That is expected. MCP
-servers communicate over stdio, so this command waits quietly for an MCP client, such
-as Claude Code or Cursor, to connect.
+<p>&nbsp;</p>
+If the server starts successfully, the terminal may appear idle. This is expected. MCP servers communicate over standard input and output (`stdio`), 
+so the process waits for an MCP client, such as Claude Code, Cursor, or Visual Studio Code, to connect.
 
-Press `Ctrl+C` to stop the test server and return to your terminal prompt.
+Press `Ctrl+C` to stop the server and return to the command prompt.
 
 ## Working from source
 
-Most users do not need this. Use the source version only if you are developing LoomiUI
-itself or testing an unpublished local change to the MCP server.
+Most teams can skip this section.
 
-For example, if the LoomiUI source workspace lives at `~/Projects/loomiui`, build
-the server like this:
+Use a local source build only when you:
+
+- are developing LoomiUI itself
+- want to test MCP server changes before publishing
+
+### Build the MCP server from your LoomiUI workspace
+
+If your LoomiUI repo is at `~/Projects/loomiui`:
 
 ```bash
 cd ~/Projects/loomiui/components
 pnpm --filter @loomidev/mcp-server build
 ```
 
-Then point your MCP config at the built file with an absolute path:
+### Point your MCP config to the built file
+
+Use an absolute path to `dist/index.js`:
 
 ```json
 {
@@ -132,37 +153,57 @@ Then point your MCP config at the built file with an absolute path:
 }
 ```
 
-You can also start that built server from a consuming app:
+### (Optional) Run it manually from another project
+
+You can also start the built server directly from a consuming app:
 
 ```bash
 cd ~/Projects/my-app
 node /Users/your-name/Projects/loomiui/components/packages/mcp-server/dist/index.js
 ```
 
-That command still uses the local LoomiUI source workspace for the server code; it does
-not install anything into `my-app`.
+This still runs the server code from your local LoomiUI workspace.
+It does **not** install `@loomidev/mcp-server` into `my-app`.
 
 ## Using it in your assistant
 
-Once the server is connected, ask your assistant for LoomiUI-specific help:
+Once connected, your assistant can look up LoomiUI docs in real time before writing code.
+That means fewer guessed props, fewer wrong event names, and less back-and-forth.
+
+Use prompts like these:
 
 ```txt
 Add a LoomiUI date range picker with a max date of today.
 ```
 
-Your assistant can call `get_component_docs` for `datepicker`, see the real `range`,
-`max-date`, and `format` attributes, and write code against the actual component.
+```txt
+Create a LoomiUI button that shows a loading state while saving and emits an event when clicked.
+```
 
-## Why this matters
+```txt
+Build a form with LoomiUI inputs and validation messages for email and password.
+```
 
-Without the MCP server, an assistant only knows what was in its training data and what
-you paste into the chat. With the server connected, it can look up the current LoomiUI
-docs before it writes code.
+```txt
+What are all available attributes for loomi-datepicker? Show a quick usage example.
+```
 
-<loomi-alert type="info" icon="information-circle">
-  This mirrors how LoomiUI itself was documented during development — the same
-  list/search/get-docs shape that BladewindUI exposes through its own MCP connector.
-</loomi-alert>
+### How it works
+
+When connected to the LoomiUI MCP server, the assistant retrieves information directly from the current LoomiUI documentation instead of relying on its training data.
+
+A typical request follows this flow:
+
+1. Use `search_components` to find the most relevant component.
+2. Call `get_component_docs` to retrieve the component’s documentation, including its attributes, events, slots, methods, and usage examples.
+3. Generate code using the retrieved documentation.
+
+<p>&nbsp;</p>
+For example, when you ask for a date picker:
+
+1. Find the Date Picker component with `search_components`.
+2. Retrieve its documentation with `get_component_docs`.
+3. Generate code using the documented API, including attributes such as `range`, `max-date`, and `format`.
 
 ## Related
 
