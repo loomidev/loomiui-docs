@@ -37,11 +37,21 @@ const workflow = [
 ];
 
 const resources = [
-  { title: "Token System", icon: "variable", href: "/pro/themes/token-system/", description: "Understand the semantic contract behind every preset." },
   { title: "Theme Builder", icon: "adjustments-horizontal", href: "/pro/themes/theme-builder/", description: "Customize and preview a theme visually before export." },
-  { title: "Figma Kit", icon: "beaker", href: "/pro/themes/figma-kit/", description: "Design with the same components and tokens used in code." },
-  { title: "Assets & Brand", icon: "photo", href: "/pro/themes/assets-brand/", description: "Use matching product, launch, and social visuals." },
-  { title: "Accessibility", icon: "eye", href: "/pro/themes/accessibility-quality/", description: "Review contrast, focus, motion, and migration quality." },
+  { title: "Figma workflow", icon: "beaker", href: "/pro/themes/figma-kit/", description: "Import variables and keep design decisions aligned with code." },
+];
+
+const tokenGroups = [
+  { label: "Color", value: "Brand, semantic, surface and text roles" },
+  { label: "Foundation", value: "Typography, spacing, radius and shadow" },
+  { label: "Behavior", value: "Density, motion, focus and component tokens" },
+];
+
+const qualityChecks = [
+  "Readable light and dark surfaces",
+  "Visible keyboard focus",
+  "Reduced-motion preferences",
+  "High-contrast starting point",
 ];
 ---
 
@@ -69,6 +79,25 @@ const resources = [
         </div>
       </div>
     </div>
+  </section>
+
+  <section class="system-section" id="tokens" aria-labelledby="tokens-heading">
+    <div class="system-copy">
+      <p class="section-eyebrow">One contract across every component</p>
+      <h2 id="tokens-heading">Tokens are built in, not another destination to learn</h2>
+      <p>Every preset uses the same semantic <code>--loomi-*</code> contract. Change a role once and buttons, forms, navigation, tables, and product shells update together.</p>
+      <pre><code>{`:root {
+  --loomi-primary-500: #2563eb;
+  --loomi-surface: #ffffff;
+  --loomi-text: #0f172a;
+  --loomi-radius-md: 0.625rem;
+}`}</code></pre>
+    </div>
+    <dl class="token-groups">
+      {tokenGroups.map((group) => (
+        <div><dt>{group.label}</dt><dd>{group.value}</dd></div>
+      ))}
+    </dl>
   </section>
 
   <section class="mt-20" aria-labelledby="presets-heading">
@@ -110,6 +139,19 @@ const resources = [
         </li>
       ))}
     </ol>
+  </section>
+
+  <section class="quality-section" id="quality" aria-labelledby="quality-heading">
+    <div>
+      <p class="section-eyebrow">Quality is part of the preset</p>
+      <h2 id="quality-heading">Accessible defaults without a separate checklist page</h2>
+      <p>Theme choices are reviewed where they matter: contrast, focus, motion, and readability. The High Contrast preset gives teams a stronger review baseline when requirements are stricter.</p>
+    </div>
+    <ul>
+      {qualityChecks.map((check) => (
+        <li><loomi-icon name="check-circle"></loomi-icon><span>{check}</span></li>
+      ))}
+    </ul>
   </section>
 
   <section class="mt-20" aria-labelledby="resources-heading">
@@ -180,6 +222,19 @@ const resources = [
   .workflow-list li > span { color: rgb(37 99 235); font-size: .75rem; font-weight: 800; letter-spacing: .08em; }
   .workflow-list strong { font-size: .95rem; }
   .workflow-list p { margin: .3rem 0 0; color: rgb(107 114 128); font-size: .875rem; line-height: 1.5; }
+  .system-section, .quality-section { scroll-margin-top: 6rem; }
+  .system-section { display: grid; grid-template-columns: 1.1fr .9fr; gap: 3rem; margin-top: 5rem; border: 1px solid rgb(219 234 254); border-radius: 1.25rem; background: linear-gradient(145deg, rgb(239 246 255), white); padding: 2.5rem; }
+  .system-copy h2, .quality-section h2 { margin: .35rem 0 0; font-size: 1.75rem; line-height: 1.2; font-weight: 750; letter-spacing: -.025em; }
+  .system-copy > p:last-of-type, .quality-section > div > p:last-child { margin: .8rem 0 0; color: rgb(75 85 99); line-height: 1.65; }
+  .system-copy pre { overflow-x: auto; margin: 1.4rem 0 0; border-radius: .8rem; background: rgb(15 23 42); padding: 1rem; color: rgb(226 232 240); font-size: .78rem; line-height: 1.65; }
+  .token-groups { display: grid; align-content: center; gap: .75rem; margin: 0; }
+  .token-groups div { border: 1px solid rgb(219 234 254); border-radius: .8rem; background: rgb(255 255 255 / .8); padding: 1rem; }
+  .token-groups dt { color: rgb(37 99 235); font-size: .75rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
+  .token-groups dd { margin: .35rem 0 0; color: rgb(51 65 85); font-size: .9rem; line-height: 1.5; }
+  .quality-section { display: grid; grid-template-columns: 1.1fr .9fr; gap: 3rem; align-items: center; margin-top: 5rem; }
+  .quality-section ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; margin: 0; padding: 0; list-style: none; }
+  .quality-section li { display: flex; align-items: center; gap: .65rem; min-height: 4rem; border: 1px solid rgb(229 231 235); border-radius: .8rem; padding: .85rem; color: rgb(51 65 85); font-size: .85rem; font-weight: 650; }
+  .quality-section li loomi-icon { flex: none; width: 1.1rem; height: 1.1rem; color: rgb(37 99 235); }
   .resource-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; margin-top: 1.75rem; }
   .resource-list > a { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 1rem; border: 1px solid rgb(229 231 235); border-radius: .9rem; padding: 1rem; color: rgb(17 24 39); text-decoration: none; }
   .resource-list > a:hover { border-color: rgb(147 197 253); }
@@ -197,6 +252,9 @@ const resources = [
   :global(.dark) .preset-card, :global(.dark) .resource-list > a { border-color: rgb(55 65 81); background: rgb(17 24 39); color: rgb(243 244 246); }
   :global(.dark) .preset-copy p, :global(.dark) .workflow-list p, :global(.dark) .resource-list small { color: rgb(156 163 175); }
   :global(.dark) .workflow-section { background: rgb(17 24 39); }
+  :global(.dark) .system-section { border-color: rgb(30 58 138); background: linear-gradient(145deg, rgb(15 23 42), rgb(17 24 39)); }
+  :global(.dark) .token-groups div, :global(.dark) .quality-section li { border-color: rgb(55 65 81); background: rgb(17 24 39); }
+  :global(.dark) .token-groups dd, :global(.dark) .quality-section li, :global(.dark) .system-copy > p:last-of-type, :global(.dark) .quality-section > div > p:last-child { color: rgb(156 163 175); }
   :global(.dark) .workflow-list li { border-color: rgb(55 65 81); }
   :global(.dark) .resource-icon { background: rgb(30 58 138 / .5); color: rgb(147 197 253); }
   :global(.dark) .purchase-panel { background: rgb(30 58 138 / .3); }
@@ -205,9 +263,12 @@ const resources = [
     .hero-swatch { display: none; }
     .preset-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .workflow-section { grid-template-columns: 1fr; gap: 2.5rem; }
+    .system-section, .quality-section { grid-template-columns: 1fr; gap: 2rem; }
   }
   @media (max-width: 640px) {
     .section-heading, .purchase-panel { align-items: flex-start; flex-direction: column; }
     .preset-grid, .resource-list { grid-template-columns: 1fr; }
+    .system-section { padding: 1.5rem; }
+    .quality-section ul { grid-template-columns: 1fr; }
   }
 </style>

@@ -1,13 +1,12 @@
 ---
 import MarketingHeader from "./MarketingHeader.astro";
-import ProSidebar from "./ProSidebar.astro";
 import { readFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { buildImportMap } from "../lib/import-map.mjs";
 import { getProFeaturePage } from "../lib/pro-catalog.mjs";
+import { PRO_LICENSING_URL } from "../lib/pro-licensing.mjs";
 import "../styles/home.css";
 
-const GITHUB_URL = "https://github.com/loomidev/loomiui-pro";
 const feature = getProFeaturePage("theme-builder")!;
 const importMap = buildImportMap();
 const title = `${feature.title} - LoomiUI Pro`;
@@ -57,10 +56,14 @@ const lineHeightOptions = [{ label: "Tight · 1.4", value: "1.4" }, { label: "De
   <body class="bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
     <MarketingHeader />
 
-    <div class="mx-auto max-w-[90rem] px-6 py-10 lg:grid lg:grid-cols-[14rem_1fr] lg:items-start lg:gap-10">
-      <ProSidebar currentPath="/pro/themes/theme-builder/" activeCategory="theme-builder" />
+    <main class="mx-auto max-w-[90rem] px-4 py-8 sm:px-6 sm:py-12">
+      <nav class="builder-breadcrumb" aria-label="Breadcrumb">
+        <a href="/pro/themes/"><loomi-icon name="arrow-left"></loomi-icon> Themes</a>
+        <span aria-hidden="true">/</span>
+        <span>Theme Builder</span>
+      </nav>
 
-      <div class="mt-10 min-w-0 lg:mt-0">
+      <div class="min-w-0">
         <section class="builder-hero">
           <div class="builder-hero-copy">
             <div class="feature-kicker">{feature.kicker}</div>
@@ -221,12 +224,12 @@ const lineHeightOptions = [{ label: "Tight · 1.4", value: "1.4" }, { label: "De
         </div>
 
         <div class="mt-12 flex flex-wrap gap-3">
-          <loomi-button color="primary" size="small" tag="a" href={GITHUB_URL}>Buy Pro</loomi-button>
+          <loomi-button color="primary" size="small" tag="a" href={PRO_LICENSING_URL}>View Pro licenses</loomi-button>
           <loomi-button type="secondary" size="small" tag="a" href="/pro/themes/theme-presets/">Theme presets</loomi-button>
-          <loomi-button type="secondary" size="small" tag="a" href="/pro/">Back to all Pro</loomi-button>
+          <loomi-button type="secondary" size="small" tag="a" href="/pro/themes/">Back to themes</loomi-button>
         </div>
       </div>
-    </div>
+    </main>
 
     <script type="application/json" id="theme-builder-data" is:inline set:html={JSON.stringify(themeBundle)}></script>
 
@@ -581,6 +584,25 @@ const brand = createTheme({
 </html>
 
 <style is:global>
+  .builder-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    margin-bottom: 1rem;
+    color: rgb(148 163 184);
+    font-size: .8rem;
+  }
+  .builder-breadcrumb a {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    color: rgb(71 85 105);
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .builder-breadcrumb a:hover { color: rgb(37 99 235); }
+  .builder-breadcrumb loomi-icon { width: .9rem; height: .9rem; }
+  .dark .builder-breadcrumb a { color: rgb(203 213 225); }
   .builder-hero {
     display: grid;
     gap: 2rem;

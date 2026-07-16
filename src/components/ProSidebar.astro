@@ -102,7 +102,7 @@ const GITHUB_URL = "https://github.com/loomidev/loomiui-pro";
 
   <div class="sidebar-section-label">Themes</div>
   <nav class="space-y-0.5">
-    {PRO_CATEGORIES.filter((cat) => cat.area === "themes").map((cat) => (
+    {PRO_CATEGORIES.filter((cat) => cat.area === "themes" && cat.nav !== false).map((cat) => (
       cat.href ? (
         <a href={cat.href} class:list={["category-link", currentPath === cat.href && "is-active"]}>
           <span class="category-link-icon"><loomi-icon name={cat.icon} style="width:1.05rem;height:1.05rem"></loomi-icon></span>

@@ -17,6 +17,7 @@ export const PRO_CATEGORIES = [
     area: "themes",
     icon: "variable",
     href: "/pro/themes/token-system/",
+    nav: false,
   },
   {
     key: "theme-presets",
@@ -33,13 +34,14 @@ export const PRO_CATEGORIES = [
     href: "/pro/themes/theme-builder/",
   },
   { key: "figma-kit", label: "Figma Kit", area: "themes", icon: "beaker", href: "/pro/themes/figma-kit/" },
-  { key: "assets-brand", label: "Assets & Brand", area: "themes", icon: "photo", href: "/pro/themes/assets-brand/" },
+  { key: "assets-brand", label: "Assets & Brand", area: "themes", icon: "photo", href: "/pro/themes/assets-brand/", nav: false },
   {
     key: "accessibility-quality",
     label: "Accessibility & Quality",
     area: "themes",
     icon: "eye",
     href: "/pro/themes/accessibility-quality/",
+    nav: false,
   },
 ];
 

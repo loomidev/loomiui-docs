@@ -1,0 +1,131 @@
+---
+import ProLandingShell from "./ProLandingShell.astro";
+import { PRO_LICENSING_URL } from "../lib/pro-licensing.mjs";
+
+const title = "Figma Kit - LoomiUI Pro";
+const description = "Import LoomiUI Pro theme variables into Figma and keep design decisions aligned with production tokens.";
+
+const workflow = [
+  { number: "01", title: "Open Figma Desktop", description: "Local development plugins are installed from the desktop app, not the Figma web app." },
+  { number: "02", title: "Import the manifest", description: "Choose plugin/manifest.json from the extracted LoomiUI Pro Figma kit." },
+  { number: "03", title: "Choose a preset", description: "Run LoomiUI Pro Theme Importer and import one of the 12 generated themes." },
+  { number: "04", title: "Design in both modes", description: "Use the Color and Size & Style collections, then switch between Light and Dark." },
+];
+
+const deliverables = [
+  { icon: "swatch", title: "12 variable collections", description: "Color, spacing, radius, typography, density, and component tokens for every preset." },
+  { icon: "squares-2x2", title: "Component blueprints", description: "Core and Pro JSON specifications with names and variants that map back to code." },
+  { icon: "rectangle-stack", title: "Layouts and screens", description: "Auto-layout patterns plus Admin, SaaS, CRM, and Analytics screen specifications." },
+  { icon: "document-text", title: "Library guidance", description: "Documentation, states, text styles, effects, changelog, and library assembly instructions." },
+];
+---
+
+<ProLandingShell title={title} description={description}>
+  <section class="figma-hero">
+    <div>
+      <p class="section-eyebrow">LoomiUI Pro for Figma</p>
+      <h1>Move from theme tokens to design decisions without losing the code contract</h1>
+      <p class="hero-copy">Import the same variables your application uses, work in light and dark modes, and hand developers component choices that map cleanly to LoomiUI.</p>
+      <div class="hero-actions">
+        <loomi-button color="primary" tag="a" href="#setup">See the setup</loomi-button>
+        <loomi-button type="secondary" tag="a" href="/pro/themes/theme-presets/">Browse presets</loomi-button>
+      </div>
+    </div>
+    <div class="variable-preview" aria-label="Example Figma variable mapping">
+      <div class="preview-header"><span class="figma-mark">F</span><strong>Fintech / Color</strong><span class="mode-pill">Light · Dark</span></div>
+      <div class="variable-row"><span class="color-dot primary"></span><code>primary/500</code><span>--loomi-primary-500</span></div>
+      <div class="variable-row"><span class="color-dot surface"></span><code>surface/base</code><span>--loomi-surface</span></div>
+      <div class="variable-row"><span class="color-dot text"></span><code>text/muted</code><span>--loomi-text-muted</span></div>
+      <div class="variable-row"><span class="size-dot">10</span><code>radius/md</code><span>--loomi-radius-md</span></div>
+    </div>
+  </section>
+
+  <section class="truth-panel" aria-labelledby="truth-heading">
+    <div class="truth-icon"><loomi-icon name="information-circle"></loomi-icon></div>
+    <div>
+      <h2 id="truth-heading">Know what the importer does</h2>
+      <p>The included offline plugin creates local <strong>Color</strong> and <strong>Size & Style</strong> variable collections. It does not generate finished Figma components or a published <code>.fig</code> team library; the kit includes blueprints and assembly guidance for that work.</p>
+    </div>
+  </section>
+
+  <section class="setup-section" id="setup" aria-labelledby="setup-heading">
+    <div class="section-heading">
+      <div><p class="section-eyebrow">About five minutes</p><h2 id="setup-heading">Import a theme preset</h2></div>
+      <p>You only install the development plugin once. Rebuilding or replacing the extracted kit updates the local files it reads.</p>
+    </div>
+    <ol class="setup-grid">
+      {workflow.map((step) => (
+        <li><span>{step.number}</span><strong>{step.title}</strong><p>{step.description}</p></li>
+      ))}
+    </ol>
+    <div class="path-callout">
+      <span>Choose this file when Figma asks for a manifest</span>
+      <code>plugin/manifest.json</code>
+    </div>
+  </section>
+
+  <section class="deliverables-section" id="deliverables" aria-labelledby="deliverables-heading">
+    <div class="section-heading">
+      <div><p class="section-eyebrow">Inside the customer kit</p><h2 id="deliverables-heading">Everything needed to keep design and code aligned</h2></div>
+      <p>The exports are generated from the Pro theme package, so the token names and preset modes stay traceable to production.</p>
+    </div>
+    <div class="deliverables-grid">
+      {deliverables.map((item) => (
+        <article><span><loomi-icon name={item.icon}></loomi-icon></span><h3>{item.title}</h3><p>{item.description}</p></article>
+      ))}
+    </div>
+  </section>
+
+  <section class="mapping-section" aria-labelledby="mapping-heading">
+    <div>
+      <p class="section-eyebrow">A shared naming system</p>
+      <h2 id="mapping-heading">The design handoff already speaks LoomiUI</h2>
+      <p>Figma variables map to CSS custom properties, while component variant names map to element attributes such as <code>type</code>, <code>size</code>, and <code>color</code>.</p>
+    </div>
+    <div class="mapping-example">
+      <span>Figma</span><code>Button · type=primary · size=regular</code>
+      <loomi-icon name="arrow-down"></loomi-icon>
+      <span>Code</span><code>&lt;loomi-button type="primary" size="regular"&gt;</code>
+    </div>
+  </section>
+
+  <section class="purchase-panel">
+    <div><p class="section-eyebrow">Included with LoomiUI Pro</p><h2>Start from the same system in design and code</h2><p>Get the generated Figma kit, all theme presets, templates, private packages, and future updates.</p></div>
+    <loomi-button color="primary" tag="a" href={PRO_LICENSING_URL}>View Pro licenses</loomi-button>
+  </section>
+</ProLandingShell>
+
+<style>
+  .section-eyebrow { margin: 0; color: rgb(37 99 235); font-size: .75rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
+  .figma-hero { display: grid; grid-template-columns: 1.08fr .92fr; align-items: center; gap: 4rem; padding: 1rem 0 2rem; }
+  .figma-hero h1 { max-width: 16ch; margin: .7rem 0 0; font-size: clamp(2.6rem, 5vw, 4rem); line-height: 1.02; font-weight: 800; letter-spacing: -.05em; }
+  .hero-copy { max-width: 42rem; margin: 1.4rem 0 0; color: rgb(75 85 99); font-size: 1.08rem; line-height: 1.75; }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.75rem; }
+  .variable-preview { overflow: hidden; border: 1px solid rgb(219 234 254); border-radius: 1.2rem; background: white; box-shadow: 0 24px 60px rgb(37 99 235 / .14); }
+  .preview-header { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: .75rem; border-bottom: 1px solid rgb(226 232 240); padding: 1rem; font-size: .85rem; }
+  .figma-mark { display: grid; width: 1.8rem; height: 1.8rem; place-items: center; border-radius: .5rem; background: rgb(37 99 235); color: white; font-weight: 850; }
+  .mode-pill { border-radius: 999px; background: rgb(239 246 255); padding: .35rem .6rem; color: rgb(29 78 216); font-size: .68rem; font-weight: 750; }
+  .variable-row { display: grid; grid-template-columns: 1.5rem minmax(7.5rem, .8fr) 1.2fr; align-items: center; gap: .65rem; border-bottom: 1px solid rgb(241 245 249); padding: .9rem 1rem; font-size: .72rem; }
+  .variable-row:last-child { border-bottom: 0; }
+  .variable-row > span:last-child { overflow: hidden; color: rgb(100 116 139); text-overflow: ellipsis; white-space: nowrap; }
+  .color-dot, .size-dot { width: 1.35rem; height: 1.35rem; border: 1px solid rgb(226 232 240); border-radius: .4rem; }
+  .color-dot.primary { background: #0d9488; }.color-dot.surface { background: #fff; }.color-dot.text { background: #64748b; }
+  .size-dot { display: grid; place-items: center; color: rgb(71 85 105); font-size: .55rem; }
+  .truth-panel { display: grid; grid-template-columns: auto 1fr; gap: 1rem; margin-top: 3rem; border: 1px solid rgb(191 219 254); border-radius: 1rem; background: rgb(239 246 255); padding: 1.25rem; }
+  .truth-icon { display: grid; width: 2.5rem; height: 2.5rem; place-items: center; border-radius: .75rem; background: white; color: rgb(37 99 235); }.truth-icon loomi-icon { width: 1.2rem; height: 1.2rem; }
+  .truth-panel h2 { margin: .05rem 0 0; font-size: 1rem; }.truth-panel p { margin: .4rem 0 0; color: rgb(75 85 99); font-size: .88rem; line-height: 1.6; }
+  .setup-section, .deliverables-section, .mapping-section { scroll-margin-top: 6rem; margin-top: 5rem; }
+  .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 2rem; }
+  .section-heading h2, .mapping-section h2, .purchase-panel h2 { margin: .3rem 0 0; font-size: 1.75rem; line-height: 1.2; font-weight: 750; letter-spacing: -.025em; }
+  .section-heading > p { max-width: 31rem; margin: 0; color: rgb(75 85 99); line-height: 1.6; }
+  .setup-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .8rem; margin: 1.75rem 0 0; padding: 0; list-style: none; }
+  .setup-grid li { border: 1px solid rgb(229 231 235); border-radius: .9rem; padding: 1.1rem; }.setup-grid li > span { color: rgb(37 99 235); font-size: .72rem; font-weight: 850; letter-spacing: .09em; }.setup-grid strong { display: block; margin-top: .8rem; font-size: .92rem; }.setup-grid p { margin: .4rem 0 0; color: rgb(100 116 139); font-size: .8rem; line-height: 1.55; }
+  .path-callout { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: .8rem; border-radius: .8rem; background: rgb(15 23 42); padding: .9rem 1rem; color: rgb(203 213 225); font-size: .8rem; }.path-callout code { color: rgb(147 197 253); font-weight: 700; }
+  .deliverables-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 1.75rem; }.deliverables-grid article { border: 1px solid rgb(229 231 235); border-radius: 1rem; padding: 1.25rem; }.deliverables-grid article > span { display: grid; width: 2.5rem; height: 2.5rem; place-items: center; border-radius: .75rem; background: rgb(239 246 255); color: rgb(37 99 235); }.deliverables-grid loomi-icon { width: 1.15rem; height: 1.15rem; }.deliverables-grid h3 { margin: 1rem 0 0; font-size: 1rem; }.deliverables-grid p { margin: .45rem 0 0; color: rgb(100 116 139); font-size: .85rem; line-height: 1.6; }
+  .mapping-section { display: grid; grid-template-columns: .9fr 1.1fr; align-items: center; gap: 4rem; border-radius: 1.2rem; background: rgb(249 250 251); padding: 2.5rem; }.mapping-section > div:first-child > p:last-child { margin: .8rem 0 0; color: rgb(75 85 99); line-height: 1.65; }.mapping-example { display: grid; grid-template-columns: 3.5rem 1fr; align-items: center; gap: .7rem; }.mapping-example span { color: rgb(37 99 235); font-size: .7rem; font-weight: 800; text-transform: uppercase; }.mapping-example code { overflow-x: auto; border: 1px solid rgb(226 232 240); border-radius: .65rem; background: white; padding: .75rem; font-size: .72rem; }.mapping-example loomi-icon { grid-column: 2; width: 1rem; height: 1rem; color: rgb(148 163 184); }
+  .purchase-panel { display: flex; align-items: center; justify-content: space-between; gap: 2rem; margin-top: 5rem; border-radius: 1.25rem; background: rgb(239 246 255); padding: 2rem; }.purchase-panel p:last-child { margin: .65rem 0 0; color: rgb(75 85 99); }
+  :global(.dark) .hero-copy, :global(.dark) .section-heading > p, :global(.dark) .truth-panel p, :global(.dark) .mapping-section > div:first-child > p:last-child, :global(.dark) .purchase-panel p:last-child { color: rgb(156 163 175); }
+  :global(.dark) .variable-preview, :global(.dark) .setup-grid li, :global(.dark) .deliverables-grid article { border-color: rgb(55 65 81); background: rgb(17 24 39); }:global(.dark) .preview-header, :global(.dark) .variable-row { border-color: rgb(51 65 85); }:global(.dark) .truth-panel, :global(.dark) .purchase-panel { border-color: rgb(30 58 138); background: rgb(30 58 138 / .25); }:global(.dark) .truth-icon, :global(.dark) .deliverables-grid article > span, :global(.dark) .mode-pill { background: rgb(30 58 138 / .45); color: rgb(147 197 253); }:global(.dark) .mapping-section { background: rgb(17 24 39); }:global(.dark) .mapping-example code { border-color: rgb(55 65 81); background: rgb(15 23 42); }
+  @media (max-width: 900px) { .figma-hero, .mapping-section { grid-template-columns: 1fr; gap: 2.5rem; }.setup-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }.section-heading { align-items: flex-start; flex-direction: column; } }
+  @media (max-width: 640px) { .variable-preview { display: none; }.setup-grid, .deliverables-grid { grid-template-columns: 1fr; }.path-callout, .purchase-panel { align-items: flex-start; flex-direction: column; }.mapping-section { padding: 1.5rem; }.mapping-example { grid-template-columns: 1fr; }.mapping-example loomi-icon { grid-column: 1; } }
+</style>

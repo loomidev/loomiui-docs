@@ -16,7 +16,7 @@ interface Props {
 
 const { area } = Astro.props;
 const areaMeta = getProArea(area)!;
-const categories = PRO_CATEGORIES.filter((cat) => cat.area === area);
+const categories = PRO_CATEGORIES.filter((cat) => cat.area === area && cat.nav !== false);
 const items = proCatalogItems({ area });
 const categoryParam = Astro.url.searchParams.get("category");
 const importMap = buildImportMap();
