@@ -30,13 +30,24 @@ jobs:
           repository: loomidev/loomiui
           path: components
 
-      # LoomiUI Pro is private. LOOMI_PRO_REPO_TOKEN must have read access to
-      # loomidev/loomiui-pro (a GitHub App installation token is preferred).
+      # LoomiUI Pro is private, and the default GITHUB_TOKEN can't read another
+      # repo. Mint a short-lived installation token from the "LoomiUI Docs Deploy"
+      # GitHub App instead of a PAT, so there's nothing to rotate on an expiry.
+      # The App needs Contents: read-only and must be installed on loomiui-pro.
+      - name: Mint Pro repo token
+        id: pro-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.LOOMI_PRO_APP_ID }}
+          private-key: ${{ secrets.LOOMI_PRO_APP_PRIVATE_KEY }}
+          owner: loomidev
+          repositories: loomiui-pro
+
       - name: Checkout Pro
         uses: actions/checkout@v4
         with:
           repository: loomidev/loomiui-pro
-          token: ${{ secrets.LOOMI_PRO_REPO_TOKEN }}
+          token: ${{ steps.pro-token.outputs.token }}
           path: pro
 
       - name: Setup pnpm
@@ -84,12 +95,51 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -p "${{ secrets.DROPLET_PORT || 22 }}" -H "${{ secrets.DROPLET_HOST }}" >> ~/.ssh/known_hosts
 
+      # Releases land in <deploy-path>.releases/<sha>/ and DROPLET_DEPLOY_PATH is
+      # a symlink pointing at the live one — that's what nginx's `root` resolves.
+      # Rsyncing straight into the web root would leave the site half-copied for
+      # the length of the transfer and destroy the previous build, so there'd be
+      # nothing to roll back to if a build came out broken.
       - name: Deploy to droplet
         run: |
-          rsync -avz --delete \
-            -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.DROPLET_PORT || 22 }}" \
+          set -euo pipefail
+
+          DEPLOY_PATH="${{ secrets.DROPLET_DEPLOY_PATH }}"
+          RELEASES="${DEPLOY_PATH}.releases"
+          RELEASE="${RELEASES}/${GITHUB_SHA}"
+          REMOTE="${{ secrets.DROPLET_USER }}@${{ secrets.DROPLET_HOST }}"
+          SSH_CMD="ssh -i ~/.ssh/deploy_key -p ${{ secrets.DROPLET_PORT || 22 }}"
+
+          $SSH_CMD "$REMOTE" "mkdir -p '$RELEASES' ~/bin"
+
+          # Ship the rollback tool with every deploy so it can never drift from
+          # the release layout above. Ubuntu's default ~/.profile puts ~/bin on
+          # PATH, so `loomiui-rollback` just works — and needs no sudo.
+          rsync -az --chmod=F755 -e "$SSH_CMD" \
+            docs/deploy/rollback.sh "$REMOTE:bin/loomiui-rollback"
+
+          # --link-dest hardlinks everything unchanged since the live release, so
+          # a deploy ships only what actually differs and a kept release costs
+          # roughly nothing on disk. It warns and copies in full on first run,
+          # when the symlink doesn't exist yet.
+          rsync -avz --delete --link-dest="$DEPLOY_PATH" \
+            -e "$SSH_CMD" \
             docs/dist/ \
-            "${{ secrets.DROPLET_USER }}@${{ secrets.DROPLET_HOST }}:${{ secrets.DROPLET_DEPLOY_PATH }}"
+            "$REMOTE:$RELEASE/"
+
+          # ln into a scratch name then mv -T over the symlink: the swap is a
+          # single rename(2), so no request ever sees a partial site. Keep the
+          # five most recent releases so a rollback is one symlink away — minus
+          # whichever one is live, which after a rollback is NOT among the five
+          # newest and would otherwise be deleted out from under nginx.
+          $SSH_CMD "$REMOTE" "
+            set -eu
+            ln -sfn '$RELEASE' '${DEPLOY_PATH}.new'
+            mv -T '${DEPLOY_PATH}.new' '$DEPLOY_PATH'
+            live=\$(readlink '$DEPLOY_PATH')
+            ls -1dt '$RELEASES'/*/ | sed 's:/*\$::' | tail -n +6 \
+              | grep -vFx \"\$live\" | xargs -r rm -rf
+          "
 
       - name: Clean up SSH key
         if: always()

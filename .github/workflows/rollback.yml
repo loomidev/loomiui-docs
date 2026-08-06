@@ -1,0 +1,60 @@
+name: Rollback docs
+
+# Manual counterpart to deploy.yml: flips the droplet's live symlink to an
+# older release without rebuilding anything. Run it from the Actions tab when
+# you can't (or don't want to) SSH in — it drives the same ~/bin/loomiui-rollback
+# script the deploy installs, so both paths share one implementation.
+
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: "Release to serve (commit SHA or unique prefix). Leave empty for the previous release."
+        required: false
+        type: string
+
+concurrency:
+  # Never let a rollback and a deploy race for the symlink.
+  group: deploy-docs
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DROPLET_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p "${{ secrets.DROPLET_PORT || 22 }}" -H "${{ secrets.DROPLET_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: List releases
+        run: |
+          ssh -i ~/.ssh/deploy_key -p "${{ secrets.DROPLET_PORT || 22 }}" \
+            "${{ secrets.DROPLET_USER }}@${{ secrets.DROPLET_HOST }}" \
+            "~/bin/loomiui-rollback --list"
+
+      - name: Flip symlink
+        # Via env, not ${{ }} inline: the input would otherwise be pasted into
+        # this shell (and then into the remote one) before it's ever quoted.
+        # Release names are only ever commit SHAs, so anything else is rejected
+        # rather than escaped.
+        env:
+          RELEASE: ${{ inputs.release }}
+        run: |
+          set -euo pipefail
+          case "$RELEASE" in
+            "" | *[!0-9a-fA-F]*) [ -z "$RELEASE" ] || { echo "release must be a hex commit SHA or prefix" >&2; exit 1; } ;;
+          esac
+          ssh -i ~/.ssh/deploy_key -p "${{ secrets.DROPLET_PORT || 22 }}" \
+            "${{ secrets.DROPLET_USER }}@${{ secrets.DROPLET_HOST }}" \
+            "~/bin/loomiui-rollback $RELEASE"
+
+      - name: Clean up SSH key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
