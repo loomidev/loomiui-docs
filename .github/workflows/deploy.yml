@@ -22,32 +22,36 @@ jobs:
         with:
           path: docs
 
+      # Both loomiui and loomiui-pro are private, and the default GITHUB_TOKEN is
+      # scoped to loomiui-docs alone — it 404s on any other repo, private or not.
+      # Mint one short-lived installation token from the "LoomiUI Docs Deploy"
+      # GitHub App instead of a PAT, so there's nothing to rotate on an expiry.
+      # The App needs Contents: read-only and must be installed on BOTH repos.
+      - name: Mint source repo token
+        id: repo-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.LOOMI_PRO_APP_ID }}
+          private-key: ${{ secrets.LOOMI_PRO_APP_PRIVATE_KEY }}
+          owner: loomidev
+          repositories: |
+            loomiui
+            loomiui-pro
+
       # Component docs and previews are generated from this repo's package READMEs
       # and compiled dist/ output — see docs/scripts/gen-component-docs.mjs.
       - name: Checkout components
         uses: actions/checkout@v4
         with:
           repository: loomidev/loomiui
+          token: ${{ steps.repo-token.outputs.token }}
           path: components
-
-      # LoomiUI Pro is private, and the default GITHUB_TOKEN can't read another
-      # repo. Mint a short-lived installation token from the "LoomiUI Docs Deploy"
-      # GitHub App instead of a PAT, so there's nothing to rotate on an expiry.
-      # The App needs Contents: read-only and must be installed on loomiui-pro.
-      - name: Mint Pro repo token
-        id: pro-token
-        uses: actions/create-github-app-token@v2
-        with:
-          app-id: ${{ secrets.LOOMI_PRO_APP_ID }}
-          private-key: ${{ secrets.LOOMI_PRO_APP_PRIVATE_KEY }}
-          owner: loomidev
-          repositories: loomiui-pro
 
       - name: Checkout Pro
         uses: actions/checkout@v4
         with:
           repository: loomidev/loomiui-pro
-          token: ${{ steps.pro-token.outputs.token }}
+          token: ${{ steps.repo-token.outputs.token }}
           path: pro
 
       - name: Setup pnpm
