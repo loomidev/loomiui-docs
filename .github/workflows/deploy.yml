@@ -61,7 +61,9 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # Astro 6 requires >=22.12; anything older fails at `astro check`,
+          # after the components and Pro previews have already built.
+          node-version: 22
           cache: pnpm
           cache-dependency-path: |
             docs/pnpm-lock.yaml

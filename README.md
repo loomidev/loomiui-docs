@@ -104,7 +104,7 @@ GitHub Pages, S3+CloudFront, etc.). There's no server runtime required.
 
 - **Build command:** `pnpm build`
 - **Output directory:** `dist`
-- **Node version:** 20+
+- **Node version:** 22.12+ (Astro 6's minimum)
 
 Point your host's custom domain at `loomiui.com` (already set as `site` in
 `astro.config.mjs`, which is what the sitemap and canonical URLs are generated from).
