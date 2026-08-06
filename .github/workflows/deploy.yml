@@ -109,7 +109,11 @@ jobs:
         run: |
           set -euo pipefail
 
+          # Strip any trailing slash: with one, ".releases" and ".new" would be
+          # built *inside* the web root ("…/loomiui.com/.releases") and the flip
+          # would try to mv a symlink over a directory.
           DEPLOY_PATH="${{ secrets.DROPLET_DEPLOY_PATH }}"
+          DEPLOY_PATH="${DEPLOY_PATH%/}"
           RELEASES="${DEPLOY_PATH}.releases"
           RELEASE="${RELEASES}/${GITHUB_SHA}"
           REMOTE="${{ secrets.DROPLET_USER }}@${{ secrets.DROPLET_HOST }}"
@@ -139,6 +143,17 @@ jobs:
           # newest and would otherwise be deleted out from under nginx.
           $SSH_CMD "$REMOTE" "
             set -eu
+            # A real directory here means the droplet still predates the release
+            # layout; mv would fail with a bare 'cannot overwrite directory'.
+            if [ -d '$DEPLOY_PATH' ] && [ ! -L '$DEPLOY_PATH' ]; then
+              # The path is a masked secret in the log, so report its type too —
+              # that part isn't masked and is what actually needs diagnosing.
+              echo \"deploy path type: \$(stat -c '%F' '$DEPLOY_PATH' 2>/dev/null || echo unknown)\" >&2
+              echo \"it is a real directory, not a symlink to a release.\" >&2
+              echo \"The new release is already uploaded at '$RELEASE'.\" >&2
+              echo \"Replace the directory with a symlink to it to go live.\" >&2
+              exit 1
+            fi
             ln -sfn '$RELEASE' '${DEPLOY_PATH}.new'
             mv -T '${DEPLOY_PATH}.new' '$DEPLOY_PATH'
             live=\$(readlink '$DEPLOY_PATH')
