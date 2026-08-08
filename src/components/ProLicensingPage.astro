@@ -7,6 +7,7 @@ import {
   PRO_INCLUDED,
   PRO_LICENSE_PLANS,
   PRO_LICENSING_NOTES,
+  PRO_PORTAL_URL,
 } from "../lib/pro-licensing.mjs";
 import "../styles/home.css";
 
@@ -15,9 +16,9 @@ const title = "LoomiUI Pro licensing";
 const description =
   "Choose Solo, Team, or Enterprise licensing for LoomiUI Pro — templates, themes, private packages, and updates.";
 const billingOptions = Object.entries(PRO_BILLING_OPTIONS);
-const slackWebhookUrl =
-  import.meta.env.PUBLIC_LOOMI_PRO_SLACK_WEBHOOK ??
-  "https://hooks.slack.com/services/REPLACE/ME/WITH_REAL_WEBHOOK";
+// Leads go to the portal, which holds the Slack webhook server-side. A webhook
+// URL referenced here would ship in the static output for anyone to read and post to.
+const salesLeadEndpoint = `${PRO_PORTAL_URL}/api/sales-lead`;
 ---
 
 <html lang="en">
@@ -98,11 +99,50 @@ const slackWebhookUrl =
                 </li>
               ))}
             </ul>
-            <div class="license-cta-wrap">
+            <div class="license-cta-wrap" style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;width:100%;margin-top:1.25rem">
               {plan.contact || !checkout ? (
-                <loomi-button type="secondary" size="small" class="license-cta" data-contact-sales>
+                <loomi-button
+                  type="secondary"
+                  size="small"
+                  class="license-cta"
+                  data-contact-sales
+                  style="grid-column:2;justify-self:center"
+                >
                   {plan.cta}
                 </loomi-button>
+              ) : plan.key === "team" ? (
+                <div
+                  class="license-cta-group"
+                  style="grid-column:2;justify-self:center;display:flex;align-items:center;gap:0.75rem"
+                >
+                  <loomi-number
+                    class="license-seats"
+                    data-team-seats
+                    label="Seats"
+                    size="small"
+                    min="2"
+                    max="50"
+                    step="1"
+                    value="5"
+                    no-clearing
+                    style="width:8.75rem;flex:0 0 8.75rem"
+                  ></loomi-number>
+                  <loomi-button
+                    type={plan.featured ? undefined : "secondary"}
+                    color={plan.featured ? "primary" : undefined}
+                    size="small"
+                    tag="a"
+                    href={checkout.monthly}
+                    class="license-cta"
+                    data-checkout
+                    data-plan={plan.key}
+                    data-monthly-href={checkout.monthly}
+                    data-annual-href={checkout.annual}
+                    style="flex:0 0 auto;min-width:10rem"
+                  >
+                    {plan.cta}
+                  </loomi-button>
+                </div>
               ) : (
                 <loomi-button
                   type={plan.featured ? undefined : "secondary"}
@@ -112,8 +152,10 @@ const slackWebhookUrl =
                   href={checkout.monthly}
                   class="license-cta"
                   data-checkout
+                  data-plan={plan.key}
                   data-monthly-href={checkout.monthly}
                   data-annual-href={checkout.annual}
+                  style="grid-column:2;justify-self:center"
                 >
                   {plan.cta}
                 </loomi-button>
@@ -187,7 +229,7 @@ const slackWebhookUrl =
             Send your details and the request is forwarded to the LoomiUI Pro sales channel.
           </p>
         </div>
-        <form id="sales-contact-form" class="sales-form" data-slack-webhook={slackWebhookUrl}>
+        <form id="sales-contact-form" class="sales-form" data-lead-endpoint={salesLeadEndpoint}>
           <label>
             <span>Name</span>
             <input name="name" autocomplete="name" required />
@@ -245,13 +287,40 @@ const slackWebhookUrl =
       import "@loomidev/button";
       import "@loomidev/icon";
       import "@loomidev/alert";
+      import "@loomidev/number";
     </script>
     <script is:inline>
       const billingButtons = Array.from(document.querySelectorAll("[data-billing-option]"));
       const licenseCards = Array.from(document.querySelectorAll(".license-card"));
       const contactForm = document.querySelector("#sales-contact-form");
-      const SLACK_WEBHOOK_URL =
-        contactForm?.dataset.slackWebhook ?? "https://hooks.slack.com/services/REPLACE/ME/WITH_REAL_WEBHOOK";
+      const LEAD_ENDPOINT = contactForm?.dataset.leadEndpoint ?? "";
+
+      function teamSeats() {
+        const input = document.querySelector("[data-team-seats]");
+        const raw = input?.value ?? input?.getAttribute("value") ?? "5";
+        const seats = Number.parseInt(String(raw), 10);
+        if (!Number.isFinite(seats)) return 5;
+        return Math.min(50, Math.max(2, seats));
+      }
+
+      function checkoutHref(base, plan) {
+        if (!base) return base;
+        if (plan !== "team") return base;
+        const url = new URL(base, window.location.origin);
+        url.searchParams.set("seats", String(teamSeats()));
+        return url.toString();
+      }
+
+      function syncTeamCheckoutHrefs(period) {
+        licenseCards.forEach((card) => {
+          const checkout = card.querySelector("[data-checkout]");
+          if (!checkout) return;
+          const plan = checkout.dataset.plan ?? "";
+          const base = checkout.dataset[`${period}Href`] ?? checkout.getAttribute("href") ?? "";
+          const href = checkoutHref(base, plan);
+          if (href) checkout.setAttribute("href", href);
+        });
+      }
 
       function setBillingPeriod(period) {
         billingButtons.forEach((button) => {
@@ -273,7 +342,9 @@ const slackWebhookUrl =
           if (suffixNode) suffixNode.textContent = suffix;
           if (detailNode) detailNode.textContent = detail;
           if (checkout) {
-            const href = checkout.dataset[`${period}Href`];
+            const plan = checkout.dataset.plan ?? "";
+            const base = checkout.dataset[`${period}Href`];
+            const href = checkoutHref(base, plan);
             if (href) checkout.setAttribute("href", href);
           }
         });
@@ -282,6 +353,17 @@ const slackWebhookUrl =
       billingButtons.forEach((button) => {
         button.addEventListener("click", () => setBillingPeriod(button.dataset.billingOption));
       });
+
+      const seatsInput = document.querySelector("[data-team-seats]");
+      if (seatsInput) {
+        const refresh = () => {
+          const active = document.querySelector("[data-billing-option].is-active");
+          syncTeamCheckoutHrefs(active?.dataset.billingOption ?? "monthly");
+        };
+        seatsInput.addEventListener("input", refresh);
+        seatsInput.addEventListener("change", refresh);
+        refresh();
+      }
 
       document.querySelectorAll("[data-checkout]").forEach((button) => {
         button.addEventListener("click", () => {
@@ -305,44 +387,30 @@ const slackWebhookUrl =
         const submitButton = contactForm.querySelector("button[type='submit']");
         const formData = new FormData(contactForm);
         const lead = Object.fromEntries(formData.entries());
-        const payload = {
-          text: `New LoomiUI Pro sales lead: ${lead.company}`,
-          blocks: [
-            {
-              type: "header",
-              text: { type: "plain_text", text: "New LoomiUI Pro sales lead" },
-            },
-            {
-              type: "section",
-              fields: [
-                { type: "mrkdwn", text: `*Name*\n${lead.name}` },
-                { type: "mrkdwn", text: `*Email*\n${lead.email}` },
-                { type: "mrkdwn", text: `*Company*\n${lead.company}` },
-                { type: "mrkdwn", text: "*Source*\n/pro/licensing/" },
-              ],
-            },
-            {
-              type: "section",
-              text: { type: "mrkdwn", text: `*Message*\n${lead.message}` },
-            },
-          ],
-        };
 
         if (submitButton) submitButton.disabled = true;
         if (contactStatus) contactStatus.textContent = "Sending...";
 
         try {
-          await fetch(SLACK_WEBHOOK_URL, {
+          // The portal holds the Slack webhook and forwards this. A real response
+          // is required, so this cannot be a no-cors fire-and-forget.
+          const response = await fetch(LEAD_ENDPOINT, {
             method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "text/plain;charset=UTF-8" },
-            body: JSON.stringify(payload),
-            keepalive: true,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: lead.name,
+              email: lead.email,
+              company: lead.company,
+              message: lead.message,
+            }),
           });
+          if (!response.ok) throw new Error(`Lead endpoint returned ${response.status}`);
           contactForm.reset();
           if (contactStatus) contactStatus.textContent = "Sent. Sales will follow up shortly.";
         } catch (error) {
-          if (contactStatus) contactStatus.textContent = "Could not send. Check the Slack webhook URL.";
+          if (contactStatus) {
+            contactStatus.textContent = "Could not send. Please email sales@loomiui.com instead.";
+          }
         } finally {
           if (submitButton) submitButton.disabled = false;
         }
@@ -556,12 +624,32 @@ const slackWebhookUrl =
     color: rgb(203 213 225);
   }
   .license-cta-wrap {
-    display: flex;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    width: 100%;
     margin-top: 1.25rem;
+  }
+  .license-cta-wrap > .license-cta,
+  .license-cta-wrap > .license-cta-group {
+    grid-column: 2;
+    justify-self: center;
+  }
+  .license-cta-group {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .license-cta-group > loomi-number.license-seats {
+    width: 8.75rem;
+    max-width: 8.75rem;
+    flex: 0 0 8.75rem;
   }
   .license-cta {
     min-width: 10rem;
+    flex: 0 0 auto;
   }
   .license-panels {
     margin-top: 3rem;

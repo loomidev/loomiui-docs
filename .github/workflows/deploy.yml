@@ -89,9 +89,15 @@ jobs:
       # The prebuild hook compiles all Pro preview dependencies and the four
       # real Lit applications, copies them into public/pro/live/, prepares the
       # remaining generated content, then runs `astro check && astro build`.
+      # PUBLIC_* values are inlined into the static output at build time, so they
+      # have to be present here rather than on the droplet. Without the portal
+      # origin the licensing CTAs would fall back to localhost, so the build
+      # fails outright instead — see docs/src/lib/pro-licensing.mjs.
       - name: Build docs site
         run: pnpm build
         working-directory: docs
+        env:
+          PUBLIC_LOOMI_PORTAL_URL: ${{ vars.PUBLIC_LOOMI_PORTAL_URL }}
 
       - name: Configure SSH
         run: |

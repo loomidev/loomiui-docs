@@ -2,6 +2,29 @@
 
 export const PRO_LICENSING_URL = "/pro/licensing/";
 
+/**
+ * Portal origin that starts Lemon checkout.
+ * Set `PUBLIC_LOOMI_PORTAL_URL` in docs `.env` (e.g. https://pro.loomiui.test).
+ *
+ * This is inlined at build time, so an unset variable in CI would ship a site
+ * whose every Pro CTA points at localhost. Fail the build instead — a broken
+ * paid path is not something to discover from the live site.
+ */
+const portalOrigin = import.meta.env.PUBLIC_LOOMI_PORTAL_URL;
+
+if (!portalOrigin && import.meta.env.PROD) {
+  throw new Error(
+    "PUBLIC_LOOMI_PORTAL_URL is required for production builds — " +
+      "every Pro checkout CTA is built from it. Set it in the deploy environment.",
+  );
+}
+
+export const PRO_PORTAL_URL = (portalOrigin ?? "http://localhost:4830").replace(/\/$/, "");
+
+function portalCheckout(plan, billing) {
+  return `${PRO_PORTAL_URL}/pro/${plan}?billing=${billing}`;
+}
+
 export const PRO_BILLING_OPTIONS = {
   monthly: {
     label: "Monthly",
@@ -85,8 +108,8 @@ export const PRO_LICENSE_PLANS = [
       },
     },
     checkout: {
-      monthly: "https://checkout.loomidev.com/pro/solo?billing=monthly",
-      annual: "https://checkout.loomidev.com/pro/solo?billing=annual",
+      monthly: portalCheckout("solo", "monthly"),
+      annual: portalCheckout("solo", "annual"),
     },
     features: [
       "Licensed to one human developer",
@@ -114,8 +137,8 @@ export const PRO_LICENSE_PLANS = [
       },
     },
     checkout: {
-      monthly: "https://checkout.loomidev.com/pro/team?billing=monthly",
-      annual: "https://checkout.loomidev.com/pro/team?billing=annual",
+      monthly: portalCheckout("team", "monthly"),
+      annual: portalCheckout("team", "annual"),
     },
     features: [
       "Licensed by active seats (for example, 5 seats = 5 active users)",
@@ -157,6 +180,6 @@ export const PRO_LICENSE_PLANS = [
 
 export const PRO_LICENSING_NOTES = [
   "Licensing is enforced at the account, entitlement, package access, and support layer — not with runtime checks inside UI components.",
-  "Checkout is handled by Stripe (or Lemon Squeezy, Paddle, or Polar). After payment, you land in a customer portal with install instructions and downloads.",
+  "Checkout is handled by Lemon Squeezy. After payment, you land in the customer portal with install instructions and downloads.",
   "Premium source stays private. Access depends on authenticated portal access, per-user package tokens, and license terms — not obfuscation inside shipped bundles.",
 ];
