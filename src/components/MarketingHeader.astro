@@ -41,7 +41,10 @@ const GITHUB_URL = "https://github.com/loomidev/loomiui-docs";
         <loomi-dropmenu-item icon="building-library"><a href="/architecture/">Architecture</a></loomi-dropmenu-item>
         <loomi-dropmenu-item icon="code-bracket"><a href="/contributing/">Contributing</a></loomi-dropmenu-item>
         <loomi-dropmenu-item icon="language"><a href="/rtl-support/">RTL Support</a></loomi-dropmenu-item>
-        <loomi-dropmenu-item divider icon="star"><a href={GITHUB_URL}>Star on GitHub</a></loomi-dropmenu-item>
+        <!-- `divider` makes an item *be* a separator: the component renders a 1px rule
+             and drops the item's content, so the link inside was never shown. -->
+        <loomi-dropmenu-item divider></loomi-dropmenu-item>
+        <loomi-dropmenu-item icon="star"><a href={GITHUB_URL}>Star on GitHub</a></loomi-dropmenu-item>
       </loomi-dropmenu>
       <loomi-dropmenu position="auto" hide-after-click>
         <button slot="trigger" type="button" class="flex cursor-pointer items-center gap-1 border-0 bg-transparent p-0 font-sans text-sm font-medium text-gray-600 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400">
