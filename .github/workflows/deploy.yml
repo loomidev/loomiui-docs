@@ -94,10 +94,15 @@ jobs:
       # origin the licensing CTAs would fall back to localhost, so the build
       # fails outright instead — see docs/src/lib/pro-licensing.mjs.
       - name: Build docs site
-        run: pnpm build
+        run: |
+          if [ -z "$PUBLIC_LOOMI_PORTAL_URL" ]; then
+            echo "PUBLIC_LOOMI_PORTAL_URL is not configured as a production environment variable or secret." >&2
+            exit 1
+          fi
+          pnpm build
         working-directory: docs
         env:
-          PUBLIC_LOOMI_PORTAL_URL: ${{ vars.PUBLIC_LOOMI_PORTAL_URL }}
+          PUBLIC_LOOMI_PORTAL_URL: ${{ vars.PUBLIC_LOOMI_PORTAL_URL || secrets.PUBLIC_LOOMI_PORTAL_URL }}
 
       - name: Configure SSH
         run: |
