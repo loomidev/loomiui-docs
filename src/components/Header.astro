@@ -32,11 +32,7 @@ const GITHUB_URL = "https://github.com/loomidev/loomiui-docs";
 // top bar drops the links that would otherwise duplicate it: "Docs" and
 // "Components" are both reachable from the sidebar, and "Get Started" just points
 // at /installation/, already the first "Start Here" entry.
-const { hasSidebar, id } = Astro.locals.starlightRoute;
-// The site-wide Pagefind search only stays in the top bar on individual component
-// detail pages (/components/<name>/) — everywhere else (marketing pages via
-// MarketingHeader.astro, and the "Start Here" docs here) drops it.
-const isComponentPage = id.startsWith("components/");
+const { hasSidebar } = Astro.locals.starlightRoute;
 ---
 
 <div class="loomi-header">
@@ -69,7 +65,10 @@ const isComponentPage = id.startsWith("components/");
       <loomi-dropmenu-item icon="building-library"><a href="/architecture/">Architecture</a></loomi-dropmenu-item>
       <loomi-dropmenu-item icon="code-bracket"><a href="/contributing/">Contributing</a></loomi-dropmenu-item>
       <loomi-dropmenu-item icon="language"><a href="/rtl-support/">RTL Support</a></loomi-dropmenu-item>
-      <loomi-dropmenu-item divider icon="star"><a href={GITHUB_URL}>Star on GitHub</a></loomi-dropmenu-item>
+      <!-- `divider` makes an item *be* a separator: the component renders a 1px rule
+             and drops the item's content, so the link inside was never shown. -->
+        <loomi-dropmenu-item divider></loomi-dropmenu-item>
+        <loomi-dropmenu-item icon="star"><a href={GITHUB_URL}>Star on GitHub</a></loomi-dropmenu-item>
     </loomi-dropmenu>
     <loomi-dropmenu position="auto" hide-after-click>
       <button slot="trigger" type="button" class="loomi-header-link loomi-header-resources">
@@ -84,13 +83,9 @@ const isComponentPage = id.startsWith("components/");
   </nav>
 
   <div class="loomi-header-controls sl-flex print:hidden">
-    {
-      isComponentPage && (
-        <div class="loomi-header-search">
-          <Search />
-        </div>
-      )
-    }
+    <div class="loomi-header-search">
+      <Search />
+    </div>
     <ThemeSelect />
     <a href={GITHUB_URL} aria-label="GitHub" class="loomi-header-github hidden sm:inline-flex">
       <svg viewBox="0 0 24 24" class="h-5 w-5" fill="currentColor" aria-hidden="true">

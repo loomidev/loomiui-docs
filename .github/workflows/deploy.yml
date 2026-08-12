@@ -18,7 +18,7 @@ jobs:
     environment: production
     steps:
       - name: Checkout docs
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           path: docs
 
@@ -26,7 +26,7 @@ jobs:
       # and compiled dist/ output — see docs/scripts/gen-component-docs.mjs.
       # loomiui is public, so the default GITHUB_TOKEN can read it.
       - name: Checkout components
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: loomidev/loomiui
           path: components
@@ -39,7 +39,7 @@ jobs:
       # substitute for.
       - name: Mint Pro repo token
         id: pro-token
-        uses: actions/create-github-app-token@v2
+        uses: actions/create-github-app-token@v3
         with:
           app-id: ${{ secrets.LOOMI_PRO_APP_ID }}
           private-key: ${{ secrets.LOOMI_PRO_APP_PRIVATE_KEY }}
@@ -47,19 +47,19 @@ jobs:
           repositories: loomiui-pro
 
       - name: Checkout Pro
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: loomidev/loomiui-pro
           token: ${{ steps.pro-token.outputs.token }}
           path: pro
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: 9.15.9
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           # Astro 6 requires >=22.12; anything older fails at `astro check`,
           # after the components and Pro previews have already built.
@@ -89,9 +89,15 @@ jobs:
       # The prebuild hook compiles all Pro preview dependencies and the four
       # real Lit applications, copies them into public/pro/live/, prepares the
       # remaining generated content, then runs `astro check && astro build`.
+      # PUBLIC_* values are inlined into the static output at build time, so they
+      # have to be present here rather than on the droplet. Without the portal
+      # origin the licensing CTAs would fall back to localhost, so the build
+      # fails outright instead — see docs/src/lib/pro-licensing.mjs.
       - name: Build docs site
         run: pnpm build
         working-directory: docs
+        env:
+          PUBLIC_LOOMI_PORTAL_URL: ${{ vars.PUBLIC_LOOMI_PORTAL_URL }}
 
       - name: Configure SSH
         run: |

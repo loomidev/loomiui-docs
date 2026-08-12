@@ -9,6 +9,8 @@ yarn-error.log*
 .pnp.js
 
 .vscode/*
+.env
+!.env.example
 /dist
 /src/content/docs/components
 /src/content/docs/pro-components

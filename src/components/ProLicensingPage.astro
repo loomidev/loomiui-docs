@@ -1,4 +1,5 @@
 ---
+import GoogleAnalytics from "./GoogleAnalytics.astro";
 import MarketingHeader from "./MarketingHeader.astro";
 import { buildImportMap } from "../lib/import-map.mjs";
 import {
@@ -7,17 +8,31 @@ import {
   PRO_INCLUDED,
   PRO_LICENSE_PLANS,
   PRO_LICENSING_NOTES,
+  PRO_PORTAL_URL,
 } from "../lib/pro-licensing.mjs";
 import "../styles/home.css";
 
 const importMap = buildImportMap();
 const title = "LoomiUI Pro licensing";
 const description =
-  "Choose Solo, Team, or Enterprise licensing for LoomiUI Pro — templates, themes, private packages, and updates.";
+  "Choose Solo, Team, or Enterprise licensing for LoomiUI Pro, including templates, themes, private packages, and updates.";
 const billingOptions = Object.entries(PRO_BILLING_OPTIONS);
-const slackWebhookUrl =
-  import.meta.env.PUBLIC_LOOMI_PRO_SLACK_WEBHOOK ??
-  "https://hooks.slack.com/services/REPLACE/ME/WITH_REAL_WEBHOOK";
+const enterpriseSeatOptions = [
+  { label: "2–10", value: "2–10" },
+  { label: "11–25", value: "11–25" },
+  { label: "26–50", value: "26–50" },
+  { label: "51+", value: "51+" },
+  { label: "Not sure yet", value: "Not sure yet" },
+];
+const enterpriseTimelineOptions = [
+  { label: "This month", value: "This month" },
+  { label: "This quarter", value: "This quarter" },
+  { label: "Later", value: "Later" },
+  { label: "Just exploring", value: "Just exploring" },
+];
+// Leads go to the portal, which holds the Slack webhook server-side. A webhook
+// URL referenced here would ship in the static output for anyone to read and post to.
+const salesLeadEndpoint = `${PRO_PORTAL_URL}/api/sales-lead`;
 ---
 
 <html lang="en">
@@ -28,6 +43,7 @@ const slackWebhookUrl =
     <meta name="description" content={description} />
     <link rel="icon" href="/favicon.png" />
     <script type="importmap" is:inline set:html={JSON.stringify(importMap)} />
+    <GoogleAnalytics />
   </head>
   <body class="bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
     <MarketingHeader />
@@ -100,9 +116,44 @@ const slackWebhookUrl =
             </ul>
             <div class="license-cta-wrap">
               {plan.contact || !checkout ? (
-                <loomi-button type="secondary" size="small" class="license-cta" data-contact-sales>
+                <loomi-button
+                  type="secondary"
+                  size="small"
+                  class="license-cta"
+                  data-contact-sales
+                >
                   {plan.cta}
                 </loomi-button>
+              ) : plan.key === "team" ? (
+                <div
+                  class="license-cta-group"
+                >
+                  <loomi-number
+                    class="license-seats"
+                    data-team-seats
+                    label="Seats"
+                    size="small"
+                    min="2"
+                    max="50"
+                    step="1"
+                    value="5"
+                    no-clearing
+                  ></loomi-number>
+                  <loomi-button
+                    type={plan.featured ? undefined : "secondary"}
+                    color={plan.featured ? "primary" : undefined}
+                    size="small"
+                    tag="a"
+                    href={checkout.monthly}
+                    class="license-cta"
+                    data-checkout
+                    data-plan={plan.key}
+                    data-monthly-href={checkout.monthly}
+                    data-annual-href={checkout.annual}
+                  >
+                    {plan.cta}
+                  </loomi-button>
+                </div>
               ) : (
                 <loomi-button
                   type={plan.featured ? undefined : "secondary"}
@@ -112,6 +163,7 @@ const slackWebhookUrl =
                   href={checkout.monthly}
                   class="license-cta"
                   data-checkout
+                  data-plan={plan.key}
                   data-monthly-href={checkout.monthly}
                   data-annual-href={checkout.annual}
                 >
@@ -180,33 +232,57 @@ const slackWebhookUrl =
       </section>
 
       <section id="contact-sales" class="contact-sales">
-        <div>
+        <div class="contact-sales-copy">
           <div class="feature-kicker">Enterprise sales</div>
-          <h3>Talk through seats, procurement, or private registry access</h3>
+          <h3>Enterprise licensing, built around your team</h3>
           <p>
-            Send your details and the request is forwarded to the LoomiUI Pro sales channel.
+            Tell us what you need, from seats and invoicing to SSO or private registry access.
+            We’ll take it from there.
           </p>
         </div>
-        <form id="sales-contact-form" class="sales-form" data-slack-webhook={slackWebhookUrl}>
-          <label>
-            <span>Name</span>
-            <input name="name" autocomplete="name" required />
-          </label>
-          <label>
-            <span>Work email</span>
-            <input name="email" type="email" autocomplete="email" required />
-          </label>
-          <label>
-            <span>Company</span>
-            <input name="company" autocomplete="organization" required />
-          </label>
-          <label>
-            <span>What do you need?</span>
-            <textarea name="message" rows="4" required>Enterprise licensing for LoomiUI Pro</textarea>
+        <form id="sales-contact-form" class="sales-form" data-lead-endpoint={salesLeadEndpoint}>
+          <div class="sales-form-heading">
+            <span>Start a conversation</span>
+            <strong>Tell us what your team needs</strong>
+          </div>
+          <loomi-input name="name" label="Name" autocomplete="name" required></loomi-input>
+          <loomi-input name="email" type="email" label="Work email" autocomplete="email" required></loomi-input>
+          <loomi-input name="company" label="Company" autocomplete="organization" required></loomi-input>
+          <div class="sales-form-row">
+            <loomi-select
+              name="seats"
+              label="Expected seats"
+              placeholder="Choose a range"
+              data={JSON.stringify(enterpriseSeatOptions)}
+              required
+              no-clearing
+            ></loomi-select>
+            <loomi-select
+              name="timeline"
+              label="Timeline"
+              placeholder="Choose a timeline"
+              data={JSON.stringify(enterpriseTimelineOptions)}
+              required
+              no-clearing
+            ></loomi-select>
+          </div>
+          <loomi-textarea
+            name="message"
+            label="What do you need?"
+            rows="4"
+            value="Enterprise licensing for LoomiUI Pro"
+            required
+          ></loomi-textarea>
+          <label class="sales-honeypot" aria-hidden="true">
+            <span>Website</span>
+            <input name="website" tabindex="-1" autocomplete="off" />
           </label>
           <div class="sales-form-actions">
-            <button type="submit" class="sales-submit">Contact sales</button>
+            <loomi-button can-submit class="sales-submit">Contact sales</loomi-button>
             <p id="sales-contact-status" class="sales-status" role="status" aria-live="polite"></p>
+            <p class="sales-privacy">
+              We only use these details to respond to your enterprise licensing request.
+            </p>
           </div>
         </form>
       </section>
@@ -223,7 +299,7 @@ const slackWebhookUrl =
         </ul>
       </section>
 
-      <div class="mt-10 flex flex-wrap gap-3">
+      <div class="license-footer-actions">
         <loomi-button type="secondary" size="small" tag="a" href="/pro/">Browse Pro catalog</loomi-button>
         <loomi-button type="secondary" size="small" tag="a" href="/components/">Browse free components</loomi-button>
       </div>
@@ -245,13 +321,43 @@ const slackWebhookUrl =
       import "@loomidev/button";
       import "@loomidev/icon";
       import "@loomidev/alert";
+      import "@loomidev/number";
+      import "@loomidev/select";
+      import "@loomidev/input";
+      import "@loomidev/textarea";
     </script>
     <script is:inline>
       const billingButtons = Array.from(document.querySelectorAll("[data-billing-option]"));
       const licenseCards = Array.from(document.querySelectorAll(".license-card"));
       const contactForm = document.querySelector("#sales-contact-form");
-      const SLACK_WEBHOOK_URL =
-        contactForm?.dataset.slackWebhook ?? "https://hooks.slack.com/services/REPLACE/ME/WITH_REAL_WEBHOOK";
+      const LEAD_ENDPOINT = contactForm?.dataset.leadEndpoint ?? "";
+
+      function teamSeats() {
+        const input = document.querySelector("[data-team-seats]");
+        const raw = input?.value ?? input?.getAttribute("value") ?? "5";
+        const seats = Number.parseInt(String(raw), 10);
+        if (!Number.isFinite(seats)) return 5;
+        return Math.min(50, Math.max(2, seats));
+      }
+
+      function checkoutHref(base, plan) {
+        if (!base) return base;
+        if (plan !== "team") return base;
+        const url = new URL(base, window.location.origin);
+        url.searchParams.set("seats", String(teamSeats()));
+        return url.toString();
+      }
+
+      function syncTeamCheckoutHrefs(period) {
+        licenseCards.forEach((card) => {
+          const checkout = card.querySelector("[data-checkout]");
+          if (!checkout) return;
+          const plan = checkout.dataset.plan ?? "";
+          const base = checkout.dataset[`${period}Href`] ?? checkout.getAttribute("href") ?? "";
+          const href = checkoutHref(base, plan);
+          if (href) checkout.setAttribute("href", href);
+        });
+      }
 
       function setBillingPeriod(period) {
         billingButtons.forEach((button) => {
@@ -273,7 +379,9 @@ const slackWebhookUrl =
           if (suffixNode) suffixNode.textContent = suffix;
           if (detailNode) detailNode.textContent = detail;
           if (checkout) {
-            const href = checkout.dataset[`${period}Href`];
+            const plan = checkout.dataset.plan ?? "";
+            const base = checkout.dataset[`${period}Href`];
+            const href = checkoutHref(base, plan);
             if (href) checkout.setAttribute("href", href);
           }
         });
@@ -283,6 +391,17 @@ const slackWebhookUrl =
         button.addEventListener("click", () => setBillingPeriod(button.dataset.billingOption));
       });
 
+      const seatsInput = document.querySelector("[data-team-seats]");
+      if (seatsInput) {
+        const refresh = () => {
+          const active = document.querySelector("[data-billing-option].is-active");
+          syncTeamCheckoutHrefs(active?.dataset.billingOption ?? "monthly");
+        };
+        seatsInput.addEventListener("input", refresh);
+        seatsInput.addEventListener("change", refresh);
+        refresh();
+      }
+
       document.querySelectorAll("[data-checkout]").forEach((button) => {
         button.addEventListener("click", () => {
           const href = button.getAttribute("href");
@@ -291,7 +410,7 @@ const slackWebhookUrl =
       });
 
       const contactStatus = document.querySelector("#sales-contact-status");
-      const firstContactField = contactForm?.querySelector("input, textarea");
+      const firstContactField = contactForm?.querySelector("loomi-input, loomi-textarea");
 
       document.querySelectorAll("[data-contact-sales]").forEach((button) => {
         button.addEventListener("click", () => {
@@ -302,47 +421,41 @@ const slackWebhookUrl =
 
       contactForm?.addEventListener("submit", async (event) => {
         event.preventDefault();
-        const submitButton = contactForm.querySelector("button[type='submit']");
+        const submitButton = contactForm.querySelector("loomi-button[can-submit]");
         const formData = new FormData(contactForm);
         const lead = Object.fromEntries(formData.entries());
-        const payload = {
-          text: `New LoomiUI Pro sales lead: ${lead.company}`,
-          blocks: [
-            {
-              type: "header",
-              text: { type: "plain_text", text: "New LoomiUI Pro sales lead" },
-            },
-            {
-              type: "section",
-              fields: [
-                { type: "mrkdwn", text: `*Name*\n${lead.name}` },
-                { type: "mrkdwn", text: `*Email*\n${lead.email}` },
-                { type: "mrkdwn", text: `*Company*\n${lead.company}` },
-                { type: "mrkdwn", text: "*Source*\n/pro/licensing/" },
-              ],
-            },
-            {
-              type: "section",
-              text: { type: "mrkdwn", text: `*Message*\n${lead.message}` },
-            },
-          ],
-        };
 
         if (submitButton) submitButton.disabled = true;
         if (contactStatus) contactStatus.textContent = "Sending...";
 
         try {
-          await fetch(SLACK_WEBHOOK_URL, {
+          // The portal holds the Slack webhook and forwards this. A real response
+          // is required, so this cannot be a no-cors fire-and-forget.
+          const response = await fetch(LEAD_ENDPOINT, {
             method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "text/plain;charset=UTF-8" },
-            body: JSON.stringify(payload),
-            keepalive: true,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: lead.name,
+              email: lead.email,
+              company: lead.company,
+              seats: lead.seats,
+              timeline: lead.timeline,
+              message: lead.message,
+              website: lead.website,
+              source: window.location.pathname,
+            }),
           });
+          if (!response.ok) throw new Error(`Lead endpoint returned ${response.status}`);
           contactForm.reset();
+          contactForm.querySelectorAll("loomi-input").forEach((input) => { input.value = ""; });
+          contactForm.querySelectorAll("loomi-select").forEach((select) => select.reset());
+          const message = contactForm.querySelector("loomi-textarea[name='message']");
+          if (message) message.value = "Enterprise licensing for LoomiUI Pro";
           if (contactStatus) contactStatus.textContent = "Sent. Sales will follow up shortly.";
         } catch (error) {
-          if (contactStatus) contactStatus.textContent = "Could not send. Check the Slack webhook URL.";
+          if (contactStatus) {
+            contactStatus.textContent = "Could not send. Please email sales@loomiui.com instead.";
+          }
         } finally {
           if (submitButton) submitButton.disabled = false;
         }
@@ -557,11 +670,29 @@ const slackWebhookUrl =
   }
   .license-cta-wrap {
     display: flex;
+    align-items: center;
     justify-content: center;
+    width: 100%;
     margin-top: 1.25rem;
+  }
+  .license-cta-group {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .license-cta-group > loomi-number.license-seats {
+    width: 8.75rem;
+    max-width: 8.75rem;
+    flex: 0 0 8.75rem;
+  }
+  .license-cta-group > .license-cta {
+    min-width: 0;
   }
   .license-cta {
     min-width: 10rem;
+    flex: 0 0 auto;
   }
   .license-panels {
     margin-top: 3rem;
@@ -718,23 +849,38 @@ const slackWebhookUrl =
     color: rgb(252 211 77);
   }
   .contact-sales {
+    position: relative;
+    overflow: hidden;
     margin-top: 3rem;
     display: grid;
     gap: 1.5rem;
-    border: 1px solid rgb(226 232 240);
-    border-radius: 1rem;
-    background: linear-gradient(135deg, rgb(248 250 252), white);
+    border: 1px solid rgb(191 219 254);
+    border-radius: 1.25rem;
+    background:
+      radial-gradient(circle at 8% 12%, rgb(96 165 250 / 0.22), transparent 30%),
+      radial-gradient(circle at 52% 105%, rgb(129 140 248 / 0.15), transparent 34%),
+      linear-gradient(135deg, rgb(239 246 255), rgb(248 250 252) 58%, white);
     padding: 1.5rem;
+    box-shadow: 0 28px 65px -46px rgb(37 99 235 / 0.55);
   }
   .dark .contact-sales {
-    border-color: rgb(51 65 85);
-    background: linear-gradient(135deg, rgb(15 23 42 / 0.8), rgb(30 41 59 / 0.35));
+    border-color: rgb(30 64 175 / 0.65);
+    background:
+      radial-gradient(circle at 8% 12%, rgb(37 99 235 / 0.28), transparent 30%),
+      radial-gradient(circle at 52% 105%, rgb(79 70 229 / 0.2), transparent 34%),
+      linear-gradient(135deg, rgb(15 23 42), rgb(15 23 42 / 0.94));
+  }
+  .contact-sales-copy {
+    position: relative;
+    z-index: 1;
   }
   .contact-sales h3 {
     margin: 0.35rem 0 0;
     color: rgb(15 23 42);
-    font-size: 1.45rem;
+    font-size: 1.65rem;
     font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
   }
   .dark .contact-sales h3 {
     color: white;
@@ -748,41 +894,64 @@ const slackWebhookUrl =
     color: rgb(203 213 225);
   }
   .sales-form {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: 0.9rem;
+    border: 1px solid rgb(226 232 240 / 0.9);
+    border-radius: 1rem;
+    background: rgb(255 255 255 / 0.92);
+    padding: 1.25rem;
+    box-shadow: 0 24px 55px -40px rgb(15 23 42 / 0.5);
+    backdrop-filter: blur(12px);
+  }
+  .dark .sales-form {
+    border-color: rgb(51 65 85);
+    background: rgb(15 23 42 / 0.8);
+  }
+  .sales-form-heading {
+    display: grid;
+    gap: 0.5rem;
+    margin-bottom: 0.15rem;
+  }
+  .sales-form-heading span {
+    color: rgb(37 99 235);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .sales-form-heading strong {
+    color: rgb(15 23 42);
+    font-size: 1.05rem;
+  }
+  .dark .sales-form-heading span {
+    color: rgb(96 165 250);
+  }
+  .dark .sales-form-heading strong {
+    color: white;
+  }
+  .sales-form > loomi-input,
+  .sales-form > loomi-textarea {
+    display: block;
+    width: 100%;
+  }
+  .sales-form-row {
     display: grid;
     gap: 0.9rem;
   }
-  .sales-form label {
-    display: grid;
-    gap: 0.35rem;
-    color: rgb(51 65 85);
-    font-size: 0.84rem;
-    font-weight: 700;
-  }
-  .dark .sales-form label {
-    color: rgb(226 232 240);
-  }
-  .sales-form input,
-  .sales-form textarea {
+  .sales-form-row loomi-select {
+    display: block;
     width: 100%;
-    border: 1px solid rgb(203 213 225);
-    border-radius: 0.55rem;
-    background: white;
-    color: rgb(15 23 42);
-    font: inherit;
-    font-weight: 500;
-    padding: 0.7rem 0.8rem;
   }
-  .dark .sales-form input,
-  .dark .sales-form textarea {
-    border-color: rgb(71 85 105);
-    background: rgb(15 23 42);
-    color: white;
-  }
-  .sales-form input:focus,
-  .sales-form textarea:focus {
-    border-color: rgb(37 99 235);
-    box-shadow: 0 0 0 3px rgb(37 99 235 / 0.16);
-    outline: none;
+  .sales-honeypot {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
   .sales-form-actions {
     display: flex;
@@ -791,25 +960,6 @@ const slackWebhookUrl =
     justify-content: center;
     gap: 0.8rem;
     text-align: center;
-  }
-  .sales-submit {
-    border: 0;
-    border-radius: 0.55rem;
-    background: rgb(37 99 235);
-    color: white;
-    cursor: pointer;
-    font: inherit;
-    font-size: 0.88rem;
-    font-weight: 800;
-    min-width: 10rem;
-    padding: 0.7rem 1rem;
-  }
-  .sales-submit:hover {
-    background: rgb(29 78 216);
-  }
-  .sales-submit:disabled {
-    cursor: not-allowed;
-    opacity: 0.65;
   }
   .sales-status {
     margin: 0;
@@ -821,14 +971,37 @@ const slackWebhookUrl =
   .dark .sales-status {
     color: rgb(203 213 225);
   }
+  .sales-privacy {
+    margin: -0.25rem 0 0 !important;
+    color: rgb(100 116 139) !important;
+    font-size: 0.76rem;
+    line-height: 1.5 !important;
+  }
+  .dark .sales-privacy {
+    color: rgb(148 163 184) !important;
+  }
+  .license-footer-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 2.5rem;
+  }
   @media (min-width: 900px) {
     .license-panels {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
     .contact-sales {
       grid-template-columns: minmax(0, 0.82fr) minmax(24rem, 1fr);
-      align-items: start;
-      padding: 2rem;
+      align-items: center;
+      gap: 2.5rem;
+      padding: 2.25rem;
+    }
+    .sales-form {
+      padding: 1.5rem;
+    }
+    .sales-form-row {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
   @media (max-width: 640px) {

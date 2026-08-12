@@ -1,4 +1,5 @@
 ---
+import GoogleAnalytics from "./GoogleAnalytics.astro";
 import MarketingHeader from "./MarketingHeader.astro";
 import ProSidebar from "./ProSidebar.astro";
 import { buildImportMap } from "../lib/import-map.mjs";
@@ -167,6 +168,7 @@ const STYLED_HIGHLIGHT_CATEGORIES = new Set([
     <meta name="description" content={feature.description} />
     <link rel="icon" href="/favicon.png" />
     <script type="importmap" is:inline set:html={JSON.stringify(importMap)} />
+    <GoogleAnalytics />
   </head>
   <body class="bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
     <MarketingHeader />

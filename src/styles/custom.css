@@ -448,69 +448,26 @@ div.loomi-preview:has(> loomi-avatar + loomi-avatar) {
 		@apply mt-0;
 	}
 
-/* Restyle Starlight's real <Search /> trigger as a rounded-rect "Search docs... ⌘K"
-   pill, matching the marketing homepage's header search box exactly (rounded-lg not
-   fully-rounded, gray-50/gray-200 surface, content-sized width, same kbd treatment) —
-   same component, same keyboard shortcut and Pagefind modal, just reskinned. Scoped to
-   the same `min-width: 50rem` breakpoint Starlight's own button style uses for its
-   label+kbd: below that, the label/kbd are already `display: none`, and Starlight's
-   default icon-only button (transparent, no border, fixed 2.5rem height) is the right
-   mobile affordance — applying the pill border/radius/padding without it would leave
-   an odd, empty-looking tall capsule around just the icon. */
-@media (min-width: 50rem) {
-  site-search button[data-open-modal] {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    width: auto;
-    height: auto;
-    border: 1px solid var(--sl-color-gray-6);
-    border-radius: 0.5rem;
-    background: var(--sl-color-gray-7);
-    padding: 0.375rem 0.75rem;
-    color: var(--sl-color-gray-3);
-    font-size: 0.875rem;
-    /* Pinned explicitly — Tailwind's text-sm carries its own 1.25rem line-height on
-       MarketingHeader's search link, but this button otherwise inherits Starlight's
-       much taller ambient body line-height, which was inflating the pill's auto
-       height well past MarketingHeader's ~34px. */
-    line-height: 1.25rem;
-    cursor: pointer;
-  }
-  site-search button[data-open-modal]:hover {
-    border-color: var(--sl-color-gray-5);
-  }
-  :root[data-theme="dark"] site-search button[data-open-modal] {
-    background: var(--sl-color-gray-6);
-  }
-  /* Starlight renders this as a *nested* `<kbd><kbd>⌘</kbd><kbd>K</kbd></kbd>` (one
-     inner kbd per key), unlike MarketingHeader's flat single `<kbd>⌘K</kbd>` — so the
-     pill chrome (border/bg/padding) goes on the outer kbd only, as one badge, and the
-     inner per-key kbds are reset to plain text so the styling doesn't stack 3 deep. */
-  site-search button[data-open-modal] > kbd {
-    display: flex;
-    align-items: center;
-    margin-left: 1.5rem;
-    gap: 0.1em;
-    border: 1px solid var(--sl-color-gray-6);
-    border-radius: 0.25rem;
-    background: var(--sl-color-bg);
-    padding: 0.125rem 0.375rem;
-    color: var(--sl-color-gray-3);
-    font-size: 0.625rem;
-    font-weight: 600;
-    /* Tight 1x line-height, not inherited from the button's own 1.25rem (sized for
-       the "Search docs..." label) — otherwise the badge's row height, not its content,
-       ends up dictating the whole button's height. */
-    line-height: 1;
-  }
-  site-search button[data-open-modal] > kbd kbd {
-    border: 0;
-    background: none;
-    padding: 0;
-    font-size: inherit;
-    font-weight: inherit;
-    line-height: inherit;
-    color: inherit;
-  }
+/* Keep Starlight's real Pagefind trigger in the topbar, but present it as the same
+   compact icon control at every breakpoint. The hidden label remains available via
+   the button's aria-label and the standard Cmd/Ctrl+K shortcut still works. */
+.loomi-header-search site-search button[data-open-modal] {
+  justify-content: center;
+  width: 2.5rem;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: transparent;
+  padding: 0.625rem;
+  color: var(--sl-color-gray-2);
+}
+.loomi-header-search site-search button[data-open-modal]:hover {
+  border-color: transparent;
+  background: var(--sl-color-gray-6);
+  color: var(--sl-color-text);
+}
+.loomi-header-search site-search button[data-open-modal] > span,
+.loomi-header-search site-search button[data-open-modal] > kbd {
+  display: none !important;
 }

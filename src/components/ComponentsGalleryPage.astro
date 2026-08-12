@@ -1,6 +1,7 @@
 ---
 // Gallery shell for the /components/ index page.
 import { getCollection } from "astro:content";
+import GoogleAnalytics from "./GoogleAnalytics.astro";
 import MarketingHeader from "./MarketingHeader.astro";
 import { buildImportMap } from "../lib/import-map.mjs";
 import { COMPONENT_NAMES } from "../../scripts/loomiui-packages.mjs";
@@ -161,6 +162,7 @@ const counts = categoryCounts();
     <meta name="description" content={description} />
     <link rel="icon" href="/favicon.png" />
     <script type="importmap" is:inline set:html={JSON.stringify(importMap)} />
+    <GoogleAnalytics />
   </head>
   <body class="bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
     <MarketingHeader />
