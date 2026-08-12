@@ -1,5 +1,6 @@
 ---
 // Area gallery for /pro/templates/ or /pro/themes/.
+import GoogleAnalytics from "./GoogleAnalytics.astro";
 import MarketingHeader from "./MarketingHeader.astro";
 import ProSidebar from "./ProSidebar.astro";
 import { buildImportMap } from "../lib/import-map.mjs";
@@ -38,6 +39,7 @@ const GITHUB_URL = "https://github.com/loomidev/loomiui-pro";
     <meta name="description" content={description} />
     <link rel="icon" href="/favicon.png" />
     <script type="importmap" is:inline set:html={JSON.stringify(importMap)} />
+    <GoogleAnalytics />
   </head>
   <body class="bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100">
     <MarketingHeader />

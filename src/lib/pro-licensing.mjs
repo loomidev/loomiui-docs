@@ -179,7 +179,7 @@ export const PRO_LICENSE_PLANS = [
 ];
 
 export const PRO_LICENSING_NOTES = [
-  "Licensing is enforced at the account, entitlement, package access, and support layer — not with runtime checks inside UI components.",
+  "Licensing is enforced at the account, entitlement, package access, and support layer, not with runtime checks inside UI components.",
   "Checkout is handled by Lemon Squeezy. After payment, you land in the customer portal with install instructions and downloads.",
-  "Premium source stays private. Access depends on authenticated portal access, per-user package tokens, and license terms — not obfuscation inside shipped bundles.",
+  "Premium source stays private. Access depends on authenticated portal access, per-user package tokens, and license terms, not obfuscation inside shipped bundles.",
 ];
