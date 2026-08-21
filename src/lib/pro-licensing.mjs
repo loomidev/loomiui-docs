@@ -20,6 +20,7 @@ if (!portalOrigin && import.meta.env.PROD) {
 }
 
 export const PRO_PORTAL_URL = (portalOrigin ?? "http://localhost:4830").replace(/\/$/, "");
+export const PRO_SIGN_IN_URL = `${PRO_PORTAL_URL}/login`;
 
 function portalCheckout(plan, billing) {
   return `${PRO_PORTAL_URL}/pro/${plan}?billing=${billing}`;

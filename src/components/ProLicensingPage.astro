@@ -9,6 +9,7 @@ import {
   PRO_LICENSE_PLANS,
   PRO_LICENSING_NOTES,
   PRO_PORTAL_URL,
+  PRO_SIGN_IN_URL,
 } from "../lib/pro-licensing.mjs";
 import "../styles/home.css";
 
@@ -306,6 +307,7 @@ const salesLeadEndpoint = `${PRO_PORTAL_URL}/api/sales-lead`;
       </section>
 
       <div class="license-footer-actions">
+        <loomi-button color="primary" size="small" tag="a" href={PRO_SIGN_IN_URL}>Already purchased? Sign in</loomi-button>
         <loomi-button type="secondary" size="small" tag="a" href="/pro/">Browse Pro catalog</loomi-button>
         <loomi-button type="secondary" size="small" tag="a" href="/components/">Browse free components</loomi-button>
       </div>

@@ -24,7 +24,7 @@
 import SiteTitle from "@astrojs/starlight/components/SiteTitle.astro";
 import Search from "@astrojs/starlight/components/Search.astro";
 import ThemeSelect from "./ThemeSelect.astro";
-import { PRO_LICENSING_URL } from "../lib/pro-licensing.mjs";
+import { PRO_LICENSING_URL, PRO_SIGN_IN_URL } from "../lib/pro-licensing.mjs";
 
 const GITHUB_URL = "https://github.com/loomidev/loomiui-docs";
 // Sidebar pages (/components/* and the "Start Here" docs — see
@@ -96,6 +96,7 @@ const { hasSidebar } = Astro.locals.starlightRoute;
         ></path>
       </svg>
     </a>
+    <a href={PRO_SIGN_IN_URL} class="loomi-header-account">Sign in</a>
     {
       !hasSidebar && (
         <loomi-button class="hidden sm:inline-flex" type="secondary" size="small" tag="a" href="/installation/">
@@ -183,6 +184,17 @@ const { hasSidebar } = Astro.locals.starlightRoute;
     .loomi-header-github:hover {
       color: var(--sl-color-text);
       background: var(--sl-color-gray-6);
+    }
+    .loomi-header-account {
+      color: var(--sl-color-gray-2);
+      font-family: var(--sl-font);
+      font-size: 0.875rem;
+      font-weight: 500;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .loomi-header-account:hover {
+      color: var(--sl-color-text-accent);
     }
     :root[data-theme="dark"] .loomi-header-github:hover {
       background: var(--sl-color-gray-5);

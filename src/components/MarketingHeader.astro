@@ -11,7 +11,7 @@ import logoDark from "../assets/logo-dark.png";
 import Search from "@astrojs/starlight/components/Search.astro";
 import ThemeProvider from "./ThemeProvider.astro";
 
-import { PRO_LICENSING_URL } from "../lib/pro-licensing.mjs";
+import { PRO_LICENSING_URL, PRO_SIGN_IN_URL } from "../lib/pro-licensing.mjs";
 
 const GITHUB_URL = "https://github.com/loomidev/loomiui-docs";
 ---
@@ -73,6 +73,10 @@ const GITHUB_URL = "https://github.com/loomidev/loomiui-docs";
           />
         </svg>
       </a>
+      <a
+        href={PRO_SIGN_IN_URL}
+        class="whitespace-nowrap text-sm font-medium text-gray-600 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-400"
+      >Sign in</a>
       <loomi-button class="hidden sm:inline-flex" type="secondary" size="small" tag="a" href="/installation/">Get Started</loomi-button>
       <loomi-button class="hidden sm:inline-flex" color="primary" size="small" tag="a" href={PRO_LICENSING_URL}>Get Pro</loomi-button>
     </div>
