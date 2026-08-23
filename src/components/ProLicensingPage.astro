@@ -422,6 +422,28 @@ const salesLeadEndpoint = `${PRO_PORTAL_URL}/api/sales-lead`;
       const contactError = document.querySelector("#sales-contact-error");
       const firstContactField = contactForm?.querySelector("loomi-input, loomi-textarea");
 
+      async function clearContactForm() {
+        if (!contactForm) return;
+
+        const fields = Array.from(contactForm.querySelectorAll("loomi-input, loomi-select, loomi-textarea"));
+        fields.forEach((field) => {
+          // Select and textarea do not yet expose a form reset callback. Clear
+          // their revealed-validation state before emptying required values so
+          // a successful submission does not leave the blank form looking invalid.
+          if ("validationVisible" in field) field.validationVisible = false;
+        });
+        contactForm.reset();
+        contactForm.querySelectorAll("loomi-select").forEach((field) => field.reset());
+        contactForm.querySelectorAll("loomi-textarea").forEach((field) => {
+          field.value = "";
+        });
+
+        await Promise.all(fields.map((field) => field.updateComplete));
+        fields.forEach((field) => {
+          field.invalid = false;
+        });
+      }
+
       document.querySelectorAll("[data-contact-sales]").forEach((button) => {
         button.addEventListener("click", () => {
           contactForm?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -458,9 +480,7 @@ const salesLeadEndpoint = `${PRO_PORTAL_URL}/api/sales-lead`;
             }),
           });
           if (!response.ok) throw new Error(`Lead endpoint returned ${response.status}`);
-          // Keep the submitted values visible. Clearing required form-associated
-          // custom elements immediately after validation makes their revealed
-          // invalid state turn every empty field red, even though the request sent.
+          await clearContactForm();
           if (contactStatus) contactStatus.textContent = "";
           if (contactSuccess) contactSuccess.hidden = false;
         } catch (error) {
