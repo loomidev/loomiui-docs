@@ -81,6 +81,7 @@ export default defineConfig({
             // directly. Names are placeholders (any registered @loomidev/icons name
             // works) — swap freely.
             { label: "Installation", slug: "installation", attrs: { "data-icon": "arrow-down-tray" } },
+            { label: "React", slug: "react", attrs: { "data-icon": "code-bracket-square" } },
             { label: "Theming", slug: "theming", attrs: { "data-icon": "swatch" } },
             {
               label: "Foundations",

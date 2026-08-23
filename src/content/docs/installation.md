@@ -254,6 +254,8 @@ Every LoomiUI package ships with built-in TypeScript types.
 No extra `@types/*` install is required. As soon as you install a LoomiUI package,
 your editor and TypeScript compiler can resolve its types automatically.
 
+**Using React?** JSX type support requires one extra package. See [Using with React →](/react/).
+
 This gives you better developer experience right away:
 
 - Autocomplete for component APIs
