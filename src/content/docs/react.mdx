@@ -1,17 +1,89 @@
 ---
 title: Using with React
-description: Add LoomiUI custom elements to a React project with full TypeScript JSX support.
+description: Add LoomiUI components to a React project — as native custom elements or as full React wrapper components.
 ---
 
-LoomiUI components are standard web components. React treats them like any other HTML
-element, so you can drop them directly into JSX. The `@loomidev/react-types` package
-adds TypeScript declarations so your editor and compiler understand every attribute and
-property.
+LoomiUI ships two packages for React:
 
-`@loomidev/react-types` is **types only**. It adds no runtime code and ships no
-wrappers — the components still run from `@loomidev/components`.
+| Package | What it gives you |
+| --- | --- |
+| `@loomidev/react-types` | TypeScript JSX declarations so editors and the compiler understand every `loomi-*` attribute. Types only — no runtime. |
+| `@loomidev/react` | Named React components (`<Button />`, `<Select />`, …) with typed props, `on*` event callbacks, and automatic array/object property handling. |
 
-## Setup
+Use `@loomidev/react` for a native React experience. Use `@loomidev/react-types` alone if you prefer to write the raw custom elements but still want full type-checking.
+
+## Option A — React wrapper components
+
+`@loomidev/react` wraps every LoomiUI element in a `forwardRef` component, so you get named exports, typed `on*` callbacks, and automatic DOM property setting for arrays and objects — no `ref` + `useEffect` boilerplate needed.
+
+### 1. Install
+
+```bash
+npm install @loomidev/react @loomidev/components lit
+```
+
+`react` must already be in your project (it is a peer dependency).
+
+### 2. Import and use
+
+```tsx
+import { Button, Select } from "@loomidev/react";
+
+export function CountrySelect({ onChange }: { onChange: (value: string) => void }) {
+  return (
+    <Select
+      data={[
+        { label: "Canada", value: "ca" },
+        { label: "India", value: "in" },
+      ]}
+      label-key="label"
+      value-key="value"
+      onChange={(e) => onChange((e as CustomEvent<{ value: string }>).detail.value)}
+    />
+  );
+}
+```
+
+Arrays and objects are set directly on the DOM element (no serialization). Events map to `on*` callback props and are wired via `addEventListener` under the hood, so they work the same way in both React 18 and React 19.
+
+### Available components
+
+Every LoomiUI component has a wrapper. The export name is the tag name without the `loomi-` prefix, in PascalCase:
+
+```
+loomi-accordion       → Accordion
+loomi-accordion-item  → AccordionItem
+loomi-button          → Button
+loomi-select          → Select
+loomi-data-grid       → DataGrid
+...
+```
+
+### Forwarding refs
+
+All wrappers use `forwardRef`, so a `ref` gives you the underlying custom element:
+
+```tsx
+import { useRef } from "react";
+import { Button } from "@loomidev/react";
+import type { LoomiButton } from "@loomidev/button";
+
+export function SpinningButton() {
+  const ref = useRef<LoomiButton>(null);
+  return (
+    <Button ref={ref} onClick={() => ref.current?.startSpinner()}>
+      Save
+    </Button>
+  );
+}
+```
+
+---
+
+## Option B — Custom elements with JSX types
+
+If you prefer writing the raw `loomi-*` tags, `@loomidev/react-types` adds TypeScript
+declarations without adding any runtime code or wrappers.
 
 ### 1. Install
 
@@ -37,8 +109,6 @@ props, shows autocomplete, and reports type errors without any per-component imp
 
 ### 3. Import and use
 
-Import the component you need, then use it in JSX:
-
 ```tsx
 import "@loomidev/components/button";
 
@@ -51,43 +121,7 @@ export function SaveButton() {
 }
 ```
 
-TypeScript checks the props. If you pass a wrong type — `disabled={1}` instead of
-`disabled={false}` — you get a compile error, not a silent runtime mismatch.
-
-## Passing data to components
-
-Scalar values (strings, numbers, booleans) work the same way in both React versions:
-pass them directly as JSX props.
-
-```tsx
-<loomi-pagination page-size={10} show-total={true} />
-```
-
-Arrays and objects behave differently depending on your React version.
-
-### React 19
-
-React 19 understands custom element properties natively. Pass arrays and objects
-directly as props and React sets them on the DOM element, not the attribute string:
-
-```tsx
-import "@loomidev/components/select";
-
-export function CountrySelect() {
-  return (
-    <loomi-select
-      data={[
-        { label: "Canada", value: "ca" },
-        { label: "India", value: "in" },
-      ]}
-      label-key="label"
-      value-key="value"
-    />
-  );
-}
-```
-
-### React 18
+### Passing arrays and objects (React 18)
 
 React 18 serializes non-primitive values to strings when it sees an unknown element.
 Pass a `ref` instead and set array/object properties imperatively in a `useEffect`:
@@ -113,15 +147,14 @@ export function CountrySelect() {
 ```
 
 <loomi-alert type="info" icon="information-circle">
-  The <code>loomi-select</code> type in <code>HTMLElementTagNameMap</code> comes from
-  importing the component. The ref is fully typed — your editor knows every property
-  and method on the element.
+  React 19 understands custom element properties natively — you can pass arrays and
+  objects directly as props without a ref.
 </loomi-alert>
 
-## Custom events
+### Custom events
 
-LoomiUI components fire DOM `CustomEvent`s with a `loomi-` prefix. React does not
-map these to JSX callback props, so attach listeners on the element directly:
+LoomiUI fires DOM `CustomEvent`s. React does not map these to JSX callback props, so
+attach listeners on the element directly:
 
 ```tsx
 import { useEffect, useRef } from "react";
@@ -142,21 +175,6 @@ export function CountrySelect({ onChange }: { onChange: (value: string) => void 
   return <loomi-select ref={ref} />;
 }
 ```
-
-Each component's documentation lists the events it fires and the shape of their
-`detail` payload.
-
-## What's not handled yet
-
-`@loomidev/react-types` covers all 103 components for type-checking, but two rough
-edges remain with the direct custom-element approach in React 18:
-
-- **Arrays and objects** require a `ref` + `useEffect` (see [React 18](#react-18) above).
-- **Custom events** need manual `addEventListener` wiring.
-
-A future `@loomidev/react` package will wrap each component with conventional React
-props and `on*` callbacks so neither workaround is needed. Until then,
-`@loomidev/react-types` plus the `ref` pattern covers all components.
 
 <loomi-alert type="warning" icon="exclamation-triangle">
   The <a href="/components/data-grid/">Data Grid</a> and other components that accept
