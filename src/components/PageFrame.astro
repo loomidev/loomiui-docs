@@ -1,7 +1,7 @@
 ---
 // Mirrors Starlight's default PageFrame, but `hasSidebar` is only true on /components/*
-// routes (see src/starlightRouteData.ts) — every other docs page keeps its navigation
-// in the top bar and renders without the left rail or mobile menu.
+// routes and the "Start Here" docs (see src/starlightRouteData.ts) — every other docs
+// page keeps its navigation in the top bar and renders without the left rail or mobile menu.
 import MobileMenuToggle from "@astrojs/starlight/components/MobileMenuToggle.astro";
 
 const { hasSidebar } = Astro.locals.starlightRoute;
