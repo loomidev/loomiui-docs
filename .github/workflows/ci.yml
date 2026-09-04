@@ -33,6 +33,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # Only the fallback-preview generation, not the rest of `prepare:content`:
+      # ComponentsGalleryPage.astro imports its generated output unconditionally,
+      # but the script degrades gracefully (empty map) when the sibling
+      # components checkout it reads READMEs from isn't present, as it isn't here.
+      - name: Generate preview fallbacks
+        run: pnpm run gen:preview-fallbacks
+
       - name: Check Astro
         run: pnpm exec astro check
 
