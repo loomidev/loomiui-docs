@@ -22,7 +22,10 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
         with:
-          version: 9.15.9
+          # Must satisfy the loomiui (components) repo's pnpm-workspace.yaml `overrides`,
+          # which pnpm 9 reads differently and rejects as ERR_PNPM_LOCKFILE_CONFIG_MISMATCH
+          # — see the same pin in deploy.yml, which installs that repo too.
+          version: 11.9.0
 
       - name: Setup Node
         uses: actions/setup-node@v7
