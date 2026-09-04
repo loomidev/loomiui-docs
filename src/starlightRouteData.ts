@@ -5,6 +5,7 @@ import { defineRouteMiddleware } from "@astrojs/starlight/route-data";
 // it never runs through this middleware at all and is excluded for free.
 const START_HERE_SLUGS = [
   "installation",
+  "react",
   "theming",
   "foundations",
   "contributing",

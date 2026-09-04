@@ -11,7 +11,7 @@ const publicThemes = resolve(__dirname, "../public/pro/themes");
 
 if (!existsSync(themesDist)) {
   console.warn(
-    "[copy-pro-theme-assets] skip — no themes dist found. Run `pnpm --filter @loomdev-pro/themes build` in loomiui-pro first."
+    "[copy-pro-theme-assets] skip — no themes dist found. Run `pnpm --filter @loomidev-pro/themes build` in loomiui-pro first."
   );
   process.exit(0);
 }

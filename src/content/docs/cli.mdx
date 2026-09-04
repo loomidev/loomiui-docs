@@ -4,7 +4,7 @@ description: Scaffold LoomiUI Pro starter kits, apply themes, add block guides, 
 ---
 <script type="module" src="/loomi/accordion/dist/index.js"></script>
 
-`@loomdev-pro/cli` is the command-line tool for [LoomiUI Pro](/pro/licensing/). Use it to scaffold production-ready starter apps, apply [theme presets](/pro/themes/), add Pro block guides, and keep your codebase in sync as [templates](/pro/templates/) and packages change.
+`@loomidev-pro/cli` is the command-line tool for [LoomiUI Pro](/pro/licensing/). Use it to scaffold production-ready starter apps, apply [theme presets](/pro/themes/), add Pro block guides, and keep your codebase in sync as [templates](/pro/templates/) and packages change.
 
 Unlike a typical runtime package, `loomi-pro` writes real source files directly into your repository. App shell files, routes, theme imports, and block guides are added as editable project files, so you own the code end to end. You can inspect every change in version control and customize freely without fighting generated output.
 
@@ -16,7 +16,7 @@ You’ll use the CLI during initial setup and later updates. It runs only in you
 | --- | --- | --- |
 | Scaffold a new app | `create` | Full starter kit directory with routes, mock API wiring, and `loomi.json` |
 | Configure an existing checkout | `init` | Writes or updates `loomi.json` for your template and framework |
-| Apply a theme preset | `theme`, `add theme:*` | Updates `@loomdev-pro/themes` CSS import and config |
+| Apply a theme preset | `theme`, `add theme:*` | Updates `@loomidev-pro/themes` CSS import and config |
 | Add Pro block guides | `add` | Writes editable block guides for your configured template |
 | Compare with upstream | `diff` | Shows file diffs against the registry template |
 | Validate setup | `doctor` | Checks config, dependencies, and registry auth |
@@ -28,16 +28,16 @@ Before you install the CLI, make sure these are in place:
 
 1. **An active Pro license** — Solo, Team, or Enterprise.
   See [Pro licensing](/pro/licensing/) or [browse Pro](/pro/).
-2. **Node.js 18 or newer** — `@loomdev-pro/cli` is a Node package.
+2. **Node.js 18 or newer** — `@loomidev-pro/cli` is a Node package.
   Use the same Node version you use for local development and production.
 3. **Pro registry access** — add your account token to `.npmrc` so packages
-  under `@loomdev-pro/*` can be installed.
+  under `@loomidev-pro/*` can be installed.
 
 <p>&nbsp;</p>
-The CLI package is `@loomdev-pro/cli`.
+The CLI package is `@loomidev-pro/cli`.
 Starter kits also install these Pro dependencies:
-`@loomdev-pro/themes`, `@loomdev-pro/mock-data`, `@loomdev-pro/mock-api`, and
-`@loomdev-pro/template-core`.
+`@loomidev-pro/themes`, `@loomidev-pro/mock-data`, `@loomidev-pro/mock-api`, and
+`@loomidev-pro/template-core`.
 
 ## Installation
 
@@ -50,7 +50,7 @@ Add these lines to either:
 - your project-level `.npmrc` (local to this repo).
 
 ```sh
-@loomdev-pro:registry=https://registry.pro.loomiui.com
+@loomidev-pro:registry=https://registry.pro.loomiui.com
 //registry.pro.loomiui.com/:_authToken=${LOOMI_PRO_TOKEN}
 ```
 
@@ -65,13 +65,13 @@ You have two ways to run the CLI.
 Install it globally if you want to use `loomi-pro` anywhere in your terminal:
 
 ```sh
-pnpm add -g @loomdev-pro/cli
+pnpm add -g @loomidev-pro/cli
 ```
 
 Or run it on demand (no global install required):
 
 ```sh
-pnpm dlx @loomdev-pro/cli --help
+pnpm dlx @loomidev-pro/cli --help
 ```
 
 After installing globally, confirm it works:
@@ -113,7 +113,7 @@ After you run `create`, Loomi Pro scaffolds your app and includes:
 - A full variant source tree (`src/`, config files, `package.json`)
 - Shared route content in `content/` (from the template route manifest)
 - A root `loomi.json` with your template, variant, theme, and registry details
-- A theme CSS import in your layout/entry file: `@loomdev-pro/themes/css/<preset>.css`
+- A theme CSS import in your layout/entry file: `@loomidev-pro/themes/css/<preset>.css`
 
 ### Initialize a project you already have
 
@@ -164,7 +164,7 @@ across local development and CI environments:
   "template": "admin",
   "variant": "next-react",
   "theme": "default",
-  "registry": "@loomdev-pro/registry",
+  "registry": "@loomidev-pro/registry",
   "css": "src/app/globals.css",
   "aliases": {
     "components": "@/components",
@@ -177,7 +177,7 @@ across local development and CI environments:
 | --- | --- |
 | `template` | Starter kit family: `admin`, `saas`, `crm`, or `analytics` |
 | `variant` | Framework stack: `vite-lit` or `next-react` |
-| `theme` | Active theme preset name (matches a file under `@loomdev-pro/themes/css/`) |
+| `theme` | Active theme preset name (matches a file under `@loomidev-pro/themes/css/`) |
 | `registry` | Registry package used for `add` and `diff` |
 | `css` | Path to your global stylesheet (used by some theme operations) |
 | `aliases.components` | Where generated components and blocks should live |
@@ -250,7 +250,7 @@ loomi-pro create analytics-app --template analytics --variant vite-lit -d
 **Behavior**
 
 - Copies the variant source tree and shared `content/` routes
-- Rewrites `workspace:*` dependencies to published `@loomdev-pro` versions in `package.json`
+- Rewrites `workspace:*` dependencies to published `@loomidev-pro` versions in `package.json`
 - Writes `loomi.json` and sets the theme import in `layout.tsx` or `main.ts`
 - Sets `package.json` `name` to the directory name you provided
 
@@ -313,7 +313,7 @@ Use `--dry-run` before `--overwrite` when updating files you may have customized
 
 ### `theme`
 
-Apply or list theme presets from `@loomdev-pro/themes`.
+Apply or list theme presets from `@loomidev-pro/themes`.
 
 ```sh
 loomi-pro theme [name] [options]
@@ -406,9 +406,9 @@ loomi-pro doctor [options]
 Checks:
 
 - `loomi.json` exists and parses against the schema
-- Required `@loomdev-pro/*` packages appear in `package.json`
+- Required `@loomidev-pro/*` packages appear in `package.json`
 - Detected framework (Next.js vs Vite) matches `loomi.json` `variant`
-- `@loomdev-pro:registry` auth is present in `.npmrc`
+- `@loomidev-pro:registry` auth is present in `.npmrc`
 
 Exit code is non-zero when issues are found — useful in CI after scaffolding.
 
@@ -442,8 +442,8 @@ loomi-pro migrate mock-api src
 
 | Migration | Description |
 | --- | --- |
-| `theme-imports` | Normalize `@loomdev-pro/themes` CSS import paths to the current export format |
-| `mock-api` | Align mock API imports with `@loomdev-pro/mock-api` route modules |
+| `theme-imports` | Normalize `@loomidev-pro/themes` CSS import paths to the current export format |
+| `mock-api` | Align mock API imports with `@loomidev-pro/mock-api` route modules |
 
 
 <loomi-alert type="warning">
@@ -466,8 +466,8 @@ Use starter kits to bootstrap common product foundations with prebuilt routes, s
 Each variant includes:
 
 - A client-side or App Router shell with navigation driven by `content/routes.json`
-- Mock API routes backed by `@loomdev-pro/mock-data` fixtures
-- Pro component registration via `@loomdev-pro/template-core`
+- Mock API routes backed by `@loomidev-pro/mock-data` fixtures
+- Pro component registration via `@loomidev-pro/template-core`
 - Theme CSS variables from your chosen preset
 
 See the full catalog on [Pro templates](/pro/templates/).
@@ -479,7 +479,7 @@ Choose a framework variant based on your existing stack and deployment model—t
 | Variant | Description |
 | --- | --- |
 | `next-react` | Next.js App Router with a catch-all route, React bridges for web components (`pro-elements.tsx`), and mock API at `src/app/api/[...path]/route.ts`. |
-| `vite-lit` | Vite SPA with Lit components, client-side routing in `src/main.ts`, and mock API via the `@loomdev-pro/mock-api/vite` plugin. |
+| `vite-lit` | Vite SPA with Lit components, client-side routing in `src/main.ts`, and mock API via the `@loomidev-pro/mock-api/vite` plugin. |
 | `nuxt` | Nuxt 3 with index and catch-all pages, Vue wrappers for Loomi web components, and mock API routes served by Nitro at `server/api/[...path].ts`.|
 | `laravel-inertia` | aravel 11 with Inertia.js and Vue 3, a catch-all Laravel route rendering the admin shell, Vue wrappers for Loomi web components, and mock JSON endpoints defined in `routes/api.php`. |
 
@@ -553,10 +553,10 @@ Use these optional environment variables to control how the CLI resolves local t
 <loomi-accordion>
   <loomi-accordion-item>
     <div slot="title" style="margin-top: -3px">**`doctor` reports missing registry auth**</div>
-    Confirm `@loomdev-pro:registry` and your auth token line exist in either `~/.npmrc` or the
+    Confirm `@loomidev-pro:registry` and your auth token line exist in either `~/.npmrc` or the
     project `.npmrc`, and that both point to the same registry host. If both files exist, ensure
     there is no conflicting duplicate config and that the active token is scoped to
-    `@loomdev-pro`. You can quickly validate with `npm config get @loomdev-pro:registry` and retry
+    `@loomidev-pro`. You can quickly validate with `npm config get @loomidev-pro:registry` and retry
     after `npm whoami --registry <registry-url>`. Tokens expire when seats rotate — generate a new
     one from the customer portal, update `.npmrc`, and rerun `loomi-pro doctor`.
   </loomi-accordion-item>
@@ -581,8 +581,8 @@ Use these optional environment variables to control how the CLI resolves local t
 
   <loomi-accordion-item>
     <div slot="title" style="margin-top: -3px">**Theme import did not update**</div>
-    Ensure your layout file imports `@loomdev-pro/themes/css/<preset>.css` (for example,
-    `@loomdev-pro/themes/css/indigo.css`). The CLI updates known entry files only, so verify
+    Ensure your layout file imports `@loomidev-pro/themes/css/<preset>.css` (for example,
+    `@loomidev-pro/themes/css/indigo.css`). The CLI updates known entry files only, so verify
     the import exists in `src/app/layout.tsx` (Next.js) or `src/main.ts` (Vite). If your project
     uses a custom entry path, add the import manually and place it before app styles so preset
     variables are available everywhere. After saving, restart your dev server to confirm the

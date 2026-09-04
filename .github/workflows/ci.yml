@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docs:
+    name: Check and build docs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 9.15.9
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Only the fallback-preview generation, not the rest of `prepare:content`:
+      # ComponentsGalleryPage.astro imports its generated output unconditionally,
+      # but the script degrades gracefully (empty map) when the sibling
+      # components checkout it reads READMEs from isn't present, as it isn't here.
+      - name: Generate preview fallbacks
+        run: pnpm run gen:preview-fallbacks
+
+      - name: Check Astro
+        run: pnpm exec astro check
+
+      # Run Astro directly: the full `pnpm build` prepares content from sibling
+      # components and private Pro repositories, which are intentionally only
+      # available to the deployment workflow.
+      - name: Build docs
+        run: pnpm exec astro build
+        env:
+          PUBLIC_LOOMI_PORTAL_URL: https://portal.example.com
+
+  workflows:
+    name: Lint workflows
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Run actionlint
+        uses: docker://rhysd/actionlint:1.7.12
+        with:
+          args: -color

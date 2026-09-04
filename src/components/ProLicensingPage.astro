@@ -9,6 +9,7 @@ import {
   PRO_LICENSE_PLANS,
   PRO_LICENSING_NOTES,
   PRO_PORTAL_URL,
+  PRO_SIGN_IN_URL,
 } from "../lib/pro-licensing.mjs";
 import "../styles/home.css";
 
@@ -280,6 +281,12 @@ const salesLeadEndpoint = `${PRO_PORTAL_URL}/api/sales-lead`;
           <div class="sales-form-actions">
             <loomi-button can-submit class="sales-submit">Contact sales</loomi-button>
             <p id="sales-contact-status" class="sales-status" role="status" aria-live="polite"></p>
+            <loomi-alert id="sales-contact-success" class="sales-feedback" type="success" hidden>
+              Sent. Sales will follow up shortly.
+            </loomi-alert>
+            <loomi-alert id="sales-contact-error" class="sales-feedback" type="error" hidden>
+              Could not send your request. Please <a href="mailto:sales@loomiui.com">email sales@loomiui.com</a> instead.
+            </loomi-alert>
             <p class="sales-privacy">
               We only use these details to respond to your enterprise licensing request.
             </p>
@@ -300,6 +307,7 @@ const salesLeadEndpoint = `${PRO_PORTAL_URL}/api/sales-lead`;
       </section>
 
       <div class="license-footer-actions">
+        <loomi-button color="primary" size="small" tag="a" href={PRO_SIGN_IN_URL}>Already purchased? Sign in</loomi-button>
         <loomi-button type="secondary" size="small" tag="a" href="/pro/">Browse Pro catalog</loomi-button>
         <loomi-button type="secondary" size="small" tag="a" href="/components/">Browse free components</loomi-button>
       </div>
@@ -410,7 +418,31 @@ const salesLeadEndpoint = `${PRO_PORTAL_URL}/api/sales-lead`;
       });
 
       const contactStatus = document.querySelector("#sales-contact-status");
+      const contactSuccess = document.querySelector("#sales-contact-success");
+      const contactError = document.querySelector("#sales-contact-error");
       const firstContactField = contactForm?.querySelector("loomi-input, loomi-textarea");
+
+      async function clearContactForm() {
+        if (!contactForm) return;
+
+        const fields = Array.from(contactForm.querySelectorAll("loomi-input, loomi-select, loomi-textarea"));
+        fields.forEach((field) => {
+          // Select and textarea do not yet expose a form reset callback. Clear
+          // their revealed-validation state before emptying required values so
+          // a successful submission does not leave the blank form looking invalid.
+          if ("validationVisible" in field) field.validationVisible = false;
+        });
+        contactForm.reset();
+        contactForm.querySelectorAll("loomi-select").forEach((field) => field.reset());
+        contactForm.querySelectorAll("loomi-textarea").forEach((field) => {
+          field.value = "";
+        });
+
+        await Promise.all(fields.map((field) => field.updateComplete));
+        fields.forEach((field) => {
+          field.invalid = false;
+        });
+      }
 
       document.querySelectorAll("[data-contact-sales]").forEach((button) => {
         button.addEventListener("click", () => {
@@ -426,6 +458,8 @@ const salesLeadEndpoint = `${PRO_PORTAL_URL}/api/sales-lead`;
         const lead = Object.fromEntries(formData.entries());
 
         if (submitButton) submitButton.disabled = true;
+        if (contactSuccess) contactSuccess.hidden = true;
+        if (contactError) contactError.hidden = true;
         if (contactStatus) contactStatus.textContent = "Sending...";
 
         try {
@@ -446,16 +480,13 @@ const salesLeadEndpoint = `${PRO_PORTAL_URL}/api/sales-lead`;
             }),
           });
           if (!response.ok) throw new Error(`Lead endpoint returned ${response.status}`);
-          contactForm.reset();
-          contactForm.querySelectorAll("loomi-input").forEach((input) => { input.value = ""; });
-          contactForm.querySelectorAll("loomi-select").forEach((select) => select.reset());
-          const message = contactForm.querySelector("loomi-textarea[name='message']");
-          if (message) message.value = "Enterprise licensing for LoomiUI Pro";
-          if (contactStatus) contactStatus.textContent = "Sent. Sales will follow up shortly.";
+          await clearContactForm();
+          if (contactStatus) contactStatus.textContent = "";
+          if (contactSuccess) contactSuccess.hidden = false;
         } catch (error) {
-          if (contactStatus) {
-            contactStatus.textContent = "Could not send. Please email sales@loomiui.com instead.";
-          }
+          console.error("Sales lead submission failed", error);
+          if (contactStatus) contactStatus.textContent = "";
+          if (contactError) contactError.hidden = false;
         } finally {
           if (submitButton) submitButton.disabled = false;
         }
@@ -970,6 +1001,19 @@ const salesLeadEndpoint = `${PRO_PORTAL_URL}/api/sales-lead`;
   }
   .dark .sales-status {
     color: rgb(203 213 225);
+  }
+  .sales-feedback {
+    display: block;
+    width: 100%;
+    text-align: left;
+  }
+  .sales-feedback[hidden] {
+    display: none;
+  }
+  .sales-feedback a {
+    color: inherit;
+    font-weight: 700;
+    text-decoration: underline;
   }
   .sales-privacy {
     margin: -0.25rem 0 0 !important;

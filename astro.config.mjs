@@ -81,13 +81,13 @@ export default defineConfig({
             // directly. Names are placeholders (any registered @loomidev/icons name
             // works) — swap freely.
             { label: "Installation", slug: "installation", attrs: { "data-icon": "arrow-down-tray" } },
-            { label: "Theming", slug: "theming", attrs: { "data-icon": "swatch" } },
+            { label: "React", slug: "react", attrs: { "data-icon": "code-bracket-square" } },
             {
               label: "Foundations",
               slug: "foundations",
               attrs: { "data-icon": "building-library" },
             },
-            { label: "Contributing", slug: "contributing", attrs: { "data-icon": "code-bracket" } },
+            { label: "Theming", slug: "theming", attrs: { "data-icon": "swatch" } },
             { label: "Internationalization", slug: "i18n", attrs: { "data-icon": "globe-alt" } },
             { label: "RTL Support", slug: "rtl-support", attrs: { "data-icon": "language" } },
             // Raw Astro page (src/pages/icons/index.astro), not a content-collection
@@ -97,9 +97,10 @@ export default defineConfig({
             // Also a raw Astro page (src/pages/playground/index.astro) — dropped from
             // the top bar on sidebar pages (Header.astro), so it lives here instead.
             { label: "Playground", link: "/playground/", attrs: { "data-icon": "play-circle" } },
-            { label: "MCP", slug: "mcp-server", attrs: { "data-icon": "cpu-chip" } },
             { label: "CLI", slug: "cli", attrs: { "data-icon": "command-line" } },
+            { label: "MCP", slug: "mcp-server", attrs: { "data-icon": "cpu-chip" } },
             { label: "Architecture", slug: "architecture", collapsed: true, attrs: { "data-icon": "building-library" } },
+            { label: "Contributing", slug: "contributing", attrs: { "data-icon": "code-bracket" } },
           ],
         },
         {

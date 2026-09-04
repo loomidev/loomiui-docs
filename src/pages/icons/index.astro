@@ -33,8 +33,12 @@ function titleCase(s: string): string {
 }
 
 // --- Heroicons: parse the inlined tagged-template registry ---------------------------
+// public/loomi/icons/dist/** only exists once scripts/copy-component-assets.mjs has run
+// against the sibling @loomidev/icons checkout — the CI `astro build` step intentionally
+// skips that (see .github/workflows/ci.yml), so this page renders with zero icons there
+// instead of failing the build.
 const heroSrcPath = path.resolve("./public/loomi/icons/dist/heroicons.js");
-const heroSrc = fs.readFileSync(heroSrcPath, "utf8");
+const heroSrc = fs.existsSync(heroSrcPath) ? fs.readFileSync(heroSrcPath, "utf8") : "";
 
 function extractHeroBlock(src: string, blockName: string): Record<string, string> {
   const blockMatch = src.match(new RegExp(`const ${blockName}[^{]*\\{([\\s\\S]*?)\\n\\};`));
@@ -59,10 +63,13 @@ function heroIconHtml(markup: string, variant: "outline" | "solid"): string {
 
 // --- Iconsax / Untitled UI: parse the disk-icon name manifest ------------------------
 const diskManifestPath = path.resolve("./public/loomi/icons/dist/generated/disk-manifest.js");
-const diskManifestSrc = fs.readFileSync(diskManifestPath, "utf8");
-const diskManifestMatch = diskManifestSrc.match(/export const DISK_ICON_NAMES = (\{[\s\S]*?\});/);
-if (!diskManifestMatch) throw new Error("icons page: could not parse disk-manifest.js — has its export shape changed?");
-const DISK_ICON_NAMES: Record<string, Record<string, string[]>> = JSON.parse(diskManifestMatch[1]);
+let DISK_ICON_NAMES: Record<string, Record<string, string[]>> = { iconsax: {}, untitledui: {} };
+if (fs.existsSync(diskManifestPath)) {
+  const diskManifestSrc = fs.readFileSync(diskManifestPath, "utf8");
+  const diskManifestMatch = diskManifestSrc.match(/export const DISK_ICON_NAMES = (\{[\s\S]*?\});/);
+  if (!diskManifestMatch) throw new Error("icons page: could not parse disk-manifest.js — has its export shape changed?");
+  DISK_ICON_NAMES = JSON.parse(diskManifestMatch[1]);
+}
 
 function diskIconHtml(source: string, type: string, name: string): { html: string; src: string } {
   const src = `/loomi/icons/dist/svg/${source}/${type}/${encodeURIComponent(name)}.svg`;

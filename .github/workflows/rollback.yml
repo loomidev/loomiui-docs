@@ -35,6 +35,7 @@ jobs:
 
       - name: List releases
         run: |
+          # shellcheck disable=SC2088  # tilde is meant for the remote shell to expand, not this one
           ssh -i ~/.ssh/deploy_key -p "${{ secrets.DROPLET_PORT || 22 }}" \
             "${{ secrets.DROPLET_USER }}@${{ secrets.DROPLET_HOST }}" \
             "~/bin/loomiui-rollback --list"
@@ -51,6 +52,7 @@ jobs:
           case "$RELEASE" in
             "" | *[!0-9a-fA-F]*) [ -z "$RELEASE" ] || { echo "release must be a hex commit SHA or prefix" >&2; exit 1; } ;;
           esac
+          # shellcheck disable=SC2088  # tilde is meant for the remote shell to expand, not this one
           ssh -i ~/.ssh/deploy_key -p "${{ secrets.DROPLET_PORT || 22 }}" \
             "${{ secrets.DROPLET_USER }}@${{ secrets.DROPLET_HOST }}" \
             "~/bin/loomiui-rollback $RELEASE"

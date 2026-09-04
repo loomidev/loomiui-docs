@@ -798,12 +798,12 @@ function paletteFor(preset: any) {
             <button type="button" class="pm-tab" data-pm="pnpm" aria-pressed="false">pnpm</button>
           </div>
           <div class="code-row">
-            <code id="install-code">npm i @loomdev-pro/themes</code>
+            <code id="install-code">npm i @loomidev-pro/themes</code>
             <button type="button" id="copy-install" aria-label="Copy install command"><loomi-icon name="clipboard"></loomi-icon></button>
           </div>
           <p class="import-note">or import the CSS</p>
           <div class="code-row">
-            <code id="import-code">@import &quot;@loomdev-pro/themes/css/{initialPreset.name}.css&quot;;</code>
+            <code id="import-code">@import &quot;@loomidev-pro/themes/css/{initialPreset.name}.css&quot;;</code>
             <button type="button" id="copy-import" aria-label="Copy preset import"><loomi-icon name="clipboard"></loomi-icon></button>
           </div>
           <span class="copy-feedback" id="copy-feedback" aria-live="polite"></span>
@@ -982,8 +982,8 @@ function paletteFor(preset: any) {
       const preset = getPreset(activePreset);
       if (!preset) return;
       const commands: Record<string, string> = { npm: "npm i", yarn: "yarn add", pnpm: "pnpm add" };
-      installCode.textContent = `${commands[activePm] ?? commands.npm} @loomdev-pro/themes`;
-      importCode.textContent = `@import "@loomdev-pro/themes/css/${preset.name}.css";`;
+      installCode.textContent = `${commands[activePm] ?? commands.npm} @loomidev-pro/themes`;
+      importCode.textContent = `@import "@loomidev-pro/themes/css/${preset.name}.css";`;
       pmButtons.forEach((button) => {
         const active = button.dataset.pm === activePm;
         button.classList.toggle("is-active", active);
