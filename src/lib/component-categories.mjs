@@ -27,14 +27,14 @@ const MEMBERS = {
   feedback: ["alert", "notification", "bell", "spinner", "progress", "processing", "progress-steps"],
   navigation: [
     "tab", "pagination", "dropmenu", "theme-switcher", "context-menu", "command-palette",
-    "bottom-nav", "profile-menu", "side-nav",
+    "bottom-nav", "profile-menu", "side-nav", "breadcrumb",
   ],
   overlay: ["modal", "popover", "tooltip", "drawer", "floating-panel", "lightbox"],
   "data-display": [
     "table", "tag", "arc-meter", "statistic", "rating", "scroller", "timeline", "listview", "contact-card", "chart",
-    "horizontal-line-graph", "clipboard", "timer", "data-grid", "calendar", "chat", "photo-gallery",
+    "horizontal-line-graph", "clipboard", "timer", "data-grid", "calendar", "chat", "photo-gallery", "skeleton",
   ],
-  layout: ["button", "button-group", "card", "accordion", "centered-content", "sortable", "divider", "resizable", "fab"],
+  layout: ["button", "button-group", "card", "accordion", "centered-content", "sortable", "divider", "resizable", "fab", "split-button"],
   media: ["icon", "avatar", "empty-state", "qrcode", "video"],
 };
 

@@ -69,6 +69,7 @@ const PREVIEWS: Record<string, string> = {
   "progress-steps": `<div style="transform:scale(.62);transform-origin:center;width:167%"><loomi-progress-steps current="2" style="display:block"><loomi-progress-step label="Account"></loomi-progress-step><loomi-progress-step label="Billing"></loomi-progress-step><loomi-progress-step label="Confirm"></loomi-progress-step></loomi-progress-steps></div>`,
 
   // Navigation
+  breadcrumb: `<loomi-breadcrumb style="display:block"><loomi-breadcrumb-item label="Home" href="/"></loomi-breadcrumb-item><loomi-breadcrumb-item label="Settings" href="/settings"></loomi-breadcrumb-item><loomi-breadcrumb-item label="Billing" last></loomi-breadcrumb-item></loomi-breadcrumb>`,
   tab: `<loomi-tabs class="w-full"><loomi-tab label="Tab 1" active></loomi-tab><loomi-tab label="Tab 2"></loomi-tab></loomi-tabs>`,
   pagination: `<loomi-pagination total="60" page-size="20" page="2" pagination-style="numbers" show-total="false"></loomi-pagination>`,
   dropmenu: `<loomi-dropmenu position="auto"><loomi-button slot="trigger" type="secondary" size="small" icon="chevron-down" icon-right>Open menu</loomi-button><loomi-dropmenu-item>Edit</loomi-dropmenu-item><loomi-dropmenu-item>Duplicate</loomi-dropmenu-item></loomi-dropmenu>`,
@@ -102,9 +103,11 @@ const PREVIEWS: Record<string, string> = {
   timer: `<loomi-timer duration="90" label="Sprint" style="font-size:14px"></loomi-timer>`,
   chat: `<div style="height:5.5rem;width:100%;overflow:hidden;display:flex;flex-direction:column;justify-content:center;gap:.3rem;padding:0 .5rem;transform:scale(.9)"><loomi-chat-message text="Can we ship this today?" sender="Sara" sender-id="sara" bubble-color="success" show-avatar></loomi-chat-message><loomi-chat-message text="Yes — pushing now." sender="You" sender-id="you" bubble-color="primary" outgoing show-avatar></loomi-chat-message></div>`,
   "photo-gallery": `<div style="height:5.5rem;width:100%;overflow:hidden"><loomi-photo-gallery thumb-size="90" show-slideshow="false" show-album-toggle="false" style="display:block;width:166%;transform:scale(.6);transform-origin:top left"><loomi-photo-gallery-item src="/avatars/male.jpg" thumb="/avatars/male.jpg" alt="Photo one"></loomi-photo-gallery-item><loomi-photo-gallery-item src="/avatars/female.jpg" thumb="/avatars/female.jpg" alt="Photo two"></loomi-photo-gallery-item><loomi-photo-gallery-item src="/avatars/male2.jpg" thumb="/avatars/male2.jpg" alt="Photo three" favourite></loomi-photo-gallery-item></loomi-photo-gallery></div>`,
+  skeleton: `<div style="display:flex;align-items:center;gap:.6rem;width:100%"><loomi-skeleton variant="circle" width="2.4rem" height="2.4rem"></loomi-skeleton><div style="display:flex;flex-direction:column;gap:.4rem;flex:1"><loomi-skeleton variant="text" width="80%"></loomi-skeleton><loomi-skeleton variant="text" width="55%"></loomi-skeleton></div></div>`,
 
   // Layout
   button: `<loomi-button color="primary">Button</loomi-button>`,
+  "split-button": `<loomi-split-button size="small" color="primary">Create<loomi-dropmenu-item slot="menu">Import</loomi-dropmenu-item></loomi-split-button>`,
   "button-group": `<loomi-button-group size="small"><loomi-button-group-item label="Day" value="day" selected></loomi-button-group-item><loomi-button-group-item label="Week" value="week"></loomi-button-group-item><loomi-button-group-item label="Month" value="month"></loomi-button-group-item></loomi-button-group>`,
   card: `<loomi-card class="w-full text-left"><loomi-card-header><loomi-card-title>Card title</loomi-card-title><loomi-card-description>Card description</loomi-card-description></loomi-card-header></loomi-card>`,
   accordion: `<div style="width:100%;transform:scale(.88)"><loomi-accordion class="w-full"><loomi-accordion-item title="Section one" open></loomi-accordion-item><loomi-accordion-item title="Section two"></loomi-accordion-item></loomi-accordion></div>`,
