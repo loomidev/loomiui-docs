@@ -7,7 +7,7 @@
 export const INFRA = ["theme", "core", "icons"];
 
 export const CATEGORY = {
-  standalone: ["button", "button-group", "icon", "spinner", "alert", "bell", "modal", "notification", "table", "fab"],
+  standalone: ["button", "button-group", "icon", "spinner", "alert", "bell", "modal", "notification", "table", "fab", "split-button"],
   forms: [
     "input", "textarea", "select", "countries", "checkbox", "radio", "toggle", "number", "slider",
     "checkcards", "datepicker", "timepicker", "timezonepicker", "colorpicker", "filepicker",
@@ -19,9 +19,9 @@ export const CATEGORY = {
     "rating", "scroller", "timeline", "progress", "listview", "contact-card", "centered-content",
     "sortable", "processing", "horizontal-line-graph", "chart", "drawer", "clipboard",
     "divider", "qrcode", "timer", "data-grid", "calendar", "chat", "resizable",
-    "progress-steps", "video", "floating-panel", "photo-gallery", "lightbox",
+    "progress-steps", "video", "floating-panel", "photo-gallery", "lightbox", "skeleton",
   ],
-  navigation: ["tab", "pagination", "dropmenu", "theme-switcher", "context-menu", "command-palette", "bottom-nav", "profile-menu", "side-nav"],
+  navigation: ["tab", "pagination", "dropmenu", "theme-switcher", "context-menu", "command-palette", "bottom-nav", "profile-menu", "side-nav", "breadcrumb"],
 };
 
 export const COMPONENT_NAMES = Object.values(CATEGORY).flat();
