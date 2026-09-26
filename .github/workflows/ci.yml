@@ -19,13 +19,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      # No `version`: this job installs only the docs repo, so it follows
+      # package.json's `packageManager`, and action-setup refuses to run when both
+      # are set. deploy.yml pins 11.9.0 because it also installs the components
+      # repo; its docs checkout lives in docs/, so there's no conflict there.
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
-        with:
-          # Must satisfy the loomiui (components) repo's pnpm-workspace.yaml `overrides`,
-          # which pnpm 9 reads differently and rejects as ERR_PNPM_LOCKFILE_CONFIG_MISMATCH
-          # — see the same pin in deploy.yml, which installs that repo too.
-          version: 11.9.0
 
       - name: Setup Node
         uses: actions/setup-node@v7
