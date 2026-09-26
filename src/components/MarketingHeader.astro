@@ -147,6 +147,13 @@ const GITHUB_URL = "https://github.com/loomidev/loomiui-docs";
       display: none;
     }
   }
+
+  /* Same as Header.astro: until the dropmenu module (import-map/CDN chain, see the
+     script below) registers the elements, <loomi-dropmenu-item> is plain inline
+     content, so on slow connections every menu's items show in the top bar. */
+  loomi-dropmenu-item:not(:defined) {
+    display: none;
+  }
 </style>
 
 <script type="module" is:inline>
