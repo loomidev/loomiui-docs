@@ -1,0 +1,121 @@
+---
+// Version pill beside the logo in both Header.astro (Starlight pages) and
+// MarketingHeader.astro (raw pages). See src/lib/versions.mjs for where the versions
+// come from. The menu is rendered at build time from this build's copy of
+// public/versions.json, then refreshed in the browser from the live site's copy so
+// archived builds still list newer releases.
+//
+// Styled with plain CSS rather than Tailwind or Starlight's tokens since it has to
+// look the same under both shells; both set `data-theme` on <html> via
+// ThemeProvider.astro, so that drives dark mode.
+import { CURRENT_VERSION, collapseVersions, formatVersion } from "../lib/versions.mjs";
+import versions from "../../public/versions.json";
+
+const items = collapseVersions(versions);
+---
+
+<loomi-dropmenu class="loomi-version" position="auto" hide-after-click>
+  <button slot="trigger" type="button" class="loomi-version-trigger" aria-label={`Docs version: ${formatVersion(CURRENT_VERSION)}`}>
+    {formatVersion(CURRENT_VERSION)}
+    <loomi-icon name="chevron-down" style="width:0.75rem;height:0.75rem"></loomi-icon>
+  </button>
+  {
+    items.map((item) => (
+      <loomi-dropmenu-item>
+        <a class="loomi-version-link" href={item.url} aria-current={item.current ? "true" : undefined}>
+          {formatVersion(item.version)}
+          {item.current && <loomi-icon name="check" />}
+        </a>
+      </loomi-dropmenu-item>
+    ))
+  }
+</loomi-dropmenu>
+
+<script>
+  import { VERSIONS_URL, collapseVersions, formatVersion } from "../lib/versions.mjs";
+
+  // Same-origin in dev so the local public/versions.json is used; the live site
+  // needs `Access-Control-Allow-Origin: *` on /versions.json for archived
+  // subdomains to read it.
+  const url = import.meta.env.DEV ? "/versions.json" : VERSIONS_URL;
+
+  fetch(url)
+    .then((response) => (response.ok ? response.json() : Promise.reject(response.status)))
+    .then((versions) => {
+      const items = collapseVersions(versions);
+      for (const menu of document.querySelectorAll("loomi-dropmenu.loomi-version")) {
+        menu.querySelectorAll("loomi-dropmenu-item").forEach((item) => item.remove());
+        for (const entry of items) {
+          const item = document.createElement("loomi-dropmenu-item");
+          const link = document.createElement("a");
+          link.className = "loomi-version-link";
+          link.href = entry.url;
+          link.textContent = formatVersion(entry.version);
+          if (entry.current) {
+            link.setAttribute("aria-current", "true");
+            const check = document.createElement("loomi-icon");
+            check.setAttribute("name", "check");
+            link.append(check);
+          }
+          item.append(link);
+          menu.append(item);
+        }
+      }
+    })
+    // Offline or blocked: keep the build-time list.
+    .catch(() => {});
+</script>
+
+<style>
+  .loomi-version {
+    flex-shrink: 0;
+    margin-left: 0.75rem;
+  }
+  .loomi-version-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    border: 0;
+    border-radius: 9999px;
+    background: #f3f4f6;
+    padding: 0.2rem 0.55rem;
+    color: #374151;
+    font-family: inherit;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.25;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .loomi-version-trigger:hover {
+    background: #e5e7eb;
+    color: #111827;
+  }
+  :global(:root[data-theme="dark"]) .loomi-version-trigger {
+    background: #1f2937;
+    color: #d1d5db;
+  }
+  :global(:root[data-theme="dark"]) .loomi-version-trigger:hover {
+    background: #374151;
+    color: #fff;
+  }
+  /* :global because the refresh script above rebuilds these links, and elements it
+     creates don't carry Astro's scoping attribute. The check sits at the right edge,
+     like the item's own `icon-right` would place it, but that option reverses the
+     whole row, which pushes items without an icon out of line. */
+  :global(.loomi-version-link) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    min-width: 6rem;
+  }
+  :global(.loomi-version-link loomi-icon) {
+    width: 1rem;
+    height: 1rem;
+  }
+  /* See Header.astro: items render inline until the dropmenu module registers. */
+  loomi-dropmenu-item:not(:defined) {
+    display: none;
+  }
+</style>

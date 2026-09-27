@@ -24,6 +24,7 @@
 import SiteTitle from "@astrojs/starlight/components/SiteTitle.astro";
 import Search from "@astrojs/starlight/components/Search.astro";
 import ThemeSelect from "./ThemeSelect.astro";
+import VersionSwitcher from "./VersionSwitcher.astro";
 import { PRO_LICENSING_URL, PRO_SIGN_IN_URL } from "../lib/pro-licensing.mjs";
 
 const GITHUB_URL = "https://github.com/loomidev/loomiui-docs";
@@ -39,6 +40,7 @@ const { hasSidebar } = Astro.locals.starlightRoute;
   <div class="loomi-header-title sl-flex">
     <SiteTitle />
   </div>
+  <VersionSwitcher />
 
   <nav class="loomi-header-nav sl-hidden lg:sl-flex">
     {
