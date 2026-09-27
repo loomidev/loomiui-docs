@@ -10,6 +10,7 @@ import logoLight from "../assets/logo-light.png";
 import logoDark from "../assets/logo-dark.png";
 import Search from "@astrojs/starlight/components/Search.astro";
 import ThemeProvider from "./ThemeProvider.astro";
+import VersionSwitcher from "./VersionSwitcher.astro";
 
 import { PRO_LICENSING_URL, PRO_SIGN_IN_URL } from "../lib/pro-licensing.mjs";
 
@@ -24,6 +25,7 @@ const GITHUB_URL = "https://github.com/loomidev/loomiui-docs";
       <Image src={logoLight} alt="loomiui" class="hidden h-7 w-auto dark:hidden sm:block" />
       <Image src={logoDark} alt="loomiui" class="hidden h-7 w-auto dark:sm:block" />
     </a>
+    <VersionSwitcher />
 
     <nav class="ml-10 hidden items-center gap-7 text-sm font-medium text-gray-600 dark:text-gray-300 lg:flex">
       <a href="/installation/" class="hover:text-primary-600 dark:hover:text-primary-400">Docs</a>

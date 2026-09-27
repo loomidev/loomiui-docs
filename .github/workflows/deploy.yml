@@ -136,6 +136,26 @@ jobs:
 
           $SSH_CMD "$REMOTE" "mkdir -p '$RELEASES' ~/bin"
 
+          # A deploy that starts a new major version (0.x → 1.0.0, 1.x → 2.0.0)
+          # first archives the outgoing live build beside the site, e.g.
+          # /var/www/html/v0.loomiui.com next to /var/www/html/loomiui.com, which
+          # is the address the version switcher already links to (see
+          # src/lib/version-lines.mjs, and deploy/nginx-archives.conf for serving
+          # it). Patch and minor deploys within a line archive nothing, so each line
+          # is archived once, as its last release. An existing archive is never
+          # overwritten, so a rollback followed by a redeploy can't clobber it.
+          line_of() { echo "${1%%.*}"; }
+          NEW_VERSION=$(jq -r .version docs/dist/version.json)
+          # Empty for a live build that predates /version.json: nothing to compare,
+          # so nothing is archived.
+          LIVE_VERSION=$($SSH_CMD "$REMOTE" "cat '$DEPLOY_PATH/version.json' 2>/dev/null" \
+            | jq -r '.version // empty' 2>/dev/null || true)
+          ARCHIVE=""
+          if [ -n "$LIVE_VERSION" ] && [ "$(line_of "$LIVE_VERSION")" != "$(line_of "$NEW_VERSION")" ]; then
+            ARCHIVE="$(dirname "$DEPLOY_PATH")/v$(line_of "$LIVE_VERSION").$(basename "$DEPLOY_PATH")"
+            echo "New version line ($LIVE_VERSION → $NEW_VERSION): archiving the live build as v$(line_of "$LIVE_VERSION") unless that archive exists"
+          fi
+
           # Ship the rollback tool with every deploy so it can never drift from
           # the release layout above. Ubuntu's default ~/.profile puts ~/bin on
           # PATH, so `loomiui-rollback` just works — and needs no sudo.
@@ -168,6 +188,13 @@ jobs:
               echo \"The new release is already uploaded at '$RELEASE'.\" >&2
               echo \"Replace the directory with a symlink to it to go live.\" >&2
               exit 1
+            fi
+            # Hardlinked like the releases, so the archive costs roughly nothing
+            # on disk and outlives the pruning of the release it came from.
+            if [ -n '$ARCHIVE' ] && [ ! -e '$ARCHIVE' ]; then
+              rm -rf '${ARCHIVE}.tmp'
+              cp -al \"\$(readlink -f '$DEPLOY_PATH')\" '${ARCHIVE}.tmp'
+              mv -T '${ARCHIVE}.tmp' '$ARCHIVE'
             fi
             ln -sfn '$RELEASE' '${DEPLOY_PATH}.new'
             mv -T '${DEPLOY_PATH}.new' '$DEPLOY_PATH'

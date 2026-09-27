@@ -15,7 +15,7 @@
     "previews:build": "pnpm --dir ../pro build:previews && node scripts/copy-pro-template-previews.mjs",
     "previews:serve": "pnpm --dir ../pro serve:previews",
     "astro": "astro",
-    "prepare:content": "node scripts/copy-component-assets.mjs && node scripts/copy-pro-theme-assets.mjs && node scripts/copy-pro-template-screenshots.mjs && node scripts/copy-pro-template-previews.mjs && node scripts/gen-component-docs.mjs && node scripts/gen-preview-fallbacks.mjs",
+    "prepare:content": "node scripts/sync-docs-version.mjs && node scripts/copy-component-assets.mjs && node scripts/copy-pro-theme-assets.mjs && node scripts/copy-pro-template-screenshots.mjs && node scripts/copy-pro-template-previews.mjs && node scripts/gen-component-docs.mjs && node scripts/gen-preview-fallbacks.mjs",
     "gen:components": "node scripts/gen-component-docs.mjs",
     "gen:preview-fallbacks": "node scripts/gen-preview-fallbacks.mjs",
     "copy:assets": "node scripts/copy-component-assets.mjs",
