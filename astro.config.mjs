@@ -27,7 +27,6 @@ export default defineConfig({
   integrations: [
     starlight({
       title: "LoomiUI",
-      tagline: "Web components for every stack",
       description: "LoomiUI is a framework-agnostic library of Web Components built with Lit, fully themeable through CSS custom properties. Install a single component or the entire library",
       // The logo image already contains the "LoomiUI" wordmark, so it replaces the
       // separate text title entirely rather than rendering alongside it. Dedicated
